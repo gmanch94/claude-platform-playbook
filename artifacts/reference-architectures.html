@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Claude Reference Architectures — 5 canonical patterns</title>
+<title>Claude Reference Architectures — 6 canonical patterns</title>
 <link href="https://fonts.googleapis.com/css2?family=Caveat:wght@500;700&family=Patrick+Hand&display=swap" rel="stylesheet">
 <style>
   :root {
@@ -51,7 +51,7 @@
 <div class="wrap">
   <header>
     <h1>Reference Architectures <span class="asof">As of 2026-05</span></h1>
-    <div class="sub">5 canonical Claude patterns. Hand-drawn diagrams — meant to be re-drawn on a whiteboard, not pasted into a slide. See <a href="../docs/feature-inventory.md">feature-inventory.md</a> for canonical feature status.</div>
+    <div class="sub">6 canonical Claude patterns. Hand-drawn diagrams — meant to be re-drawn on a whiteboard, not pasted into a slide. See <a href="../docs/feature-inventory.md">feature-inventory.md</a> for canonical feature status.</div>
   </header>
 
   <div class="legend-row">
@@ -582,6 +582,139 @@
       <a href="hooks-starter-pack.md">hooks-starter-pack.md</a> — 10 hook templates with phased Phase 1→4 rollout matrix ·
       <a href="mcp-starter-pack.md">mcp-starter-pack.md</a> — 7 read-only server templates (issue tracker, docs, CI logs, code search) ·
       <a href="eval-starter-pack.md">eval-starter-pack.md</a> — Phase 3 governance gate before plugin promotion.
+    </div>
+  </div>
+
+  <!-- ====================================================================== -->
+  <!-- PATTERN 6: Embedded copilot                                            -->
+  <!-- ====================================================================== -->
+  <div class="pattern">
+    <h2>6. Embedded copilot</h2>
+    <div class="stack-line">Sonnet 4.6 (Haiku 4.5 for triage) · cached app context · MCP to host app · memory tool for personalization</div>
+
+    <div class="diagram">
+      <svg viewBox="0 0 980 400" xmlns="http://www.w3.org/2000/svg">
+        <defs>
+          <marker id="arr6" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto">
+            <path d="M0,1 L9,5 L0,9 L2,5 z" fill="#2a2017"/>
+          </marker>
+        </defs>
+        <style>
+          .lbl { font-size: 16px; fill: #2a2017; }
+          .sub { font-size: 13px; fill: #5a4a3a; }
+          .anno { font-size: 14px; fill: var(--c1d); font-family: 'Caveat', cursive; }
+          .box { fill: #fffefb; stroke-width: 2.5; }
+          .user { stroke: var(--user); }
+          .claude { stroke: var(--claude); }
+          .tool { stroke: var(--tool); }
+          .store { stroke: var(--store); }
+          .out { stroke: var(--out); }
+          .flow { stroke: #2a2017; stroke-width: 2; fill: none; }
+          .flow.dash { stroke-dasharray: 5 4; }
+        </style>
+
+        <!-- End user -->
+        <path class="box user" d="M22,170 Q22,160 34,158 L132,162 Q144,160 142,172 L141,220 Q144,232 132,230 L34,228 Q20,232 22,218 Z"/>
+        <text class="lbl" x="82" y="192" text-anchor="middle">User</text>
+        <text class="sub" x="82" y="210" text-anchor="middle">in-app prompt</text>
+
+        <!-- Host app (CRM / ticketing UI) -->
+        <path class="box user" d="M180,90 Q180,80 192,78 L348,82 Q360,80 358,92 L357,300 Q360,312 348,310 L192,308 Q178,312 180,298 Z" fill="#fef9ee"/>
+        <text class="lbl" x="269" y="106" text-anchor="middle" font-weight="700">Host app</text>
+        <text class="sub" x="269" y="124" text-anchor="middle">CRM · ticketing · IDE panel</text>
+
+        <!-- Sidebar / chat panel inside host app -->
+        <path class="box claude" d="M200,148 Q200,140 212,138 L338,142 Q348,140 346,150 L345,200 Q348,210 338,208 L212,206 Q198,210 200,198 Z" stroke-dasharray="4 3"/>
+        <text class="lbl" x="273" y="170" text-anchor="middle">Copilot panel</text>
+        <text class="sub" x="273" y="188" text-anchor="middle">/ai · ⌘K · sidebar</text>
+
+        <!-- App context cache -->
+        <path class="box store" d="M200,228 Q200,220 212,218 L338,222 Q348,220 346,231 L345,278 Q348,290 338,288 L212,286 Q198,290 200,278 Z"/>
+        <text class="lbl" x="273" y="250" text-anchor="middle">App context</text>
+        <text class="sub" x="273" y="268" text-anchor="middle">user role · current record</text>
+
+        <!-- Claude API box -->
+        <path class="box claude" d="M400,60 Q400,50 414,48 L700,52 Q716,50 714,64 L713,340 Q716,354 700,352 L414,350 Q396,354 398,338 Z" fill="#fdf6ed"/>
+        <text class="lbl" x="556" y="80" text-anchor="middle" font-weight="700">Claude API</text>
+
+        <!-- Haiku triage -->
+        <path class="box claude" d="M420,108 Q420,100 432,98 L548,102 Q560,100 558,112 L558,170 Q560,182 548,180 L432,178 Q418,182 420,168 Z"/>
+        <text class="lbl" x="488" y="130" text-anchor="middle">Haiku 4.5</text>
+        <text class="sub" x="488" y="148" text-anchor="middle">triage · classify</text>
+        <text class="sub" x="488" y="166" text-anchor="middle">simple Q? answer fast</text>
+
+        <!-- Sonnet main -->
+        <path class="box claude" d="M580,108 Q580,100 592,98 L700,102 Q712,100 710,112 L710,170 Q712,182 700,180 L592,178 Q578,182 580,168 Z"/>
+        <text class="lbl" x="645" y="130" text-anchor="middle">Sonnet 4.6</text>
+        <text class="sub" x="645" y="148" text-anchor="middle">complex · tool use</text>
+        <text class="sub" x="645" y="166" text-anchor="middle">extended thinking</text>
+
+        <!-- Prompt cache -->
+        <path class="box store" d="M420,205 Q420,197 432,195 L700,199 Q712,197 710,210 L710,250 Q712,262 700,260 L432,258 Q418,262 420,248 Z"/>
+        <text class="lbl" x="565" y="225" text-anchor="middle">Prompt cache</text>
+        <text class="sub" x="565" y="245" text-anchor="middle">system + tool defs + app schema (90% off cached input)</text>
+
+        <!-- Tool use ports -->
+        <path class="box tool" d="M420,278 Q420,270 432,268 L548,272 Q560,270 558,282 L558,322 Q560,334 548,332 L432,330 Q418,334 420,320 Z"/>
+        <text class="lbl" x="488" y="298" text-anchor="middle">tool_use</text>
+        <text class="sub" x="488" y="316" text-anchor="middle">MCP host-app</text>
+
+        <path class="box tool" d="M580,278 Q580,270 592,268 L700,272 Q712,270 710,282 L710,322 Q712,334 700,332 L592,330 Q578,334 580,320 Z"/>
+        <text class="lbl" x="645" y="298" text-anchor="middle">memory_tool</text>
+        <text class="sub" x="645" y="316" text-anchor="middle">per-user prefs</text>
+
+        <!-- MCP host-app server -->
+        <path class="box tool" d="M755,100 Q755,92 767,90 L955,94 Q968,92 966,104 L965,178 Q968,190 955,188 L767,186 Q753,190 755,176 Z"/>
+        <text class="lbl" x="860" y="120" text-anchor="middle">MCP: host-app</text>
+        <text class="sub" x="860" y="140" text-anchor="middle">read records · search</text>
+        <text class="sub" x="860" y="158" text-anchor="middle">draft action (gated)</text>
+        <text class="sub" x="860" y="176" text-anchor="middle" font-style="italic">scope = current user</text>
+
+        <!-- Memory store -->
+        <path class="box store" d="M755,210 Q755,202 767,200 L955,204 Q968,202 966,214 L965,270 Q968,282 955,280 L767,278 Q753,282 755,268 Z"/>
+        <text class="lbl" x="860" y="232" text-anchor="middle">Memory store</text>
+        <text class="sub" x="860" y="250" text-anchor="middle">per-user, per-tenant</text>
+        <text class="sub" x="860" y="268" text-anchor="middle">retention policy applies</text>
+
+        <!-- Rendered response back in app -->
+        <path class="box out" d="M755,300 Q755,292 767,290 L955,294 Q968,292 966,304 L965,338 Q968,350 955,348 L767,346 Q753,350 755,336 Z"/>
+        <text class="lbl" x="860" y="320" text-anchor="middle">Rendered in app</text>
+        <text class="sub" x="860" y="338" text-anchor="middle">inline · sidebar · suggested action</text>
+
+        <!-- Flows -->
+        <path class="flow" d="M146,194 Q165,192 178,194" marker-end="url(#arr6)"/>
+        <path class="flow" d="M348,172 Q372,140 398,140" marker-end="url(#arr6)"/>
+        <path class="flow dash" d="M348,250 Q372,225 398,225" marker-end="url(#arr6)"/>
+        <path class="flow dash" d="M560,172 Q572,180 580,170"/>
+        <path class="flow" d="M716,140 Q734,124 753,128" marker-end="url(#arr6)"/>
+        <path class="flow dash" d="M716,300 Q734,290 753,322" marker-end="url(#arr6)"/>
+        <path class="flow dash" d="M716,300 Q734,250 753,238" marker-end="url(#arr6)"/>
+        <path class="flow" d="M753,318 Q580,380 358,310" marker-end="url(#arr6)"/>
+
+        <text class="anno" x="490" y="44">Haiku triages → Sonnet only when needed</text>
+        <text class="anno" x="860" y="296">response back in host UI</text>
+      </svg>
+    </div>
+
+    <div class="meta">
+      <div class="cell"><h4>Cost band</h4><div class="v">Mid — Haiku triage + 90% cached input on system + app schema compounds. ~$0.001–$0.01 per interaction typical.</div></div>
+      <div class="cell"><h4>Latency</h4><div class="v">Sub-2s for triaged answers (Haiku). 2–6s when Sonnet handles tool use. Streaming UI hides the rest.</div></div>
+      <div class="cell"><h4>Governance</h4><div class="v">Memory tool retention + per-user/per-tenant isolation. App-context redaction before send. MCP server scoped to current user.</div></div>
+    </div>
+
+    <p>The copilot lives <em>inside</em> an existing app — CRM record sidebar, ticketing detail page, IDE panel — not as a standalone chat. Haiku 4.5 triages: simple lookups answer immediately; complex reasoning routes to Sonnet 4.6 with tool use. The system prompt + tool definitions + app schema are cached (90% off cached input on hit). An MCP server scoped to the host app reads the current record, searches related records, and drafts (but does not commit) actions. Memory tool persists per-user preferences across sessions. The response renders inline — never as a popup the user has to context-switch to.</p>
+
+    <div class="when">
+      <div class="yes"><h4>Use when</h4>Existing app with workflow context (CRM, ticketing, IDE, internal tools). Users want help inside their flow, not a separate chat tab. Personalization across sessions matters.</div>
+      <div class="no"><h4>Don't use when</h4>No host app yet (build the app first). Pure document Q&A (use Pattern 1 RAG). Multi-step autonomous execution (use Pattern 2 agentic).</div>
+    </div>
+
+    <div class="companions">
+      <strong>Operationalize with:</strong>
+      <a href="claude-code-starter-skills.md">claude-code-starter-skills.md</a> — Skills package in-app procedures (drafting, summarizing, classifying) ·
+      <a href="mcp-starter-pack.md">mcp-starter-pack.md</a> — host-app MCP server (read-only by default, gated mutate via Phase 4) ·
+      <a href="eval-starter-pack.md">eval-starter-pack.md</a> — refusal-calibration + grounding evals matter most for in-app responses ·
+      <a href="governance-overlay.md">governance-overlay.md</a> — §1 data flow when prompts include app context, §8 memory tool retention.
     </div>
   </div>
 
