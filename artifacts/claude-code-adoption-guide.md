@@ -155,6 +155,8 @@ team-plugin/
     └── internal-docs/            # MCP server config for internal wiki/docs
 ```
 
+For a starter set of 8 team-grade Skill templates (PR review, test generation, migration guard, bug triage, doc refresh, release notes, on-call investigation, refactor scout) — each framed by when-to-use / failure-mode / owner before the prompt body — see [`claude-code-starter-skills.md`](claude-code-starter-skills.md). Pick 2–3 to seed Phase 2; do not ship all eight at once.
+
 Source-control in a dedicated repo. Tag releases. Engineers install:
 
 ```bash
@@ -279,6 +281,7 @@ For recurring work (weekly sweep, on-cadence reports), use scheduled tasks rathe
 
 ## Companion artifacts
 
+- [`claude-code-starter-skills.md`](claude-code-starter-skills.md) — 8 team-grade Skill templates with when-to-use / failure-mode / owner framing
 - [`adoption-playbook.md`](adoption-playbook.md) — business + transformation lens (Claude broadly, not just Claude Code)
 - [`feature-decision-matrix.html`](feature-decision-matrix.html) — code-automation row maps directly here
 - [`reference-architectures.html`](reference-architectures.html) — Pattern 5 is the architecture diagram for this guide

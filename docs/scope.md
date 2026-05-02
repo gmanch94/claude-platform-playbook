@@ -159,3 +159,15 @@ Session 1: items 1-4 (skeleton + 3 anchors). Session 2: items 5-9 (depth + ship)
 2. Include OpenAI/Gemini comparisons in cost-calculator (more useful) or Claude-only (less risky positioning)?
 3. Reference architectures — SVG hand-drawn or Mermaid generated?
 4. Worth adding a `claude-code-adoption-guide.md` for engineering-team-specific rollout (separate from exec adoption playbook)?
+
+---
+
+## Post-v1 additions (justified extensions)
+
+### `claude-code-starter-skills.md` (added 2026-05)
+
+**Why it earns its place.** The Claude Code adoption guide names "5 engineers, 5 plugins, 0 reuse" as one of the eight common adoption mistakes. A pack of decision-framed Skill templates lowers the activation energy for *team* plugins (vs. per-engineer plugins) and gives engineering leads a concrete day-1 productivity floor to point at when justifying rollout. Without it, the adoption guide describes the failure mode but offers no scaffolding to prevent it.
+
+**Why it's not in the original 8.** The original scope assumed Skills would be team-specific enough that templating them was unhelpful. Empirically, 6 of the 8 patterns in the pack (PR review, test generation, migration guard, bug triage, release notes, refactor scout) are shaped almost identically across teams — the *contents* differ but the *structure* (when-to-use / failure-mode / owner / prompt body) is portable. Treating the structure as the artifact and the prompt body as a placeholder is what makes this a reusable decision tool rather than a tutorial.
+
+**Posture.** Decision-frame first (when each Skill earns its keep, what its failure mode is, who owns it), prompt body last. Not a tutorial. Pinned to current model surface like the rest of the artifacts.

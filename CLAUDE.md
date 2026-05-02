@@ -37,7 +37,8 @@ claude-platform-playbook/
     ├── reference-architectures.html     5 hand-drawn SVG patterns (Caveat font)
     ├── adoption-playbook.md             90-day rollout · 8 failure modes
     ├── governance-overlay.md            Data flow · BAA · NIST · EU AI Act
-    └── claude-code-adoption-guide.md    Engineering CLI rollout
+    ├── claude-code-adoption-guide.md    Engineering CLI rollout
+    └── claude-code-starter-skills.md    8 team-grade Skill templates (when-to-use / failure-mode / owner / prompt body)
 ```
 
 ## Working in this repo

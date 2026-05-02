@@ -32,7 +32,7 @@ Not Anthropic marketing. Decision-frame first, features second.
 | Architect choosing patterns | [`reference-architectures.html`](artifacts/reference-architectures.html) → [`feature-decision-matrix.html`](artifacts/feature-decision-matrix.html) |
 | Transformation lead running rollout | [`adoption-playbook.md`](artifacts/adoption-playbook.md) |
 | Risk / compliance reviewer | [`governance-overlay.md`](artifacts/governance-overlay.md) |
-| Engineering manager rolling out Claude Code | [`claude-code-adoption-guide.md`](artifacts/claude-code-adoption-guide.md) |
+| Engineering manager rolling out Claude Code | [`claude-code-adoption-guide.md`](artifacts/claude-code-adoption-guide.md) → [`claude-code-starter-skills.md`](artifacts/claude-code-starter-skills.md) |
 
 ---
 
@@ -48,6 +48,7 @@ Not Anthropic marketing. Decision-frame first, features second.
 | [`build-vs-buy-worksheet.html`](artifacts/build-vs-buy-worksheet.html) | Decision tool | Add use case → score 5 axes → recommendation: Claude direct / via Bedrock or Vertex / OpenAI / open-source / packaged SaaS. TCO band + rationale. |
 | [`reference-architectures.html`](artifacts/reference-architectures.html) | Reference | 5 canonical patterns with hand-drawn SVG diagrams: RAG copilot, agentic workflow, batch enrichment, domain expert assistant, code automation. |
 | [`claude-code-adoption-guide.md`](artifacts/claude-code-adoption-guide.md) | Operational | Engineering-team rollout for Claude Code (CLI). Pilot selection, hooks, skills, settings, MCP, security model, measurement. |
+| [`claude-code-starter-skills.md`](artifacts/claude-code-starter-skills.md) | Templates | 8 team-grade Skill templates (PR review, test gen, migration guard, bug triage, doc refresh, release notes, on-call, refactor scout). Each framed by when-to-use / failure-mode / owner before the prompt body. |
 
 ---
 
