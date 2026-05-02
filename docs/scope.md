@@ -21,7 +21,7 @@ claude-platform-playbook/
     ├── adoption-playbook.md         (90-day rollout plan)
     ├── governance-overlay.md        (BAA, data residency, no-train, audit, retention)
     ├── build-vs-buy-worksheet.html  (use case → Claude vs DIY vs other vendor)
-    └── reference-architectures.html (5 canonical patterns w/ diagrams)
+    └── reference-architectures.html (6 canonical patterns w/ diagrams)
 ```
 
 7 artifacts. ~2 sessions to ship cleanly.
@@ -101,14 +101,15 @@ Add use case → score on 5 axes (regulated data, latency, customization depth, 
 
 Output: ranked recommendations + rationale + estimated TCO band.
 
-### 7. `reference-architectures.html` — 5 canonical patterns
+### 7. `reference-architectures.html` — 6 canonical patterns
 
-Each w/ block diagram (SVG or Mermaid):
+Each w/ hand-drawn SVG block diagram:
 1. **RAG copilot** — Files API + caching + Sonnet
 2. **Agentic workflow** — Agent SDK + tool use + Sonnet/Opus mix
 3. **Batch enrichment** — Batch API + Haiku
 4. **Domain expert assistant** — Skills + MCP + Sonnet
 5. **Code automation** — Claude Code + computer use + Opus
+6. **Embedded copilot** — Sonnet (Haiku triage) + cached app context + MCP to host app + memory tool *(added 2026-05; closes a gap where feature-decision-matrix named the pattern but ref-arch had no diagram)*
 
 Each diagram: 1-paragraph description, cost band, governance notes, when-to-use / when-not.
 

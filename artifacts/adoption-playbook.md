@@ -192,7 +192,7 @@ You can run a small adoption with 4–6 people. Larger orgs will scale each func
 - [`pilot-selection-worksheet.html`](pilot-selection-worksheet.html) — Week 0 use-case scoring (5 axes, ranked verdicts, blocker flags)
 - [`feature-decision-matrix.html`](feature-decision-matrix.html) — pick the right Claude features for the pattern
 - [`build-vs-buy-worksheet.html`](build-vs-buy-worksheet.html) — score a use case for Claude direct vs. alternatives
-- [`reference-architectures.html`](reference-architectures.html) — 5 canonical patterns with diagrams
+- [`reference-architectures.html`](reference-architectures.html) — 6 canonical patterns with diagrams
 - [`governance-overlay.md`](governance-overlay.md) — risk + compliance overlay
 - [`eval-starter-pack.md`](eval-starter-pack.md) — 8 evaluation templates (regression, format, tool-call, grounding, adversarial, cost, latency, refusal) — Weeks 5–8 scaffolding
 - [`claude-code-adoption-guide.md`](claude-code-adoption-guide.md) — engineering-team rollout for Claude Code

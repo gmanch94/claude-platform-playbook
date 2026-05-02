@@ -34,7 +34,7 @@ claude-platform-playbook/
     ├── cost-calculator.html             Live $/mo · Chart.js · 4 presets
     ├── feature-decision-matrix.html     8 patterns × 12 features · hover tooltips
     ├── build-vs-buy-worksheet.html      5-axis score → ranked 6-option rec
-    ├── reference-architectures.html     5 hand-drawn SVG patterns (Caveat font)
+    ├── reference-architectures.html     6 hand-drawn SVG patterns (Caveat font)
     ├── adoption-playbook.md             90-day rollout · 8 failure modes
     ├── pilot-selection-worksheet.html   Week 0 use-case scorer · 5 axes · ranked verdicts + blocker flags
     ├── governance-overlay.md            Data flow · BAA · NIST · EU AI Act
