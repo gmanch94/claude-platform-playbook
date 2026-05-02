@@ -1,0 +1,552 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Claude Reference Architectures — 5 canonical patterns</title>
+<link href="https://fonts.googleapis.com/css2?family=Caveat:wght@500;700&family=Patrick+Hand&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --c1:#D97757; --c1d:#B45309; --c2:#7C5E48; --bg:#faf7f3; --ink:#2a2017;
+    --line:#e8e0d3; --muted:#8a7e6e; --good:#15803d; --warn:#b45309;
+    --user:#D97757; --claude:#7C5E48; --tool:#1E40AF; --store:#15803d; --out:#9a3412;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; background: var(--bg); color: var(--ink); padding: 32px 24px 80px; line-height: 1.55; }
+  .wrap { max-width: 1180px; margin: 0 auto; }
+  header { border-bottom: 2px solid var(--c1); padding-bottom: 16px; margin-bottom: 24px; }
+  header h1 { font-size: 32px; font-weight: 700; }
+  header .sub { color: var(--muted); font-size: 15px; margin-top: 6px; }
+  .asof { display: inline-block; background: var(--c1); color: white; padding: 3px 10px; border-radius: 12px; font-size: 12px; font-weight: 600; margin-left: 8px; vertical-align: middle; }
+  .pattern { background: white; border: 1px solid var(--line); border-radius: 10px; padding: 24px; margin-bottom: 24px; }
+  .pattern h2 { font-size: 24px; color: var(--c1d); margin-bottom: 4px; font-family: 'Caveat', cursive; font-weight: 700; letter-spacing: 0.5px; }
+  .pattern .stack-line { font-family: 'Patrick Hand', cursive; font-size: 16px; color: var(--c2); margin-bottom: 14px; }
+  .diagram { background: #fffefb; border: 2px solid var(--ink); border-radius: 8px; padding: 14px; margin-bottom: 18px; box-shadow: 4px 4px 0 var(--line); }
+  .diagram svg { width: 100%; height: auto; max-width: 980px; display: block; margin: 0 auto; font-family: 'Patrick Hand', 'Caveat', cursive; }
+  .meta { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 14px; margin-bottom: 14px; }
+  @media (max-width: 800px) { .meta { grid-template-columns: 1fr; } }
+  .meta .cell { background: #fef9ee; border-left: 3px solid var(--c1); padding: 10px 14px; font-size: 13px; border-radius: 4px; }
+  .meta .cell h4 { font-size: 12px; color: var(--c1d); text-transform: uppercase; letter-spacing: 0.05em; margin-bottom: 4px; }
+  .meta .cell .v { font-weight: 600; font-size: 14px; }
+  .pattern p { font-size: 14px; line-height: 1.6; margin-bottom: 10px; }
+  .when { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; margin-top: 12px; }
+  @media (max-width: 700px) { .when { grid-template-columns: 1fr; } }
+  .when div { padding: 10px 14px; border-radius: 6px; font-size: 13px; }
+  .when .yes { background: rgba(21,128,61,0.08); border-left: 3px solid var(--good); }
+  .when .no { background: rgba(180,83,9,0.08); border-left: 3px solid var(--warn); }
+  .when h4 { font-size: 12px; text-transform: uppercase; letter-spacing: 0.05em; margin-bottom: 4px; }
+  .when .yes h4 { color: var(--good); }
+  .when .no h4 { color: var(--warn); }
+  .legend-row { display: flex; gap: 18px; flex-wrap: wrap; padding: 10px 14px; background: white; border: 1px solid var(--line); border-radius: 8px; margin-bottom: 22px; font-size: 13px; align-items: center; }
+  .legend-row .item { display: flex; align-items: center; gap: 6px; }
+  .legend-row .swatch { width: 18px; height: 14px; border: 2px solid; border-radius: 3px; }
+  footer { margin-top: 40px; padding-top: 16px; border-top: 1px solid var(--line); text-align: center; font-size: 12px; color: var(--muted); }
+  footer a { color: var(--c1d); }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <h1>Reference Architectures <span class="asof">As of 2026-05</span></h1>
+    <div class="sub">5 canonical Claude patterns. Hand-drawn diagrams — meant to be re-drawn on a whiteboard, not pasted into a slide. See <a href="../docs/feature-inventory.md">feature-inventory.md</a> for canonical feature status.</div>
+  </header>
+
+  <div class="legend-row">
+    <strong style="font-family:'Caveat',cursive; font-size:18px;">Legend:</strong>
+    <div class="item"><span class="swatch" style="border-color:var(--user); background:rgba(217,119,87,0.15)"></span>User / client</div>
+    <div class="item"><span class="swatch" style="border-color:var(--claude); background:rgba(124,94,72,0.15)"></span>Claude API</div>
+    <div class="item"><span class="swatch" style="border-color:var(--tool); background:rgba(30,64,175,0.12)"></span>Tools / MCP</div>
+    <div class="item"><span class="swatch" style="border-color:var(--store); background:rgba(21,128,61,0.12)"></span>Storage / data</div>
+    <div class="item"><span class="swatch" style="border-color:var(--out); background:rgba(154,52,18,0.12)"></span>Output / sink</div>
+  </div>
+
+  <!-- ====================================================================== -->
+  <!-- PATTERN 1: RAG copilot                                                 -->
+  <!-- ====================================================================== -->
+  <div class="pattern">
+    <h2>1. RAG copilot</h2>
+    <div class="stack-line">Sonnet 4.6 · Files API · prompt caching · citations · (optional MCP for live data)</div>
+
+    <div class="diagram">
+      <svg viewBox="0 0 980 380" xmlns="http://www.w3.org/2000/svg">
+        <defs>
+          <marker id="arr1" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto">
+            <path d="M0,1 L9,5 L0,9 L2,5 z" fill="#2a2017"/>
+          </marker>
+          <filter id="rough"><feTurbulence baseFrequency="0.04" numOctaves="2" /><feDisplacementMap in="SourceGraphic" scale="1.2"/></filter>
+        </defs>
+        <style>
+          .lbl { font-size: 16px; fill: #2a2017; }
+          .sub { font-size: 13px; fill: #5a4a3a; }
+          .anno { font-size: 14px; fill: var(--c1d); font-family: 'Caveat', cursive; }
+          .box { fill: #fffefb; stroke-width: 2.5; }
+          .user { stroke: var(--user); }
+          .claude { stroke: var(--claude); }
+          .tool { stroke: var(--tool); }
+          .store { stroke: var(--store); }
+          .out { stroke: var(--out); }
+          .flow { stroke: #2a2017; stroke-width: 2; fill: none; }
+          .flow.dash { stroke-dasharray: 5 4; }
+        </style>
+        <!-- User -->
+        <path class="box user" d="M30,150 Q30,140 42,138 L168,142 Q180,140 178,152 L177,200 Q180,212 168,210 L42,208 Q28,210 30,198 Z"/>
+        <text class="lbl" x="105" y="172" text-anchor="middle">User</text>
+        <text class="sub" x="105" y="190" text-anchor="middle">"What's our refund policy?"</text>
+
+        <!-- App / orchestrator -->
+        <path class="box user" d="M225,90 Q225,80 237,78 L388,82 Q400,80 398,92 L397,265 Q400,277 388,275 L237,273 Q223,277 225,263 Z"/>
+        <text class="lbl" x="312" y="115" text-anchor="middle">App / API</text>
+        <text class="sub" x="312" y="135" text-anchor="middle">retrieve →</text>
+        <text class="sub" x="312" y="152" text-anchor="middle">prompt build →</text>
+        <text class="sub" x="312" y="169" text-anchor="middle">Claude call</text>
+        <text class="sub" x="312" y="200" text-anchor="middle" font-weight="600">Cached prefix:</text>
+        <text class="sub" x="312" y="216" text-anchor="middle">system + tool defs</text>
+        <text class="sub" x="312" y="232" text-anchor="middle" font-weight="600">Fresh:</text>
+        <text class="sub" x="312" y="248" text-anchor="middle">retrieved chunks + Q</text>
+
+        <!-- Files API store (above) -->
+        <path class="box store" d="M250,15 Q250,8 260,8 L370,10 Q380,8 380,18 L380,55 Q380,65 370,63 L260,62 Q248,65 248,55 Z"/>
+        <text class="lbl" x="314" y="32" text-anchor="middle">Files API</text>
+        <text class="sub" x="314" y="50" text-anchor="middle">policies, PDFs, manuals</text>
+
+        <!-- Vector / search store (below) -->
+        <path class="box store" d="M250,300 Q250,292 261,290 L370,294 Q381,292 380,303 L378,340 Q381,353 370,350 L260,348 Q248,352 250,340 Z"/>
+        <text class="lbl" x="314" y="318" text-anchor="middle">Search index</text>
+        <text class="sub" x="314" y="336" text-anchor="middle">retrieval over Files</text>
+
+        <!-- Claude API -->
+        <path class="box claude" d="M460,140 Q460,130 472,128 L640,132 Q652,130 650,142 L649,225 Q652,237 640,235 L472,233 Q458,237 460,223 Z"/>
+        <text class="lbl" x="555" y="165" text-anchor="middle" font-weight="700">Claude API</text>
+        <text class="sub" x="555" y="184" text-anchor="middle">Sonnet 4.6</text>
+        <text class="sub" x="555" y="201" text-anchor="middle">+ extended cache</text>
+        <text class="sub" x="555" y="218" text-anchor="middle">+ citations on</text>
+
+        <!-- Output -->
+        <path class="box out" d="M720,140 Q720,130 732,128 L900,132 Q912,130 910,142 L909,225 Q912,237 900,235 L732,233 Q718,237 720,223 Z"/>
+        <text class="lbl" x="815" y="165" text-anchor="middle">Answer + cites</text>
+        <text class="sub" x="815" y="184" text-anchor="middle">paragraph w/ source spans</text>
+        <text class="sub" x="815" y="206" text-anchor="middle">→ rendered to user</text>
+
+        <!-- Arrows -->
+        <path class="flow" d="M180,170 Q200,168 222,170" marker-end="url(#arr1)"/>
+        <path class="flow" d="M312,80 Q314,55 314,32" marker-end="url(#arr1)"/>
+        <path class="flow" d="M312,278 Q313,295 314,300" marker-end="url(#arr1)"/>
+        <path class="flow" d="M400,180 Q425,178 458,180" marker-end="url(#arr1)"/>
+        <path class="flow" d="M654,182 Q685,180 718,182" marker-end="url(#arr1)"/>
+        <path class="flow dash" d="M812,135 Q650,75 400,80" marker-end="url(#arr1)"/>
+
+        <!-- Annotations -->
+        <text class="anno" x="555" y="115">~70% cache hit ⇒ 60-80% cost cut</text>
+        <text class="anno" x="730" y="118">return to user</text>
+      </svg>
+    </div>
+
+    <div class="meta">
+      <div class="cell"><h4>Cost band</h4><div class="v">Low — Sonnet + caching dominates.</div></div>
+      <div class="cell"><h4>Latency</h4><div class="v">1–3s typical end-to-end.</div></div>
+      <div class="cell"><h4>Governance</h4><div class="v">Citations mandatory. Log retrieved chunks for audit.</div></div>
+    </div>
+
+    <p>User question hits the app, which retrieves relevant chunks from a search index over content uploaded to Files API. The static system prompt + tool definitions stay cached on Claude's side; only the retrieved context + question are fresh per request. Sonnet 4.6 returns a grounded answer with citation spans pointing back to the source documents.</p>
+
+    <div class="when">
+      <div class="yes"><h4>Use when</h4>Domain Q&A over a stable corpus. Compliance requires source attribution. Latency budget allows 1–3s.</div>
+      <div class="no"><h4>Don't use when</h4>Answer requires multi-step reasoning across systems (use agentic). Corpus changes per-request (rebuild as live tool use).</div>
+    </div>
+  </div>
+
+  <!-- ====================================================================== -->
+  <!-- PATTERN 2: Agentic workflow                                            -->
+  <!-- ====================================================================== -->
+  <div class="pattern">
+    <h2>2. Agentic workflow</h2>
+    <div class="stack-line">Sonnet 4.6 (Opus 4.7 escalation) · Agent SDK · MCP · Skills · memory tool · plugins for distribution</div>
+
+    <div class="diagram">
+      <svg viewBox="0 0 980 420" xmlns="http://www.w3.org/2000/svg">
+        <defs>
+          <marker id="arr2" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto">
+            <path d="M0,1 L9,5 L0,9 L2,5 z" fill="#2a2017"/>
+          </marker>
+        </defs>
+        <style>
+          .lbl { font-size: 16px; fill: #2a2017; }
+          .sub { font-size: 13px; fill: #5a4a3a; }
+          .anno { font-size: 14px; fill: var(--c1d); font-family: 'Caveat', cursive; }
+          .box { fill: #fffefb; stroke-width: 2.5; }
+          .user { stroke: var(--user); }
+          .claude { stroke: var(--claude); }
+          .tool { stroke: var(--tool); }
+          .store { stroke: var(--store); }
+          .out { stroke: var(--out); }
+          .flow { stroke: #2a2017; stroke-width: 2; fill: none; }
+          .flow.loop { stroke: var(--c1d); stroke-width: 2.5; }
+          .flow.dash { stroke-dasharray: 5 4; }
+        </style>
+
+        <!-- Trigger -->
+        <path class="box user" d="M30,180 Q30,170 42,168 L160,172 Q174,170 172,182 L171,230 Q174,242 160,240 L42,238 Q28,242 30,228 Z"/>
+        <text class="lbl" x="100" y="202" text-anchor="middle">Trigger</text>
+        <text class="sub" x="100" y="220" text-anchor="middle">user / cron / event</text>
+
+        <!-- Agent SDK (loop area) -->
+        <path class="box claude" d="M225,40 Q225,32 240,30 L740,34 Q758,32 756,46 L755,360 Q758,375 740,373 L240,371 Q220,375 222,358 Z" fill="#fdf6ed"/>
+        <text class="lbl" x="488" y="62" text-anchor="middle" font-weight="700">Agent SDK loop</text>
+
+        <!-- Plan -->
+        <path class="box claude" d="M260,90 Q260,82 270,80 L390,84 Q402,82 400,93 L400,140 Q402,152 390,150 L270,148 Q258,152 260,138 Z"/>
+        <text class="lbl" x="330" y="110" text-anchor="middle">Plan / think</text>
+        <text class="sub" x="330" y="128" text-anchor="middle">Sonnet 4.6 + thinking</text>
+
+        <!-- Act -->
+        <path class="box claude" d="M428,90 Q428,82 440,80 L548,84 Q560,82 558,93 L558,140 Q560,152 548,150 L440,148 Q426,152 428,138 Z"/>
+        <text class="lbl" x="494" y="110" text-anchor="middle">Tool call</text>
+        <text class="sub" x="494" y="128" text-anchor="middle">via MCP server</text>
+
+        <!-- Observe -->
+        <path class="box claude" d="M590,90 Q590,82 602,80 L710,84 Q722,82 720,93 L720,140 Q722,152 710,150 L602,148 Q588,152 590,138 Z"/>
+        <text class="lbl" x="656" y="110" text-anchor="middle">Observe</text>
+        <text class="sub" x="656" y="128" text-anchor="middle">parse + decide next</text>
+
+        <!-- Skills -->
+        <path class="box tool" d="M260,200 Q260,192 270,190 L390,194 Q402,192 400,203 L400,250 Q402,262 390,260 L270,258 Q258,262 260,248 Z"/>
+        <text class="lbl" x="330" y="220" text-anchor="middle">Skills</text>
+        <text class="sub" x="330" y="238" text-anchor="middle">domain procedures</text>
+
+        <!-- MCP servers -->
+        <path class="box tool" d="M428,200 Q428,192 440,190 L548,194 Q560,192 558,203 L558,250 Q560,262 548,260 L440,258 Q426,262 428,248 Z"/>
+        <text class="lbl" x="494" y="220" text-anchor="middle">MCP servers</text>
+        <text class="sub" x="494" y="238" text-anchor="middle">CRM · ticketing · search</text>
+
+        <!-- Memory -->
+        <path class="box store" d="M590,200 Q590,192 602,190 L710,194 Q722,192 720,203 L720,250 Q722,262 710,260 L602,258 Q588,262 590,248 Z"/>
+        <text class="lbl" x="656" y="220" text-anchor="middle">Memory tool</text>
+        <text class="sub" x="656" y="238" text-anchor="middle">cross-session state</text>
+
+        <!-- Escalation -->
+        <path class="box claude" d="M260,290 Q260,282 272,280 L425,284 Q437,282 435,293 L435,338 Q437,350 425,348 L272,346 Q258,350 260,336 Z"/>
+        <text class="lbl" x="347" y="310" text-anchor="middle">Escalate to Opus 4.7</text>
+        <text class="sub" x="347" y="328" text-anchor="middle">when stuck / high-stakes</text>
+
+        <!-- Plugin distribution box -->
+        <path class="box tool" d="M460,290 Q460,282 472,280 L720,284 Q732,282 730,293 L730,338 Q732,350 720,348 L472,346 Q458,350 460,336 Z"/>
+        <text class="lbl" x="595" y="310" text-anchor="middle">Plugin packaging</text>
+        <text class="sub" x="595" y="328" text-anchor="middle">commands + skills + hooks + MCP</text>
+
+        <!-- Output -->
+        <path class="box out" d="M800,180 Q800,170 812,168 L940,172 Q952,170 950,182 L949,230 Q952,242 940,240 L812,238 Q798,242 800,228 Z"/>
+        <text class="lbl" x="876" y="202" text-anchor="middle">Action / report</text>
+        <text class="sub" x="876" y="220" text-anchor="middle">terminal state</text>
+
+        <!-- Flows -->
+        <path class="flow" d="M174,202 Q200,200 222,202" marker-end="url(#arr2)"/>
+        <path class="flow" d="M402,114 Q415,112 426,114" marker-end="url(#arr2)"/>
+        <path class="flow" d="M560,114 Q575,112 588,114" marker-end="url(#arr2)"/>
+        <path class="flow loop" d="M656,148 Q660,170 580,170 Q495,172 410,170 Q330,168 330,150" marker-end="url(#arr2)"/>
+        <path class="flow dash" d="M494,150 Q494,170 494,190" marker-end="url(#arr2)"/>
+        <path class="flow dash" d="M330,150 Q330,170 330,190" marker-end="url(#arr2)"/>
+        <path class="flow dash" d="M656,150 Q656,170 656,190" marker-end="url(#arr2)"/>
+        <path class="flow" d="M722,202 Q760,200 798,202" marker-end="url(#arr2)"/>
+
+        <!-- Annotation -->
+        <text class="anno" x="488" y="80">plan → act → observe (loop)</text>
+        <text class="anno" x="500" y="385">distribute the agent as ONE plugin install</text>
+      </svg>
+    </div>
+
+    <div class="meta">
+      <div class="cell"><h4>Cost band</h4><div class="v">Mid–High. Loop fan-out matters; cap iterations.</div></div>
+      <div class="cell"><h4>Latency</h4><div class="v">10s–10m. Pattern is async-tolerant.</div></div>
+      <div class="cell"><h4>Governance</h4><div class="v">Sandbox tool runtime. Audit every tool call.</div></div>
+    </div>
+
+    <p>The Agent SDK runs the plan-act-observe loop. Sonnet 4.6 is the default planner; escalate to Opus 4.7 when the agent flags a hard step. Tools come through MCP servers (one connector per system, reused across agents). Skills hold the domain playbook so the agent has expert procedures, not just primitives. Memory tool persists state across runs for long-running agents. Distribute the whole bundle as a plugin so other teams install one thing.</p>
+
+    <div class="when">
+      <div class="yes"><h4>Use when</h4>Multi-step task that decomposes naturally into tool calls. Domain has stable procedures worth encoding as Skills. Async-tolerant.</div>
+      <div class="no"><h4>Don't use when</h4>Task is single-shot. Latency budget is &lt; 3s. Tools don't exist or have no API surface (use computer use instead).</div>
+    </div>
+  </div>
+
+  <!-- ====================================================================== -->
+  <!-- PATTERN 3: Batch enrichment                                            -->
+  <!-- ====================================================================== -->
+  <div class="pattern">
+    <h2>3. Batch enrichment</h2>
+    <div class="stack-line">Haiku 4.5 · Batch API · prompt caching · Files API for inputs</div>
+
+    <div class="diagram">
+      <svg viewBox="0 0 980 320" xmlns="http://www.w3.org/2000/svg">
+        <defs>
+          <marker id="arr3" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto">
+            <path d="M0,1 L9,5 L0,9 L2,5 z" fill="#2a2017"/>
+          </marker>
+        </defs>
+        <style>
+          .lbl { font-size: 16px; fill: #2a2017; }
+          .sub { font-size: 13px; fill: #5a4a3a; }
+          .anno { font-size: 14px; fill: var(--c1d); font-family: 'Caveat', cursive; }
+          .box { fill: #fffefb; stroke-width: 2.5; }
+          .user { stroke: var(--user); }
+          .claude { stroke: var(--claude); }
+          .tool { stroke: var(--tool); }
+          .store { stroke: var(--store); }
+          .out { stroke: var(--out); }
+          .flow { stroke: #2a2017; stroke-width: 2; fill: none; }
+        </style>
+
+        <path class="box store" d="M30,120 Q30,112 42,110 L182,114 Q194,112 192,123 L192,200 Q194,212 182,210 L42,208 Q28,212 30,198 Z"/>
+        <text class="lbl" x="111" y="142" text-anchor="middle">Source data</text>
+        <text class="sub" x="111" y="162" text-anchor="middle">100k–10M records</text>
+        <text class="sub" x="111" y="180" text-anchor="middle">DB · S3 · GCS · queue</text>
+
+        <path class="box user" d="M240,120 Q240,112 252,110 L388,114 Q400,112 398,123 L398,200 Q400,212 388,210 L252,208 Q238,212 240,198 Z"/>
+        <text class="lbl" x="319" y="142" text-anchor="middle">Job builder</text>
+        <text class="sub" x="319" y="162" text-anchor="middle">build N requests w/</text>
+        <text class="sub" x="319" y="180" text-anchor="middle">cached schema prefix</text>
+
+        <path class="box claude" d="M448,80 Q448,70 460,68 L640,72 Q652,70 650,82 L650,238 Q652,250 640,248 L460,246 Q446,250 448,236 Z" fill="#fdf6ed"/>
+        <text class="lbl" x="549" y="105" text-anchor="middle" font-weight="700">Batch API</text>
+        <text class="sub" x="549" y="125" text-anchor="middle">submit job</text>
+        <text class="sub" x="549" y="148" text-anchor="middle">↓</text>
+        <text class="sub" x="549" y="170" text-anchor="middle">Haiku 4.5 × N</text>
+        <text class="sub" x="549" y="195" text-anchor="middle">↓</text>
+        <text class="sub" x="549" y="218" text-anchor="middle">poll until done (≤24h)</text>
+
+        <path class="box out" d="M700,120 Q700,112 712,110 L848,114 Q860,112 858,123 L858,200 Q860,212 848,210 L712,208 Q698,212 700,198 Z"/>
+        <text class="lbl" x="779" y="142" text-anchor="middle">Output sink</text>
+        <text class="sub" x="779" y="162" text-anchor="middle">enriched records →</text>
+        <text class="sub" x="779" y="180" text-anchor="middle">DB · warehouse · index</text>
+
+        <path class="box store" d="M870,120 Q870,112 882,110 L962,114 Q976,112 974,123 L974,200 Q976,212 962,210 L882,208 Q868,212 870,198 Z"/>
+        <text class="lbl" x="922" y="142" text-anchor="middle">Audit log</text>
+        <text class="sub" x="922" y="162" text-anchor="middle">job ID +</text>
+        <text class="sub" x="922" y="180" text-anchor="middle">cost + counts</text>
+
+        <path class="flow" d="M194,160 Q220,158 238,160" marker-end="url(#arr3)"/>
+        <path class="flow" d="M400,160 Q425,158 446,160" marker-end="url(#arr3)"/>
+        <path class="flow" d="M654,160 Q680,158 698,160" marker-end="url(#arr3)"/>
+        <path class="flow" d="M860,160 Q884,158 868,160" marker-end="url(#arr3)"/>
+
+        <text class="anno" x="500" y="55">50% off pricing · 24h SLA</text>
+        <text class="anno" x="320" y="245">cache the schema prefix once</text>
+      </svg>
+    </div>
+
+    <div class="meta">
+      <div class="cell"><h4>Cost band</h4><div class="v">Lowest. Haiku + batch + cache compounds.</div></div>
+      <div class="cell"><h4>Latency</h4><div class="v">Up to 24h SLA per job.</div></div>
+      <div class="cell"><h4>Governance</h4><div class="v">Sample audit on output. Track per-job cost.</div></div>
+    </div>
+
+    <p>For document classification, extraction, summarization, evalsets, scheduled enrichment. Build N requests with the same cached schema/instruction prefix; submit as one Batch job; poll for completion. Haiku 4.5 handles the bulk of extraction work cheaper than any other tier. Output goes to a sink and audit log.</p>
+
+    <div class="when">
+      <div class="yes"><h4>Use when</h4>Latency-tolerant. High volume. Schema/instructions reused across records. Eval suites overnight.</div>
+      <div class="no"><h4>Don't use when</h4>Real-time response required. Per-record customization is high. Extraction needs deep reasoning (use Sonnet, not Haiku).</div>
+    </div>
+  </div>
+
+  <!-- ====================================================================== -->
+  <!-- PATTERN 4: Domain expert assistant                                     -->
+  <!-- ====================================================================== -->
+  <div class="pattern">
+    <h2>4. Domain expert assistant</h2>
+    <div class="stack-line">Sonnet 4.6 + thinking · Skills · MCP · Files · citations · plugins for org distribution</div>
+
+    <div class="diagram">
+      <svg viewBox="0 0 980 380" xmlns="http://www.w3.org/2000/svg">
+        <defs>
+          <marker id="arr4" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto">
+            <path d="M0,1 L9,5 L0,9 L2,5 z" fill="#2a2017"/>
+          </marker>
+        </defs>
+        <style>
+          .lbl { font-size: 16px; fill: #2a2017; }
+          .sub { font-size: 13px; fill: #5a4a3a; }
+          .anno { font-size: 14px; fill: var(--c1d); font-family: 'Caveat', cursive; }
+          .box { fill: #fffefb; stroke-width: 2.5; }
+          .user { stroke: var(--user); }
+          .claude { stroke: var(--claude); }
+          .tool { stroke: var(--tool); }
+          .store { stroke: var(--store); }
+          .out { stroke: var(--out); }
+          .flow { stroke: #2a2017; stroke-width: 2; fill: none; }
+          .flow.dash { stroke-dasharray: 5 4; }
+        </style>
+
+        <path class="box user" d="M30,160 Q30,150 42,148 L172,152 Q184,150 182,162 L181,210 Q184,222 172,220 L42,218 Q28,222 30,208 Z"/>
+        <text class="lbl" x="106" y="182" text-anchor="middle">Practitioner</text>
+        <text class="sub" x="106" y="200" text-anchor="middle">analyst · clinician · adviser</text>
+
+        <!-- Plugin envelope -->
+        <path class="box tool" d="M230,40 Q230,30 245,28 L780,34 Q798,32 796,48 L795,330 Q798,346 780,344 L245,342 Q225,346 227,328 Z" fill="#f0f4ff" stroke-dasharray="6 4"/>
+        <text class="lbl" x="513" y="62" text-anchor="middle" font-weight="700">Plugin (single install)</text>
+
+        <!-- Skills -->
+        <path class="box tool" d="M260,90 Q260,82 270,80 L420,84 Q432,82 430,93 L430,160 Q432,172 420,170 L270,168 Q258,172 260,158 Z"/>
+        <text class="lbl" x="345" y="112" text-anchor="middle">Skills</text>
+        <text class="sub" x="345" y="130" text-anchor="middle">domain procedures</text>
+        <text class="sub" x="345" y="148" text-anchor="middle">style + edge cases</text>
+
+        <!-- MCP -->
+        <path class="box tool" d="M460,90 Q460,82 472,80 L620,84 Q632,82 630,93 L630,160 Q632,172 620,170 L472,168 Q458,172 460,158 Z"/>
+        <text class="lbl" x="545" y="112" text-anchor="middle">MCP servers</text>
+        <text class="sub" x="545" y="130" text-anchor="middle">case mgmt · pricing</text>
+        <text class="sub" x="545" y="148" text-anchor="middle">EHR · ledger</text>
+
+        <!-- Files -->
+        <path class="box store" d="M660,90 Q660,82 672,80 L770,84 Q782,82 780,93 L780,160 Q782,172 770,170 L672,168 Q658,172 660,158 Z"/>
+        <text class="lbl" x="720" y="112" text-anchor="middle">Files</text>
+        <text class="sub" x="720" y="130" text-anchor="middle">policies</text>
+        <text class="sub" x="720" y="148" text-anchor="middle">regs · manuals</text>
+
+        <!-- Sonnet -->
+        <path class="box claude" d="M340,200 Q340,192 352,190 L668,194 Q680,192 678,205 L678,275 Q680,287 668,285 L352,283 Q338,287 340,273 Z"/>
+        <text class="lbl" x="510" y="222" text-anchor="middle" font-weight="700">Sonnet 4.6 + thinking</text>
+        <text class="sub" x="510" y="244" text-anchor="middle">cached system + skill prefix</text>
+        <text class="sub" x="510" y="262" text-anchor="middle">citations on</text>
+
+        <!-- Output -->
+        <path class="box out" d="M830,160 Q830,150 842,148 L955,152 Q968,150 966,162 L965,210 Q968,222 955,220 L842,218 Q828,222 830,208 Z"/>
+        <text class="lbl" x="897" y="182" text-anchor="middle">Recommendation</text>
+        <text class="sub" x="897" y="200" text-anchor="middle">w/ citations + audit</text>
+
+        <!-- Flows -->
+        <path class="flow" d="M186,184 Q210,182 226,184" marker-end="url(#arr4)"/>
+        <path class="flow dash" d="M345,170 Q380,180 420,200" marker-end="url(#arr4)"/>
+        <path class="flow dash" d="M545,170 Q540,180 530,200" marker-end="url(#arr4)"/>
+        <path class="flow dash" d="M720,170 Q650,180 600,200" marker-end="url(#arr4)"/>
+        <path class="flow" d="M680,236 Q750,200 828,184" marker-end="url(#arr4)"/>
+
+        <text class="anno" x="510" y="80">domain knowledge lives here</text>
+        <text class="anno" x="510" y="310">grounded · cited · auditable</text>
+      </svg>
+    </div>
+
+    <div class="meta">
+      <div class="cell"><h4>Cost band</h4><div class="v">Mid. Cache amortizes large skill/policy prefix.</div></div>
+      <div class="cell"><h4>Latency</h4><div class="v">3–8s w/ thinking on hard cases.</div></div>
+      <div class="cell"><h4>Governance</h4><div class="v">Citations mandatory. Per-recommendation audit log.</div></div>
+    </div>
+
+    <p>The pattern that earns the highest ROI for regulated verticals (legal, finance, clinical, compliance, claims). Skills carry the domain procedures + style + decision rules. MCP exposes the systems of record. Files holds the policy/regulatory corpus. Sonnet 4.6 with extended thinking returns cited recommendations. Distribute the whole bundle as one plugin so a new region or business unit installs it in minutes.</p>
+
+    <div class="when">
+      <div class="yes"><h4>Use when</h4>Vertical with proprietary procedures and high-value decisions. Citation/audit is mandatory. Multiple teams will adopt.</div>
+      <div class="no"><h4>Don't use when</h4>Generic Q&A — the customization stack is overkill. Decisions are low-stakes — simpler RAG copilot suffices.</div>
+    </div>
+  </div>
+
+  <!-- ====================================================================== -->
+  <!-- PATTERN 5: Code automation                                             -->
+  <!-- ====================================================================== -->
+  <div class="pattern">
+    <h2>5. Code automation</h2>
+    <div class="stack-line">Claude Code · Opus 4.7 + Sonnet 4.6 · plugins (commands + skills + hooks + MCP) · sub-agents · computer use 2.0 (optional)</div>
+
+    <div class="diagram">
+      <svg viewBox="0 0 980 400" xmlns="http://www.w3.org/2000/svg">
+        <defs>
+          <marker id="arr5" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto">
+            <path d="M0,1 L9,5 L0,9 L2,5 z" fill="#2a2017"/>
+          </marker>
+        </defs>
+        <style>
+          .lbl { font-size: 16px; fill: #2a2017; }
+          .sub { font-size: 13px; fill: #5a4a3a; }
+          .anno { font-size: 14px; fill: var(--c1d); font-family: 'Caveat', cursive; }
+          .box { fill: #fffefb; stroke-width: 2.5; }
+          .user { stroke: var(--user); }
+          .claude { stroke: var(--claude); }
+          .tool { stroke: var(--tool); }
+          .store { stroke: var(--store); }
+          .out { stroke: var(--out); }
+          .flow { stroke: #2a2017; stroke-width: 2; fill: none; }
+          .flow.dash { stroke-dasharray: 5 4; }
+        </style>
+
+        <path class="box user" d="M30,170 Q30,160 42,158 L160,162 Q172,160 170,172 L169,220 Q172,232 160,230 L42,228 Q28,232 30,218 Z"/>
+        <text class="lbl" x="100" y="192" text-anchor="middle">Engineer</text>
+        <text class="sub" x="100" y="210" text-anchor="middle">CLI · IDE</text>
+
+        <!-- Claude Code box -->
+        <path class="box claude" d="M210,40 Q210,30 224,28 L740,34 Q758,32 756,48 L755,360 Q758,376 740,374 L224,372 Q204,376 206,358 Z" fill="#fdf6ed"/>
+        <text class="lbl" x="482" y="62" text-anchor="middle" font-weight="700">Claude Code (CLI / IDE)</text>
+
+        <!-- Models -->
+        <path class="box claude" d="M240,90 Q240,82 252,80 L380,84 Q392,82 390,93 L390,150 Q392,162 380,160 L252,158 Q238,162 240,148 Z"/>
+        <text class="lbl" x="315" y="112" text-anchor="middle">Sonnet 4.6 default</text>
+        <text class="sub" x="315" y="130" text-anchor="middle">+ Opus 4.7 escalate</text>
+        <text class="sub" x="315" y="148" text-anchor="middle">extended thinking</text>
+
+        <!-- Built-in tools -->
+        <path class="box tool" d="M420,90 Q420,82 432,80 L560,84 Q572,82 570,93 L570,150 Q572,162 560,160 L432,158 Q418,162 420,148 Z"/>
+        <text class="lbl" x="495" y="112" text-anchor="middle">Built-in tools</text>
+        <text class="sub" x="495" y="130" text-anchor="middle">edit · bash · grep</text>
+        <text class="sub" x="495" y="148" text-anchor="middle">read · web fetch · git</text>
+
+        <!-- Sub-agents -->
+        <path class="box claude" d="M600,90 Q600,82 612,80 L730,84 Q742,82 740,93 L740,150 Q742,162 730,160 L612,158 Q598,162 600,148 Z"/>
+        <text class="lbl" x="670" y="112" text-anchor="middle">Sub-agents</text>
+        <text class="sub" x="670" y="130" text-anchor="middle">Task tool —</text>
+        <text class="sub" x="670" y="148" text-anchor="middle">parallel investigators</text>
+
+        <!-- Plugin (skills + hooks + commands + MCP) -->
+        <path class="box tool" d="M240,200 Q240,192 254,190 L740,194 Q752,192 750,205 L750,290 Q752,302 740,300 L254,298 Q236,302 238,288 Z" stroke-dasharray="6 4"/>
+        <text class="lbl" x="495" y="220" text-anchor="middle" font-weight="700">Team plugin</text>
+        <text class="sub" x="320" y="245" text-anchor="middle">/commands</text>
+        <text class="sub" x="430" y="245" text-anchor="middle">Skills</text>
+        <text class="sub" x="540" y="245" text-anchor="middle">hooks</text>
+        <text class="sub" x="660" y="245" text-anchor="middle">MCP servers</text>
+        <text class="sub" x="495" y="278" text-anchor="middle">repo conventions · style · CI · ticketing · docs</text>
+
+        <!-- Headless / CI -->
+        <path class="box out" d="M240,320 Q240,312 252,310 L460,314 Q472,312 470,323 L470,355 Q472,367 460,365 L252,363 Q238,367 240,353 Z"/>
+        <text class="lbl" x="355" y="338" text-anchor="middle">Headless / CI mode</text>
+        <text class="sub" x="355" y="354" text-anchor="middle">scheduled · cron · review bot</text>
+
+        <!-- Computer use optional -->
+        <path class="box tool" d="M510,320 Q510,312 522,310 L735,314 Q747,312 745,323 L745,355 Q747,367 735,365 L522,363 Q508,367 510,353 Z"/>
+        <text class="lbl" x="627" y="338" text-anchor="middle">Computer use 2.0 (opt)</text>
+        <text class="sub" x="627" y="354" text-anchor="middle">browser debugging · UI tests</text>
+
+        <!-- Repo / output -->
+        <path class="box out" d="M810,170 Q810,160 822,158 L955,162 Q968,160 966,172 L965,220 Q968,232 955,230 L822,228 Q808,232 810,218 Z"/>
+        <text class="lbl" x="887" y="192" text-anchor="middle">Repo · PR</text>
+        <text class="sub" x="887" y="210" text-anchor="middle">commit + tests + review</text>
+
+        <!-- Flows -->
+        <path class="flow" d="M174,194 Q195,192 206,194" marker-end="url(#arr5)"/>
+        <path class="flow dash" d="M392,128 Q410,128 418,128" marker-end="url(#arr5)"/>
+        <path class="flow dash" d="M572,128 Q585,128 598,128" marker-end="url(#arr5)"/>
+        <path class="flow dash" d="M315,160 Q315,180 320,200" marker-end="url(#arr5)"/>
+        <path class="flow dash" d="M495,160 Q495,180 495,200" marker-end="url(#arr5)"/>
+        <path class="flow" d="M758,194 Q780,192 808,194" marker-end="url(#arr5)"/>
+
+        <text class="anno" x="495" y="80">repo-aware loop · auto cache</text>
+        <text class="anno" x="495" y="195">teams install ONE plugin</text>
+      </svg>
+    </div>
+
+    <div class="meta">
+      <div class="cell"><h4>Cost band</h4><div class="v">Per-engineer subscription or API metered. Cache + Sonnet default keeps it predictable.</div></div>
+      <div class="cell"><h4>Latency</h4><div class="v">Interactive in CLI. Headless in CI matches build time.</div></div>
+      <div class="cell"><h4>Governance</h4><div class="v">Hooks enforce policy at tool boundary. Settings.json under source control.</div></div>
+    </div>
+
+    <p>Engineering teams use Claude Code (CLI + IDE) day-to-day. Sonnet 4.6 is the default; Opus 4.7 handles hard refactors. Sub-agents (Task tool) parallelize investigation work. The team plugin bundles slash commands, Skills (repo conventions, language patterns), hooks (PreToolUse policy enforcement), and MCP servers (issue tracker, internal docs) so a new engineer's setup is a one-line install. Headless mode runs the same loop in CI. Detail in <a href="claude-code-adoption-guide.md">claude-code-adoption-guide.md</a>.</p>
+
+    <div class="when">
+      <div class="yes"><h4>Use when</h4>Engineering teams shipping software. Repo-aware tasks. Refactors, migrations, code review, scheduled maintenance.</div>
+      <div class="no"><h4>Don't use when</h4>Pattern is API-only (use Agent SDK directly). User isn't a developer.</div>
+    </div>
+  </div>
+
+</div>
+
+<footer>
+  © gmanch94 · CC-BY-4.0 · As of 2026-05. Verify feature surface at <a href="https://docs.claude.com">docs.claude.com</a>. Source-of-truth status in <a href="../docs/feature-inventory.md">feature-inventory.md</a>.
+</footer>
+</body>
+</html>

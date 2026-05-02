@@ -1,0 +1,379 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Claude Cost Calculator — monthly $ estimator</title>
+<style>
+  :root {
+    --c1:#D97757; --c1d:#B45309; --c2:#7C5E48; --bg:#faf7f3; --ink:#2a2017;
+    --line:#e8e0d3; --muted:#8a7e6e; --good:#15803d; --warn:#b45309;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; background: var(--bg); color: var(--ink); padding: 32px 24px 80px; line-height: 1.55; }
+  .wrap { max-width: 1120px; margin: 0 auto; }
+  header { border-bottom: 2px solid var(--c1); padding-bottom: 16px; margin-bottom: 24px; }
+  header h1 { font-size: 32px; font-weight: 700; }
+  header .sub { color: var(--muted); font-size: 15px; margin-top: 6px; }
+  .asof { display: inline-block; background: var(--c1); color: white; padding: 3px 10px; border-radius: 12px; font-size: 12px; font-weight: 600; margin-left: 8px; vertical-align: middle; }
+  .grid { display: grid; grid-template-columns: 1fr 1fr; gap: 24px; }
+  @media (max-width: 900px) { .grid { grid-template-columns: 1fr; } }
+  .card { background: white; border: 1px solid var(--line); border-radius: 10px; padding: 22px; }
+  .card h2 { font-size: 19px; margin-bottom: 14px; color: var(--c1d); border-bottom: 1px solid var(--line); padding-bottom: 8px; }
+  .field { margin-bottom: 18px; }
+  .field label { display: flex; justify-content: space-between; font-size: 14px; font-weight: 600; margin-bottom: 6px; }
+  .field label .val { color: var(--c1d); font-variant-numeric: tabular-nums; }
+  .field input[type=range] { width: 100%; accent-color: var(--c1); }
+  .field input[type=number] { width: 100%; padding: 8px 10px; border: 1px solid var(--line); border-radius: 6px; font-size: 14px; font-variant-numeric: tabular-nums; }
+  .field .hint { font-size: 12px; color: var(--muted); margin-top: 4px; }
+  .mix-row { display: grid; grid-template-columns: 80px 1fr 60px; align-items: center; gap: 10px; margin-bottom: 8px; font-size: 14px; }
+  .mix-row .name { font-weight: 600; }
+  .mix-row .pct { text-align: right; font-variant-numeric: tabular-nums; color: var(--c1d); font-weight: 600; }
+  .mix-warn { font-size: 12px; color: var(--warn); margin-top: 4px; min-height: 16px; }
+  .out { background: linear-gradient(135deg, #fef3ec 0%, #fdfaf6 100%); border: 1px solid var(--c1); }
+  .out .big { font-size: 56px; font-weight: 700; color: var(--c1d); line-height: 1; margin: 12px 0; font-variant-numeric: tabular-nums; }
+  .out .big small { font-size: 22px; color: var(--muted); font-weight: 400; }
+  .out .perreq { font-size: 17px; color: var(--ink); margin-top: 4px; }
+  .out .savings { margin-top: 14px; padding: 12px 14px; background: rgba(21,128,61,0.1); border-left: 3px solid var(--good); border-radius: 4px; font-size: 14px; }
+  .out .savings strong { color: var(--good); font-size: 17px; }
+  table { width: 100%; border-collapse: collapse; font-size: 14px; margin-top: 8px; }
+  th, td { padding: 8px 10px; text-align: left; border-bottom: 1px solid var(--line); }
+  th { font-weight: 600; color: var(--muted); font-size: 12px; text-transform: uppercase; letter-spacing: 0.04em; }
+  td.num { text-align: right; font-variant-numeric: tabular-nums; }
+  .chart-wrap { margin-top: 16px; height: 280px; position: relative; }
+  .pricing-note { background: #fef9ee; border-left: 3px solid var(--c1); padding: 10px 14px; font-size: 13px; margin-top: 12px; border-radius: 4px; }
+  .pricing-note a { color: var(--c1d); }
+  details { margin-top: 14px; }
+  details summary { cursor: pointer; font-weight: 600; color: var(--c1d); font-size: 14px; padding: 6px 0; }
+  details .body { padding: 10px 0 0; font-size: 13px; color: var(--ink); }
+  details .body ul { padding-left: 22px; }
+  details .body li { margin-bottom: 4px; }
+  footer { margin-top: 40px; padding-top: 16px; border-top: 1px solid var(--line); text-align: center; font-size: 12px; color: var(--muted); }
+  footer a { color: var(--c1d); }
+  .preset-row { display: flex; gap: 6px; flex-wrap: wrap; margin-bottom: 14px; }
+  .preset-row button { padding: 6px 12px; background: white; border: 1px solid var(--line); border-radius: 6px; font-size: 12px; cursor: pointer; color: var(--ink); }
+  .preset-row button:hover { border-color: var(--c1); color: var(--c1d); }
+  .preset-row button.active { background: var(--c1); color: white; border-color: var(--c1); }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <h1>Claude Cost Calculator <span class="asof">As of 2026-05</span></h1>
+    <div class="sub">Model your monthly Claude API spend. Sliders are interactive — outputs update live.</div>
+  </header>
+
+  <div class="grid">
+    <!-- INPUTS -->
+    <div class="card">
+      <h2>Workload inputs</h2>
+
+      <div class="preset-row">
+        <button data-preset="copilot" class="active">Internal copilot</button>
+        <button data-preset="rag">RAG support bot</button>
+        <button data-preset="agent">Agentic workflow</button>
+        <button data-preset="batch">Batch enrichment</button>
+      </div>
+
+      <div class="field">
+        <label>Monthly requests <span class="val" id="vol-val">1,000,000</span></label>
+        <input type="range" id="vol" min="10000" max="50000000" step="10000" value="1000000">
+        <div class="hint">Total requests/month across all use cases.</div>
+      </div>
+
+      <div class="field">
+        <label>Avg input tokens / request <span class="val" id="in-val">8,000</span></label>
+        <input type="range" id="in" min="200" max="100000" step="100" value="8000">
+        <div class="hint">Includes system prompt, history, retrieved context. RAG patterns trend high (10k–50k); chat trends low (1k–5k).</div>
+      </div>
+
+      <div class="field">
+        <label>Avg output tokens / request <span class="val" id="out-val">600</span></label>
+        <input type="range" id="out" min="50" max="16000" step="50" value="600">
+        <div class="hint">Tool-calling agents accumulate output across turns. A 5-turn agent w/ 800 tok/turn ≈ 4,000.</div>
+      </div>
+
+      <h2 style="margin-top:18px;">Model mix</h2>
+      <div class="mix-row">
+        <span class="name">Haiku 4.5</span>
+        <input type="range" id="mix-h" min="0" max="100" value="60">
+        <span class="pct" id="mix-h-val">60%</span>
+      </div>
+      <div class="mix-row">
+        <span class="name">Sonnet 4.6</span>
+        <input type="range" id="mix-s" min="0" max="100" value="35">
+        <span class="pct" id="mix-s-val">35%</span>
+      </div>
+      <div class="mix-row">
+        <span class="name">Opus 4.7</span>
+        <input type="range" id="mix-o" min="0" max="100" value="5">
+        <span class="pct" id="mix-o-val">5%</span>
+      </div>
+      <div class="mix-warn" id="mix-warn"></div>
+
+      <h2 style="margin-top:18px;">Optimization levers</h2>
+      <div class="field">
+        <label>Prompt cache hit rate <span class="val" id="cache-val">70%</span></label>
+        <input type="range" id="cache" min="0" max="95" value="70">
+        <div class="hint">% of input tokens served from cache (90% cheaper). Realistic: 50–85% once warm. New conversations start cold.</div>
+      </div>
+
+      <div class="field">
+        <label>Batch-eligible % <span class="val" id="batch-val">0%</span></label>
+        <input type="range" id="batch" min="0" max="100" value="0">
+        <div class="hint">% of traffic that can wait up to 24h (50% off). Interactive copilots: 0%. Nightly enrichment: 100%.</div>
+      </div>
+    </div>
+
+    <!-- OUTPUTS -->
+    <div class="card out">
+      <h2>Monthly cost</h2>
+      <div class="big" id="total">$<span id="total-num">0</span><small>/mo</small></div>
+      <div class="perreq" id="perreq">— per request</div>
+
+      <div class="savings" id="savings-box">
+        <strong id="savings-pct">0%</strong> saved vs. naive baseline (all-Opus, no caching, no batch): <span id="savings-amt">$0</span>/mo
+      </div>
+
+      <div class="chart-wrap"><canvas id="chart"></canvas></div>
+
+      <h2 style="margin-top:18px;">Cost breakdown</h2>
+      <table>
+        <thead>
+          <tr><th>Component</th><th class="num">Tokens/mo</th><th class="num">$/mo</th></tr>
+        </thead>
+        <tbody id="breakdown-body"></tbody>
+      </table>
+
+      <details>
+        <summary>Pricing assumptions (per million tokens, USD)</summary>
+        <div class="body">
+          <table>
+            <thead><tr><th>Model</th><th class="num">Input</th><th class="num">Output</th><th class="num">Cache read</th><th class="num">Cache write 5m</th></tr></thead>
+            <tbody>
+              <tr><td>Haiku 4.5</td><td class="num">$1.00</td><td class="num">$5.00</td><td class="num">$0.10</td><td class="num">$1.25</td></tr>
+              <tr><td>Sonnet 4.6</td><td class="num">$3.00</td><td class="num">$15.00</td><td class="num">$0.30</td><td class="num">$3.75</td></tr>
+              <tr><td>Opus 4.7</td><td class="num">$15.00</td><td class="num">$75.00</td><td class="num">$1.50</td><td class="num">$18.75</td></tr>
+            </tbody>
+          </table>
+          <p style="margin-top:10px;">Batch API: 50% off all rates. Cache read = 10% of input price. Cache write 5m = 125% of input price (one-time per cached prefix).</p>
+        </div>
+      </details>
+
+      <div class="pricing-note">
+        Pricing approximate as of <strong>2026-05</strong>. Verify current rates at <a href="https://www.anthropic.com/pricing" target="_blank">anthropic.com/pricing</a> before final budgeting.
+      </div>
+    </div>
+  </div>
+
+  <div class="card" style="margin-top:24px;">
+    <h2>Reading the result</h2>
+    <details open>
+      <summary>What drives spend most</summary>
+      <div class="body">
+        <ul>
+          <li><strong>Model mix dominates.</strong> Opus is 15× Haiku on input, 15× on output. Triaging with Haiku and routing only hard cases to Sonnet/Opus is the single highest-leverage decision.</li>
+          <li><strong>Cache hit rate is the second lever.</strong> A 70% hit rate on a 50k-token system prompt is roughly equivalent to running a much smaller model. RAG patterns benefit most.</li>
+          <li><strong>Output tokens cost 5× input.</strong> Agentic loops that generate long chains pay disproportionately. Worth measuring tokens-per-task and capping with explicit instructions.</li>
+          <li><strong>Batch is free money where latency allows.</strong> Overnight enrichment, eval runs, content generation, analytics — half-price by default.</li>
+        </ul>
+      </div>
+    </details>
+    <details>
+      <summary>Common modeling mistakes</summary>
+      <div class="body">
+        <ul>
+          <li>Forgetting agent fan-out — a single user request can become 5–20 model calls with tool use. Multiply.</li>
+          <li>Treating cache hit rate as a constant — real workloads vary 30–80% depending on conversation reset frequency.</li>
+          <li>Pricing all output at the highest tier — if you're routing 80% of traffic to Haiku, output blends accordingly.</li>
+          <li>Ignoring extended thinking budget — when enabled, thinking tokens count as output. Budget separately.</li>
+        </ul>
+      </div>
+    </details>
+  </div>
+</div>
+
+<footer>
+  © gmanch94 · CC-BY-4.0 · As of 2026-05. Verify pricing/models at <a href="https://www.anthropic.com/pricing">anthropic.com/pricing</a>. Calculator gives an order-of-magnitude estimate — production patterns vary.
+</footer>
+
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+<script>
+// Pricing per million tokens (USD), as of 2026-05
+const PRICING = {
+  haiku:  { in: 1.00,  out: 5.00,  cacheRead: 0.10,  cacheWrite: 1.25 },
+  sonnet: { in: 3.00,  out: 15.00, cacheRead: 0.30,  cacheWrite: 3.75 },
+  opus:   { in: 15.00, out: 75.00, cacheRead: 1.50,  cacheWrite: 18.75 }
+};
+
+const PRESETS = {
+  copilot: { vol: 1_000_000, in: 8000, out: 600,  mixH: 60, mixS: 35, mixO: 5,  cache: 70, batch: 0 },
+  rag:     { vol: 500_000,   in: 25000, out: 800, mixH: 30, mixS: 65, mixO: 5,  cache: 80, batch: 0 },
+  agent:   { vol: 200_000,   in: 4000, out: 3000, mixH: 20, mixS: 60, mixO: 20, cache: 60, batch: 0 },
+  batch:   { vol: 5_000_000, in: 3000, out: 400,  mixH: 90, mixS: 10, mixO: 0,  cache: 40, batch: 100 }
+};
+
+const $ = id => document.getElementById(id);
+const fmt = n => n >= 1e6 ? (n/1e6).toFixed(1)+'M' : n >= 1e3 ? (n/1e3).toFixed(0)+'k' : n.toString();
+const fmtUSD = n => n < 1 ? '$' + n.toFixed(3) : n < 100 ? '$' + n.toFixed(2) : '$' + Math.round(n).toLocaleString();
+const fmtUSDk = n => n >= 1e6 ? '$' + (n/1e6).toFixed(2) + 'M' : n >= 1e3 ? '$' + (n/1e3).toFixed(1) + 'k' : '$' + Math.round(n).toLocaleString();
+
+let chart;
+
+function applyPreset(name) {
+  const p = PRESETS[name];
+  if (!p) return;
+  $('vol').value = p.vol;
+  $('in').value = p.in;
+  $('out').value = p.out;
+  $('mix-h').value = p.mixH;
+  $('mix-s').value = p.mixS;
+  $('mix-o').value = p.mixO;
+  $('cache').value = p.cache;
+  $('batch').value = p.batch;
+  document.querySelectorAll('.preset-row button').forEach(b => b.classList.toggle('active', b.dataset.preset === name));
+  recompute();
+}
+
+function computeForModel(modelKey, share, vol, inTok, outTok, cacheRate, batchPct) {
+  const p = PRICING[modelKey];
+  if (share === 0) return { input: 0, cacheRead: 0, cacheWrite: 0, output: 0, total: 0, tokens: 0 };
+
+  const reqs = vol * share;
+  const inputTokens = reqs * inTok;
+  const outputTokens = reqs * outTok;
+
+  // Input split: cacheRate% from cache, (1-cacheRate)% billed at full input
+  // Cache write: amortize one write per ~10 reads (rough; real depends on TTL)
+  const cachedInputTokens = inputTokens * cacheRate;
+  const freshInputTokens = inputTokens - cachedInputTokens;
+  const cacheWriteTokens = cacheRate > 0 ? cachedInputTokens / 10 : 0;
+
+  // Batch discount applies to all rates
+  const batchMult = (1 - batchPct) + batchPct * 0.5;
+
+  const inputCost = (freshInputTokens / 1e6) * p.in * batchMult;
+  const cacheReadCost = (cachedInputTokens / 1e6) * p.cacheRead * batchMult;
+  const cacheWriteCost = (cacheWriteTokens / 1e6) * p.cacheWrite * batchMult;
+  const outputCost = (outputTokens / 1e6) * p.out * batchMult;
+
+  return {
+    input: inputCost,
+    cacheRead: cacheReadCost,
+    cacheWrite: cacheWriteCost,
+    output: outputCost,
+    total: inputCost + cacheReadCost + cacheWriteCost + outputCost,
+    tokens: inputTokens + outputTokens
+  };
+}
+
+function recompute() {
+  const vol = +$('vol').value;
+  const inTok = +$('in').value;
+  const outTok = +$('out').value;
+  let mixH = +$('mix-h').value;
+  let mixS = +$('mix-s').value;
+  let mixO = +$('mix-o').value;
+  const cacheRate = +$('cache').value / 100;
+  const batchPct = +$('batch').value / 100;
+
+  // Display raw mix values
+  $('vol-val').textContent = vol.toLocaleString();
+  $('in-val').textContent = inTok.toLocaleString();
+  $('out-val').textContent = outTok.toLocaleString();
+  $('mix-h-val').textContent = mixH + '%';
+  $('mix-s-val').textContent = mixS + '%';
+  $('mix-o-val').textContent = mixO + '%';
+  $('cache-val').textContent = Math.round(cacheRate*100) + '%';
+  $('batch-val').textContent = Math.round(batchPct*100) + '%';
+
+  const sum = mixH + mixS + mixO;
+  const warn = $('mix-warn');
+  if (sum === 0) {
+    warn.textContent = '⚠ Mix sums to 0% — set at least one model > 0.';
+    warn.style.color = 'var(--warn)';
+  } else if (sum !== 100) {
+    warn.textContent = `Mix = ${sum}%. Normalizing to 100% in calc.`;
+    warn.style.color = 'var(--muted)';
+  } else {
+    warn.textContent = '';
+  }
+
+  // Normalize
+  const total = sum || 1;
+  const sH = mixH / total, sS = mixS / total, sO = mixO / total;
+
+  const h = computeForModel('haiku',  sH, vol, inTok, outTok, cacheRate, batchPct);
+  const s = computeForModel('sonnet', sS, vol, inTok, outTok, cacheRate, batchPct);
+  const o = computeForModel('opus',   sO, vol, inTok, outTok, cacheRate, batchPct);
+
+  const totalCost = h.total + s.total + o.total;
+  $('total-num').textContent = totalCost >= 1e6 ? (totalCost/1e6).toFixed(2) + 'M' : totalCost >= 1e3 ? (totalCost/1e3).toFixed(1) + 'k' : Math.round(totalCost).toLocaleString();
+  $('perreq').textContent = vol > 0 ? fmtUSD(totalCost / vol) + ' per request' : '— per request';
+
+  // Naive baseline: all Opus, no cache, no batch
+  const naive = computeForModel('opus', 1, vol, inTok, outTok, 0, 0);
+  const savingsAmt = naive.total - totalCost;
+  const savingsPct = naive.total > 0 ? Math.max(0, savingsAmt / naive.total) * 100 : 0;
+  $('savings-pct').textContent = savingsPct.toFixed(0) + '%';
+  $('savings-amt').textContent = fmtUSDk(Math.max(0, savingsAmt));
+
+  // Breakdown table
+  const tb = $('breakdown-body');
+  const rows = [
+    ['Haiku 4.5',  h.tokens, h.total],
+    ['Sonnet 4.6', s.tokens, s.total],
+    ['Opus 4.7',   o.tokens, o.total],
+  ];
+  tb.innerHTML = rows.map(r =>
+    `<tr><td>${r[0]}</td><td class="num">${fmt(r[1])}</td><td class="num">${fmtUSDk(r[2])}</td></tr>`
+  ).join('') + `<tr style="font-weight:700;background:#fef9ee;"><td>Total</td><td class="num">${fmt(h.tokens+s.tokens+o.tokens)}</td><td class="num">${fmtUSDk(totalCost)}</td></tr>`;
+
+  // Chart
+  const labels = ['Input (fresh)', 'Cache read', 'Cache write', 'Output'];
+  const haikuData  = [h.input, h.cacheRead, h.cacheWrite, h.output];
+  const sonnetData = [s.input, s.cacheRead, s.cacheWrite, s.output];
+  const opusData   = [o.input, o.cacheRead, o.cacheWrite, o.output];
+
+  if (chart) {
+    chart.data.datasets[0].data = haikuData;
+    chart.data.datasets[1].data = sonnetData;
+    chart.data.datasets[2].data = opusData;
+    chart.update();
+  } else {
+    chart = new Chart($('chart').getContext('2d'), {
+      type: 'bar',
+      data: {
+        labels,
+        datasets: [
+          { label: 'Haiku 4.5',  data: haikuData,  backgroundColor: '#f3c5a8' },
+          { label: 'Sonnet 4.6', data: sonnetData, backgroundColor: '#D97757' },
+          { label: 'Opus 4.7',   data: opusData,   backgroundColor: '#7C5E48' }
+        ]
+      },
+      options: {
+        responsive: true, maintainAspectRatio: false,
+        plugins: { legend: { position: 'bottom' }, title: { display: false },
+          tooltip: { callbacks: { label: c => c.dataset.label + ': ' + fmtUSDk(c.parsed.y) } }
+        },
+        scales: {
+          x: { stacked: true },
+          y: { stacked: true, ticks: { callback: v => fmtUSDk(v) } }
+        }
+      }
+    });
+  }
+}
+
+// Wire all inputs
+document.querySelectorAll('input[type=range], input[type=number]').forEach(el => {
+  el.addEventListener('input', recompute);
+});
+document.querySelectorAll('.preset-row button').forEach(btn => {
+  btn.addEventListener('click', () => applyPreset(btn.dataset.preset));
+});
+
+recompute();
+</script>
+</body>
+</html>

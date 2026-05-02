@@ -1,0 +1,318 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>AI Transformation on the Claude Platform — Executive Briefing</title>
+<style>
+  :root { --c1:#D97757; --c2:#7C5E48; --c3:#B45309; --c5:#1E40AF; }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  html, body { height: 100%; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; background: #111; color: #fff; overflow: hidden; }
+  .deck { width: 100vw; height: 100vh; position: relative; }
+  .slide { position: absolute; inset: 0; padding: 60px 80px; display: none; flex-direction: column; justify-content: center; }
+  .slide.active { display: flex; }
+  .slide.dark { background: #1a1410; color: #fff; }
+  .slide.light { background: #faf7f3; color: #2a2017; }
+  .slide.t1 { border-top: 8px solid var(--c1); }
+  .slide.t2 { border-top: 8px solid var(--c2); }
+  .slide.t3 { border-top: 8px solid var(--c3); }
+  .slide.t5 { border-top: 8px solid var(--c5); }
+  .slide h1 { font-size: 56px; line-height: 1.1; margin-bottom: 24px; font-weight: 700; }
+  .slide h2 { font-size: 36px; margin-bottom: 18px; font-weight: 600; }
+  .slide h3 { font-size: 24px; color: #888; margin-bottom: 16px; font-weight: 400; }
+  .slide p { font-size: 22px; line-height: 1.5; margin-bottom: 16px; max-width: 980px; }
+  .slide ul { font-size: 21px; line-height: 1.65; padding-left: 28px; }
+  .slide li { margin-bottom: 8px; }
+  .slide .quote { font-size: 30px; font-style: italic; line-height: 1.4; max-width: 900px; margin-top: 24px; }
+  .slide .attr { font-size: 18px; color: #888; margin-top: 12px; }
+  .slide .stat { font-size: 88px; font-weight: 700; line-height: 1; margin: 16px 0; }
+  .slide .stat.t1 { color: var(--c1); }
+  .slide .stat.t2 { color: var(--c2); }
+  .slide .stat.t3 { color: var(--c3); }
+  .slide .stat.t5 { color: var(--c5); }
+  .slide .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 24px; margin-top: 16px; }
+  .slide .grid-3 { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 18px; margin-top: 16px; }
+  .slide .col { padding: 20px; background: rgba(255,255,255,0.05); border-radius: 8px; }
+  .slide.light .col { background: rgba(0,0,0,0.04); }
+  .slide .col h4 { font-size: 20px; margin-bottom: 10px; color: var(--c1); }
+  .slide .col p { font-size: 17px; margin-bottom: 8px; }
+  .slide .col ul { font-size: 16px; line-height: 1.5; }
+  .slide .badge { display: inline-block; padding: 4px 14px; border-radius: 14px; font-size: 14px; margin-bottom: 16px; font-weight: 600; }
+  .slide.t1 .badge { background: var(--c1); color: white; }
+  .slide.t2 .badge { background: var(--c2); color: white; }
+  .slide.t3 .badge { background: var(--c3); color: white; }
+  .slide.t5 .badge { background: var(--c5); color: white; }
+  .slide .footer { position: absolute; bottom: 24px; left: 80px; right: 80px; display: flex; justify-content: space-between; font-size: 13px; color: #666; }
+  .nav { position: fixed; bottom: 16px; right: 24px; display: flex; gap: 6px; z-index: 100; }
+  .nav button { padding: 6px 12px; background: rgba(255,255,255,0.15); border: 0; color: #fff; border-radius: 4px; cursor: pointer; font-size: 13px; }
+  .nav button:hover { background: rgba(255,255,255,0.3); }
+  .progress { position: fixed; top: 0; left: 0; height: 3px; background: var(--c1); transition: width 0.3s; z-index: 100; }
+  table { width: 100%; border-collapse: collapse; font-size: 17px; margin-top: 14px; }
+  table th, table td { padding: 8px 12px; text-align: left; border-bottom: 1px solid rgba(255,255,255,0.15); }
+  .light table th, .light table td { border-bottom: 1px solid #ddd; }
+  table th { font-weight: 600; }
+  .pill { display: inline-block; padding: 2px 10px; border-radius: 10px; font-size: 13px; background: var(--c1); color: white; margin-right: 6px; }
+  @media print {
+    .nav, .progress { display: none; }
+    .slide { display: flex !important; page-break-after: always; }
+    body { background: white; color: black; }
+    .slide.dark { background: white; color: black; }
+  }
+</style>
+</head>
+<body>
+<div class="progress" id="progress"></div>
+<div class="deck">
+
+<!-- Slide 1: Title -->
+<div class="slide dark active">
+  <h1>AI Transformation<br/>on the Claude Platform</h1>
+  <h3>A 10-slide brief for executives sponsoring AI bets</h3>
+  <p style="color:#bba;">When Claude wins, what it costs, how to roll it out in 90 days, and how to govern it.</p>
+  <p style="color:#777; font-size:16px; margin-top:32px;">As of 2026-05. Verify pricing/models at anthropic.com.</p>
+  <div class="footer"><span>© gmanch94 · CC-BY-4.0 · github.com/gmanch94/claude-platform-playbook</span><span>Slide 1 / 10</span></div>
+</div>
+
+<!-- Slide 2: Platform shift -->
+<div class="slide light t1">
+  <span class="badge">The shift</span>
+  <h2>Foundation models are the new platform primitive</h2>
+  <p>The build/buy question has changed. You no longer build the intelligence — you build on top of it.</p>
+  <table>
+    <tr><th>Wave</th><th>What you used to build</th><th>What you build now</th></tr>
+    <tr><td>Mainframe → PC</td><td>The OS</td><td>Apps on the OS</td></tr>
+    <tr><td>On-prem → Cloud</td><td>The data center</td><td>Services on AWS/GCP/Azure</td></tr>
+    <tr><td>Custom ML → Foundation models</td><td>The model</td><td><strong>Workflows on the model</strong></td></tr>
+  </table>
+  <p style="margin-top:24px; color: #555;">Organizations that try to recreate the model layer in 2026 are repeating the "build our own data center" mistake of 2010.</p>
+  <div class="footer"><span>© gmanch94 · CC-BY-4.0</span><span>Slide 2 / 10</span></div>
+</div>
+
+<!-- Slide 3: Claude in 60 seconds -->
+<div class="slide dark t1">
+  <span class="badge">The platform</span>
+  <h2>Claude in 60 seconds</h2>
+  <div class="grid-2">
+    <div class="col">
+      <h4>3 model tiers</h4>
+      <ul>
+        <li><strong>Haiku 4.5</strong> — fast, cheap, triage and high-volume</li>
+        <li><strong>Sonnet 4.6</strong> — balanced, the workhorse</li>
+        <li><strong>Opus 4.7</strong> — deep reasoning, hard problems</li>
+      </ul>
+    </div>
+    <div class="col">
+      <h4>6 capabilities that change the math</h4>
+      <ul>
+        <li><strong>Prompt caching</strong> — 90% off cached input</li>
+        <li><strong>Extended thinking</strong> — model reasons before answering</li>
+        <li><strong>Tool use</strong> — model calls your APIs</li>
+        <li><strong>Computer use 2.0</strong> — model drives a browser/desktop</li>
+        <li><strong>Files API</strong> — upload docs, model reads them</li>
+        <li><strong>Batch API</strong> — 50% off, async jobs</li>
+      </ul>
+    </div>
+  </div>
+  <p style="margin-top:20px; color: #aaa; font-size:18px;">Plus: <strong>Skills</strong> (custom domain expertise), <strong>MCP</strong> (connect external systems), <strong>Agent SDK</strong> (build autonomous workflows), <strong>Plugins</strong> (bundle and distribute), <strong>Memory tool</strong> (cross-session state), <strong>Claude Code</strong> (engineering CLI).</p>
+  <div class="footer"><span>© gmanch94 · CC-BY-4.0</span><span>Slide 3 / 10</span></div>
+</div>
+
+<!-- Slide 4: When Claude wins -->
+<div class="slide light t2">
+  <span class="badge">The decision</span>
+  <h2>When Claude wins (and when it doesn't)</h2>
+  <div class="grid-2">
+    <div class="col">
+      <h4>Claude wins when…</h4>
+      <ul>
+        <li>Long context matters (200K+ tokens)</li>
+        <li>Careful reasoning beats speed</li>
+        <li>Code-heavy workflows</li>
+        <li>Agentic / multi-step automation</li>
+        <li>Regulated data (no-train guarantees, BAA paths)</li>
+        <li>Hard-to-jailbreak production deployments</li>
+      </ul>
+    </div>
+    <div class="col">
+      <h4>Pick something else when…</h4>
+      <ul>
+        <li>You need image/video generation (Claude is text + vision input only)</li>
+        <li>You need real-time voice (use a voice-native vendor)</li>
+        <li>Sub-100ms latency is the binding constraint</li>
+        <li>You're locked into another platform's stack and switching cost &gt; benefit</li>
+        <li>The use case is so simple a templated SaaS already solves it</li>
+      </ul>
+    </div>
+  </div>
+  <div class="footer"><span>© gmanch94 · CC-BY-4.0</span><span>Slide 4 / 10</span></div>
+</div>
+
+<!-- Slide 5: Cost economics -->
+<div class="slide dark t3">
+  <span class="badge">Cost</span>
+  <h2>The cost levers most teams miss</h2>
+  <div class="stat t3">60–80%</div>
+  <p>Achievable cost reduction vs. naive use (all-Opus, no caching, no batch).</p>
+  <div class="grid-3" style="margin-top:24px;">
+    <div class="col">
+      <h4>Prompt caching</h4>
+      <p>~90% discount on cached input tokens. Game-changer for RAG, system prompts, repeated context.</p>
+    </div>
+    <div class="col">
+      <h4>Batch API</h4>
+      <p>50% discount on async work. Use for enrichment, classification, summarization at scale.</p>
+    </div>
+    <div class="col">
+      <h4>Model mix</h4>
+      <p>Triage with Haiku, route hard cases to Sonnet/Opus. 5–15× cost gap between tiers.</p>
+    </div>
+  </div>
+  <p style="margin-top:24px; color: #aaa; font-size:18px;">→ Run the numbers in <code style="background:rgba(255,255,255,0.1); padding:3px 8px; border-radius:4px;">cost-calculator.html</code> for your volume.</p>
+  <div class="footer"><span>© gmanch94 · CC-BY-4.0</span><span>Slide 5 / 10</span></div>
+</div>
+
+<!-- Slide 6: Time-to-value -->
+<div class="slide light t1">
+  <span class="badge">Speed</span>
+  <h2>Weeks, not quarters</h2>
+  <p>Platform features collapse traditional ML build timelines.</p>
+  <table>
+    <tr><th>Capability</th><th>DIY timeline</th><th>On Claude</th></tr>
+    <tr><td>Domain-specific assistant</td><td>3–6 months (fine-tune + eval + serve)</td><td>1–2 weeks (Skills + system prompt + eval)</td></tr>
+    <tr><td>RAG over internal docs</td><td>2–4 months (embed + index + retrieval + serving)</td><td>1–3 weeks (Files API or vector store + prompt caching)</td></tr>
+    <tr><td>Agentic workflow</td><td>4–8 months (orchestration + tool wiring + recovery)</td><td>2–6 weeks (Agent SDK + tool use)</td></tr>
+    <tr><td>Connect to internal systems</td><td>Custom adapters per system</td><td>MCP server (1 adapter, all clients use it)</td></tr>
+  </table>
+  <p style="margin-top:20px; color: #555;">The platform compresses build time. The hard work shifts to <strong>evaluation, governance, and change management</strong> — which is where it always belonged.</p>
+  <div class="footer"><span>© gmanch94 · CC-BY-4.0</span><span>Slide 6 / 10</span></div>
+</div>
+
+<!-- Slide 7: Governance fit -->
+<div class="slide dark t5">
+  <span class="badge">Governance</span>
+  <h2>What the risk reviewer needs to hear</h2>
+  <div class="grid-2">
+    <div class="col">
+      <h4>Built-in</h4>
+      <ul>
+        <li><strong>No training on API data</strong> by default</li>
+        <li><strong>Data residency</strong> options (US, EU)</li>
+        <li><strong>BAA available</strong> for HIPAA workloads</li>
+        <li><strong>SOC 2 Type II, ISO 27001</strong></li>
+        <li><strong>Zero data retention</strong> options for sensitive flows</li>
+      </ul>
+    </div>
+    <div class="col">
+      <h4>You add</h4>
+      <ul>
+        <li><strong>Prompt versioning</strong> (treat prompts as code)</li>
+        <li><strong>Eval suite</strong> per use case</li>
+        <li><strong>Cost guardrails</strong> (per-team budgets, alerts)</li>
+        <li><strong>Audit log</strong> (request, prompt hash, response, model version)</li>
+        <li><strong>Multi-model abstraction</strong> for vendor concentration risk</li>
+      </ul>
+    </div>
+  </div>
+  <p style="margin-top:20px; color: #aaa; font-size:17px;">→ Full mapping to NIST AI RMF + EU AI Act in <code style="background:rgba(255,255,255,0.1); padding:3px 8px; border-radius:4px;">governance-overlay.md</code>.</p>
+  <div class="footer"><span>© gmanch94 · CC-BY-4.0</span><span>Slide 7 / 10</span></div>
+</div>
+
+<!-- Slide 8: 90-day plan -->
+<div class="slide light t2">
+  <span class="badge">Rollout</span>
+  <h2>The 90-day rollout</h2>
+  <div class="grid-3">
+    <div class="col">
+      <h4>Weeks 1–4 — Pilot</h4>
+      <ul>
+        <li>1 use case, 1 team</li>
+        <li>Executive sponsor named</li>
+        <li>BAA signed if needed</li>
+        <li>Success metric defined upfront</li>
+        <li>Eval suite v0</li>
+      </ul>
+    </div>
+    <div class="col">
+      <h4>Weeks 5–8 — Guardrails</h4>
+      <ul>
+        <li>Prompt versioning live</li>
+        <li>Cost dashboard per team</li>
+        <li>Red-team pass</li>
+        <li>Audit log piped to SIEM</li>
+        <li>Internal docs + runbook</li>
+      </ul>
+    </div>
+    <div class="col">
+      <h4>Weeks 9–13 — Scale</h4>
+      <ul>
+        <li>2nd and 3rd use case</li>
+        <li>Center of excellence stood up</li>
+        <li>Reusable Skills library</li>
+        <li>MCP servers for shared systems</li>
+        <li>Quarterly review cadence</li>
+      </ul>
+    </div>
+  </div>
+  <p style="margin-top:20px; color: #555; font-size:18px;">→ Operational detail in <code style="background:rgba(0,0,0,0.05); padding:3px 8px; border-radius:4px;">adoption-playbook.md</code>.</p>
+  <div class="footer"><span>© gmanch94 · CC-BY-4.0</span><span>Slide 8 / 10</span></div>
+</div>
+
+<!-- Slide 9: Risks -->
+<div class="slide dark t3">
+  <span class="badge">Risks</span>
+  <h2>Five risks worth naming</h2>
+  <table>
+    <tr><th>Risk</th><th>Mitigation</th></tr>
+    <tr><td><strong>Vendor concentration</strong> — single-vendor model dependency</td><td>Multi-model abstraction layer; quarterly evaluation of alternatives</td></tr>
+    <tr><td><strong>Model deprecation</strong> — models get retired</td><td>Pin to model family in code; eval pipeline detects regression on switch</td></tr>
+    <tr><td><strong>Cost surprises</strong> — unexpected bills</td><td>Per-team budgets + hard caps + per-request cost telemetry</td></tr>
+    <tr><td><strong>Prompt drift</strong> — silent quality regressions</td><td>Prompt versioning + canary evals + alerts on metric drops</td></tr>
+    <tr><td><strong>Shadow AI</strong> — staff using consumer Claude with company data</td><td>Sanctioned API access with logging; policy + training; SSO-gated</td></tr>
+  </table>
+  <p style="margin-top:24px; color: #aaa;">None are show-stoppers. All are predictable. Plan for them in week 1, not month 6.</p>
+  <div class="footer"><span>© gmanch94 · CC-BY-4.0</span><span>Slide 9 / 10</span></div>
+</div>
+
+<!-- Slide 10: Decide -->
+<div class="slide light t1">
+  <span class="badge">Decide</span>
+  <h2>What to ask of your team this week</h2>
+  <ul>
+    <li><strong>Pick the pilot use case.</strong> Bounded, measurable, executive sponsor named, fail-safe if it doesn't work.</li>
+    <li><strong>Run the cost calculator</strong> for your projected volume. Decide whether the economics work before signing anything.</li>
+    <li><strong>Score build vs. buy</strong> on the worksheet. Default to platform; override only with reason.</li>
+    <li><strong>Stand up the eval suite</strong> in week 1. No eval = no go.</li>
+    <li><strong>Name the governance owner.</strong> Not the AI team. Risk, legal, or security.</li>
+  </ul>
+  <p style="margin-top:32px; font-size:20px; color: #555;"><strong>Companion artifacts:</strong> <a href="cost-calculator.html">cost calculator</a> · <a href="feature-decision-matrix.html">feature matrix</a> · <a href="adoption-playbook.md">adoption playbook</a> · <a href="governance-overlay.md">governance overlay</a> · <a href="build-vs-buy-worksheet.html">build-vs-buy worksheet</a> · <a href="reference-architectures.html">reference architectures</a> · <a href="claude-code-adoption-guide.md">Claude Code rollout</a></p>
+  <div class="footer"><span>© gmanch94 · CC-BY-4.0 · As of 2026-05 · Verify at anthropic.com</span><span>Slide 10 / 10</span></div>
+</div>
+
+</div>
+
+<div class="nav">
+  <button onclick="prev()">← Prev</button>
+  <button onclick="next()">Next →</button>
+  <button onclick="window.print()">Print PDF</button>
+</div>
+
+<script>
+  const slides = document.querySelectorAll('.slide');
+  let cur = 0;
+  function show(i) {
+    slides[cur].classList.remove('active');
+    cur = Math.max(0, Math.min(slides.length - 1, i));
+    slides[cur].classList.add('active');
+    document.getElementById('progress').style.width = ((cur + 1) / slides.length * 100) + '%';
+  }
+  function next() { show(cur + 1); }
+  function prev() { show(cur - 1); }
+  document.addEventListener('keydown', e => {
+    if (e.key === 'ArrowRight' || e.key === ' ') next();
+    else if (e.key === 'ArrowLeft') prev();
+    else if (e.key === 'Home') show(0);
+    else if (e.key === 'End') show(slides.length - 1);
+  });
+  show(0);
+</script>
+</body>
+</html>

@@ -1,0 +1,245 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Claude Feature Decision Matrix</title>
+<style>
+  :root { --c1:#D97757; --c1d:#B45309; --c2:#7C5E48; --bg:#faf7f3; --ink:#2a2017; --line:#e8e0d3; --muted:#8a7e6e; --good:#15803d; --warn:#b45309; --bad:#9ca3af; }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; background: var(--bg); color: var(--ink); padding: 32px 24px 80px; line-height: 1.55; }
+  .wrap { max-width: 1280px; margin: 0 auto; }
+  header { border-bottom: 2px solid var(--c1); padding-bottom: 16px; margin-bottom: 24px; }
+  header h1 { font-size: 32px; font-weight: 700; }
+  header .sub { color: var(--muted); font-size: 15px; margin-top: 6px; }
+  .asof { display: inline-block; background: var(--c1); color: white; padding: 3px 10px; border-radius: 12px; font-size: 12px; font-weight: 600; margin-left: 8px; vertical-align: middle; }
+  .legend { display: flex; gap: 22px; flex-wrap: wrap; padding: 14px 18px; background: white; border: 1px solid var(--line); border-radius: 10px; margin-bottom: 18px; font-size: 14px; }
+  .legend .item { display: flex; align-items: center; gap: 8px; }
+  .legend .cell { display: inline-block; width: 28px; height: 28px; border-radius: 4px; text-align: center; line-height: 28px; font-weight: 700; }
+  .yes { background: #dcfce7; color: var(--good); }
+  .cond { background: #fef3c7; color: var(--warn); }
+  .no { background: #f1f5f9; color: var(--bad); }
+  .matrix-wrap { background: white; border: 1px solid var(--line); border-radius: 10px; padding: 8px; overflow-x: auto; }
+  table.matrix { width: 100%; border-collapse: separate; border-spacing: 2px; font-size: 13px; }
+  table.matrix th, table.matrix td { padding: 8px 6px; text-align: center; border-radius: 4px; }
+  table.matrix thead th { background: #f7f1e7; font-size: 12px; font-weight: 600; color: var(--c1d); writing-mode: vertical-rl; transform: rotate(180deg); white-space: nowrap; min-width: 40px; height: 130px; vertical-align: bottom; padding: 8px 4px; cursor: help; }
+  table.matrix thead th:first-child { writing-mode: horizontal-tb; transform: none; text-align: left; padding-left: 12px; min-width: 220px; height: auto; vertical-align: middle; font-size: 13px; }
+  table.matrix tbody th { background: #f7f1e7; text-align: left; font-weight: 600; padding: 12px; min-width: 220px; cursor: help; }
+  table.matrix tbody th .desc { display: block; font-weight: 400; font-size: 11px; color: var(--muted); margin-top: 2px; line-height: 1.3; }
+  table.matrix tbody td { background: white; cursor: help; transition: transform 0.1s; font-size: 18px; font-weight: 700; }
+  table.matrix tbody td:hover { transform: scale(1.05); }
+  table.matrix tbody td.y { background: #dcfce7; color: var(--good); }
+  table.matrix tbody td.c { background: #fef3c7; color: var(--warn); }
+  table.matrix tbody td.n { background: #f1f5f9; color: var(--bad); }
+  /* tooltip */
+  td[data-tip], th[data-tip] { position: relative; }
+  td[data-tip]:hover::after, th[data-tip]:hover::after {
+    content: attr(data-tip);
+    position: absolute; bottom: calc(100% + 6px); left: 50%; transform: translateX(-50%);
+    background: #1a1410; color: white; padding: 8px 12px; border-radius: 6px;
+    font-size: 12px; font-weight: 400; line-height: 1.4; white-space: normal; width: 280px;
+    text-align: left; z-index: 100; box-shadow: 0 6px 20px rgba(0,0,0,0.25); pointer-events: none;
+    writing-mode: horizontal-tb; transform: translateX(-50%);
+  }
+  th[data-tip]:hover::after { writing-mode: horizontal-tb; }
+  thead th[data-tip]:hover::after { transform: rotate(180deg) translateX(50%); writing-mode: horizontal-tb; bottom: auto; top: 100%; left: 50%; }
+  details.guide { margin-top: 22px; background: white; border: 1px solid var(--line); border-radius: 10px; padding: 18px 22px; }
+  details.guide summary { cursor: pointer; font-weight: 600; color: var(--c1d); font-size: 16px; }
+  details.guide .body { padding-top: 12px; font-size: 14px; }
+  details.guide ol { padding-left: 22px; margin-top: 6px; }
+  details.guide ol li { margin-bottom: 6px; }
+  footer { margin-top: 40px; padding-top: 16px; border-top: 1px solid var(--line); text-align: center; font-size: 12px; color: var(--muted); }
+  footer a { color: var(--c1d); }
+  .pattern-cards { display: grid; grid-template-columns: repeat(auto-fill, minmax(320px, 1fr)); gap: 14px; margin-top: 22px; }
+  .pattern-cards .pc { background: white; border: 1px solid var(--line); border-radius: 8px; padding: 14px 16px; font-size: 13px; }
+  .pattern-cards .pc h4 { font-size: 15px; color: var(--c1d); margin-bottom: 6px; }
+  .pattern-cards .pc .stack { font-family: ui-monospace, Menlo, monospace; font-size: 12px; background: #f7f1e7; padding: 6px 8px; border-radius: 4px; margin-top: 8px; }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <h1>Claude Feature Decision Matrix <span class="asof">As of 2026-05</span></h1>
+    <div class="sub">For each use-case pattern, which Claude platform features are essential, conditional, or rarely useful. Hover any cell for rationale.</div>
+  </header>
+
+  <div class="legend">
+    <div class="item"><span class="cell yes">✓</span> Essential — pattern doesn't work well without it</div>
+    <div class="item"><span class="cell cond">~</span> Conditional — useful in specific sub-cases</div>
+    <div class="item"><span class="cell no">·</span> Rarely useful — feature mismatch with pattern</div>
+  </div>
+
+  <div class="matrix-wrap">
+    <table class="matrix">
+      <thead>
+        <tr>
+          <th>Pattern  ↓     Feature →</th>
+          <th data-tip="Cache the static prefix of your prompt (system + tools + retrieved context) so reads cost 10% of fresh input. Highest-leverage cost lever.">Prompt caching</th>
+          <th data-tip="Model produces visible reasoning before the final answer. Higher accuracy on hard problems; doubles output tokens.">Extended thinking</th>
+          <th data-tip="Model can call functions you define (DB lookups, API calls, calculators). Foundation for any non-chat workflow.">Tool use</th>
+          <th data-tip="Computer use 2.0 — model drives a browser/desktop via screenshots + actions. Web automation, legacy app integration.">Computer use 2.0</th>
+          <th data-tip="Upload PDFs/CSVs/images directly to the model without chunking. Ideal for document-grounded patterns.">Files API</th>
+          <th data-tip="Reusable, packaged domain knowledge + procedures the model loads on demand. Custom expertise without fine-tuning.">Skills</th>
+          <th data-tip="Model Context Protocol — standardized server interface to connect Claude to internal systems (DBs, ticketing, search).">MCP</th>
+          <th data-tip="Plugins — bundles of slash commands, hooks, MCP servers, skills, agents distributed as one unit. Standardize team workflows.">Plugins</th>
+          <th data-tip="Build agentic loops with managed sessions, tool routing, and orchestration patterns. Skip rolling your own state machine.">Agent SDK</th>
+          <th data-tip="Persistent memory across sessions — model writes, reads, and updates a long-term store. Enables long-running personal/team agents.">Memory tool</th>
+          <th data-tip="Async batch jobs at 50% of interactive pricing, with 24h SLA. Free money for any non-realtime workload.">Batch API</th>
+          <th data-tip="Model returns spans pointing back to source documents in its response. Required for any compliance-sensitive grounded output.">Citations</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <th data-tip="A user-facing chat assistant grounded in an internal knowledge base. RAG-style retrieval + Claude generation."><span>RAG support copilot</span><span class="desc">User asks → retrieve → ground → answer</span></th>
+          <td class="y" data-tip="Cache the system prompt + retrieved context — 70%+ hit rate in steady state.">✓</td>
+          <td class="n" data-tip="Latency cost rarely worth it for grounded Q&A. Use Sonnet without thinking.">·</td>
+          <td class="c" data-tip="Optional. Useful if the assistant needs to escalate, file tickets, or fetch fresh data.">~</td>
+          <td class="n" data-tip="Wrong tool for grounded Q&A — adds latency and unpredictability.">·</td>
+          <td class="y" data-tip="Drop PDFs/policies into Files instead of building a chunking pipeline. Major operational simplification.">✓</td>
+          <td class="c" data-tip="If your knowledge base is large + structured, package retrieval logic as a Skill.">~</td>
+          <td class="c" data-tip="Useful when grounding draws from live systems (CRM, ticketing) — wire via MCP server.">~</td>
+          <td class="c" data-tip="Helpful if you operate multiple copilots and want shared retrieval/eval skills + commands.">~</td>
+          <td class="n" data-tip="Single-turn or short multi-turn chat doesn't need orchestration. Direct API call is simpler.">·</td>
+          <td class="c" data-tip="Useful if you want the assistant to remember user preferences across sessions.">~</td>
+          <td class="n" data-tip="Interactive copilots need <2s response. Batch SLA is 24h.">·</td>
+          <td class="y" data-tip="Compliance basics — show users which doc each claim came from. Files API + citations is the standard pairing.">✓</td>
+        </tr>
+        <tr>
+          <th data-tip="Model autonomously plans, calls tools, observes results, and replans across many steps to complete a task."><span>Agentic workflow</span><span class="desc">Plan → tool calls → observe → replan</span></th>
+          <td class="y" data-tip="Long agent traces benefit massively from cache — repeated context across loop iterations.">✓</td>
+          <td class="y" data-tip="Hard tasks benefit from explicit reasoning before each tool call.">✓</td>
+          <td class="y" data-tip="The pattern is built on tool use.">✓</td>
+          <td class="c" data-tip="Use computer use 2.0 only when target system has no API. Slow and brittle compared to MCP.">~</td>
+          <td class="c" data-tip="Helpful when the agent operates over uploaded documents.">~</td>
+          <td class="y" data-tip="Encode domain procedures as Skills so the agent has expert playbooks instead of inventing them.">✓</td>
+          <td class="y" data-tip="MCP standardizes how the agent reaches your systems. Avoid bespoke tool wiring per system.">✓</td>
+          <td class="y" data-tip="Bundle the agent's commands + hooks + MCP servers + skills as a plugin for team distribution.">✓</td>
+          <td class="y" data-tip="Don't roll your own loop. Agent SDK gives sessions, retries, parallel tool calls.">✓</td>
+          <td class="y" data-tip="Long-running agents need memory across runs — what worked, what failed, user state.">✓</td>
+          <td class="c" data-tip="Run eval suites or backfills via batch. Live agentic flows use sync API.">~</td>
+          <td class="c" data-tip="Useful when the agent's outputs are grounded in retrieved documents.">~</td>
+        </tr>
+        <tr>
+          <th data-tip="Process a large set of documents, records, or queries asynchronously. Latency-tolerant."><span>Batch enrichment</span><span class="desc">Document/data classification, extraction</span></th>
+          <td class="y" data-tip="If schema/instructions are reused across millions of items, cache the prefix.">✓</td>
+          <td class="n" data-tip="Most batch tasks are extraction — thinking adds output cost without accuracy gain.">·</td>
+          <td class="c" data-tip="Optional — for structured output or tool-driven extraction patterns.">~</td>
+          <td class="n" data-tip="Wrong tool. Computer use is for interactive automation.">·</td>
+          <td class="y" data-tip="Pass PDFs/images directly. Avoid chunking pipelines for moderate-size documents.">✓</td>
+          <td class="c" data-tip="If the extraction logic is non-trivial, package as a Skill for consistency.">~</td>
+          <td class="n" data-tip="Batch jobs are typically self-contained — pull data once, send.">·</td>
+          <td class="n" data-tip="Plugins are for human-in-the-loop workflows. Batch is data pipeline territory.">·</td>
+          <td class="n" data-tip="Single-shot calls. Agent SDK adds overhead without value.">·</td>
+          <td class="n" data-tip="Stateless processing. Memory adds no value.">·</td>
+          <td class="y" data-tip="The whole point — 50% off pricing for 24h SLA.">✓</td>
+          <td class="c" data-tip="Required if extracted facts must be source-traceable.">~</td>
+        </tr>
+        <tr>
+          <th data-tip="Model interacts with a UI it wasn't designed for — legacy desktop apps, third-party web tools, accessibility flows."><span>Computer-use automation</span><span class="desc">Browser/desktop control via screenshots</span></th>
+          <td class="c" data-tip="Helpful — long screenshot+action histories accumulate. Cache the system prompt at minimum.">~</td>
+          <td class="y" data-tip="Critical for resilient action selection. Without thinking, the model misclicks more.">✓</td>
+          <td class="y" data-tip="Computer use is implemented via dedicated tools (screenshot, click, type).">✓</td>
+          <td class="y" data-tip="The whole pattern.">✓</td>
+          <td class="n" data-tip="Out-of-band; computer use operates on live screens, not files.">·</td>
+          <td class="y" data-tip="Encode the workflow as a Skill so the model has the playbook, not just primitives.">✓</td>
+          <td class="c" data-tip="Useful when the automation must also call APIs alongside UI clicks.">~</td>
+          <td class="c" data-tip="Distribute the automation as a plugin for repeatable team use.">~</td>
+          <td class="y" data-tip="Computer use loops are agentic — Agent SDK handles retries + recovery.">✓</td>
+          <td class="c" data-tip="Useful for workflows that resume across sessions (multi-day automations).">~</td>
+          <td class="n" data-tip="Real-time pattern. Batch doesn't apply.">·</td>
+          <td class="n" data-tip="Output is actions, not document-grounded answers.">·</td>
+        </tr>
+        <tr>
+          <th data-tip="Specialized assistant for a narrow domain — legal, finance, clinical, internal taxonomy. High accuracy, deep expertise."><span>Domain expert assistant</span><span class="desc">Vertical assistant w/ deep procedures</span></th>
+          <td class="y" data-tip="Domain prompts are large and reused — cache aggressively.">✓</td>
+          <td class="y" data-tip="Hard domain reasoning benefits from thinking. Worth the latency for high-stakes calls.">✓</td>
+          <td class="c" data-tip="If the domain requires lookups (codes, prices, clinical refs).">~</td>
+          <td class="n" data-tip="Wrong tool for knowledge-grounded assistant.">·</td>
+          <td class="y" data-tip="Domain documents (policies, regs, manuals) live in Files.">✓</td>
+          <td class="y" data-tip="Skills are the canonical home for domain procedures + style + edge cases.">✓</td>
+          <td class="y" data-tip="Connect to domain systems (case management, EHR, pricing engines) via MCP.">✓</td>
+          <td class="y" data-tip="Distribute the assistant as a plugin so multiple teams can adopt it consistently.">✓</td>
+          <td class="c" data-tip="If the assistant must take multi-step actions, not just answer.">~</td>
+          <td class="c" data-tip="Useful for client-specific or case-specific persistent state.">~</td>
+          <td class="c" data-tip="For overnight regression eval suites against the assistant.">~</td>
+          <td class="y" data-tip="Domain assistants must cite — regulatory requirement in most verticals.">✓</td>
+        </tr>
+        <tr>
+          <th data-tip="Engineering team uses Claude Code (CLI) to write, refactor, debug, and review code — local plus optionally CI."><span>Code automation (Claude Code)</span><span class="desc">CLI + IDE for engineering teams</span></th>
+          <td class="y" data-tip="Claude Code uses prompt caching automatically across sessions on the same repo.">✓</td>
+          <td class="y" data-tip="Default for hard problems. Improves diff quality + reasoning visibility.">✓</td>
+          <td class="y" data-tip="Built-in: file ops, bash, git, web fetch.">✓</td>
+          <td class="c" data-tip="Available — useful for browser-based debugging or testing flows.">~</td>
+          <td class="n" data-tip="Code lives in the workspace, not Files API.">·</td>
+          <td class="y" data-tip="Skills are the right home for team coding standards, language-specific patterns, repo conventions.">✓</td>
+          <td class="y" data-tip="Connect Claude Code to issue trackers, CI, internal docs via MCP.">✓</td>
+          <td class="y" data-tip="Plugins distribute team-specific commands, skills, hooks, MCP servers as a single install.">✓</td>
+          <td class="c" data-tip="Use Agent SDK for headless/CI agents. Local Claude Code runs the loop itself.">~</td>
+          <td class="c" data-tip="Useful for long-running engineering agents that span days/weeks.">~</td>
+          <td class="c" data-tip="Run nightly review/refactor/migration jobs via Agent SDK + batch.">~</td>
+          <td class="n" data-tip="Code-edit context, not document-grounded prose.">·</td>
+        </tr>
+        <tr>
+          <th data-tip="Internal copilot inside an existing app (CRM, support tool, BI). Embedded chat or inline suggestions."><span>Embedded copilot</span><span class="desc">Chat surface inside an internal app</span></th>
+          <td class="y" data-tip="Cache the app context + tool schema — every user benefits.">✓</td>
+          <td class="c" data-tip="Optional. Often disabled to keep latency low.">~</td>
+          <td class="y" data-tip="Connect to the host app's actions (create record, update field, escalate).">✓</td>
+          <td class="n" data-tip="Inside an app, you have an API. Don't drive the UI.">·</td>
+          <td class="c" data-tip="If users upload attachments inline.">~</td>
+          <td class="c" data-tip="Skills capture the host app's style + approval rules.">~</td>
+          <td class="y" data-tip="MCP is the right interface to the host app and its data model.">✓</td>
+          <td class="c" data-tip="Distribute the copilot config as a plugin if you have multiple internal app embeds.">~</td>
+          <td class="c" data-tip="If the copilot takes multi-step actions on user behalf.">~</td>
+          <td class="c" data-tip="Per-user memory enables personalization across sessions.">~</td>
+          <td class="n" data-tip="Interactive — batch SLA wrong.">·</td>
+          <td class="c" data-tip="Required if responses pull from documents.">~</td>
+        </tr>
+        <tr>
+          <th data-tip="Continuous regression testing of prompts, models, and skills against a held-out evalset."><span>Eval / regression testing</span><span class="desc">Prompt + model regression suite</span></th>
+          <td class="y" data-tip="Eval prompts are reused thousands of times — cache the prefix.">✓</td>
+          <td class="c" data-tip="Match production config — if prod uses thinking, eval must too.">~</td>
+          <td class="c" data-tip="Match production tool surface for accuracy of measurement.">~</td>
+          <td class="n" data-tip="Eval is data-driven, not UI-driven.">·</td>
+          <td class="c" data-tip="If the eval set includes documents.">~</td>
+          <td class="c" data-tip="Test that Skills behave consistently — package skill regressions.">~</td>
+          <td class="n" data-tip="Eval runners hit the API directly.">·</td>
+          <td class="n" data-tip="Single-purpose runner doesn't need plugin packaging.">·</td>
+          <td class="c" data-tip="If evaluating multi-turn agent traces, use Agent SDK to reproduce loops.">~</td>
+          <td class="n" data-tip="Stateless per-run.">·</td>
+          <td class="y" data-tip="Run the evalset overnight at half price.">✓</td>
+          <td class="n" data-tip="Score against expected output, not citations.">·</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <details class="guide" open>
+    <summary>How to read this matrix</summary>
+    <div class="body">
+      <ol>
+        <li><strong>Pick your pattern</strong> — find the row that best describes the workload. If two rows fit, your design is probably blending patterns and that's fine — combine the ✓ columns.</li>
+        <li><strong>The green cells are your build list.</strong> Anything marked ✓ is core to making the pattern work. Skipping a green cell usually shows up as a quality, cost, or maintenance problem within 90 days.</li>
+        <li><strong>Yellow cells are decisions, not defaults.</strong> Adopt only when the sub-condition in the tooltip applies. Adopting all yellows by reflex bloats the architecture.</li>
+        <li><strong>Gray cells are signal that you're using the wrong tool.</strong> If you find yourself reaching for one, re-check the pattern row — you may be solving a different problem than you think.</li>
+      </ol>
+    </div>
+  </details>
+
+  <h2 style="margin-top:30px; font-size:22px; color:var(--c1d);">Canonical stacks (one-liner per pattern)</h2>
+  <div class="pattern-cards">
+    <div class="pc"><h4>RAG support copilot</h4><div>Sonnet 4.6 · cached system + retrieved context · Files API for source docs · citations on.</div><div class="stack">Sonnet 4.6 + caching + Files + citations</div></div>
+    <div class="pc"><h4>Agentic workflow</h4><div>Sonnet 4.6 baseline (Opus 4.7 escalation) · Agent SDK loop · MCP for system access · Skills for procedures · memory tool · plugins for distribution.</div><div class="stack">Agent SDK + MCP + Skills + memory + plugins</div></div>
+    <div class="pc"><h4>Batch enrichment</h4><div>Haiku 4.5 · Batch API · cached schema · Files API for inputs.</div><div class="stack">Haiku 4.5 + batch + caching + Files</div></div>
+    <div class="pc"><h4>Computer-use automation</h4><div>Sonnet 4.6 + thinking · computer use 2.0 · Skills for the workflow playbook · Agent SDK for the loop.</div><div class="stack">computer use 2.0 + thinking + Skills + Agent SDK</div></div>
+    <div class="pc"><h4>Domain expert assistant</h4><div>Sonnet 4.6 + thinking · Skills for procedures · Files for regs/policies · MCP for systems · citations.</div><div class="stack">Skills + Files + MCP + citations + plugins</div></div>
+    <div class="pc"><h4>Code automation</h4><div>Claude Code (Opus 4.7 for hard refactors, Sonnet 4.6 default) · team plugin (commands + skills + hooks + MCP).</div><div class="stack">Claude Code + plugins + Skills + MCP</div></div>
+    <div class="pc"><h4>Embedded copilot</h4><div>Sonnet 4.6 (Haiku 4.5 for triage) · cached app context · MCP to host app · memory tool for personalization.</div><div class="stack">Sonnet + MCP + caching + memory</div></div>
+    <div class="pc"><h4>Eval / regression suite</h4><div>Same model as prod · Batch API overnight · cached prompt prefix · evalset versioned in repo.</div><div class="stack">batch + caching + match-prod-config</div></div>
+  </div>
+</div>
+
+<footer>
+  © gmanch94 · CC-BY-4.0 · As of 2026-05. Verify feature surface at <a href="https://docs.claude.com">docs.claude.com</a>. Matrix encodes opinion + tradeoffs, not Anthropic guidance.
+</footer>
+</body>
+</html>
