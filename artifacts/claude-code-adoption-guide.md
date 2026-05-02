@@ -118,6 +118,8 @@ In `.claude/settings.json`:
 | `PostToolUse / Edit\|Write → run-linter.sh` | Auto-format / lint changed files. Cheap quality gate. |
 | `Stop → log-cost.sh` | Append session cost + duration to a team CSV for cost dashboards. |
 
+> See [`hooks-starter-pack.md`](hooks-starter-pack.md) for richer bodies of these three plus 7 more (PII scrub, branch guard, dependency license, audit log, commit-msg, session-context, eval-trigger), each with when-to-use / failure-mode / owner before the body. Don't ship more than these 3 in Phase 1 — graduate the rest as governance asks land in Phase 2 and 3.
+
 ### Pilot success signals (end of week 2)
 
 - Engineers complete real tasks with Claude Code in normal workflow (PR merges with `Generated with Claude Code` badge are fine, not required)
@@ -284,6 +286,7 @@ For recurring work (weekly sweep, on-cadence reports), use scheduled tasks rathe
 ## Companion artifacts
 
 - [`claude-code-starter-skills.md`](claude-code-starter-skills.md) — 8 team-grade Skill templates with when-to-use / failure-mode / owner framing
+- [`hooks-starter-pack.md`](hooks-starter-pack.md) — 10 hook templates extending the 3 named here (PII scrub, branch guard, audit log, license check, etc.)
 - [`eval-starter-pack.md`](eval-starter-pack.md) — 8 evaluation templates (regression, format, tool-call, grounding, adversarial, cost, latency, refusal)
 - [`adoption-playbook.md`](adoption-playbook.md) — business + transformation lens (Claude broadly, not just Claude Code)
 - [`feature-decision-matrix.html`](feature-decision-matrix.html) — code-automation row maps directly here

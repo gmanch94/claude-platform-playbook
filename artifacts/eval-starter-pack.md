@@ -447,6 +447,7 @@ When in doubt: start advisory, promote to blocking after 60 days of stable signa
 - [`adoption-playbook.md`](adoption-playbook.md) — Weeks 5–8 guardrails are the lifecycle home for these evals
 - [`claude-code-adoption-guide.md`](claude-code-adoption-guide.md) — Phase 3 governance pass calls out eval as the gate before plugin promotion
 - [`claude-code-starter-skills.md`](claude-code-starter-skills.md) — every Skill in that pack should pass at minimum the regression + format evals before promotion
+- [`hooks-starter-pack.md`](hooks-starter-pack.md) — hook 10 (`eval-trigger`) is how these evals fire automatically when prompts/skills change
 - [`governance-overlay.md`](governance-overlay.md) — adversarial + refusal calibration tie to NIST AI RMF *Measure* function
 - [`cost-calculator.html`](cost-calculator.html) — pricing table the cost-per-task eval depends on
 - [`../docs/feature-inventory.md`](../docs/feature-inventory.md) — Batch API + Code execution tool surface canonical list

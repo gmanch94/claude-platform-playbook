@@ -104,6 +104,8 @@ Per request, capture:
 
 **Where this matters:** EU AI Act high-risk systems must produce an automatic event log; NIST AI RMF Manage requires monitoring; SOC 2 audit requires consistency between logged behavior and stated policy.
 
+**For Claude Code (CLI) workloads:** the `audit-log-append` and `pii-scrub-prompt` hooks in [`hooks-starter-pack.md`](hooks-starter-pack.md) are how this control lands at the engineer's machine. Local-file mode is pilot-only — production audit needs append-only storage (S3 with object-lock, write-only logging endpoint) so engineers can't edit their own audit trail.
+
 ---
 
 ## 7. Prompt + Skill versioning + rollback
@@ -198,6 +200,8 @@ Claude has built-in safety and refusal behavior, but **prompt injection** is you
 - [`cost-calculator.html`](cost-calculator.html) — cost modeling
 - [`build-vs-buy-worksheet.html`](build-vs-buy-worksheet.html) — Claude vs alternatives
 - [`claude-code-adoption-guide.md`](claude-code-adoption-guide.md) — engineering team rollout
+- [`hooks-starter-pack.md`](hooks-starter-pack.md) — operationalizes audit log + PII scrub + branch guard for Claude Code
+- [`eval-starter-pack.md`](eval-starter-pack.md) — adversarial + refusal calibration evals tie to NIST AI RMF *Measure*
 - [`../docs/feature-inventory.md`](../docs/feature-inventory.md) — canonical feature + status list
 
 ---

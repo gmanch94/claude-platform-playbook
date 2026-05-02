@@ -180,12 +180,20 @@ Session 1: items 1-4 (skeleton + 3 anchors). Session 2: items 5-9 (depth + ship)
 
 **Posture.** Decision-frame first (catches / failure-mode / owner), eval shape last. Explicit about where each eval should run cheaply (Batch API, Code execution tool) and which evals should be blocking vs advisory. Pinned to current model surface.
 
+### `hooks-starter-pack.md` (added 2026-05)
+
+**Why it earns its place.** The Claude Code adoption guide names three Phase 1 hooks (`block-secrets`, `run-linter`, `log-cost`) and stops there — but the same guide names "Hooks enforce destructive-op blocking" and "Audit log: all tool calls in headless mode" as Phase 3 governance requirements without showing the hook body. Engineering leads end up either shipping the 3 starter hooks and discovering gaps in incident review, or attempting 12 hooks at once and ending up with a brittle pre-tool layer that throttles the agent. The pack closes that gap with 10 hooks, each decision-framed (when-to-use / failure-mode / owner) before the body, plus a Phase 1→4 rollout matrix and a blocking-vs-advisory default per hook.
+
+**Why it's not in the original 8.** Original scope assumed hooks would be team-specific enough that templating was unhelpful. Empirically the *event-to-control mapping* is portable across teams (every regulated team needs a PII scrub, every team with protected branches needs a branch guard) — only the patterns and thresholds differ. Treating the structure as the artifact and the patterns as placeholders is what makes this a decision tool rather than a tutorial.
+
+**Posture.** Decision-frame first (when-to-use / failure-mode-without / failure-mode-of-the-hook / owner), hook body last. Phased rollout matrix prevents the "ship 12 hooks on day 1" failure mode. Blocking-vs-advisory matrix mirrors the eval pack's blocking discipline. Pinned to current Claude Code surface.
+
 ### Pattern for future starter packs
 
-The starter-skills + eval-pack pair establishes a **template artifact pattern**: when the existing playbook/guide names a failure mode but offers no scaffolding, a starter pack with structured templates (when-to-use / failure-mode / owner / body) earns its place. Candidate future packs to evaluate against this bar:
+The starter-skills + eval-pack + hooks-pack triple establishes a **template artifact pattern**: when the existing playbook/guide names a failure mode but offers no scaffolding, a starter pack with structured templates (when-to-use / failure-mode / owner / body) earns its place. Candidate future packs to evaluate against this bar:
 
-- **Hooks starter pack** — extends the 3 hooks named in the Claude Code adoption guide to ~10 (PII scrub, branch guard, commit-msg gen, cost alert, audit log, dependency check)
 - **MCP server starter pack** — 6–8 read-only server patterns (issue tracker, docs, CI logs, DB replica) for Phase 2 demand
 - **Pilot use-case selection worksheet** — interactive HTML scoring tool for "which use case should we pilot?"
+- **Slash-command starter pack** — 6–8 portable slash commands (review-pr, run-eval, gen-changelog) — only earns place if the adoption guide's slash-command section grows past the current sketch
 
 Bar for inclusion: existing artifact must already name the failure mode the pack would address; the structure must be portable across teams while the content remains team-specific.

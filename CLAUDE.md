@@ -39,6 +39,7 @@ claude-platform-playbook/
     ├── governance-overlay.md            Data flow · BAA · NIST · EU AI Act
     ├── claude-code-adoption-guide.md    Engineering CLI rollout
     ├── claude-code-starter-skills.md    8 team-grade Skill templates (when-to-use / failure-mode / owner / prompt body)
+    ├── hooks-starter-pack.md            10 hook templates (block-secrets, PII scrub, branch guard, license, audit log, etc.) — phased 1→4 rollout
     └── eval-starter-pack.md             8 eval templates (regression, format, tool-call, grounding, adversarial, cost, latency, refusal)
 ```
 
