@@ -1,0 +1,334 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Pilot Use-Case Selection Worksheet — Claude Platform</title>
+<style>
+  :root { --c1:#D97757; --c1d:#B45309; --c2:#7C5E48; --bg:#faf7f3; --ink:#2a2017; --line:#e8e0d3; --muted:#8a7e6e; --good:#15803d; --warn:#b45309; --bad:#dc2626; --soft:#fef3ec; }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; background: var(--bg); color: var(--ink); padding: 32px 24px 80px; line-height: 1.55; }
+  .wrap { max-width: 1180px; margin: 0 auto; }
+  header { border-bottom: 2px solid var(--c1); padding-bottom: 16px; margin-bottom: 24px; }
+  header h1 { font-size: 32px; font-weight: 700; }
+  header .sub { color: var(--muted); font-size: 15px; margin-top: 6px; max-width: 900px; }
+  .asof { display: inline-block; background: var(--c1); color: white; padding: 3px 10px; border-radius: 12px; font-size: 12px; font-weight: 600; margin-left: 8px; vertical-align: middle; }
+  .toolbar { display: flex; gap: 10px; align-items: center; margin-bottom: 18px; flex-wrap: wrap; }
+  .btn { padding: 8px 14px; border-radius: 6px; border: 1px solid var(--c1); background: var(--c1); color: white; font-size: 13px; font-weight: 600; cursor: pointer; }
+  .btn:hover { background: var(--c1d); border-color: var(--c1d); }
+  .btn.ghost { background: white; color: var(--c1d); }
+  .btn.ghost:hover { background: var(--soft); }
+  .btn.danger { background: white; color: var(--bad); border-color: var(--line); }
+  .btn.danger:hover { border-color: var(--bad); }
+  .grid { display: grid; grid-template-columns: 1fr 1fr; gap: 24px; }
+  @media (max-width: 1000px) { .grid { grid-template-columns: 1fr; } }
+  .card { background: white; border: 1px solid var(--line); border-radius: 10px; padding: 22px; margin-bottom: 18px; }
+  .card h2 { font-size: 19px; margin-bottom: 14px; color: var(--c1d); border-bottom: 1px solid var(--line); padding-bottom: 8px; }
+  .card h3 { font-size: 15px; margin: 14px 0 8px; color: var(--c2); }
+  input[type=text] { width: 100%; padding: 10px 12px; border: 1px solid var(--line); border-radius: 6px; font-size: 14px; }
+  .uc-card { border: 1px solid var(--line); border-radius: 10px; padding: 18px; margin-bottom: 14px; background: white; }
+  .uc-head { display: flex; gap: 10px; align-items: center; margin-bottom: 10px; }
+  .uc-head input { flex: 1; }
+  .uc-head .remove { background: white; border: 1px solid var(--line); color: var(--muted); padding: 6px 10px; border-radius: 6px; font-size: 12px; cursor: pointer; }
+  .uc-head .remove:hover { color: var(--bad); border-color: var(--bad); }
+  .axis { margin-bottom: 12px; }
+  .axis label { display: block; font-weight: 600; font-size: 13px; margin-bottom: 2px; }
+  .axis .desc { font-size: 11.5px; color: var(--muted); margin-bottom: 6px; line-height: 1.45; }
+  .scale { display: flex; gap: 4px; }
+  .scale button { flex: 1; padding: 7px; background: white; border: 1px solid var(--line); border-radius: 6px; font-size: 13px; cursor: pointer; }
+  .scale button:hover { border-color: var(--c1); }
+  .scale button.active { background: var(--c1); color: white; border-color: var(--c1); font-weight: 600; }
+  .scale-labels { display: flex; justify-content: space-between; font-size: 10.5px; color: var(--muted); margin-top: 2px; }
+  .verdict { padding: 14px 16px; border-radius: 10px; margin-bottom: 14px; }
+  .verdict.strong { background: linear-gradient(135deg, #ecfdf5, #fff); border: 2px solid var(--good); }
+  .verdict.viable { background: linear-gradient(135deg, var(--soft), #fff); border: 2px solid var(--c1); }
+  .verdict.risky { background: linear-gradient(135deg, #fffbeb, #fff); border: 2px solid var(--warn); }
+  .verdict.notyet { background: linear-gradient(135deg, #fef2f2, #fff); border: 2px solid var(--bad); }
+  .verdict .head { display: flex; align-items: baseline; gap: 10px; margin-bottom: 6px; }
+  .verdict .name { font-size: 17px; font-weight: 700; color: var(--ink); }
+  .verdict .label { font-size: 12px; font-weight: 700; padding: 3px 9px; border-radius: 10px; color: white; }
+  .verdict.strong .label { background: var(--good); }
+  .verdict.viable .label { background: var(--c1); }
+  .verdict.risky .label { background: var(--warn); }
+  .verdict.notyet .label { background: var(--bad); }
+  .verdict .score { margin-left: auto; font-size: 13px; color: var(--muted); font-variant-numeric: tabular-nums; }
+  .verdict .why { font-size: 13.5px; line-height: 1.55; margin-top: 4px; }
+  .verdict .blockers { background: white; border-left: 3px solid var(--bad); padding: 8px 10px; margin-top: 8px; font-size: 12.5px; color: var(--bad); }
+  .verdict .blockers strong { color: var(--ink); }
+  .verdict .axis-bar { display: flex; gap: 4px; margin-top: 8px; }
+  .verdict .axis-bar .a { flex: 1; padding: 4px 6px; border-radius: 4px; font-size: 11px; text-align: center; color: white; font-weight: 600; }
+  .verdict .axis-bar .a.s1 { background: var(--bad); }
+  .verdict .axis-bar .a.s2 { background: var(--bad); opacity: .8; }
+  .verdict .axis-bar .a.s3 { background: var(--warn); }
+  .verdict .axis-bar .a.s4 { background: var(--c1); }
+  .verdict .axis-bar .a.s5 { background: var(--good); }
+  .verdict .axis-bar .a.s0 { background: var(--line); color: var(--muted); }
+  .empty { text-align: center; padding: 40px 20px; color: var(--muted); font-size: 14px; }
+  details { margin-top: 18px; }
+  details summary { cursor: pointer; font-weight: 600; color: var(--c1d); font-size: 14px; padding: 6px 0; }
+  details .body { padding: 10px 0 0; font-size: 13px; line-height: 1.6; }
+  details .body ul { padding-left: 22px; margin-top: 4px; }
+  details .body li { margin-bottom: 4px; }
+  footer { margin-top: 40px; padding-top: 16px; border-top: 1px solid var(--line); text-align: center; font-size: 12px; color: var(--muted); }
+  footer a { color: var(--c1d); }
+  .axis-key { font-size: 11px; color: var(--muted); }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <h1>Pilot Use-Case Selection Worksheet <span class="asof">As of 2026-05</span></h1>
+    <div class="sub">Score 2–6 candidate use cases across 5 axes → ranked verdict (Strong pilot / Viable / Risky / Not yet) with explicit blockers. Operationalizes Week 0 of the <a href="adoption-playbook.md" style="color:var(--c1d);">adoption playbook</a> — the playbook names the decision; this worksheet shows the math.</div>
+  </header>
+
+  <div class="toolbar">
+    <button class="btn" onclick="addUseCase()">+ Add use case</button>
+    <button class="btn ghost" onclick="loadExamples()">Load 3 examples</button>
+    <button class="btn danger" onclick="clearAll()">Clear all</button>
+    <span class="axis-key">Each axis 1–5. Any axis ≤ 2 = blocker flag. Total /25 maps to verdict.</span>
+  </div>
+
+  <div class="grid">
+    <div>
+      <div class="card">
+        <h2>Candidate use cases</h2>
+        <div id="ucList"></div>
+      </div>
+
+      <div class="card">
+        <h2>Axis definitions</h2>
+
+        <div style="margin-bottom:14px;">
+          <strong style="color:var(--c1d);">1. Value-at-stake</strong>
+          <div style="font-size:13px; color:var(--muted); margin-top:2px;">How much does it matter <em>if Claude works here</em>. <strong>1</strong> = nice-to-have, no executive interest. <strong>5</strong> = board-visible win / direct P&amp;L lever / strategic priority.</div>
+          <div style="font-size:12px; color:var(--c2); margin-top:4px;">Why it matters: low-value pilots starve in week 8 when budget reviews start.</div>
+        </div>
+
+        <div style="margin-bottom:14px;">
+          <strong style="color:var(--c1d);">2. Time-to-signal</strong>
+          <div style="font-size:13px; color:var(--muted); margin-top:2px;">How fast you can tell if it worked. <strong>1</strong> = needs 6+ months of usage data. <strong>5</strong> = signal in 2–4 weeks of pilot users.</div>
+          <div style="font-size:12px; color:var(--c2); margin-top:4px;">Why it matters: 90-day arc fails if you can't prove the win by week 8.</div>
+        </div>
+
+        <div style="margin-bottom:14px;">
+          <strong style="color:var(--c1d);">3. Data + tool readiness</strong>
+          <div style="font-size:13px; color:var(--muted); margin-top:2px;">Are the inputs Claude needs already accessible? <strong>1</strong> = data behind 3 system migrations. <strong>5</strong> = clean APIs / docs / structured data already in place.</div>
+          <div style="font-size:12px; color:var(--c2); margin-top:4px;">Why it matters: pilots that need a data engineering project first aren't pilots — they're full programs.</div>
+        </div>
+
+        <div style="margin-bottom:14px;">
+          <strong style="color:var(--c1d);">4. Risk profile (reversibility)</strong>
+          <div style="font-size:13px; color:var(--muted); margin-top:2px;">Lower risk = better pilot. <strong>1</strong> = regulated, customer-facing, irreversible (PHI claims, public statements, financial advice). <strong>5</strong> = internal-only, reversible, low blast radius.</div>
+          <div style="font-size:12px; color:var(--c2); margin-top:4px;">Why it matters: the playbook says "don't lead with customer-facing." Pilots are for learning, not for proving you can fly the high wire on day 1.</div>
+        </div>
+
+        <div>
+          <strong style="color:var(--c1d);">5. Sponsor + owner clarity</strong>
+          <div style="font-size:13px; color:var(--muted); margin-top:2px;"><strong>1</strong> = "the AI committee owns it." <strong>5</strong> = named C-level sponsor <em>and</em> named operational owner whose neck is out.</div>
+          <div style="font-size:12px; color:var(--c2); margin-top:4px;">Why it matters: the most common Week 0 mistake is committee ownership. Committees diffuse decisions; pilots need someone whose neck is out.</div>
+        </div>
+      </div>
+    </div>
+
+    <div>
+      <div class="card">
+        <h2>Ranked verdicts</h2>
+        <div id="results"><div class="empty">Add candidate use cases to see ranked verdicts.</div></div>
+
+        <details>
+          <summary>How verdicts are computed</summary>
+          <div class="body">
+            <p><strong>Total score</strong> = sum of 5 axes (max 25).</p>
+            <p style="margin-top:6px;"><strong>Verdict bands (no blockers):</strong></p>
+            <ul>
+              <li><strong style="color:var(--good);">Strong pilot</strong> ≥ 20 — high-leverage, clean inputs, owned. Build first.</li>
+              <li><strong style="color:var(--c1d);">Viable</strong> 16–19 — workable, with at least one axis to monitor.</li>
+              <li><strong style="color:var(--warn);">Risky</strong> 12–15 — needs structural work before piloting.</li>
+              <li><strong style="color:var(--bad);">Not yet</strong> &lt; 12 — pick a different use case for the pilot.</li>
+            </ul>
+            <p style="margin-top:8px;"><strong>Blocker rule:</strong> any axis at <strong>≤ 2</strong> downgrades the verdict by one band, even if the total is high. <strong>Any axis at 1</strong> forces "Not yet" regardless of total.</p>
+            <p style="margin-top:8px;">Why blockers override the total: a use case scoring 4-4-4-4-1 has the same total as 4-4-3-3-3 but the first one has a fatal axis (e.g., no sponsor). Pilots fail on weakest-link, not on average.</p>
+          </div>
+        </details>
+      </div>
+
+      <div class="card">
+        <h2>Decision frames (cheat sheet)</h2>
+        <ul style="padding-left:22px; font-size:13.5px; line-height:1.7;">
+          <li><strong>Two Strong-pilot use cases?</strong> Pick the one with faster time-to-signal. Faster signal = more credibility for the rest of the program.</li>
+          <li><strong>Strong on 4 axes, axis-1 blocker on Sponsor?</strong> Don't fix the use case — fix the sponsor. Re-score after.</li>
+          <li><strong>All candidates land in Risky?</strong> The bottleneck is upstream — usually data-readiness or sponsor clarity. Don't pilot yet; spend 2 weeks on those before scoring again.</li>
+          <li><strong>One use case is Strong, but customer-facing?</strong> Treat with extra care — the playbook recommends internal-facing first. Score Risk Profile honestly; consider a smaller internal-facing pilot adjacent to it.</li>
+          <li><strong>Tie?</strong> Faster time-to-signal wins, then lower risk profile, then higher data readiness. Value-at-stake is the tiebreaker only when the others are even.</li>
+          <li><strong>Don't pilot more than two use cases at once.</strong> Two is for learning rate; three+ is for losing focus. Plan the second pilot for Weeks 9–13 (scale phase).</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+
+  <div class="card" style="margin-top:8px;">
+    <h2>Why these 5 axes (and not the obvious 10)</h2>
+    <p style="font-size:14px; line-height:1.7;">Every axis here is a <em>weakest-link</em> dimension — a failure in any one of them sinks the pilot regardless of how strong the others are. Other dimensions (model fit, prompt complexity, UI quality) <em>matter</em>, but they can be iterated during the pilot. These five can't.</p>
+    <p style="font-size:14px; line-height:1.7; margin-top:8px;">Notably absent: <strong>budget</strong> (assumed; if you don't have one you're not selecting a pilot, you're seeking funding), <strong>team availability</strong> (collapses into Sponsor + Owner clarity), <strong>technical complexity</strong> (use cases at this stage are scoped, not built — complexity emerges later), and <strong>vendor choice</strong> (this worksheet assumes Claude; see <a href="build-vs-buy-worksheet.html" style="color:var(--c1d);">build-vs-buy-worksheet.html</a> for that decision).</p>
+  </div>
+</div>
+
+<footer>
+  © gmanch94 · CC-BY-4.0 · As of 2026-05. Operationalizes Week 0 of <a href="adoption-playbook.md">adoption-playbook.md</a>. See <a href="../docs/feature-inventory.md">feature-inventory.md</a> for source-of-truth feature status.
+</footer>
+
+<script>
+const AXES = [
+  { id: 'value', label: 'Value-at-stake', loW: 'Nice-to-have', hiW: 'Board-visible' },
+  { id: 'speed', label: 'Time-to-signal', loW: '6+ months', hiW: '2–4 weeks' },
+  { id: 'data',  label: 'Data + tool readiness', loW: 'Behind 3 migrations', hiW: 'Already accessible' },
+  { id: 'risk',  label: 'Risk profile (reversibility)', loW: 'Customer-facing / regulated', hiW: 'Internal / reversible' },
+  { id: 'owner', label: 'Sponsor + owner clarity', loW: 'Committee owned', hiW: 'Named sponsor + owner' }
+];
+
+const BLOCKER_REASONS = {
+  value: 'Low value-at-stake — pilot will lose budget review in week 8 even if it works.',
+  speed: 'Time-to-signal too long — 90-day arc fails if you can\'t prove the win by week 8.',
+  data:  'Data/tool readiness too low — this is a data engineering program, not a pilot.',
+  risk:  'High risk profile — playbook recommends internal-facing first; customer-facing/regulated pilots take 2–3× longer.',
+  owner: 'Sponsor/owner unclear — committee ownership is the #1 cause of stalled pilots.'
+};
+
+let useCases = [];
+
+function uid() { return 'uc' + Math.random().toString(36).slice(2, 8); }
+
+function addUseCase(name) {
+  if (useCases.length >= 6) { alert('Six is enough — focus is the point.'); return; }
+  useCases.push({ id: uid(), name: name || '', scores: { value:0, speed:0, data:0, risk:0, owner:0 } });
+  render();
+}
+
+function removeUseCase(id) {
+  useCases = useCases.filter(u => u.id !== id);
+  render();
+}
+
+function clearAll() {
+  if (useCases.length === 0) return;
+  if (!confirm('Clear all use cases?')) return;
+  useCases = [];
+  render();
+}
+
+function loadExamples() {
+  if (useCases.length > 0 && !confirm('Replace current use cases with examples?')) return;
+  useCases = [
+    { id: uid(), name: 'Internal claims-triage assistant for adjusters', scores: { value:5, speed:4, data:4, risk:4, owner:5 } },
+    { id: uid(), name: 'Customer-facing chatbot on public marketing site', scores: { value:4, speed:3, data:3, risk:1, owner:3 } },
+    { id: uid(), name: 'Dev productivity (Claude Code rollout to 50 engineers)', scores: { value:4, speed:5, data:5, risk:5, owner:4 } }
+  ];
+  render();
+}
+
+function setName(id, name) {
+  const u = useCases.find(x => x.id === id);
+  if (u) u.name = name;
+  renderResults();
+}
+
+function setScore(id, axis, value) {
+  const u = useCases.find(x => x.id === id);
+  if (!u) return;
+  u.scores[axis] = value;
+  render();
+}
+
+function verdictFor(uc) {
+  const total = AXES.reduce((s, a) => s + (uc.scores[a.id] || 0), 0);
+  const blockers = AXES.filter(a => uc.scores[a.id] > 0 && uc.scores[a.id] <= 2);
+  const has1 = AXES.some(a => uc.scores[a.id] === 1);
+  const allScored = AXES.every(a => uc.scores[a.id] > 0);
+  if (!allScored) return { label: 'Score all 5 axes', kind: 'notyet', total, blockers: [], why: 'Pending — score every axis to see verdict.' };
+
+  let kind, label;
+  if (has1) { kind = 'notyet'; label = 'Not yet'; }
+  else if (total >= 20 && blockers.length === 0) { kind = 'strong'; label = 'Strong pilot'; }
+  else if (total >= 16 && blockers.length === 0) { kind = 'viable'; label = 'Viable'; }
+  else if (total >= 20 && blockers.length > 0) { kind = 'viable'; label = 'Viable (with blocker)'; }
+  else if (total >= 12) { kind = 'risky'; label = 'Risky'; }
+  else { kind = 'notyet'; label = 'Not yet'; }
+
+  let why;
+  if (kind === 'strong') why = 'High-leverage, clean inputs, owned. Build first. Watch the lowest-scoring axis through pilot.';
+  else if (kind === 'viable' && blockers.length === 0) why = 'Workable. At least one axis is mid-band — keep an eye on it through Weeks 1–4.';
+  else if (kind === 'viable' && blockers.length > 0) why = 'Total score is high but a blocker axis is dragging it down. Fix the blocker before piloting.';
+  else if (kind === 'risky') why = 'Multiple weak dimensions. Don\'t pilot yet — fix the lowest 1–2 axes first, then re-score.';
+  else why = has1 ? 'A score-of-1 axis kills any pilot regardless of total. Address it or pick a different use case.' : 'Total score too low. Pick a different use case for the pilot.';
+
+  return { label, kind, total, blockers, why };
+}
+
+function render() {
+  renderUseCases();
+  renderResults();
+}
+
+function renderUseCases() {
+  const list = document.getElementById('ucList');
+  if (useCases.length === 0) {
+    list.innerHTML = '<div class="empty">No use cases yet. Click <strong>+ Add use case</strong> or <strong>Load 3 examples</strong>.</div>';
+    return;
+  }
+  list.innerHTML = useCases.map(uc => `
+    <div class="uc-card">
+      <div class="uc-head">
+        <input type="text" placeholder="Name this use case (e.g., Internal claims triage)" value="${escapeHTML(uc.name)}" oninput="setName('${uc.id}', this.value)" />
+        <button class="remove" onclick="removeUseCase('${uc.id}')">remove</button>
+      </div>
+      ${AXES.map(a => `
+        <div class="axis">
+          <label>${a.label}</label>
+          <div class="scale">
+            ${[1,2,3,4,5].map(v => `<button class="${uc.scores[a.id] === v ? 'active' : ''}" onclick="setScore('${uc.id}', '${a.id}', ${v})">${v}</button>`).join('')}
+          </div>
+          <div class="scale-labels"><span>${a.loW}</span><span>${a.hiW}</span></div>
+        </div>
+      `).join('')}
+    </div>
+  `).join('');
+}
+
+function renderResults() {
+  const out = document.getElementById('results');
+  if (useCases.length === 0) {
+    out.innerHTML = '<div class="empty">Add candidate use cases to see ranked verdicts.</div>';
+    return;
+  }
+  const ranked = useCases.map(uc => ({ uc, v: verdictFor(uc) }))
+    .sort((a, b) => {
+      const order = { strong: 0, viable: 1, risky: 2, notyet: 3 };
+      const dKind = order[a.v.kind] - order[b.v.kind];
+      if (dKind !== 0) return dKind;
+      return b.v.total - a.v.total;
+    });
+
+  out.innerHTML = ranked.map(({ uc, v }) => `
+    <div class="verdict ${v.kind}">
+      <div class="head">
+        <span class="name">${escapeHTML(uc.name || '(unnamed use case)')}</span>
+        <span class="label">${v.label}</span>
+        <span class="score">${v.total}/25</span>
+      </div>
+      <div class="why">${v.why}</div>
+      <div class="axis-bar">
+        ${AXES.map(a => `<div class="a s${uc.scores[a.id]}" title="${a.label}: ${uc.scores[a.id] || '–'}">${a.label.split(' ')[0]} ${uc.scores[a.id] || '–'}</div>`).join('')}
+      </div>
+      ${v.blockers.length > 0 ? `<div class="blockers"><strong>Blocker${v.blockers.length>1?'s':''}:</strong> ${v.blockers.map(b => BLOCKER_REASONS[b.id]).join(' ')}</div>` : ''}
+    </div>
+  `).join('');
+}
+
+function escapeHTML(s) {
+  return (s || '').replace(/[&<>"']/g, c => ({ '&':'&amp;', '<':'&lt;', '>':'&gt;', '"':'&quot;', "'":'&#39;' }[c]));
+}
+
+addUseCase();
+</script>
+</body>
+</html>

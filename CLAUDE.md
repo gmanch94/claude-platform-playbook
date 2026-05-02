@@ -36,6 +36,7 @@ claude-platform-playbook/
     ├── build-vs-buy-worksheet.html      5-axis score → ranked 6-option rec
     ├── reference-architectures.html     5 hand-drawn SVG patterns (Caveat font)
     ├── adoption-playbook.md             90-day rollout · 8 failure modes
+    ├── pilot-selection-worksheet.html   Week 0 use-case scorer · 5 axes · ranked verdicts + blocker flags
     ├── governance-overlay.md            Data flow · BAA · NIST · EU AI Act
     ├── claude-code-adoption-guide.md    Engineering CLI rollout
     ├── claude-code-starter-skills.md    8 team-grade Skill templates (when-to-use / failure-mode / owner / prompt body)

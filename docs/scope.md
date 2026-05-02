@@ -196,12 +196,20 @@ Session 1: items 1-4 (skeleton + 3 anchors). Session 2: items 5-9 (depth + ship)
 
 **Posture.** Decision-frame first (when-to-use / failure-mode-without / failure-mode-of-the-server / owner / scope), config body last. Read-only by design — every server in the pack is gated to read scope, with mutate variants explicitly deferred to Phase 4. Phased rollout matrix mirrors the hooks pack and the adoption guide's 90-day arc. Pinned to current Claude + MCP surface.
 
+### `pilot-selection-worksheet.html` (added 2026-05)
+
+**Why it earns its place.** The adoption playbook Week 0 names "pilot use case" as a decision with a one-line default ("internal-facing workflow with measurable cycle time and a willing team") — but the playbook also names "picking the use case first, sponsor second" and "letting 'the AI committee' replace a single accountable owner" as the top Week 0 mistakes, without a tool to surface those failure modes before the pilot ships. The worksheet operationalizes the decision: 5 weakest-link axes (value, time-to-signal, data readiness, risk, sponsor clarity), per-axis blocker flags, ranked verdicts. A use case scoring 4-4-4-4-1 has the same total as 4-4-3-3-3 but the first one has a fatal axis — the blocker rule catches that.
+
+**Why it's not in the original 8.** Original scope assumed pilot selection was political/contextual enough that templating the scoring would be unhelpful. Empirically the *axes* are portable across orgs (every Week 0 has a value-vs-readiness-vs-sponsor question); only the use cases differ. Treating the axes + verdict logic as the artifact and the use-case names as placeholders is what makes it a decision tool rather than a checklist.
+
+**Posture.** Decision-frame first (axis definitions explain *why* each one is weakest-link, not just what it measures). Multi-use-case (2–6) so it forces comparison rather than rationalization of a pre-picked choice. Blocker rule overrides total — pilots fail on weakest-link, not on average. Pinned to current Claude surface; cross-linked from adoption-playbook.md Week 0.
+
 ### Pattern for future starter packs
 
-The starter-skills + eval-pack + hooks-pack + mcp-pack quadruple establishes a **template artifact pattern**: when the existing playbook/guide names a failure mode but offers no scaffolding, a starter pack with structured templates (when-to-use / failure-mode / owner / body) earns its place. Candidate future packs to evaluate against this bar:
+The starter-skills + eval-pack + hooks-pack + mcp-pack + pilot-worksheet quintuple establishes a **template artifact pattern**: when the existing playbook/guide names a failure mode but offers no scaffolding, a starter pack with structured templates (when-to-use / failure-mode / owner / body) — or in the worksheet case, scored axes + verdict logic — earns its place. Candidate future packs to evaluate against this bar:
 
-- **Pilot use-case selection worksheet** — interactive HTML scoring tool for "which use case should we pilot?" — earns place if the adoption playbook's use-case selection section grows past the current sketch
 - **Slash-command starter pack** — 6–8 portable slash commands (review-pr, run-eval, gen-changelog) — only earns place if the adoption guide's slash-command section grows past the current sketch
 - **Incident response runbook pack** — Claude-specific incident patterns (prompt regression, model deprecation, MCP server compromise, cost spike) — earns place if a real incident category emerges from playbook readers
+- **COE charter template** — adoption playbook Weeks 9–13 names "COE pattern operating: intake → triage → support → graduate" without showing the charter. Earns place if asked.
 
 Bar for inclusion: existing artifact must already name the failure mode the pack would address; the structure must be portable across teams while the content remains team-specific.

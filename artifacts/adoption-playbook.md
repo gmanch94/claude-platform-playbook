@@ -15,7 +15,7 @@ Skipping Week 0 is the single most common cause of stalled Claude pilots. Spend 
 | Decision | Default for most orgs | When to deviate |
 |---|---|---|
 | **Executive sponsor** | Named C-level (CIO, CTO, or business unit P&L owner). Not "the AI committee." | Skip only if pilot is a single team, single use case, no cross-functional asks. |
-| **Pilot use case** | One internal-facing workflow with measurable cycle time and a willing team. | Don't lead with customer-facing — too much governance overhead before you have evidence. |
+| **Pilot use case** | One internal-facing workflow with measurable cycle time and a willing team. Use [`pilot-selection-worksheet.html`](pilot-selection-worksheet.html) to score 2–6 candidates on 5 axes (value, speed, data, risk, sponsor) before committing. | Don't lead with customer-facing — too much governance overhead before you have evidence. |
 | **Success metrics** | Cycle time, accuracy/quality, user satisfaction, and **cost-per-task**. Numeric, not adjectival. | If you can't measure cost-per-task, you'll lose the budget conversation in week 12. |
 | **Procurement path** | Direct API via `console.anthropic.com` for speed. Bedrock or Vertex if hyperscaler commits dictate. | Bedrock/Vertex add a regional + procurement path but cost a model-version lag. |
 | **BAA / DPA** | Sign before any data flows. | Healthcare, finance, EU operations: required before pilot. |
@@ -189,6 +189,7 @@ You can run a small adoption with 4–6 people. Larger orgs will scale each func
 
 - [`executive-briefing.html`](executive-briefing.html) — the 10-slide deck for sponsor + board
 - [`cost-calculator.html`](cost-calculator.html) — model your projected $/month
+- [`pilot-selection-worksheet.html`](pilot-selection-worksheet.html) — Week 0 use-case scoring (5 axes, ranked verdicts, blocker flags)
 - [`feature-decision-matrix.html`](feature-decision-matrix.html) — pick the right Claude features for the pattern
 - [`build-vs-buy-worksheet.html`](build-vs-buy-worksheet.html) — score a use case for Claude direct vs. alternatives
 - [`reference-architectures.html`](reference-architectures.html) — 5 canonical patterns with diagrams
