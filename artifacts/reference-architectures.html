@@ -37,6 +37,9 @@
   .when h4 { font-size: 12px; text-transform: uppercase; letter-spacing: 0.05em; margin-bottom: 4px; }
   .when .yes h4 { color: var(--good); }
   .when .no h4 { color: var(--warn); }
+  .companions { margin-top: 14px; padding: 10px 14px; background: #fdf6ed; border-left: 3px solid var(--c1d); border-radius: 4px; font-size: 13px; line-height: 1.6; }
+  .companions strong { color: var(--c1d); font-family: 'Caveat', cursive; font-size: 16px; letter-spacing: 0.3px; }
+  .companions a { color: var(--c1d); text-decoration: underline; }
   .legend-row { display: flex; gap: 18px; flex-wrap: wrap; padding: 10px 14px; background: white; border: 1px solid var(--line); border-radius: 8px; margin-bottom: 22px; font-size: 13px; align-items: center; }
   .legend-row .item { display: flex; align-items: center; gap: 6px; }
   .legend-row .swatch { width: 18px; height: 14px; border: 2px solid; border-radius: 3px; }
@@ -153,6 +156,13 @@
       <div class="yes"><h4>Use when</h4>Domain Q&A over a stable corpus. Compliance requires source attribution. Latency budget allows 1–3s.</div>
       <div class="no"><h4>Don't use when</h4>Answer requires multi-step reasoning across systems (use agentic). Corpus changes per-request (rebuild as live tool use).</div>
     </div>
+
+    <div class="companions">
+      <strong>Operationalize with:</strong>
+      <a href="eval-starter-pack.md">eval-starter-pack.md</a> — <em>grounding</em> + <em>format-compliance</em> evals are how you catch citation drift and untethered answers ·
+      <a href="mcp-starter-pack.md">mcp-starter-pack.md</a> — <em>internal-docs</em> server is the live-data MCP for this pattern ·
+      <a href="governance-overlay.md">governance-overlay.md</a> §6 — what to log per request when citations are mandatory.
+    </div>
   </div>
 
   <!-- ====================================================================== -->
@@ -266,6 +276,14 @@
       <div class="yes"><h4>Use when</h4>Multi-step task that decomposes naturally into tool calls. Domain has stable procedures worth encoding as Skills. Async-tolerant.</div>
       <div class="no"><h4>Don't use when</h4>Task is single-shot. Latency budget is &lt; 3s. Tools don't exist or have no API surface (use computer use instead).</div>
     </div>
+
+    <div class="companions">
+      <strong>Operationalize with:</strong>
+      <a href="mcp-starter-pack.md">mcp-starter-pack.md</a> — 7 read-only server templates populate the MCP layer in the diagram ·
+      <a href="eval-starter-pack.md">eval-starter-pack.md</a> — <em>tool-call-accuracy</em> + <em>grounding</em> + <em>cost-per-task</em> evals are non-negotiable for agentic loops ·
+      <a href="claude-code-starter-skills.md">claude-code-starter-skills.md</a> — Skills template structure (when-to-use / failure-mode / owner) is portable beyond Claude Code ·
+      <a href="governance-overlay.md">governance-overlay.md</a> §11 — sandbox tool runtime, treat tool returns as untrusted.
+    </div>
   </div>
 
   <!-- ====================================================================== -->
@@ -344,6 +362,13 @@
     <div class="when">
       <div class="yes"><h4>Use when</h4>Latency-tolerant. High volume. Schema/instructions reused across records. Eval suites overnight.</div>
       <div class="no"><h4>Don't use when</h4>Real-time response required. Per-record customization is high. Extraction needs deep reasoning (use Sonnet, not Haiku).</div>
+    </div>
+
+    <div class="companions">
+      <strong>Operationalize with:</strong>
+      <a href="cost-calculator.html">cost-calculator.html</a> — model the Haiku + batch + cache compounding before you commit a job size ·
+      <a href="eval-starter-pack.md">eval-starter-pack.md</a> — <em>format-compliance</em> + <em>regression</em> evals run cheaply on the Batch API itself ·
+      <a href="governance-overlay.md">governance-overlay.md</a> §6 + §8 — per-job audit trail and retention policy for batch outputs.
     </div>
   </div>
 
@@ -435,6 +460,14 @@
     <div class="when">
       <div class="yes"><h4>Use when</h4>Vertical with proprietary procedures and high-value decisions. Citation/audit is mandatory. Multiple teams will adopt.</div>
       <div class="no"><h4>Don't use when</h4>Generic Q&A — the customization stack is overkill. Decisions are low-stakes — simpler RAG copilot suffices.</div>
+    </div>
+
+    <div class="companions">
+      <strong>Operationalize with:</strong>
+      <a href="claude-code-starter-skills.md">claude-code-starter-skills.md</a> — Skills template shape (when-to-use / failure-mode / owner) ports directly to domain Skills ·
+      <a href="mcp-starter-pack.md">mcp-starter-pack.md</a> — read-only servers (issue tracker, internal docs, observability, API catalog) populate the systems-of-record layer ·
+      <a href="eval-starter-pack.md">eval-starter-pack.md</a> — <em>grounding</em> + <em>refusal-calibration</em> evals are mandatory for high-stakes verticals ·
+      <a href="governance-overlay.md">governance-overlay.md</a> §4 + §6 — EU AI Act high-risk deployer obligations + audit log requirements.
     </div>
   </div>
 
@@ -540,6 +573,29 @@
     <div class="when">
       <div class="yes"><h4>Use when</h4>Engineering teams shipping software. Repo-aware tasks. Refactors, migrations, code review, scheduled maintenance.</div>
       <div class="no"><h4>Don't use when</h4>Pattern is API-only (use Agent SDK directly). User isn't a developer.</div>
+    </div>
+
+    <div class="companions">
+      <strong>Operationalize with:</strong>
+      <a href="claude-code-adoption-guide.md">claude-code-adoption-guide.md</a> — phased rollout, settings hierarchy, sub-agents ·
+      <a href="claude-code-starter-skills.md">claude-code-starter-skills.md</a> — 8 team-grade Skill templates (PR review, test gen, migration guard, refactor scout, etc.) ·
+      <a href="hooks-starter-pack.md">hooks-starter-pack.md</a> — 10 hook templates with phased Phase 1→4 rollout matrix ·
+      <a href="mcp-starter-pack.md">mcp-starter-pack.md</a> — 7 read-only server templates (issue tracker, docs, CI logs, code search) ·
+      <a href="eval-starter-pack.md">eval-starter-pack.md</a> — Phase 3 governance gate before plugin promotion.
+    </div>
+  </div>
+
+  <!-- ====================================================================== -->
+  <!-- BEFORE YOU BUILD: pilot selection                                      -->
+  <!-- ====================================================================== -->
+  <div class="pattern" style="background: #fdfaf6;">
+    <h2 style="color: var(--c2);">Before you build any of these</h2>
+    <p style="font-size:14px; line-height:1.6;">Picking the architecture is the easy part. Picking the right <em>first</em> use case is what stalls 80% of pilots. Score 2–6 candidate use cases on 5 weakest-link axes (value, time-to-signal, data readiness, risk, sponsor clarity) before committing to any pattern above.</p>
+    <div class="companions" style="margin-top: 10px;">
+      <strong>Start here:</strong>
+      <a href="pilot-selection-worksheet.html">pilot-selection-worksheet.html</a> — Week 0 use-case scorer ·
+      <a href="adoption-playbook.md">adoption-playbook.md</a> — 90-day rollout arc that wraps the pattern you pick ·
+      <a href="build-vs-buy-worksheet.html">build-vs-buy-worksheet.html</a> — 5-axis Claude-vs-alternatives scorer for the same use case.
     </div>
   </div>
 
