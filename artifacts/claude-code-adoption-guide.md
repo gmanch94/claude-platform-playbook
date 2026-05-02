@@ -207,6 +207,8 @@ Just like the API patterns, prompts and Skills regress silently. Set up a regres
 
 Without eval: a Skill change that breaks 30% of cases ships unnoticed and erodes trust in the tooling.
 
+For the 8-category eval scaffolding (regression, format compliance, tool-call accuracy, grounding, adversarial, cost-per-task, latency, refusal calibration) — each framed by what it catches / failure-mode / owner — see [`eval-starter-pack.md`](eval-starter-pack.md). Skills in this pack should pass the regression + format-compliance evals before promotion past pilot.
+
 ### Cost controls
 
 - Per-engineer monthly dashboard (use the `Stop` hook from Phase 1)
@@ -282,6 +284,7 @@ For recurring work (weekly sweep, on-cadence reports), use scheduled tasks rathe
 ## Companion artifacts
 
 - [`claude-code-starter-skills.md`](claude-code-starter-skills.md) — 8 team-grade Skill templates with when-to-use / failure-mode / owner framing
+- [`eval-starter-pack.md`](eval-starter-pack.md) — 8 evaluation templates (regression, format, tool-call, grounding, adversarial, cost, latency, refusal)
 - [`adoption-playbook.md`](adoption-playbook.md) — business + transformation lens (Claude broadly, not just Claude Code)
 - [`feature-decision-matrix.html`](feature-decision-matrix.html) — code-automation row maps directly here
 - [`reference-architectures.html`](reference-architectures.html) — Pattern 5 is the architecture diagram for this guide

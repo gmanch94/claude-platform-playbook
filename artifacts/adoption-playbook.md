@@ -85,6 +85,8 @@ Goal: codify what worked, paper over what didn't, and make the pattern repeatabl
 - Add cost regression: alert if cost-per-task moves > 15% between runs
 - Decide: which evals block deploy vs. which are advisory
 
+For the 8-category eval scaffolding (regression, format compliance, tool-call accuracy, grounding, adversarial, cost-per-task, latency, refusal calibration) — each framed by what it catches / failure-mode / owner — see [`eval-starter-pack.md`](eval-starter-pack.md). Pick 2–3 categories per use case in Phase 1; expand through Phase 2.
+
 #### 2. Cost controls
 - Caching strategy locked in (cache hits should be ≥ 60% in steady state for any production workload — see [`cost-calculator.html`](cost-calculator.html))
 - Model tier routing (Haiku 4.5 triage → Sonnet 4.6 default → Opus 4.7 escalation only when justified)
@@ -191,7 +193,9 @@ You can run a small adoption with 4–6 people. Larger orgs will scale each func
 - [`build-vs-buy-worksheet.html`](build-vs-buy-worksheet.html) — score a use case for Claude direct vs. alternatives
 - [`reference-architectures.html`](reference-architectures.html) — 5 canonical patterns with diagrams
 - [`governance-overlay.md`](governance-overlay.md) — risk + compliance overlay
+- [`eval-starter-pack.md`](eval-starter-pack.md) — 8 evaluation templates (regression, format, tool-call, grounding, adversarial, cost, latency, refusal) — Weeks 5–8 scaffolding
 - [`claude-code-adoption-guide.md`](claude-code-adoption-guide.md) — engineering-team rollout for Claude Code
+- [`claude-code-starter-skills.md`](claude-code-starter-skills.md) — 8 team-grade Skill templates for Claude Code rollouts
 
 ---
 

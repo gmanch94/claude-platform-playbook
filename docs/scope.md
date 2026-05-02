@@ -171,3 +171,21 @@ Session 1: items 1-4 (skeleton + 3 anchors). Session 2: items 5-9 (depth + ship)
 **Why it's not in the original 8.** The original scope assumed Skills would be team-specific enough that templating them was unhelpful. Empirically, 6 of the 8 patterns in the pack (PR review, test generation, migration guard, bug triage, release notes, refactor scout) are shaped almost identically across teams — the *contents* differ but the *structure* (when-to-use / failure-mode / owner / prompt body) is portable. Treating the structure as the artifact and the prompt body as a placeholder is what makes this a reusable decision tool rather than a tutorial.
 
 **Posture.** Decision-frame first (when each Skill earns its keep, what its failure mode is, who owns it), prompt body last. Not a tutorial. Pinned to current model surface like the rest of the artifacts.
+
+### `eval-starter-pack.md` (added 2026-05)
+
+**Why it earns its place.** The adoption playbook names *eval debt* as the #2 failure mode in Claude scaling: "prompts evolved faster than the evalset; quality regressed unnoticed." The Claude Code adoption guide says "without eval, a Skill change that breaks 30% of cases ships unnoticed and erodes trust in the tooling." Both name the failure mode but offer no scaffolding. This pack ships the scaffolding: 8 eval categories (regression, format compliance, tool-call accuracy, grounding, adversarial, cost-per-task, latency, refusal calibration) each framed by what it catches / failure-mode-of-the-eval-itself / owner — plus a blocking-vs-advisory matrix to prevent eval-bypass culture.
+
+**Why it's not in the original 8.** Same reason as starter-skills: original scope assumed evals would be too repo-specific to template. Empirically the *categories* and the *ownership pattern* are portable across teams; only the specific tasks differ. Treating the structure as the artifact and the tasks as placeholders is what makes it a decision tool rather than a tutorial.
+
+**Posture.** Decision-frame first (catches / failure-mode / owner), eval shape last. Explicit about where each eval should run cheaply (Batch API, Code execution tool) and which evals should be blocking vs advisory. Pinned to current model surface.
+
+### Pattern for future starter packs
+
+The starter-skills + eval-pack pair establishes a **template artifact pattern**: when the existing playbook/guide names a failure mode but offers no scaffolding, a starter pack with structured templates (when-to-use / failure-mode / owner / body) earns its place. Candidate future packs to evaluate against this bar:
+
+- **Hooks starter pack** — extends the 3 hooks named in the Claude Code adoption guide to ~10 (PII scrub, branch guard, commit-msg gen, cost alert, audit log, dependency check)
+- **MCP server starter pack** — 6–8 read-only server patterns (issue tracker, docs, CI logs, DB replica) for Phase 2 demand
+- **Pilot use-case selection worksheet** — interactive HTML scoring tool for "which use case should we pilot?"
+
+Bar for inclusion: existing artifact must already name the failure mode the pack would address; the structure must be portable across teams while the content remains team-specific.

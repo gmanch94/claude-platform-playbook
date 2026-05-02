@@ -30,9 +30,10 @@ Not Anthropic marketing. Decision-frame first, features second.
 | CEO / board sponsor for AI bets | [`executive-briefing.html`](artifacts/executive-briefing.html) |
 | CIO / CTO sizing Claude TCO | [`cost-calculator.html`](artifacts/cost-calculator.html) → [`build-vs-buy-worksheet.html`](artifacts/build-vs-buy-worksheet.html) |
 | Architect choosing patterns | [`reference-architectures.html`](artifacts/reference-architectures.html) → [`feature-decision-matrix.html`](artifacts/feature-decision-matrix.html) |
-| Transformation lead running rollout | [`adoption-playbook.md`](artifacts/adoption-playbook.md) |
-| Risk / compliance reviewer | [`governance-overlay.md`](artifacts/governance-overlay.md) |
-| Engineering manager rolling out Claude Code | [`claude-code-adoption-guide.md`](artifacts/claude-code-adoption-guide.md) → [`claude-code-starter-skills.md`](artifacts/claude-code-starter-skills.md) |
+| Transformation lead running rollout | [`adoption-playbook.md`](artifacts/adoption-playbook.md) → [`eval-starter-pack.md`](artifacts/eval-starter-pack.md) |
+| Risk / compliance reviewer | [`governance-overlay.md`](artifacts/governance-overlay.md) → [`eval-starter-pack.md`](artifacts/eval-starter-pack.md) |
+| Engineering manager rolling out Claude Code | [`claude-code-adoption-guide.md`](artifacts/claude-code-adoption-guide.md) → [`claude-code-starter-skills.md`](artifacts/claude-code-starter-skills.md) → [`eval-starter-pack.md`](artifacts/eval-starter-pack.md) |
+| ML / platform lead setting up CI for prompts + Skills | [`eval-starter-pack.md`](artifacts/eval-starter-pack.md) |
 
 ---
 
@@ -49,6 +50,7 @@ Not Anthropic marketing. Decision-frame first, features second.
 | [`reference-architectures.html`](artifacts/reference-architectures.html) | Reference | 5 canonical patterns with hand-drawn SVG diagrams: RAG copilot, agentic workflow, batch enrichment, domain expert assistant, code automation. |
 | [`claude-code-adoption-guide.md`](artifacts/claude-code-adoption-guide.md) | Operational | Engineering-team rollout for Claude Code (CLI). Pilot selection, hooks, skills, settings, MCP, security model, measurement. |
 | [`claude-code-starter-skills.md`](artifacts/claude-code-starter-skills.md) | Templates | 8 team-grade Skill templates (PR review, test gen, migration guard, bug triage, doc refresh, release notes, on-call, refactor scout). Each framed by when-to-use / failure-mode / owner before the prompt body. |
+| [`eval-starter-pack.md`](artifacts/eval-starter-pack.md) | Templates | 8 evaluation templates (regression, format compliance, tool-call accuracy, grounding, adversarial, cost-per-task, latency, refusal calibration). Each framed by what it catches / failure-mode of the eval itself / owner. Plus a blocking-vs-advisory matrix. |
 
 ---
 

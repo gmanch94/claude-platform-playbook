@@ -363,6 +363,7 @@ You scope refactors. Output is a plan, not a changelist.
 ## Companion artifacts
 
 - [`claude-code-adoption-guide.md`](claude-code-adoption-guide.md) — phase 2 of the rollout is where this pack lands
+- [`eval-starter-pack.md`](eval-starter-pack.md) — every Skill above should pass at minimum the regression + format-compliance evals before promotion
 - [`feature-decision-matrix.html`](feature-decision-matrix.html) — Skills row maps here
 - [`adoption-playbook.md`](adoption-playbook.md) — broader Claude rollout context
 - [`../docs/feature-inventory.md`](../docs/feature-inventory.md) — Skills + plugin canonical surface
