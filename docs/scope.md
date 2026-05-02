@@ -188,12 +188,20 @@ Session 1: items 1-4 (skeleton + 3 anchors). Session 2: items 5-9 (depth + ship)
 
 **Posture.** Decision-frame first (when-to-use / failure-mode-without / failure-mode-of-the-hook / owner), hook body last. Phased rollout matrix prevents the "ship 12 hooks on day 1" failure mode. Blocking-vs-advisory matrix mirrors the eval pack's blocking discipline. Pinned to current Claude Code surface.
 
+### `mcp-starter-pack.md` (added 2026-05)
+
+**Why it earns its place.** The Claude Code adoption guide's Phase 2 names four MCP servers worth wiring early (issue tracker, internal docs, CI logs, DB read replica) at the header level — no config bodies, no read-vs-mutate framing, no per-server failure-mode breakdown. The feature decision matrix and reference architectures cite MCP across five patterns without showing the server shape. Engineering leads end up either (a) shipping "MCP for everything immediately" (one of the eight named adoption mistakes) with 7 half-built servers, or (b) deferring MCP indefinitely and wiring bespoke per-agent tools that rot when an agent moves. The pack closes the gap with 7 decision-framed read-only server templates, each gated by an explicit read/mutate scope declaration.
+
+**Why it's not in the original 8.** Same reason as the prior three template packs: original scope assumed MCP servers would be too system-specific to template. Empirically the *server class* (issue tracker, docs, observability, etc.) and the *redaction + allow-list shape* are portable across teams; only the credentials and project keys differ. The structural decision (which scope, which redactor, which owner) is the artifact; the credential is the placeholder.
+
+**Posture.** Decision-frame first (when-to-use / failure-mode-without / failure-mode-of-the-server / owner / scope), config body last. Read-only by design — every server in the pack is gated to read scope, with mutate variants explicitly deferred to Phase 4. Phased rollout matrix mirrors the hooks pack and the adoption guide's 90-day arc. Pinned to current Claude + MCP surface.
+
 ### Pattern for future starter packs
 
-The starter-skills + eval-pack + hooks-pack triple establishes a **template artifact pattern**: when the existing playbook/guide names a failure mode but offers no scaffolding, a starter pack with structured templates (when-to-use / failure-mode / owner / body) earns its place. Candidate future packs to evaluate against this bar:
+The starter-skills + eval-pack + hooks-pack + mcp-pack quadruple establishes a **template artifact pattern**: when the existing playbook/guide names a failure mode but offers no scaffolding, a starter pack with structured templates (when-to-use / failure-mode / owner / body) earns its place. Candidate future packs to evaluate against this bar:
 
-- **MCP server starter pack** — 6–8 read-only server patterns (issue tracker, docs, CI logs, DB replica) for Phase 2 demand
-- **Pilot use-case selection worksheet** — interactive HTML scoring tool for "which use case should we pilot?"
+- **Pilot use-case selection worksheet** — interactive HTML scoring tool for "which use case should we pilot?" — earns place if the adoption playbook's use-case selection section grows past the current sketch
 - **Slash-command starter pack** — 6–8 portable slash commands (review-pr, run-eval, gen-changelog) — only earns place if the adoption guide's slash-command section grows past the current sketch
+- **Incident response runbook pack** — Claude-specific incident patterns (prompt regression, model deprecation, MCP server compromise, cost spike) — earns place if a real incident category emerges from playbook readers
 
 Bar for inclusion: existing artifact must already name the failure mode the pack would address; the structure must be portable across teams while the content remains team-specific.

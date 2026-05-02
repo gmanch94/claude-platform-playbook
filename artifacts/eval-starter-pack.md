@@ -448,6 +448,7 @@ When in doubt: start advisory, promote to blocking after 60 days of stable signa
 - [`claude-code-adoption-guide.md`](claude-code-adoption-guide.md) — Phase 3 governance pass calls out eval as the gate before plugin promotion
 - [`claude-code-starter-skills.md`](claude-code-starter-skills.md) — every Skill in that pack should pass at minimum the regression + format evals before promotion
 - [`hooks-starter-pack.md`](hooks-starter-pack.md) — hook 10 (`eval-trigger`) is how these evals fire automatically when prompts/skills change
+- [`mcp-starter-pack.md`](mcp-starter-pack.md) — `tool-call-accuracy` and `grounding` evals are how you catch a server returning junk or the agent invoking it wrong; eval each MCP server's tool surface before promoting past Phase 2
 - [`governance-overlay.md`](governance-overlay.md) — adversarial + refusal calibration tie to NIST AI RMF *Measure* function
 - [`cost-calculator.html`](cost-calculator.html) — pricing table the cost-per-task eval depends on
 - [`../docs/feature-inventory.md`](../docs/feature-inventory.md) — Batch API + Code execution tool surface canonical list

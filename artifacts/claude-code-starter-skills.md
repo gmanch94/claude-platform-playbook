@@ -365,6 +365,7 @@ You scope refactors. Output is a plan, not a changelist.
 - [`claude-code-adoption-guide.md`](claude-code-adoption-guide.md) — phase 2 of the rollout is where this pack lands
 - [`eval-starter-pack.md`](eval-starter-pack.md) — every Skill above should pass at minimum the regression + format-compliance evals before promotion
 - [`hooks-starter-pack.md`](hooks-starter-pack.md) — Skills and hooks compose: a Skill says *what to do*, a hook says *what to never do*. Pair the migration-guard / refactor-scout Skills with `block-secrets` + `branch-guard` hooks.
+- [`mcp-starter-pack.md`](mcp-starter-pack.md) — Skills + MCP compose: a Skill says *what to do*, an MCP server says *what to read*. Pair `pr-review` with the issue-tracker + internal-docs servers; pair `refactor-scout` with the code-search server.
 - [`feature-decision-matrix.html`](feature-decision-matrix.html) — Skills row maps here
 - [`adoption-playbook.md`](adoption-playbook.md) — broader Claude rollout context
 - [`../docs/feature-inventory.md`](../docs/feature-inventory.md) — Skills + plugin canonical surface

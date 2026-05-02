@@ -524,7 +524,7 @@ Default to advisory unless the failure mode is irreversible. The matrix above mi
 
 ## What this pack does NOT include
 
-- **Hooks for specific MCP servers** — those belong in the MCP server pack (planned). MCP-server-specific guards (e.g., "block writes to the production Snowflake MCP") are out of scope here.
+- **Hooks for specific MCP servers** — those belong with the MCP server pack. See [`mcp-starter-pack.md`](mcp-starter-pack.md) for the read-only-by-design server templates; MCP-server-specific guards (e.g., "block writes to the production Snowflake MCP") are out of scope here because the MCP pack ships read-only servers without write paths to guard.
 - **Hooks that depend on org-specific tooling** (Snyk, FOSSA, Vault) — the `dep-license` and `audit-log` hooks reference these as plug-points, not as ship-ready integrations.
 - **PreCompact and SubagentStop hooks** — useful for niche cases (artifact persistence, sub-agent cost attribution) but rare enough that templating them adds noise. Add as your team identifies the failure mode.
 - **Notification routing hooks** — Slack/email/PagerDuty integration is org-specific enough that a template harms more than helps.
@@ -538,6 +538,7 @@ If your team needs any of the above, the structure here (when-to-use / failure-m
 - [`claude-code-adoption-guide.md`](claude-code-adoption-guide.md) — Phase 1 names hooks 1–3; this pack is the deeper version.
 - [`claude-code-starter-skills.md`](claude-code-starter-skills.md) — Skills and hooks compose: a Skill says *what* to do, a hook says *what to never do*.
 - [`eval-starter-pack.md`](eval-starter-pack.md) — Hook 10 (`eval-trigger`) only earns its keep once eval pack is in place.
+- [`mcp-starter-pack.md`](mcp-starter-pack.md) — Hooks defend the agent's loop; MCP servers extend its reach. The `block-secrets` and `pii-scrub-prompt` hooks complement the redaction logic in MCP servers 1–6 — defense in depth.
 - [`governance-overlay.md`](governance-overlay.md) — names audit trail and prompt-versioning patterns; hooks 7 and 9 are how those land in practice.
 - [`feature-decision-matrix.html`](feature-decision-matrix.html) — when each Claude feature is right; this pack is the operational layer underneath.
 

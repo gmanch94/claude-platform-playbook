@@ -182,7 +182,7 @@ Claude has built-in safety and refusal behavior, but **prompt injection** is you
 | Pattern | Purpose |
 |---|---|
 | Separate trusted vs untrusted content in the prompt structure | Clear boundary the model can defend |
-| Treat tool results as untrusted | An MCP-returned blob could carry an injection |
+| Treat tool results as untrusted | An MCP-returned blob could carry an injection — see [`mcp-starter-pack.md`](mcp-starter-pack.md) for read-only-by-design server templates with redaction at the server layer |
 | Sandboxed tool execution | If the agent can run code, sandbox the runtime |
 | Output validation | Schema-check structured outputs; reject malformed |
 | Content filtering on outputs | Reject PII / unsafe content before exposure |
@@ -201,6 +201,7 @@ Claude has built-in safety and refusal behavior, but **prompt injection** is you
 - [`build-vs-buy-worksheet.html`](build-vs-buy-worksheet.html) — Claude vs alternatives
 - [`claude-code-adoption-guide.md`](claude-code-adoption-guide.md) — engineering team rollout
 - [`hooks-starter-pack.md`](hooks-starter-pack.md) — operationalizes audit log + PII scrub + branch guard for Claude Code
+- [`mcp-starter-pack.md`](mcp-starter-pack.md) — read-only MCP server templates; §1 data flow + §11 prompt injection apply (server returns are untrusted)
 - [`eval-starter-pack.md`](eval-starter-pack.md) — adversarial + refusal calibration evals tie to NIST AI RMF *Measure*
 - [`../docs/feature-inventory.md`](../docs/feature-inventory.md) — canonical feature + status list
 

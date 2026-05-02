@@ -32,8 +32,9 @@ Not Anthropic marketing. Decision-frame first, features second.
 | Architect choosing patterns | [`reference-architectures.html`](artifacts/reference-architectures.html) → [`feature-decision-matrix.html`](artifacts/feature-decision-matrix.html) |
 | Transformation lead running rollout | [`adoption-playbook.md`](artifacts/adoption-playbook.md) → [`eval-starter-pack.md`](artifacts/eval-starter-pack.md) |
 | Risk / compliance reviewer | [`governance-overlay.md`](artifacts/governance-overlay.md) → [`eval-starter-pack.md`](artifacts/eval-starter-pack.md) |
-| Engineering manager rolling out Claude Code | [`claude-code-adoption-guide.md`](artifacts/claude-code-adoption-guide.md) → [`claude-code-starter-skills.md`](artifacts/claude-code-starter-skills.md) → [`hooks-starter-pack.md`](artifacts/hooks-starter-pack.md) → [`eval-starter-pack.md`](artifacts/eval-starter-pack.md) |
-| Security / privacy engineer hardening Claude Code rollout | [`hooks-starter-pack.md`](artifacts/hooks-starter-pack.md) → [`governance-overlay.md`](artifacts/governance-overlay.md) |
+| Engineering manager rolling out Claude Code | [`claude-code-adoption-guide.md`](artifacts/claude-code-adoption-guide.md) → [`claude-code-starter-skills.md`](artifacts/claude-code-starter-skills.md) → [`hooks-starter-pack.md`](artifacts/hooks-starter-pack.md) → [`mcp-starter-pack.md`](artifacts/mcp-starter-pack.md) → [`eval-starter-pack.md`](artifacts/eval-starter-pack.md) |
+| Security / privacy engineer hardening Claude Code rollout | [`hooks-starter-pack.md`](artifacts/hooks-starter-pack.md) → [`mcp-starter-pack.md`](artifacts/mcp-starter-pack.md) → [`governance-overlay.md`](artifacts/governance-overlay.md) |
+| Platform engineer wiring Claude into internal systems | [`mcp-starter-pack.md`](artifacts/mcp-starter-pack.md) → [`reference-architectures.html`](artifacts/reference-architectures.html) |
 | ML / platform lead setting up CI for prompts + Skills | [`eval-starter-pack.md`](artifacts/eval-starter-pack.md) |
 
 ---
@@ -52,6 +53,7 @@ Not Anthropic marketing. Decision-frame first, features second.
 | [`claude-code-adoption-guide.md`](artifacts/claude-code-adoption-guide.md) | Operational | Engineering-team rollout for Claude Code (CLI). Pilot selection, hooks, skills, settings, MCP, security model, measurement. |
 | [`claude-code-starter-skills.md`](artifacts/claude-code-starter-skills.md) | Templates | 8 team-grade Skill templates (PR review, test gen, migration guard, bug triage, doc refresh, release notes, on-call, refactor scout). Each framed by when-to-use / failure-mode / owner before the prompt body. |
 | [`hooks-starter-pack.md`](artifacts/hooks-starter-pack.md) | Templates | 10 Claude Code hook templates (block-secrets, run-linter, log-cost, PII scrub, branch guard, dependency-license check, audit log, commit-msg, session-context, eval-trigger). Each framed by when-to-use / failure-mode / owner. Phased Phase 1→4 rollout matrix + blocking-vs-advisory defaults. |
+| [`mcp-starter-pack.md`](artifacts/mcp-starter-pack.md) | Templates | 7 read-only MCP server templates (issue tracker, internal docs, CI logs, DB read replica, observability, API catalog, code search). Each framed by when-to-use / failure-mode / owner / scope. Read-only by design; mutate variants explicitly deferred to Phase 4. |
 | [`eval-starter-pack.md`](artifacts/eval-starter-pack.md) | Templates | 8 evaluation templates (regression, format compliance, tool-call accuracy, grounding, adversarial, cost-per-task, latency, refusal calibration). Each framed by what it catches / failure-mode of the eval itself / owner. Plus a blocking-vs-advisory matrix. |
 
 ---

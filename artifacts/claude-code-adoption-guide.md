@@ -184,6 +184,8 @@ claude plugins add github.com/<your-org>/<team-plugin>
 
 Hold off on MCP servers that **mutate** state until governance is comfortable (Phase 3+).
 
+> See [`mcp-starter-pack.md`](mcp-starter-pack.md) for decision-framed config bodies of these four plus three more (observability, API catalog, code search). Each server framed by when-to-use / failure-mode / owner / scope, with explicit read-only design and Phase 4 deferral for mutate variants.
+
 ### Sub-agents (Task tool)
 
 Use sub-agents when:
@@ -287,6 +289,7 @@ For recurring work (weekly sweep, on-cadence reports), use scheduled tasks rathe
 
 - [`claude-code-starter-skills.md`](claude-code-starter-skills.md) — 8 team-grade Skill templates with when-to-use / failure-mode / owner framing
 - [`hooks-starter-pack.md`](hooks-starter-pack.md) — 10 hook templates extending the 3 named here (PII scrub, branch guard, audit log, license check, etc.)
+- [`mcp-starter-pack.md`](mcp-starter-pack.md) — 7 read-only MCP server templates extending the 4 named in Phase 2 (observability, API catalog, code search). Each gated by read-only scope.
 - [`eval-starter-pack.md`](eval-starter-pack.md) — 8 evaluation templates (regression, format, tool-call, grounding, adversarial, cost, latency, refusal)
 - [`adoption-playbook.md`](adoption-playbook.md) — business + transformation lens (Claude broadly, not just Claude Code)
 - [`feature-decision-matrix.html`](feature-decision-matrix.html) — code-automation row maps directly here
