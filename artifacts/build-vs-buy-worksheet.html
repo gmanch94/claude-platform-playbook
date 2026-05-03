@@ -52,7 +52,7 @@
 <div class="wrap">
   <header>
     <h1>Build vs Buy Worksheet <span class="asof">As of 2026-05</span></h1>
-    <div class="sub">Score one use case across 5 axes → ranked recommendation: Claude direct / Claude via hyperscaler / OpenAI / open-source / packaged SaaS. Anchored on Claude — alternatives appear only as the right call when they are.</div>
+    <div class="sub">Score one use case across 6 axes → ranked recommendation: Claude direct / Claude via hyperscaler / OpenAI / open-source / packaged SaaS. Anchored on Claude — alternatives appear only as the right call when they are. Anchor heuristic: <strong>build where you have a moat, buy where you don't.</strong></div>
   </header>
 
   <div class="grid">
@@ -60,7 +60,7 @@
       <h2>1. Describe the use case</h2>
       <input type="text" id="usecase" placeholder="e.g., Claims triage assistant for adjusters" />
 
-      <h2 style="margin-top:18px;">2. Score 5 axes <button class="reset" onclick="resetAll()">reset</button></h2>
+      <h2 style="margin-top:18px;">2. Score 6 axes <button class="reset" onclick="resetAll()">reset</button></h2>
 
       <div class="axis" data-axis="regulation">
         <label>Regulatory + data sensitivity</label>
@@ -106,6 +106,15 @@
         </div>
         <div class="scale-labels"><span>None / 1 dabbler</span><span>Dedicated AI team</span></div>
       </div>
+
+      <div class="axis" data-axis="moat">
+        <label>Strategic moat depth</label>
+        <div class="desc">How much this use case is a <em>differentiator</em> vs. a <em>commodity</em>. High = your version wins on proprietary data, workflow, or expertise that competitors can't buy. Low = anyone can buy a near-equivalent SaaS today.</div>
+        <div class="scale" data-axis="moat">
+          <button data-v="1">1</button><button data-v="2">2</button><button data-v="3">3</button><button data-v="4">4</button><button data-v="5">5</button>
+        </div>
+        <div class="scale-labels"><span>Pure commodity</span><span>Category-defining moat</span></div>
+      </div>
     </div>
 
     <div class="card">
@@ -115,8 +124,8 @@
       <details>
         <summary>How recommendations are scored</summary>
         <div class="body">
-          <p>Each option has a fit profile across the 5 axes. The worksheet computes a fit score per option = how closely your inputs match each profile's strengths. TCO bands are order-of-magnitude annual ranges, not commitments.</p>
-          <p style="margin-top:8px;">No option is universally best. The dominant signal is usually <strong>regulatory + scale</strong>; customization depth flips Skills/MCP from optional to essential.</p>
+          <p>Each option has a fit profile across the 6 axes. The worksheet computes a fit score per option = how closely your inputs match each profile's strengths. TCO bands are order-of-magnitude annual ranges, not commitments.</p>
+          <p style="margin-top:8px;">No option is universally best. The dominant signal is usually <strong>regulatory + scale</strong>; customization depth flips Skills/MCP from optional to essential; <strong>moat</strong> is the tiebreaker between build and buy — moat ≥ 4 invalidates packaged SaaS, moat ≤ 2 makes building hard to defend.</p>
         </div>
       </details>
     </div>
@@ -132,6 +141,8 @@
       <li><strong>Deep proprietary domain →</strong> Claude direct + Skills + MCP + plugins. The customization stack is what makes "build" win over "buy SaaS."</li>
       <li><strong>No internal AI/ML expertise →</strong> Packaged SaaS or Claude direct with a small build team. Skip open-source self-hosted entirely.</li>
       <li><strong>Multiple teams adopting →</strong> Claude direct + plugins distribution. Standardize the platform; let teams build on it.</li>
+      <li><strong>Moat-defining workload (moat ≥ 4) →</strong> Build it. Claude direct + Skills + MCP + plugins (or open-source if sovereignty mandates). Packaged SaaS is wrong by construction — your competitors buy the same product.</li>
+      <li><strong>Pure commodity (moat ≤ 2) →</strong> Buy it. Packaged SaaS or thin Claude-direct integration. Your engineering hours are better spent on the moat-defining workload above.</li>
     </ul>
   </div>
 </div>
@@ -141,23 +152,23 @@
 </footer>
 
 <script>
-const state = { regulation: 0, latency: 0, custom: 0, scale: 0, expertise: 0 };
+const state = { regulation: 0, latency: 0, custom: 0, scale: 0, expertise: 0, moat: 0 };
 
 const OPTIONS = [
   {
     id: 'claude-direct',
     name: 'Claude direct (Anthropic API)',
     tco: '$50k–$5M+/yr depending on scale',
-    profile: { regulation: 4, latency: 5, custom: 5, scale: 5, expertise: 3 },
-    pros: 'Latest models first. Full feature surface (caching, computer use 2.0, memory tool, plugins, Skills, MCP). Lowest latency. Best fit for deep customization.',
+    profile: { regulation: 4, latency: 5, custom: 5, scale: 5, expertise: 3, moat: 5 },
+    pros: 'Latest models first. Full feature surface (caching, computer use 2.0, memory tool, plugins, Skills, MCP). Lowest latency. Best fit for deep customization. Right call when you have a moat to build on.',
     cons: 'Direct vendor relationship — no hyperscaler procurement umbrella.',
-    bestWhen: 'Regulated AND need-latest-models, OR deep customization, OR multiple teams adopting on a shared platform.'
+    bestWhen: 'Regulated AND need-latest-models, OR deep customization, OR moat-defining workload, OR multiple teams adopting on a shared platform.'
   },
   {
     id: 'claude-bedrock',
     name: 'Claude via AWS Bedrock',
     tco: '$50k–$5M+/yr — similar to direct',
-    profile: { regulation: 5, latency: 4, custom: 4, scale: 5, expertise: 3 },
+    profile: { regulation: 5, latency: 4, custom: 4, scale: 5, expertise: 3, moat: 4 },
     pros: 'Procurement under existing AWS contract. Region/residency control via AWS. IAM integration.',
     cons: 'Model version lag (Bedrock onboards models after direct). Some platform features arrive later.',
     bestWhen: 'Already deep on AWS, regulated, willing to trade newest-model for procurement simplicity.'
@@ -166,7 +177,7 @@ const OPTIONS = [
     id: 'claude-vertex',
     name: 'Claude via Google Vertex AI',
     tco: '$50k–$5M+/yr — similar to direct',
-    profile: { regulation: 5, latency: 4, custom: 4, scale: 5, expertise: 3 },
+    profile: { regulation: 5, latency: 4, custom: 4, scale: 5, expertise: 3, moat: 4 },
     pros: 'Procurement under existing GCP contract. Region/residency. IAM integration.',
     cons: 'Model version lag. Some platform features arrive later.',
     bestWhen: 'Already deep on GCP, regulated, willing to trade newest-model for procurement simplicity.'
@@ -175,7 +186,7 @@ const OPTIONS = [
     id: 'openai',
     name: 'OpenAI / other foundation-model vendor',
     tco: 'Comparable to Claude direct, model-dependent',
-    profile: { regulation: 3, latency: 5, custom: 4, scale: 5, expertise: 3 },
+    profile: { regulation: 3, latency: 5, custom: 4, scale: 5, expertise: 3, moat: 3 },
     pros: 'Different model strengths; useful as a shadow-eval comparator.',
     cons: 'Different feature surface (not Skills/MCP/plugins-equivalent). Separate procurement, separate governance review. Not the focus of this playbook.',
     bestWhen: 'Workload depends on a capability where OpenAI/Gemini measurably outperform on your evalset. Validate empirically — do not assume.'
@@ -184,7 +195,7 @@ const OPTIONS = [
     id: 'oss',
     name: 'Open-source self-hosted (Llama / Mistral / Qwen)',
     tco: '$200k–$10M+/yr (infra + ops + eval team)',
-    profile: { regulation: 5, latency: 4, custom: 4, scale: 5, expertise: 5 },
+    profile: { regulation: 5, latency: 4, custom: 4, scale: 5, expertise: 5, moat: 5 },
     pros: 'Full control. Sovereignty + air-gap possible. Variable cost shape (capex-heavy).',
     cons: 'You own everything: serving, eval, safety, model updates, infra. Quality lags top hosted models. Operational expertise is non-trivial. Most "we will self-host" plans understaff this by 3×.',
     bestWhen: 'Sovereignty/air-gap is mandatory AND volume justifies the ops team AND you have or can hire the talent. Otherwise rarely the right call.'
@@ -193,10 +204,10 @@ const OPTIONS = [
     id: 'saas',
     name: 'Packaged SaaS (vertical AI product)',
     tco: '$10k–$2M/yr depending on seats/usage',
-    profile: { regulation: 3, latency: 4, custom: 1, scale: 3, expertise: 1 },
+    profile: { regulation: 3, latency: 4, custom: 1, scale: 3, expertise: 1, moat: 1 },
     pros: 'Fastest time-to-value. Vendor owns evals, safety, ops, model updates. No internal AI team required.',
     cons: 'Customization ceiling is low. You depend on vendor roadmap. No competitive moat — your competitors can buy the same thing.',
-    bestWhen: 'Generic use case where your customization adds little, or no internal AI team, or executive demand for "AI now" exceeds appetite for build investment.'
+    bestWhen: 'Commodity use case where your version is not a differentiator, or no internal AI team, or executive demand for "AI now" exceeds appetite for build investment. If moat score ≥ 4, this option is wrong by construction.'
   }
 ];
 
@@ -228,11 +239,11 @@ function render() {
   const filled = Object.values(state).filter(v => v > 0).length;
   const out = document.getElementById('results');
   if (filled === 0) {
-    out.innerHTML = '<p style="color:var(--muted); font-size:14px;">Score the 5 axes on the left to see ranked recommendations.</p>';
+    out.innerHTML = '<p style="color:var(--muted); font-size:14px;">Score the 6 axes on the left to see ranked recommendations.</p>';
     return;
   }
   if (filled < 5) {
-    out.innerHTML = `<p style="color:var(--muted); font-size:14px;">${5 - filled} axis remaining…</p>`;
+    out.innerHTML = `<p style="color:var(--muted); font-size:14px;">${6 - filled} axis remaining…</p>`;
     return;
   }
 

@@ -23,7 +23,7 @@
   .pattern .stack-line { font-family: 'Patrick Hand', cursive; font-size: 16px; color: var(--c2); margin-bottom: 14px; }
   .diagram { background: #fffefb; border: 2px solid var(--ink); border-radius: 8px; padding: 14px; margin-bottom: 18px; box-shadow: 4px 4px 0 var(--line); }
   .diagram svg { width: 100%; height: auto; max-width: 980px; display: block; margin: 0 auto; font-family: 'Patrick Hand', 'Caveat', cursive; }
-  .meta { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 14px; margin-bottom: 14px; }
+  .meta { display: grid; grid-template-columns: 1fr 1fr 1fr 1fr; gap: 14px; margin-bottom: 14px; }
   @media (max-width: 800px) { .meta { grid-template-columns: 1fr; } }
   .meta .cell { background: #fef9ee; border-left: 3px solid var(--c1); padding: 10px 14px; font-size: 13px; border-radius: 4px; }
   .meta .cell h4 { font-size: 12px; color: var(--c1d); text-transform: uppercase; letter-spacing: 0.05em; margin-bottom: 4px; }
@@ -148,6 +148,7 @@
       <div class="cell"><h4>Cost band</h4><div class="v">Low — Sonnet + caching dominates.</div></div>
       <div class="cell"><h4>Latency</h4><div class="v">1–3s typical end-to-end.</div></div>
       <div class="cell"><h4>Governance</h4><div class="v">Citations mandatory. Log retrieved chunks for audit.</div></div>
+      <div class="cell"><h4>Time to disruption</h4><div class="v">0–3 mo · ship now.</div></div>
     </div>
 
     <p>User question hits the app, which retrieves relevant chunks from a search index over content uploaded to Files API. The static system prompt + tool definitions stay cached on Claude's side; only the retrieved context + question are fresh per request. Sonnet 4.6 returns a grounded answer with citation spans pointing back to the source documents.</p>
@@ -268,6 +269,7 @@
       <div class="cell"><h4>Cost band</h4><div class="v">Mid–High. Loop fan-out matters; cap iterations.</div></div>
       <div class="cell"><h4>Latency</h4><div class="v">10s–10m. Pattern is async-tolerant.</div></div>
       <div class="cell"><h4>Governance</h4><div class="v">Sandbox tool runtime. Audit every tool call.</div></div>
+      <div class="cell"><h4>Time to disruption</h4><div class="v">3–12 mo · eval discipline first.</div></div>
     </div>
 
     <p>The Agent SDK runs the plan-act-observe loop. Sonnet 4.6 is the default planner; escalate to Opus 4.7 when the agent flags a hard step. Tools come through MCP servers (one connector per system, reused across agents). Skills hold the domain playbook so the agent has expert procedures, not just primitives. Memory tool persists state across runs for long-running agents. Distribute the whole bundle as a plugin so other teams install one thing.</p>
@@ -354,6 +356,7 @@
     <div class="meta">
       <div class="cell"><h4>Cost band</h4><div class="v">Lowest. Haiku + batch + cache compounds.</div></div>
       <div class="cell"><h4>Latency</h4><div class="v">Up to 24h SLA per job.</div></div>
+      <div class="cell"><h4>Time to disruption</h4><div class="v">0–3 mo · ship now.</div></div>
       <div class="cell"><h4>Governance</h4><div class="v">Sample audit on output. Track per-job cost.</div></div>
     </div>
 
@@ -453,6 +456,7 @@
       <div class="cell"><h4>Cost band</h4><div class="v">Mid. Cache amortizes large skill/policy prefix.</div></div>
       <div class="cell"><h4>Latency</h4><div class="v">3–8s w/ thinking on hard cases.</div></div>
       <div class="cell"><h4>Governance</h4><div class="v">Citations mandatory. Per-recommendation audit log.</div></div>
+      <div class="cell"><h4>Time to disruption</h4><div class="v">0–3 mo · ship now.</div></div>
     </div>
 
     <p>The pattern that earns the highest ROI for regulated verticals (legal, finance, clinical, compliance, claims). Skills carry the domain procedures + style + decision rules. MCP exposes the systems of record. Files holds the policy/regulatory corpus. Sonnet 4.6 with extended thinking returns cited recommendations. Distribute the whole bundle as one plugin so a new region or business unit installs it in minutes.</p>
@@ -566,6 +570,7 @@
       <div class="cell"><h4>Cost band</h4><div class="v">Per-engineer subscription or API metered. Cache + Sonnet default keeps it predictable.</div></div>
       <div class="cell"><h4>Latency</h4><div class="v">Interactive in CLI. Headless in CI matches build time.</div></div>
       <div class="cell"><h4>Governance</h4><div class="v">Hooks enforce policy at tool boundary. Settings.json under source control.</div></div>
+      <div class="cell"><h4>Time to disruption</h4><div class="v">0–3 mo · ship now.</div></div>
     </div>
 
     <p>Engineering teams use Claude Code (CLI + IDE) day-to-day. Sonnet 4.6 is the default; Opus 4.7 handles hard refactors. Sub-agents (Task tool) parallelize investigation work. The team plugin bundles slash commands, Skills (repo conventions, language patterns), hooks (PreToolUse policy enforcement), and MCP servers (issue tracker, internal docs) so a new engineer's setup is a one-line install. Headless mode runs the same loop in CI. Detail in <a href="claude-code-adoption-guide.md">claude-code-adoption-guide.md</a>.</p>
@@ -700,6 +705,7 @@
       <div class="cell"><h4>Cost band</h4><div class="v">Mid — Haiku triage + 90% cached input on system + app schema compounds. ~$0.001–$0.01 per interaction typical.</div></div>
       <div class="cell"><h4>Latency</h4><div class="v">Sub-2s for triaged answers (Haiku). 2–6s when Sonnet handles tool use. Streaming UI hides the rest.</div></div>
       <div class="cell"><h4>Governance</h4><div class="v">Memory tool retention + per-user/per-tenant isolation. App-context redaction before send. MCP server scoped to current user.</div></div>
+      <div class="cell"><h4>Time to disruption</h4><div class="v">3–12 mo · memory tool beta + app integration cost.</div></div>
     </div>
 
     <p>The copilot lives <em>inside</em> an existing app — CRM record sidebar, ticketing detail page, IDE panel — not as a standalone chat. Haiku 4.5 triages: simple lookups answer immediately; complex reasoning routes to Sonnet 4.6 with tool use. The system prompt + tool definitions + app schema are cached (90% off cached input on hit). An MCP server scoped to the host app reads the current record, searches related records, and drafts (but does not commit) actions. Memory tool persists per-user preferences across sessions. The response renders inline — never as a popup the user has to context-switch to.</p>

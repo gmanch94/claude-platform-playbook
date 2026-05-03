@@ -80,13 +80,13 @@
 
 ## Compliance + governance posture
 
-| Item | Status | As-of | Notes |
-|---|---|---|---|
-| No-train (API + Console default) | Confirmed | 2026-05 | Verify policy version when signing. Re-check quarterly. |
-| BAA (HIPAA workloads) | Available | 2026-05 | Direct procurement path. Verify scope per workload. |
-| Data residency (regions) | Multiple | 2026-05 | Region availability differs across direct / Bedrock / Vertex. |
-| SOC 2 Type II | Held | 2026-05 | Refresh cycle annual. Request current report before audit. |
-| ISO 27001 | Held | 2026-05 | Same as SOC 2. |
+| Item | Status | As-of | Notes | Used in artifacts |
+|---|---|---|---|---|
+| No-train (API + Console default) | Confirmed | 2026-05 | Verify policy version when signing. Re-check quarterly. | governance-overlay, anti-use-cases, briefing |
+| BAA (HIPAA workloads) | Available | 2026-05 | Direct procurement path. Verify scope per workload. | governance-overlay, anti-use-cases, build-vs-buy |
+| Data residency (regions) | Multiple | 2026-05 | Region availability differs across direct / Bedrock / Vertex. | governance-overlay, anti-use-cases, build-vs-buy |
+| SOC 2 Type II | Held | 2026-05 | Refresh cycle annual. Request current report before audit. | governance-overlay |
+| ISO 27001 | Held | 2026-05 | Same as SOC 2. | governance-overlay |
 
 ---
 

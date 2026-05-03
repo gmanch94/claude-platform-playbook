@@ -4,6 +4,8 @@
 
 A 90-day arc from "we want to use Claude" to "Claude is in production with guardrails and a Center of Excellence pattern." Built for transformation leads, not for engineers — engineers should pair this with [`claude-code-adoption-guide.md`](claude-code-adoption-guide.md).
 
+> 🛑 **Before Week 0:** run candidate use cases through [`anti-use-cases.md`](anti-use-cases.md). The "Premature" rows there are the same pre-flight gates this playbook names — but blocking, with cited frameworks. If a candidate hits any row, kill or re-route before scoring.
+
 ---
 
 ## Week 0 — Pre-flight (before anyone writes a prompt)
@@ -147,6 +149,27 @@ Goal: prove the pattern repeats, and stand up the structure so the 3rd–10th us
 ---
 
 ## Common failure modes (8 patterns)
+
+### Heatmap — scored
+
+Each failure mode scored on **probability** (Low / Med / High) and **cost-if-hit** (★ = ~$1K, ★★ = ~$10K, ★★★ = ~$100K, ★★★★ = ~$1M, ★★★★★ = $10M+ including regulatory exposure). Early-signal column is the observable indicator that fires *before* the failure mode lands — wire alerting on these, not on the failure itself. Detection-latency column is the gap between early signal and visible damage.
+
+| # | Pattern | Prob | Cost | Early signal | Detection latency | Mitigation |
+|---|---------|------|------|--------------|-------------------|-----------|
+| 1 | **Pilot purgatory** | High | ★★ | Week 4 retro: nobody can name the 2nd use case | Weeks | Pre-commit 2nd use case in Week 0 charter — see [`pilot-selection-worksheet.html`](pilot-selection-worksheet.html). Score 2–6 candidates so a backup exists. |
+| 2 | **Eval debt** | High | ★★★ | Prompt or Skill change merged without eval run | Months | Block CI on missing eval pass — see [`eval-starter-pack.md`](eval-starter-pack.md) blocking-vs-advisory matrix. |
+| 3 | **Cost surprise** | Med | ★★★★ | Daily $ trending up >20% week-over-week, or single workload >50% of total | Days | Wire 4 numeric gates ($/task, $/day, cache floor, batch floor) — see [`governance-overlay.md`](governance-overlay.md#12-cost-as-a-governance-constraint) §12. Hook-enforced, not invoice-discovered. |
+| 4 | **Prompt sprawl** | High | ★★ | Two teams shipping similar Skills independently; no shared registry | Weeks | Canonical Skills library + COE registry by Week 10 — see [`claude-code-starter-skills.md`](claude-code-starter-skills.md). |
+| 5 | **Governance afterthought** | High | ★★★★ | Risk function not on Week 1 stand-up; no DPA/BAA log | Months | Embed risk reviewer in Week 1 (advisory not blocking) — see [`governance-overlay.md`](governance-overlay.md). Issues surface early, cheaply. |
+| 6 | **Vendor concentration panic** | Med | ★★ | CFO/board ask "what if Anthropic disappears?" in QBR | Weeks | [`governance-overlay.md`](governance-overlay.md) §9 multi-model abstraction at the right layer. Don't pre-build a 3-model fallback you'll never use. |
+| 7 | **Model deprecation thrash** | Med | ★★★ | Anthropic announces deprecation date for a pinned model | Hours | COE owns model-bump runbook; pin family not point release; gate on regression eval pass — see [`eval-starter-pack.md`](eval-starter-pack.md). |
+| 8 | **The "AI committee" tax** | High | ★★★ | Decision queue >7 days; no single sponsor name on use case | Weeks | Single named sponsor with veto — see [`pilot-selection-worksheet.html`](pilot-selection-worksheet.html) sponsor-clarity axis. Committee informs, doesn't decide. |
+
+**Scoring posture.** Probability and cost are calibrated against post-mortems from public AI rollout failures + the pattern frequencies named in this playbook's own readers. Re-calibrate quarterly; if your org sees a different distribution, override the scores in your fork. The shape (early signal → detection latency → mitigation) is portable; the specific scores are not.
+
+### Detail — symptom + fix
+
+Below: each mode in prose, with the original symptom + fix framing. Use the heatmap above to pick which to monitor first; use the prose below for runbook depth.
 
 | # | Pattern | Symptom | Fix |
 |---|---------|---------|-----|

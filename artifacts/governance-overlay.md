@@ -6,6 +6,8 @@ This is a **risk + compliance overlay** — not a generic AI governance framewor
 
 > ⚠ **Verification posture.** No-train terms, BAA scope, data residency options, and pricing all drift. Anything below cited as a fact must be re-verified at signing time and quarterly thereafter. Treat this as a checklist of *questions to confirm*, not a guarantee of state.
 
+> 🛑 **Read first:** [`anti-use-cases.md`](anti-use-cases.md). This overlay tells you how to govern a Claude deployment that *should* exist. The anti-use list tells you which deployments shouldn't exist in the first place — sole-decider on regulated decisions, prompt-injection-exposed agents, missing BAA / DPA paths. Run that filter before designing controls.
+
 ---
 
 ## 1. Data flow taxonomy — what leaves your network
@@ -192,7 +194,56 @@ Claude has built-in safety and refusal behavior, but **prompt injection** is you
 
 ---
 
-## 12. Companion artifacts
+## 12. Cost as a governance constraint
+
+Most readers come at cost via [`cost-calculator.html`](cost-calculator.html) — model the spend, get a number, move on. That treats cost as a *curiosity* rather than a *constraint*. In production, cost behaves like any other governance gate: it has a threshold, a kill-switch, and an early-warning signal. If those three aren't defined before pilot launch, "cost surprise" stays on the risk register as a named adoption playbook failure mode (see [`adoption-playbook.md`](adoption-playbook.md)).
+
+This section names the gates. Run [`cost-calculator.html`](cost-calculator.html) to find your numbers; record the four thresholds below in your Week 0 pilot charter.
+
+### 12.1 Four numeric gates to define before launch
+
+| Gate | What it caps | How to set | What triggers when breached |
+|---|---|---|---|
+| **$/task ceiling** | Per-request cost at production token mix + cache hit rate. | Take the cost-calculator output for your steady-state assumptions. Set ceiling at 1.5× — leaves headroom for prompt growth, fails loud if real volume diverges from model. | Hard-stop in the application; alert the use-case owner. |
+| **$/day cap** | Total daily spend across the workload. | (Expected daily volume × $/task ceiling). Round up to a number you can defend in a Slack message at 2am. | Auto-throttle at 80% of cap; auto-disable at 100%. Wire `log-cost` hook (see [`hooks-starter-pack.md`](hooks-starter-pack.md)) to billing alerts. |
+| **Cache hit-rate floor** | Minimum sustained cache hit rate across the workload. | Production cache reuse should be ≥ 60% on stable workloads (RAG, agentic, embedded copilot). If hit rate drops below floor, prompts have probably drifted. | Alert; bisect last week's prompt changes; if a Skill or system prompt rotated, that's the cause. |
+| **Batch eligibility floor** | % of eligible workload running through Batch API instead of real-time. | Any non-interactive task should target ≥ 80% batch eligibility. If the workload could run async but is using real-time, you're paying 2× without justification. | Quarterly review; re-platform stale real-time loops to batch. |
+
+These gates are not soft. The point of a governance constraint is that breaching it is an *event* — logged, alerted, owned — not a budget overrun discovered three months later in a finance review.
+
+### 12.2 Why cost is a governance question, not a finance question
+
+Three reasons it lives here, not in the calculator alone:
+
+1. **Bound to compliance posture.** Cost spikes correlate with prompt-injection attempts (a malicious input can inflate output tokens 100×), runaway agent loops (agentic patterns can recurse on tool errors), and cache invalidation incidents. Treating cost as a security signal — not just a budget line — catches these earlier.
+2. **Bound to vendor concentration.** A 10× cost spike on a single procurement path (direct API) without an alternative path (Bedrock / Vertex / open-source fallback) is a vendor-concentration *and* a budget incident. See [`§9 Vendor concentration risk`](#9-vendor-concentration-risk--multi-model-abstraction).
+3. **Bound to audit trail.** A breach of the $/day cap is an audit event. Log: which use case, which model, which prompt, what triggered the throttle. Wire to the same audit pipeline as no-train + BAA evidence (see [`§6 Audit trail`](#6-audit-trail--what-to-log)).
+
+### 12.3 Anti-pattern — "we'll watch the bill monthly"
+
+Monthly billing review is not a governance gate. Cloud cost discipline learned this 10 years ago: by the time the invoice arrives, the bad week has already happened, the runaway loop has already burned the budget, and the post-mortem points at a hook that should have existed. Same lesson, same fix:
+
+- Daily cap, not monthly review.
+- Hook-enforced, not invoice-discovered.
+- Owner-on-call, not "the AI committee."
+
+If your pilot doesn't have a daily $ cap with auto-throttle wired before Week 1, [`anti-use-cases.md`](anti-use-cases.md) Wrong-economics row "Pilot with no defined volume cap or kill-switch" applies — go fix that before continuing.
+
+### 12.4 What good looks like
+
+A well-governed Claude workload has, on Week 1 of pilot:
+
+- Four gate numbers in the pilot charter ($/task, $/day, cache floor, batch floor)
+- `log-cost` hook (or equivalent) wired to billing alerts at 50% / 80% / 100% of $/day cap
+- Auto-throttle at 80%, auto-disable at 100%
+- One named owner who gets the alert
+- Quarterly review where the four gate numbers get re-set against actual production data — not the launch estimate
+
+Workloads without those five elements aren't ungoverned because someone forgot — they're ungoverned because cost wasn't classified as a governance question. This section reclassifies it.
+
+---
+
+## 13. Companion artifacts
 
 - [`adoption-playbook.md`](adoption-playbook.md) — 90-day rollout
 - [`feature-decision-matrix.html`](feature-decision-matrix.html) — per-pattern feature picks

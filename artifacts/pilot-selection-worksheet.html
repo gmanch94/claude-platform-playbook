@@ -55,6 +55,19 @@
   .verdict .why { font-size: 13.5px; line-height: 1.55; margin-top: 4px; }
   .verdict .blockers { background: white; border-left: 3px solid var(--bad); padding: 8px 10px; margin-top: 8px; font-size: 12.5px; color: var(--bad); }
   .verdict .blockers strong { color: var(--ink); }
+  .verdict .impact { background: #fef9ee; border-left: 3px solid var(--c1d); padding: 8px 12px; margin-top: 8px; font-size: 12.5px; color: var(--ink); border-radius: 3px; }
+  .verdict .impact strong { color: var(--c1d); font-size: 11px; text-transform: uppercase; letter-spacing: 0.04em; display: block; margin-bottom: 3px; }
+  .verdict .impact .row { display: flex; flex-wrap: wrap; gap: 10px; }
+  .verdict .impact .item { font-size: 12px; }
+  .verdict .impact .item .k { color: var(--muted); }
+  details.impact-details { margin-top: 10px; border-top: 1px dashed var(--line); padding-top: 8px; }
+  details.impact-details summary { font-size: 12.5px; font-weight: 600; color: var(--c2); cursor: pointer; padding: 4px 0; }
+  details.impact-details summary:hover { color: var(--c1d); }
+  details.impact-details .impact-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-top: 8px; }
+  details.impact-details .impact-field label { display: block; font-size: 11.5px; font-weight: 600; color: var(--c2); margin-bottom: 2px; }
+  details.impact-details .impact-field input { width: 100%; padding: 6px 8px; border: 1px solid var(--line); border-radius: 4px; font-size: 12px; }
+  details.impact-details .impact-field .hint { font-size: 10.5px; color: var(--muted); margin-top: 1px; }
+  details.impact-details .footnote { font-size: 11px; color: var(--muted); margin-top: 8px; font-style: italic; }
   .verdict .axis-bar { display: flex; gap: 4px; margin-top: 8px; }
   .verdict .axis-bar .a { flex: 1; padding: 4px 6px; border-radius: 4px; font-size: 11px; text-align: center; color: white; font-weight: 600; }
   .verdict .axis-bar .a.s1 { background: var(--bad); }
@@ -78,7 +91,7 @@
 <div class="wrap">
   <header>
     <h1>Pilot Use-Case Selection Worksheet <span class="asof">As of 2026-05</span></h1>
-    <div class="sub">Score 2–6 candidate use cases across 5 axes → ranked verdict (Strong pilot / Viable / Risky / Not yet) with explicit blockers. Operationalizes Week 0 of the <a href="adoption-playbook.md" style="color:var(--c1d);">adoption playbook</a> — the playbook names the decision; this worksheet shows the math.</div>
+    <div class="sub">Score 2–6 candidate use cases across 5 axes → ranked verdict (Strong pilot / Viable / Risky / Not yet) with explicit blockers. Operationalizes Week 0 of the <a href="adoption-playbook.md" style="color:var(--c1d);">adoption playbook</a> — the playbook names the decision; this worksheet shows the math. Run candidates through <a href="anti-use-cases.md" style="color:var(--c1d);">anti-use-cases</a> first — that filter kills bad pilots before they get scored. Optional <strong>operating-model impact</strong> annotation per candidate (collapsed by default) captures the headcount / margin / cycle-time / risk delta behind the value score — annotation only, doesn't move the math.</div>
   </header>
 
   <div class="toolbar">
@@ -122,10 +135,16 @@
           <div style="font-size:12px; color:var(--c2); margin-top:4px;">Why it matters: the playbook says "don't lead with customer-facing." Pilots are for learning, not for proving you can fly the high wire on day 1.</div>
         </div>
 
-        <div>
+        <div style="margin-bottom:14px;">
           <strong style="color:var(--c1d);">5. Sponsor + owner clarity</strong>
           <div style="font-size:13px; color:var(--muted); margin-top:2px;"><strong>1</strong> = "the AI committee owns it." <strong>5</strong> = named C-level sponsor <em>and</em> named operational owner whose neck is out.</div>
           <div style="font-size:12px; color:var(--c2); margin-top:4px;">Why it matters: the most common Week 0 mistake is committee ownership. Committees diffuse decisions; pilots need someone whose neck is out.</div>
+        </div>
+
+        <div style="background:#fef9ee; border-left:3px solid var(--c1d); padding:10px 12px; border-radius:4px;">
+          <strong style="color:var(--c1d); font-size:13px;">Optional — Operating-model impact annotation</strong>
+          <div style="font-size:12.5px; color:var(--muted); margin-top:3px; line-height:1.55;">Each candidate has a collapsed <em>Operating-model impact</em> details block: headcount delta · margin delta · cycle-time delta · risk delta. Annotation only — the inputs don't move the verdict score. They make the <strong>value-axis defensible</strong> when a CFO asks "you scored value at 5; why?" and they surface in the ranked verdict panel so the impact travels with the score.</div>
+          <div style="font-size:11.5px; color:var(--c2); margin-top:6px; font-style:italic;">Why annotation, not scoring: operating-model impact varies in <em>kind</em> across use cases (headcount-driven vs. margin-driven vs. risk-driven). Folding it into a 1–5 score loses that signal. Free-form annotation keeps the texture; the value-axis stays the math.</div>
         </div>
       </div>
     </div>
@@ -200,7 +219,7 @@ function uid() { return 'uc' + Math.random().toString(36).slice(2, 8); }
 
 function addUseCase(name) {
   if (useCases.length >= 6) { alert('Six is enough — focus is the point.'); return; }
-  useCases.push({ id: uid(), name: name || '', scores: { value:0, speed:0, data:0, risk:0, owner:0 } });
+  useCases.push({ id: uid(), name: name || '', scores: { value:0, speed:0, data:0, risk:0, owner:0 }, impact: { headcount:'', margin:'', cycle:'', riskDelta:'' } });
   render();
 }
 
@@ -219,9 +238,9 @@ function clearAll() {
 function loadExamples() {
   if (useCases.length > 0 && !confirm('Replace current use cases with examples?')) return;
   useCases = [
-    { id: uid(), name: 'Internal claims-triage assistant for adjusters', scores: { value:5, speed:4, data:4, risk:4, owner:5 } },
-    { id: uid(), name: 'Customer-facing chatbot on public marketing site', scores: { value:4, speed:3, data:3, risk:1, owner:3 } },
-    { id: uid(), name: 'Dev productivity (Claude Code rollout to 50 engineers)', scores: { value:4, speed:5, data:5, risk:5, owner:4 } }
+    { id: uid(), name: 'Internal claims-triage assistant for adjusters', scores: { value:5, speed:4, data:4, risk:4, owner:5 }, impact: { headcount:'No FTE cut; 30% capacity reclaimed', margin:'+120 bps via faster cycle', cycle:'4d → 1d (75%)', riskDelta:'Lower — fewer manual errors' } },
+    { id: uid(), name: 'Customer-facing chatbot on public marketing site', scores: { value:4, speed:3, data:3, risk:1, owner:3 }, impact: { headcount:'', margin:'', cycle:'', riskDelta:'Higher — public-facing hallucination risk' } },
+    { id: uid(), name: 'Dev productivity (Claude Code rollout to 50 engineers)', scores: { value:4, speed:5, data:5, risk:5, owner:4 }, impact: { headcount:'No FTE cut; 15–20% throughput uplift', margin:'Soft (faster shipping)', cycle:'PR → merge -25%', riskDelta:'Unchanged with hooks + evals wired' } }
   ];
   render();
 }
@@ -237,6 +256,13 @@ function setScore(id, axis, value) {
   if (!u) return;
   u.scores[axis] = value;
   render();
+}
+
+function setImpact(id, key, value) {
+  const u = useCases.find(x => x.id === id);
+  if (!u) return;
+  u.impact[key] = value;
+  renderResults();
 }
 
 function verdictFor(uc) {
@@ -290,6 +316,33 @@ function renderUseCases() {
           <div class="scale-labels"><span>${a.loW}</span><span>${a.hiW}</span></div>
         </div>
       `).join('')}
+
+      <details class="impact-details">
+        <summary>Operating-model impact (optional annotation)</summary>
+        <div class="impact-grid">
+          <div class="impact-field">
+            <label>Headcount delta</label>
+            <input type="text" placeholder="e.g., 0 FTE cut, 30% capacity reclaimed" value="${escapeHTML(uc.impact.headcount)}" oninput="setImpact('${uc.id}', 'headcount', this.value)" />
+            <div class="hint">FTE shifted, saved, or added — keep numeric where possible.</div>
+          </div>
+          <div class="impact-field">
+            <label>Margin delta</label>
+            <input type="text" placeholder="e.g., +80 bps via cycle compression" value="${escapeHTML(uc.impact.margin)}" oninput="setImpact('${uc.id}', 'margin', this.value)" />
+            <div class="hint">Basis points or %. Soft = "directionally up, not yet sized."</div>
+          </div>
+          <div class="impact-field">
+            <label>Cycle-time delta</label>
+            <input type="text" placeholder="e.g., 4d → 1d (75%)" value="${escapeHTML(uc.impact.cycle)}" oninput="setImpact('${uc.id}', 'cycle', this.value)" />
+            <div class="hint">Before / after, or % reduction.</div>
+          </div>
+          <div class="impact-field">
+            <label>Risk delta</label>
+            <input type="text" placeholder="e.g., Lower — fewer manual errors" value="${escapeHTML(uc.impact.riskDelta)}" oninput="setImpact('${uc.id}', 'riskDelta', this.value)" />
+            <div class="hint">Lower / unchanged / higher + 1-line reason.</div>
+          </div>
+        </div>
+        <div class="footnote">Annotation only — these inputs do not move the verdict score. They make the value-axis defensible and surface in the verdict panel.</div>
+      </details>
     </div>
   `).join('');
 }
@@ -320,8 +373,20 @@ function renderResults() {
         ${AXES.map(a => `<div class="a s${uc.scores[a.id]}" title="${a.label}: ${uc.scores[a.id] || '–'}">${a.label.split(' ')[0]} ${uc.scores[a.id] || '–'}</div>`).join('')}
       </div>
       ${v.blockers.length > 0 ? `<div class="blockers"><strong>Blocker${v.blockers.length>1?'s':''}:</strong> ${v.blockers.map(b => BLOCKER_REASONS[b.id]).join(' ')}</div>` : ''}
+      ${renderImpactSummary(uc)}
     </div>
   `).join('');
+}
+
+function renderImpactSummary(uc) {
+  const items = [
+    { k: 'Headcount', v: uc.impact.headcount },
+    { k: 'Margin', v: uc.impact.margin },
+    { k: 'Cycle', v: uc.impact.cycle },
+    { k: 'Risk', v: uc.impact.riskDelta }
+  ].filter(x => x.v && x.v.trim());
+  if (items.length === 0) return '';
+  return `<div class="impact"><strong>Operating-model impact</strong><div class="row">${items.map(i => `<div class="item"><span class="k">${i.k}:</span> ${escapeHTML(i.v)}</div>`).join('')}</div></div>`;
 }
 
 function escapeHTML(s) {

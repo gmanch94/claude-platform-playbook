@@ -26,6 +26,10 @@
   table.matrix thead th:first-child { writing-mode: horizontal-tb; transform: none; text-align: left; padding-left: 12px; min-width: 220px; height: auto; vertical-align: middle; font-size: 13px; }
   table.matrix tbody th { background: #f7f1e7; text-align: left; font-weight: 600; padding: 12px; min-width: 220px; cursor: help; }
   table.matrix tbody th .desc { display: block; font-weight: 400; font-size: 11px; color: var(--muted); margin-top: 2px; line-height: 1.3; }
+  table.matrix tbody th .tdis { display: inline-block; font-weight: 600; font-size: 10px; padding: 2px 7px; border-radius: 10px; margin-top: 4px; letter-spacing: 0.03em; text-transform: uppercase; }
+  table.matrix tbody th .tdis.now { background: rgba(21,128,61,0.15); color: var(--good); }
+  table.matrix tbody th .tdis.mid { background: rgba(180,83,9,0.15); color: var(--warn); }
+  table.matrix tbody th .tdis.future { background: rgba(154,52,18,0.15); color: var(--bad); }
   table.matrix tbody td { background: white; cursor: help; transition: transform 0.1s; font-size: 18px; font-weight: 700; }
   table.matrix tbody td:hover { transform: scale(1.05); }
   table.matrix tbody td.y { background: #dcfce7; color: var(--good); }
@@ -90,7 +94,7 @@
       </thead>
       <tbody>
         <tr>
-          <th data-tip="A user-facing chat assistant grounded in an internal knowledge base. RAG-style retrieval + Claude generation."><span>RAG support copilot</span><span class="desc">User asks → retrieve → ground → answer</span></th>
+          <th data-tip="A user-facing chat assistant grounded in an internal knowledge base. RAG-style retrieval + Claude generation. Time-to-disruption: 0–3 months — mature pattern, ship now."><span>RAG support copilot</span><span class="desc">User asks → retrieve → ground → answer</span><span class="tdis now">0–3 mo</span></th>
           <td class="y" data-tip="Cache the system prompt + retrieved context — 70%+ hit rate in steady state.">✓</td>
           <td class="n" data-tip="Latency cost rarely worth it for grounded Q&A. Use Sonnet without thinking.">·</td>
           <td class="c" data-tip="Optional. Useful if the assistant needs to escalate, file tickets, or fetch fresh data.">~</td>
@@ -105,7 +109,7 @@
           <td class="y" data-tip="Compliance basics — show users which doc each claim came from. Files API + citations is the standard pairing.">✓</td>
         </tr>
         <tr>
-          <th data-tip="Model autonomously plans, calls tools, observes results, and replans across many steps to complete a task."><span>Agentic workflow</span><span class="desc">Plan → tool calls → observe → replan</span></th>
+          <th data-tip="Model autonomously plans, calls tools, observes results, and replans across many steps to complete a task. Time-to-disruption: 3–12 months — eval-heavy, still maturing."><span>Agentic workflow</span><span class="desc">Plan → tool calls → observe → replan</span><span class="tdis mid">3–12 mo</span></th>
           <td class="y" data-tip="Long agent traces benefit massively from cache — repeated context across loop iterations.">✓</td>
           <td class="y" data-tip="Hard tasks benefit from explicit reasoning before each tool call.">✓</td>
           <td class="y" data-tip="The pattern is built on tool use.">✓</td>
@@ -120,7 +124,7 @@
           <td class="c" data-tip="Useful when the agent's outputs are grounded in retrieved documents.">~</td>
         </tr>
         <tr>
-          <th data-tip="Process a large set of documents, records, or queries asynchronously. Latency-tolerant."><span>Batch enrichment</span><span class="desc">Document/data classification, extraction</span></th>
+          <th data-tip="Process a large set of documents, records, or queries asynchronously. Latency-tolerant. Time-to-disruption: 0–3 months — mature, lowest-risk shipping path."><span>Batch enrichment</span><span class="desc">Document/data classification, extraction</span><span class="tdis now">0–3 mo</span></th>
           <td class="y" data-tip="If schema/instructions are reused across millions of items, cache the prefix.">✓</td>
           <td class="n" data-tip="Most batch tasks are extraction — thinking adds output cost without accuracy gain.">·</td>
           <td class="c" data-tip="Optional — for structured output or tool-driven extraction patterns.">~</td>
@@ -135,7 +139,7 @@
           <td class="c" data-tip="Required if extracted facts must be source-traceable.">~</td>
         </tr>
         <tr>
-          <th data-tip="Model interacts with a UI it wasn't designed for — legacy desktop apps, third-party web tools, accessibility flows."><span>Computer-use automation</span><span class="desc">Browser/desktop control via screenshots</span></th>
+          <th data-tip="Model interacts with a UI it wasn't designed for — legacy desktop apps, third-party web tools, accessibility flows. Time-to-disruption: 3–12 months — Computer Use 2.0 GA but rough edges remain at scale."><span>Computer-use automation</span><span class="desc">Browser/desktop control via screenshots</span><span class="tdis mid">3–12 mo</span></th>
           <td class="c" data-tip="Helpful — long screenshot+action histories accumulate. Cache the system prompt at minimum.">~</td>
           <td class="y" data-tip="Critical for resilient action selection. Without thinking, the model misclicks more.">✓</td>
           <td class="y" data-tip="Computer use is implemented via dedicated tools (screenshot, click, type).">✓</td>
@@ -150,7 +154,7 @@
           <td class="n" data-tip="Output is actions, not document-grounded answers.">·</td>
         </tr>
         <tr>
-          <th data-tip="Specialized assistant for a narrow domain — legal, finance, clinical, internal taxonomy. High accuracy, deep expertise."><span>Domain expert assistant</span><span class="desc">Vertical assistant w/ deep procedures</span></th>
+          <th data-tip="Specialized assistant for a narrow domain — legal, finance, clinical, internal taxonomy. High accuracy, deep expertise. Time-to-disruption: 0–3 months — Skills + MCP make this near-term."><span>Domain expert assistant</span><span class="desc">Vertical assistant w/ deep procedures</span><span class="tdis now">0–3 mo</span></th>
           <td class="y" data-tip="Domain prompts are large and reused — cache aggressively.">✓</td>
           <td class="y" data-tip="Hard domain reasoning benefits from thinking. Worth the latency for high-stakes calls.">✓</td>
           <td class="c" data-tip="If the domain requires lookups (codes, prices, clinical refs).">~</td>
@@ -165,7 +169,7 @@
           <td class="y" data-tip="Domain assistants must cite — regulatory requirement in most verticals.">✓</td>
         </tr>
         <tr>
-          <th data-tip="Engineering team uses Claude Code (CLI) to write, refactor, debug, and review code — local plus optionally CI."><span>Code automation (Claude Code)</span><span class="desc">CLI + IDE for engineering teams</span></th>
+          <th data-tip="Engineering team uses Claude Code (CLI) to write, refactor, debug, and review code — local plus optionally CI. Time-to-disruption: 0–3 months — already widely deployed, lowest-risk pilot."><span>Code automation (Claude Code)</span><span class="desc">CLI + IDE for engineering teams</span><span class="tdis now">0–3 mo</span></th>
           <td class="y" data-tip="Claude Code uses prompt caching automatically across sessions on the same repo.">✓</td>
           <td class="y" data-tip="Default for hard problems. Improves diff quality + reasoning visibility.">✓</td>
           <td class="y" data-tip="Built-in: file ops, bash, git, web fetch.">✓</td>
@@ -180,7 +184,7 @@
           <td class="n" data-tip="Code-edit context, not document-grounded prose.">·</td>
         </tr>
         <tr>
-          <th data-tip="Internal copilot inside an existing app (CRM, support tool, BI). Embedded chat or inline suggestions."><span>Embedded copilot</span><span class="desc">Chat surface inside an internal app</span></th>
+          <th data-tip="Internal copilot inside an existing app (CRM, support tool, BI). Embedded chat or inline suggestions. Time-to-disruption: 3–12 months — needs app integration + memory tool (beta)."><span>Embedded copilot</span><span class="desc">Chat surface inside an internal app</span><span class="tdis mid">3–12 mo</span></th>
           <td class="y" data-tip="Cache the app context + tool schema — every user benefits.">✓</td>
           <td class="c" data-tip="Optional. Often disabled to keep latency low.">~</td>
           <td class="y" data-tip="Connect to the host app's actions (create record, update field, escalate).">✓</td>
@@ -195,7 +199,7 @@
           <td class="c" data-tip="Required if responses pull from documents.">~</td>
         </tr>
         <tr>
-          <th data-tip="Continuous regression testing of prompts, models, and skills against a held-out evalset."><span>Eval / regression testing</span><span class="desc">Prompt + model regression suite</span></th>
+          <th data-tip="Continuous regression testing of prompts, models, and skills against a held-out evalset. Time-to-disruption: 0–3 months — non-negotiable foundation, wire before pilot launch."><span>Eval / regression testing</span><span class="desc">Prompt + model regression suite</span><span class="tdis now">0–3 mo</span></th>
           <td class="y" data-tip="Eval prompts are reused thousands of times — cache the prefix.">✓</td>
           <td class="c" data-tip="Match production config — if prod uses thinking, eval must too.">~</td>
           <td class="c" data-tip="Match production tool surface for accuracy of measurement.">~</td>
@@ -221,6 +225,7 @@
         <li><strong>The green cells are your build list.</strong> Anything marked ✓ is core to making the pattern work. Skipping a green cell usually shows up as a quality, cost, or maintenance problem within 90 days.</li>
         <li><strong>Yellow cells are decisions, not defaults.</strong> Adopt only when the sub-condition in the tooltip applies. Adopting all yellows by reflex bloats the architecture.</li>
         <li><strong>Gray cells are signal that you're using the wrong tool.</strong> If you find yourself reaching for one, re-check the pattern row — you may be solving a different problem than you think.</li>
+        <li><strong>Time-to-disruption tag</strong> on each pattern row classifies how soon shipping that pattern moves the needle: <span style="background:rgba(21,128,61,0.15); color:var(--good); padding:1px 6px; border-radius:8px; font-size:11px; font-weight:600;">0–3 MO</span> = mature pattern, ship now; <span style="background:rgba(180,83,9,0.15); color:var(--warn); padding:1px 6px; border-radius:8px; font-size:11px; font-weight:600;">3–12 MO</span> = still maturing or integration-heavy; <span style="background:rgba(154,52,18,0.15); color:#9ca3af; padding:1px 6px; border-radius:8px; font-size:11px; font-weight:600;">12+ MO</span> = research-stage / not represented in this matrix yet (autonomous-agent-at-scale, multimodal-output-as-product). Use the lens to <em>sequence</em> pilots: 0–3 patterns first to build evidence, 3–12 next once eval discipline lands.</li>
       </ol>
     </div>
   </details>

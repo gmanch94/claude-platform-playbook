@@ -1,0 +1,304 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Claude Platform Playbook — Decision Spine</title>
+<link href="https://fonts.googleapis.com/css2?family=Caveat:wght@500;700&family=Patrick+Hand&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --c1:#D97757; --c1d:#B45309; --c2:#7C5E48; --bg:#faf7f3; --ink:#2a2017;
+    --line:#e8e0d3; --muted:#8a7e6e; --good:#15803d; --warn:#b45309; --stop:#9a3412;
+    --user:#D97757; --claude:#7C5E48; --tool:#1E40AF; --store:#15803d; --out:#9a3412;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; background: var(--bg); color: var(--ink); padding: 32px 24px 80px; line-height: 1.55; }
+  .wrap { max-width: 1180px; margin: 0 auto; }
+  header { border-bottom: 2px solid var(--c1); padding-bottom: 16px; margin-bottom: 24px; }
+  header h1 { font-size: 32px; font-weight: 700; }
+  header .sub { color: var(--muted); font-size: 15px; margin-top: 6px; }
+  .asof { display: inline-block; background: var(--c1); color: white; padding: 3px 10px; border-radius: 12px; font-size: 12px; font-weight: 600; margin-left: 8px; vertical-align: middle; }
+  .intro { background: #fef9ee; border-left: 3px solid var(--c1); padding: 14px 18px; border-radius: 4px; margin-bottom: 24px; font-size: 14px; line-height: 1.6; }
+  .intro strong { color: var(--c1d); font-family: 'Caveat', cursive; font-size: 18px; letter-spacing: 0.3px; }
+  .legend-row { display: flex; gap: 18px; flex-wrap: wrap; padding: 10px 14px; background: white; border: 1px solid var(--line); border-radius: 8px; margin-bottom: 22px; font-size: 13px; align-items: center; }
+  .legend-row .item { display: flex; align-items: center; gap: 6px; }
+  .legend-row .swatch { width: 18px; height: 14px; border: 2px solid; border-radius: 3px; }
+
+  /* Flowchart */
+  .flowchart { background: #fffefb; border: 2px solid var(--ink); border-radius: 8px; padding: 18px; margin-bottom: 28px; box-shadow: 4px 4px 0 var(--line); }
+  .flowchart svg { width: 100%; height: auto; max-width: 1080px; display: block; margin: 0 auto; font-family: 'Patrick Hand', 'Caveat', cursive; }
+  .flowchart svg .lbl { font-size: 16px; fill: var(--ink); }
+  .flowchart svg .sub { font-size: 12px; fill: #5a4a3a; }
+  .flowchart svg .anno { font-size: 14px; fill: var(--c1d); font-family: 'Caveat', cursive; }
+  .flowchart svg .box { fill: #fffefb; stroke-width: 2.5; cursor: pointer; transition: fill 0.15s; }
+  .flowchart svg .box:hover { fill: #fef0d9; }
+  .flowchart svg .box.start { stroke: var(--user); fill: rgba(217,119,87,0.10); }
+  .flowchart svg .box.gate { stroke: var(--stop); fill: rgba(154,52,18,0.06); }
+  .flowchart svg .box.branch { stroke: var(--claude); fill: rgba(124,94,72,0.04); }
+  .flowchart svg .box.terminal { stroke: var(--good); fill: rgba(21,128,61,0.06); }
+
+  /* Branch cards */
+  h2.section { font-family: 'Caveat', cursive; font-size: 28px; color: var(--c1d); margin: 32px 0 14px; letter-spacing: 0.5px; }
+  .branch { background: white; border: 1px solid var(--line); border-radius: 10px; padding: 22px 24px; margin-bottom: 18px; transition: box-shadow 0.15s, border-color 0.15s; }
+  .branch:target { border-color: var(--c1); box-shadow: 0 0 0 3px rgba(217,119,87,0.18); }
+  .branch h3 { font-size: 22px; color: var(--c1d); margin-bottom: 4px; font-family: 'Caveat', cursive; font-weight: 700; letter-spacing: 0.5px; }
+  .branch .question { font-family: 'Patrick Hand', cursive; font-size: 17px; color: var(--c2); margin-bottom: 12px; font-style: italic; }
+  .branch .frame { font-size: 14px; line-height: 1.6; margin-bottom: 14px; color: var(--ink); }
+  .branch .who { background: #fef9ee; border-left: 3px solid var(--c1); padding: 8px 14px; border-radius: 4px; font-size: 13px; margin-bottom: 12px; }
+  .branch .who strong { color: var(--c1d); }
+  .artifacts { display: flex; flex-direction: column; gap: 8px; margin-bottom: 12px; }
+  .artifacts a { background: rgba(30,64,175,0.06); border: 1px solid rgba(30,64,175,0.25); border-radius: 6px; padding: 10px 14px; text-decoration: none; color: var(--ink); font-size: 14px; transition: background 0.15s; display: block; }
+  .artifacts a:hover { background: rgba(30,64,175,0.12); }
+  .artifacts a strong { color: var(--tool); font-family: 'Caveat', cursive; font-size: 17px; letter-spacing: 0.3px; }
+  .artifacts a .path { color: var(--muted); font-size: 12px; font-family: ui-monospace, 'SF Mono', monospace; }
+  .next-step { margin-top: 10px; padding: 10px 14px; background: rgba(21,128,61,0.06); border-left: 3px solid var(--good); border-radius: 4px; font-size: 13px; }
+  .next-step strong { color: var(--good); font-family: 'Caveat', cursive; font-size: 16px; }
+  .stop-step { margin-top: 10px; padding: 10px 14px; background: rgba(154,52,18,0.06); border-left: 3px solid var(--stop); border-radius: 4px; font-size: 13px; }
+  .stop-step strong { color: var(--stop); font-family: 'Caveat', cursive; font-size: 16px; }
+
+  footer { margin-top: 40px; padding-top: 16px; border-top: 1px solid var(--line); text-align: center; font-size: 12px; color: var(--muted); }
+  footer a { color: var(--c1d); }
+
+  @media print {
+    body { background: white; padding: 16px; }
+    .flowchart { page-break-inside: avoid; }
+    .branch { page-break-inside: avoid; }
+    .artifacts a:hover { background: rgba(30,64,175,0.06); }
+  }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <h1>Decision Spine <span class="asof">As of 2026-05</span></h1>
+    <div class="sub">The single entry-point flow for every decision in this repo. Pick the question you're trying to answer; spine routes you to the right artifact + the next decision that follows.</div>
+  </header>
+
+  <div class="intro">
+    <strong>Read this first.</strong> Most readers land in the README's audience map and pick a row. That works once you know which row you are. The spine is for the case where you don't — or where your decision spans multiple rows. Each branch resolves with: <em>1-line frame → linked artifact(s) → next decision after this one</em>. The order matters: <strong>question 1 (anti-use) is always first</strong>. If a candidate use case fails the anti-use filter, no other branch is worth running.
+  </div>
+
+  <div class="legend-row">
+    <strong style="font-family:'Caveat',cursive; font-size:18px;">Legend:</strong>
+    <div class="item"><span class="swatch" style="border-color:var(--user); background:rgba(217,119,87,0.15)"></span>You start here</div>
+    <div class="item"><span class="swatch" style="border-color:var(--stop); background:rgba(154,52,18,0.15)"></span>Reject filter (kill or re-route)</div>
+    <div class="item"><span class="swatch" style="border-color:var(--claude); background:rgba(124,94,72,0.15)"></span>Decision branch</div>
+    <div class="item"><span class="swatch" style="border-color:var(--good); background:rgba(21,128,61,0.15)"></span>Ship gate</div>
+  </div>
+
+  <!-- ====================================================================== -->
+  <!-- Flowchart                                                              -->
+  <!-- ====================================================================== -->
+  <div class="flowchart">
+    <svg viewBox="0 0 1080 760" xmlns="http://www.w3.org/2000/svg">
+      <defs>
+        <marker id="sp_arr" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto">
+          <path d="M0,1 L9,5 L0,9 L2,5 z" fill="#2a2017"/>
+        </marker>
+      </defs>
+      <style>
+        .lbl { font-size: 16px; fill: #2a2017; }
+        .sub { font-size: 12px; fill: #5a4a3a; }
+        .anno { font-size: 14px; fill: #B45309; font-family: 'Caveat', cursive; }
+        .arrow { stroke: #2a2017; stroke-width: 1.6; fill: none; }
+        .arrow-stop { stroke: #9a3412; stroke-width: 1.6; fill: none; stroke-dasharray: 4,3; }
+      </style>
+
+      <!-- Start -->
+      <a href="#b1" aria-label="Anti-use filter">
+        <rect x="430" y="20" width="220" height="60" rx="8" class="box start" />
+        <text x="540" y="44" text-anchor="middle" class="lbl" font-weight="700">You have a candidate</text>
+        <text x="540" y="64" text-anchor="middle" class="sub">use case. Start here.</text>
+      </a>
+
+      <!-- Q1: anti-use gate -->
+      <a href="#b1">
+        <rect x="370" y="120" width="340" height="78" rx="8" class="box gate" />
+        <text x="540" y="146" text-anchor="middle" class="lbl" font-weight="700">1. Should we use Claude here at all?</text>
+        <text x="540" y="166" text-anchor="middle" class="sub">Sole-decider on regulated decisions? Sub-100ms latency?</text>
+        <text x="540" y="184" text-anchor="middle" class="sub">Sub-cent unit cost? Premature without eval / owner / rollback?</text>
+      </a>
+      <path d="M 540 80 L 540 120" class="arrow" marker-end="url(#sp_arr)"/>
+
+      <!-- Reject branch -->
+      <rect x="40" y="230" width="240" height="56" rx="8" class="box gate" />
+      <text x="160" y="254" text-anchor="middle" class="lbl">If yes to any → STOP.</text>
+      <text x="160" y="272" text-anchor="middle" class="sub">Kill or re-route per anti-use list.</text>
+      <path d="M 370 175 Q 220 200 240 230" class="arrow-stop" marker-end="url(#sp_arr)"/>
+      <text x="290" y="218" class="anno">if reject</text>
+
+      <!-- Q2: pattern fit -->
+      <a href="#b2">
+        <rect x="370" y="240" width="340" height="68" rx="8" class="box branch" />
+        <text x="540" y="266" text-anchor="middle" class="lbl" font-weight="700">2. Which pattern fits?</text>
+        <text x="540" y="284" text-anchor="middle" class="sub">RAG · Agentic · Batch · Domain · Code · Embedded</text>
+        <text x="540" y="300" text-anchor="middle" class="sub">→ which features go in the stack?</text>
+      </a>
+      <path d="M 540 198 L 540 240" class="arrow" marker-end="url(#sp_arr)"/>
+      <text x="555" y="222" class="anno">if survive</text>
+
+      <!-- Q3: build vs buy -->
+      <a href="#b3">
+        <rect x="370" y="340" width="340" height="56" rx="8" class="box branch" />
+        <text x="540" y="364" text-anchor="middle" class="lbl" font-weight="700">3. Build vs buy?</text>
+        <text x="540" y="382" text-anchor="middle" class="sub">Direct API · Bedrock · Vertex · OSS · packaged SaaS</text>
+      </a>
+      <path d="M 540 308 L 540 340" class="arrow" marker-end="url(#sp_arr)"/>
+
+      <!-- Q4: cost -->
+      <a href="#b4">
+        <rect x="370" y="430" width="340" height="56" rx="8" class="box branch" />
+        <text x="540" y="454" text-anchor="middle" class="lbl" font-weight="700">4. What will it cost?</text>
+        <text x="540" y="472" text-anchor="middle" class="sub">Volume × token mix × model mix × cache × batch</text>
+      </a>
+      <path d="M 540 396 L 540 430" class="arrow" marker-end="url(#sp_arr)"/>
+
+      <!-- Q5: ship safely -->
+      <a href="#b5">
+        <rect x="370" y="520" width="340" height="56" rx="8" class="box branch" />
+        <text x="540" y="544" text-anchor="middle" class="lbl" font-weight="700">5. How do we ship safely?</text>
+        <text x="540" y="562" text-anchor="middle" class="sub">90-day arc · governance overlay · pilot scoring</text>
+      </a>
+      <path d="M 540 486 L 540 520" class="arrow" marker-end="url(#sp_arr)"/>
+
+      <!-- Side branches Q6 + Q7 -->
+      <a href="#b6">
+        <rect x="40" y="520" width="280" height="56" rx="8" class="box branch" />
+        <text x="180" y="544" text-anchor="middle" class="lbl" font-weight="700">6. CLI rollout?</text>
+        <text x="180" y="562" text-anchor="middle" class="sub">Engineering team adopting Claude Code</text>
+      </a>
+      <path d="M 370 548 L 320 548" class="arrow" marker-end="url(#sp_arr)"/>
+
+      <a href="#b7">
+        <rect x="760" y="520" width="280" height="56" rx="8" class="box branch" />
+        <text x="900" y="544" text-anchor="middle" class="lbl" font-weight="700">7. How do we measure?</text>
+        <text x="900" y="562" text-anchor="middle" class="sub">Eval pack: regression, format, grounding, cost</text>
+      </a>
+      <path d="M 710 548 L 760 548" class="arrow" marker-end="url(#sp_arr)"/>
+
+      <!-- Ship gate -->
+      <rect x="370" y="640" width="340" height="64" rx="8" class="box terminal" />
+      <text x="540" y="666" text-anchor="middle" class="lbl" font-weight="700">Pilot → Guardrails → Scale</text>
+      <text x="540" y="686" text-anchor="middle" class="sub">All branches converge here. No branch is</text>
+      <text x="540" y="700" text-anchor="middle" class="sub">optional; skipping any is a named failure mode.</text>
+      <path d="M 540 576 L 540 640" class="arrow" marker-end="url(#sp_arr)"/>
+      <path d="M 180 576 Q 180 620 370 660" class="arrow" marker-end="url(#sp_arr)"/>
+      <path d="M 900 576 Q 900 620 710 660" class="arrow" marker-end="url(#sp_arr)"/>
+
+      <!-- Hand-drawn underline annotations -->
+      <text x="710" y="318" class="anno">use feature-decision-matrix +</text>
+      <text x="710" y="334" class="anno">reference-architectures together</text>
+      <text x="710" y="408" class="anno">scores 6 axes, picks path</text>
+      <text x="710" y="500" class="anno">cost is a constraint, not a calculator</text>
+      <text x="40" y="608" class="anno">parallel track once</text>
+      <text x="40" y="624" class="anno">decision is "we're shipping"</text>
+    </svg>
+  </div>
+
+  <!-- ====================================================================== -->
+  <!-- Branch detail cards                                                    -->
+  <!-- ====================================================================== -->
+
+  <h2 class="section">Branch detail</h2>
+
+  <div class="branch" id="b1">
+    <h3>1. Should we use Claude here at all?</h3>
+    <div class="question">Anti-use filter — runs before any other decision. Kills bad pilots in Week 0.</div>
+    <div class="who"><strong>Who's asking:</strong> Risk / compliance reviewer · transformation lead in Week 0 · CTO scoping a candidate use case.</div>
+    <div class="frame">If the candidate is sole-decider on a regulated decision (credit denial, sentencing, hiring rejection), needs sub-100ms latency, runs at sub-cent unit cost, exposes prompt-injection surface without sandboxing, or arrives without an eval baseline / rollback path / named owner — stop. Re-route, narrow scope, or kill. The reject filter is upstream of every other branch.</div>
+    <div class="artifacts">
+      <a href="anti-use-cases.md"><strong>anti-use-cases.md</strong><br><span class="path">artifacts/anti-use-cases.md</span> — 5 categories: Hard nos · Wrong tool · Wrong economics · Governance no-go · Premature.</a>
+    </div>
+    <div class="stop-step"><strong>If you fail this filter:</strong> stop here. Don't proceed to branch 2. Document the rejection reason; come back when the blocker is gone.</div>
+    <div class="next-step"><strong>If you pass:</strong> go to branch <a href="#b2">2 — pattern fit</a>.</div>
+  </div>
+
+  <div class="branch" id="b2">
+    <h3>2. Which pattern fits?</h3>
+    <div class="question">Pattern + feature-stack selection — what shape is the solution?</div>
+    <div class="who"><strong>Who's asking:</strong> Architect · platform engineer · tech lead.</div>
+    <div class="frame">Six canonical patterns cover the steady-state Claude surface: RAG copilot · agentic workflow · batch enrichment · domain expert assistant · code automation · embedded copilot. Each has a default stack (Sonnet 4.6 vs Opus 4.7 vs Haiku 4.5; caching · thinking · tool use · Files API · MCP · Skills · memory tool · batch). Pick the closest pattern; the matrix names which features earn their keep for that pattern.</div>
+    <div class="artifacts">
+      <a href="reference-architectures.html"><strong>reference-architectures.html</strong><br><span class="path">artifacts/reference-architectures.html</span> — 6 hand-drawn patterns with cost band + governance notes.</a>
+      <a href="feature-decision-matrix.html"><strong>feature-decision-matrix.html</strong><br><span class="path">artifacts/feature-decision-matrix.html</span> — patterns × features grid with conditional rationale.</a>
+    </div>
+    <div class="next-step"><strong>After this:</strong> go to branch <a href="#b3">3 — build vs buy</a> to pick the procurement path for the chosen pattern.</div>
+  </div>
+
+  <div class="branch" id="b3">
+    <h3>3. Build vs buy?</h3>
+    <div class="question">Procurement path — direct API, hyperscaler, OSS, or packaged SaaS?</div>
+    <div class="who"><strong>Who's asking:</strong> CIO / CTO sizing TCO · procurement · architect defending the choice.</div>
+    <div class="frame">Score the use case on 6 axes (regulated data · latency · customization depth · scale · internal expertise · strategic moat). Verdict: Claude direct (fastest model availability) · Claude via Bedrock or Vertex (hyperscaler procurement, model-version lag) · OpenAI · open-source self-hosted · packaged SaaS. The worksheet outputs a ranked list with TCO band — not a single answer. Anchor heuristic: <strong>build where you have a moat, buy where you don't.</strong></div>
+    <div class="artifacts">
+      <a href="build-vs-buy-worksheet.html"><strong>build-vs-buy-worksheet.html</strong><br><span class="path">artifacts/build-vs-buy-worksheet.html</span> — 5-axis scorer with ranked verdict + rationale.</a>
+    </div>
+    <div class="next-step"><strong>After this:</strong> go to branch <a href="#b4">4 — cost</a> to size the unit economics for the chosen path.</div>
+  </div>
+
+  <div class="branch" id="b4">
+    <h3>4. What will it cost?</h3>
+    <div class="question">Unit economics — does the math survive contact with real volume?</div>
+    <div class="who"><strong>Who's asking:</strong> CIO / CFO budgeting the pilot · architect validating the cost-per-task target · transformation lead defending the business case.</div>
+    <div class="frame">Calculator inputs: monthly volume × avg input/output tokens × model mix (Haiku 4.5 / Sonnet 4.6 / Opus 4.7) × cache hit rate × batch eligibility. Outputs: monthly $, per-request cost, savings vs naive baseline. Treat <em>cost as a constraint</em>, not a curiosity — define a $/task gate and a kill-switch volume cap before pilot launch. If the numbers don't survive at projected scale, branch back to 2 or revisit anti-use Wrong-economics rows.</div>
+    <div class="artifacts">
+      <a href="cost-calculator.html"><strong>cost-calculator.html</strong><br><span class="path">artifacts/cost-calculator.html</span> — interactive estimator with prompt cache + batch math.</a>
+    </div>
+    <div class="next-step"><strong>After this:</strong> go to branch <a href="#b5">5 — ship safely</a> to wire the pilot end-to-end.</div>
+  </div>
+
+  <div class="branch" id="b5">
+    <h3>5. How do we ship safely?</h3>
+    <div class="question">90-day rollout with guardrails — pilot → guardrails → scale.</div>
+    <div class="who"><strong>Who's asking:</strong> Transformation lead running the pilot · risk / compliance reviewer · COE owner.</div>
+    <div class="frame">Three sub-decisions, in order: (a) <strong>Score candidate pilots</strong> on 5 axes (value · time-to-signal · data readiness · risk · sponsor clarity); pick the strongest. (b) <strong>Run the 90-day arc</strong> — Week 0 pre-flight, Weeks 1–4 pilot, 5–8 guardrails, 9–13 scale, 8 named failure modes to watch. (c) <strong>Map governance posture</strong> — BAA / DPA / data residency / no-train / EU AI Act + NIST AI RMF mapping / audit trail / prompt versioning / vendor concentration mitigation.</div>
+    <div class="artifacts">
+      <a href="pilot-selection-worksheet.html"><strong>pilot-selection-worksheet.html</strong><br><span class="path">artifacts/pilot-selection-worksheet.html</span> — Week 0 use-case scorer with blocker flags.</a>
+      <a href="adoption-playbook.md"><strong>adoption-playbook.md</strong><br><span class="path">artifacts/adoption-playbook.md</span> — 90-day rollout, 8 failure modes, reference team structure.</a>
+      <a href="governance-overlay.md"><strong>governance-overlay.md</strong><br><span class="path">artifacts/governance-overlay.md</span> — risk + compliance overlay specific to Claude.</a>
+    </div>
+    <div class="next-step"><strong>Parallel:</strong> if engineering is also adopting Claude Code, run branch <a href="#b6">6</a> alongside this. Don't wait for Week 13 to start the CLI rollout. Always wire branch <a href="#b7">7 — measurement</a> before pilot launch, not after.</div>
+  </div>
+
+  <div class="branch" id="b6">
+    <h3>6. How do engineers adopt the CLI?</h3>
+    <div class="question">Engineering-team rollout for Claude Code — separate from the executive pilot track.</div>
+    <div class="who"><strong>Who's asking:</strong> Engineering manager rolling out Claude Code · platform engineer wiring MCP · security / privacy engineer hardening the CLI surface.</div>
+    <div class="frame">Five-part rollout: pilot selection (which team, which use case) · hooks (block-secrets, PII scrub, branch guard, audit log) · skills (team-grade Skill templates, not per-engineer plugins) · MCP servers (read-only by design; mutate variants deferred to Phase 4) · evals (regression, format, tool-call accuracy, cost-per-task). Phased Phase 1→4 rollout matrix prevents the "ship 12 hooks on day 1" failure mode.</div>
+    <div class="artifacts">
+      <a href="claude-code-adoption-guide.md"><strong>claude-code-adoption-guide.md</strong><br><span class="path">artifacts/claude-code-adoption-guide.md</span> — engineering rollout, security model, measurement.</a>
+      <a href="claude-code-starter-skills.md"><strong>claude-code-starter-skills.md</strong><br><span class="path">artifacts/claude-code-starter-skills.md</span> — 8 team-grade Skill templates.</a>
+      <a href="hooks-starter-pack.md"><strong>hooks-starter-pack.md</strong><br><span class="path">artifacts/hooks-starter-pack.md</span> — 10 hook templates with phased rollout matrix.</a>
+      <a href="mcp-starter-pack.md"><strong>mcp-starter-pack.md</strong><br><span class="path">artifacts/mcp-starter-pack.md</span> — 7 read-only MCP server templates.</a>
+    </div>
+    <div class="next-step"><strong>After this:</strong> wire branch <a href="#b7">7 — evaluation</a> for the CLI surface (eval-trigger hook + eval-starter-pack), then converge with the executive track at "Pilot → Guardrails → Scale."</div>
+  </div>
+
+  <div class="branch" id="b7">
+    <h3>7. How do we measure?</h3>
+    <div class="question">Evaluation — the discipline that prevents silent quality regression.</div>
+    <div class="who"><strong>Who's asking:</strong> ML / platform lead setting up CI for prompts + Skills · transformation lead defining success metrics · engineering lead hardening the CLI rollout.</div>
+    <div class="frame">Eight eval categories: regression · format compliance · tool-call accuracy · grounding · adversarial · cost-per-task · latency · refusal calibration. Each framed by what it catches / failure-mode of the eval itself / owner. Blocking-vs-advisory matrix prevents eval-bypass culture. <strong>Wire evals before pilot launch</strong>, not after — "evals exist but nobody runs them" is the #2 failure mode in the adoption playbook.</div>
+    <div class="artifacts">
+      <a href="eval-starter-pack.md"><strong>eval-starter-pack.md</strong><br><span class="path">artifacts/eval-starter-pack.md</span> — 8 eval templates with blocking/advisory matrix.</a>
+    </div>
+    <div class="next-step"><strong>After this:</strong> branches converge at "Pilot → Guardrails → Scale." All seven branches are required; skipping any is a named failure mode.</div>
+  </div>
+
+  <h2 class="section">When to re-walk the spine</h2>
+  <div class="branch">
+    <div class="frame">
+      <strong>Trigger 1 — Anthropic ships a new capability</strong> that changes the cost / latency / governance math (new model tier, new BAA-by-default region, deterministic mode). Re-walk branches 2 → 4.<br><br>
+      <strong>Trigger 2 — A regulator publishes a new framework</strong> (EU AI Act delegated act, US state law, NIST AI RMF revision). Re-walk branch 1 to confirm anti-use list is still complete; re-walk branch 5 governance overlay.<br><br>
+      <strong>Trigger 3 — A pilot fails for a reason not in the playbook's 8 failure modes.</strong> Add the new failure mode to <a href="adoption-playbook.md">adoption-playbook.md</a>; if the failure was a missed reject, add the row to <a href="anti-use-cases.md">anti-use-cases.md</a>.<br><br>
+      <strong>Trigger 4 — Quarterly refresh.</strong> Run <code>/bump-as-of</code>; verify <a href="../docs/feature-inventory.md">feature-inventory.md</a> against <code>docs.claude.com</code> and <code>anthropic.com/pricing</code>; bump downstream artifacts on any drift.
+    </div>
+  </div>
+
+  <footer>
+    <p>© gmanch94 · CC-BY-4.0 · As of 2026-05. Verify pricing/models at <a href="https://www.anthropic.com">anthropic.com</a>.</p>
+    <p style="margin-top:6px;">Single source of truth for feature status: <a href="../docs/feature-inventory.md">docs/feature-inventory.md</a>.</p>
+  </footer>
+</div>
+</body>
+</html>

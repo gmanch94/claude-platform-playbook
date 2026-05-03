@@ -28,8 +28,11 @@ claude-platform-playbook/
 ├── .claude/commands/                    Slash commands (bump-as-of, etc.)
 ├── docs/
 │   ├── scope.md                         Original scope doc — do not delete
-│   └── feature-inventory.md             Single source of truth (edit weekly)
+│   ├── feature-inventory.md             Single source of truth (edit weekly)
+│   └── backlog.md                       Deferred enhancements with trigger-to-revisit conditions
 └── artifacts/
+    ├── decision-spine.html              Front-door flowchart · 7 branches · routes reader to right artifact at each decision
+    ├── anti-use-cases.md                Where NOT to use Claude · 5 categories · explicit reject filter (runs before pilot-selection)
     ├── executive-briefing.html          10-slide deck (arrow-key nav, print-PDF)
     ├── cost-calculator.html             Live $/mo · Chart.js · 4 presets
     ├── feature-decision-matrix.html     8 patterns × 12 features · hover tooltips
@@ -57,7 +60,7 @@ claude-platform-playbook/
 
 ### When adding a new artifact
 
-Don't, without updating `docs/scope.md` first. The 8 artifacts here are the agreed scope. New artifacts need a written justification in `scope.md` and a row in `feature-inventory.md`'s `Used in artifacts` column.
+Don't, without updating `docs/scope.md` first. The original scope agreed 8 artifacts; the repo currently ships 15 (all post-v1 additions are justified in `scope.md`). New artifacts need a written justification block in `scope.md` and a row in `feature-inventory.md`'s `Used in artifacts` column.
 
 ### When the model surface changes
 

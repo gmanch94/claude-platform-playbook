@@ -97,7 +97,7 @@ Sections:
 
 ### 6. `build-vs-buy-worksheet.html` — interactive decision tool
 
-Add use case → score on 5 axes (regulated data, latency, customization depth, scale, internal expertise) → recommendation: Claude direct / Claude via Bedrock or Vertex / OpenAI / open-source self-hosted / packaged SaaS.
+Add use case → score on 6 axes (regulated data, latency, customization depth, scale, internal expertise, strategic moat) → recommendation: Claude direct / Claude via Bedrock or Vertex / OpenAI / open-source self-hosted / packaged SaaS.
 
 Output: ranked recommendations + rationale + estimated TCO band.
 
@@ -204,6 +204,22 @@ Session 1: items 1-4 (skeleton + 3 anchors). Session 2: items 5-9 (depth + ship)
 **Why it's not in the original 8.** Original scope assumed pilot selection was political/contextual enough that templating the scoring would be unhelpful. Empirically the *axes* are portable across orgs (every Week 0 has a value-vs-readiness-vs-sponsor question); only the use cases differ. Treating the axes + verdict logic as the artifact and the use-case names as placeholders is what makes it a decision tool rather than a checklist.
 
 **Posture.** Decision-frame first (axis definitions explain *why* each one is weakest-link, not just what it measures). Multi-use-case (2–6) so it forces comparison rather than rationalization of a pre-picked choice. Blocker rule overrides total — pilots fail on weakest-link, not on average. Pinned to current Claude surface; cross-linked from adoption-playbook.md Week 0.
+
+### `anti-use-cases.md` (added 2026-05)
+
+**Why it earns its place.** Every other artifact in this repo answers *when* and *how* to use Claude. None of them answer *when not to* — except in passing, scattered across governance-overlay, build-vs-buy, and the adoption playbook's failure modes. The result: readers who go through pilot-selection-worksheet still ship use cases that should have been killed in Week 0 (sole-decider on regulated decisions, sub-100ms latency targets, sub-cent unit-cost workloads, prompt-injection-exposed agentic loops). The anti-use list is the explicit-reject filter that runs *before* scoring — 5 categories (Hard nos, Wrong tool, Wrong economics, Governance no-go, Premature) with cited regulator + framework anchors. It is the single biggest credibility lift available: a vendor-explicit repo with no "don't use this for X" reads as marketing recap. This file is the antidote.
+
+**Why it's not in the original 8.** Original scope assumed governance-overlay.md + the failure-mode list in adoption-playbook covered the no-go space. Empirically they don't: governance-overlay is reference depth on compliance posture, not a use-case reject list, and the playbook failure modes are about *running* a pilot, not *picking* one. Anti-use-cases sits upstream of both — it kills bad pilots before they get scored.
+
+**Posture.** Decision-frame first (Pattern → Why not → Do this instead → Cite). Five categories ordered by Week-0 frequency. Cross-linked from pilot-selection-worksheet (runs after this filter), build-vs-buy-worksheet (only meaningful if the use case survives this filter), governance-overlay (depth on the Governance no-go rows), adoption-playbook (the Premature rows are the playbook's pre-flight gates, made blocking).
+
+### `decision-spine.html` (added 2026-05)
+
+**Why it earns its place.** The README's audience map is a table — it works once the reader knows which row they are. For a CIO who isn't sure whether they're "sizing TCO" or "choosing patterns" (because the candidate use case crosses both), or for a transformation lead whose decision spans risk + cost + adoption, the audience map produces a guess, not a route. The spine fixes that: a single front-door flowchart that asks the seven decisions in order (anti-use → pattern → build-vs-buy → cost → ship safely → CLI rollout → measurement), routes to the right artifact at each branch, and names the next decision after each one. The order is load-bearing — anti-use is always question 1, measurement is always wired before pilot launch, governance + adoption playbook converge with CLI rollout at "Pilot → Guardrails → Scale."
+
+**Why it's not in the original 8 (or the post-v1 additions).** Original scope assumed the audience map + the artifact-table-with-arrows in README would cover navigation. Empirically they don't, because the reader doesn't always know which audience row they are. The spine isn't a new artifact in the sense of new content — every branch routes to an existing artifact. It is a new *navigation primitive* that makes the existing artifacts addressable as a system rather than a pile.
+
+**Posture.** Decision-frame first (each branch states the question + who's asking + 1-line frame + artifact links + next decision). Hand-drawn flowchart at top mirrors the `reference-architectures.html` aesthetic — same fonts, same color taxonomy, same hand-drawn rough-line geometry. Print-friendly. No JS dependencies; pure HTML + SVG + anchor navigation. Cross-linked from README (front-door promotion).
 
 ### Pattern for future starter packs
 
