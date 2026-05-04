@@ -1,0 +1,367 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Claude Platform Playbook — Decision Memes</title>
+<link href="https://fonts.googleapis.com/css2?family=Caveat:wght@500;700&family=Patrick+Hand&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --c1:#D97757; --c1d:#B45309; --c2:#7C5E48; --bg:#faf7f3; --ink:#2a2017;
+    --line:#e8e0d3; --muted:#8a7e6e; --good:#15803d; --warn:#b45309; --stop:#9a3412;
+    --tool:#1E40AF; --fire:#dc2626; --shock:#fbbf24; --space:#1e3a8a;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; background: var(--bg); color: var(--ink); padding: 32px 24px 80px; line-height: 1.55; }
+  .wrap { max-width: 1080px; margin: 0 auto; }
+  header { border-bottom: 2px solid var(--c1); padding-bottom: 16px; margin-bottom: 24px; }
+  header h1 { font-size: 32px; font-weight: 700; }
+  header .sub { color: var(--muted); font-size: 15px; margin-top: 6px; }
+  .asof { display: inline-block; background: var(--c1); color: white; padding: 3px 10px; border-radius: 12px; font-size: 12px; font-weight: 600; margin-left: 8px; vertical-align: middle; }
+  .intro { background: #fef9ee; border-left: 3px solid var(--c1); padding: 14px 18px; border-radius: 4px; margin-bottom: 24px; font-size: 14px; line-height: 1.6; }
+  .intro strong { color: var(--c1d); font-family: 'Caveat', cursive; font-size: 18px; letter-spacing: 0.3px; }
+
+  .meme-card {
+    display: grid;
+    grid-template-columns: 340px 1fr;
+    gap: 0;
+    background: white;
+    border: 2px solid var(--ink);
+    border-radius: 10px;
+    margin-bottom: 24px;
+    overflow: hidden;
+    box-shadow: 4px 4px 0 var(--line);
+  }
+  .meme-visual {
+    background: #fffefb;
+    padding: 18px;
+    border-right: 2px dashed var(--line);
+    min-height: 250px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    gap: 6px;
+  }
+  .meme-point { padding: 20px 24px; display: flex; flex-direction: column; gap: 8px; }
+  .meme-point .label { display: flex; gap: 12px; align-items: baseline; flex-wrap: wrap; margin-bottom: 4px; }
+  .meme-point .num { font-family: 'Caveat', cursive; font-size: 32px; color: var(--c1d); font-weight: 700; line-height: 1; }
+  .meme-point .template { font-size: 11px; color: var(--muted); text-transform: uppercase; letter-spacing: 0.1em; padding: 3px 8px; background: var(--bg); border-radius: 12px; font-family: ui-monospace, monospace; }
+  .meme-point h3 { font-family: 'Caveat', cursive; font-size: 24px; color: var(--ink); line-height: 1.2; letter-spacing: 0.3px; }
+  .meme-point .quote { font-family: 'Patrick Hand', cursive; font-size: 15px; color: var(--c2); padding: 6px 10px; border-left: 3px solid var(--c1); background: #fef9ee; border-radius: 4px; line-height: 1.45; }
+  .meme-point .point { font-size: 14px; line-height: 1.6; color: var(--ink); }
+  .meme-point .point strong { color: var(--c1d); }
+  .meme-point .artifact-link { background: rgba(30,64,175,0.06); border: 1px solid rgba(30,64,175,0.25); border-radius: 6px; padding: 10px 14px; text-decoration: none; color: var(--ink); font-size: 13px; transition: background 0.15s; margin-top: 6px; display: block; }
+  .meme-point .artifact-link:hover { background: rgba(30,64,175,0.12); }
+  .meme-point .artifact-link strong { color: var(--tool); font-family: 'Caveat', cursive; font-size: 16px; letter-spacing: 0.3px; }
+
+  /* DRAKE */
+  .drake-row { display: grid; grid-template-columns: 56px 1fr; align-items: center; gap: 12px; padding: 10px; border-radius: 8px; }
+  .drake-row.no { background: rgba(154,52,18,0.08); border-left: 3px solid var(--stop); }
+  .drake-row.yes { background: rgba(21,128,61,0.08); border-left: 3px solid var(--good); }
+  .drake-disc { width: 48px; height: 48px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-family: 'Caveat', cursive; font-weight: 700; font-size: 28px; line-height: 1; }
+  .drake-disc.no { background: var(--stop); color: white; }
+  .drake-disc.yes { background: var(--good); color: white; }
+  .drake-list { font-family: 'Patrick Hand', cursive; font-size: 13px; line-height: 1.4; color: var(--ink); }
+  .drake-list div + div { margin-top: 3px; }
+
+  /* GALAXY BRAIN */
+  .galaxy { display: flex; flex-direction: column; gap: 4px; }
+  .gb-row { display: grid; grid-template-columns: 70px 1fr; align-items: center; gap: 10px; padding: 8px 10px; border-radius: 6px; min-height: 48px; }
+  .gb-1 { background: linear-gradient(90deg, #f5f5f5, #fafafa); }
+  .gb-2 { background: linear-gradient(90deg, #fef3c7, #fef9ee); }
+  .gb-3 { background: linear-gradient(90deg, #fde7d8, #fef0d9); }
+  .gb-4 { background: linear-gradient(90deg, #ddd6fe, #fce7f3, #fef0d9); }
+  .gb-brain { font-family: 'Caveat', cursive; font-size: 24px; text-align: center; line-height: 1; letter-spacing: -3px; }
+  .gb-1 .gb-brain { color: #94a3b8; }
+  .gb-2 .gb-brain { color: var(--c1); }
+  .gb-3 .gb-brain { color: var(--c1d); }
+  .gb-4 .gb-brain { color: var(--space); text-shadow: 0 0 8px rgba(99,102,241,0.4); }
+  .gb-text { font-family: 'Patrick Hand', cursive; font-size: 13px; line-height: 1.3; }
+
+  /* THIS IS FINE */
+  .fine {
+    background:
+      radial-gradient(ellipse at 20% 90%, var(--fire) 5%, transparent 30%),
+      radial-gradient(ellipse at 80% 95%, #f97316 6%, transparent 30%),
+      radial-gradient(ellipse at 50% 100%, #ea580c 8%, transparent 35%),
+      linear-gradient(to bottom, #fef3c7, #fed7aa, #fb923c);
+    height: 230px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 6px;
+    position: relative;
+    overflow: hidden;
+    border: 2px solid var(--ink);
+  }
+  .fine::before {
+    content: ""; position: absolute; bottom: 0; left: 0; right: 0; height: 35%;
+    background: linear-gradient(to top, rgba(220,38,38,0.5), transparent);
+  }
+  .fine .bubble {
+    background: white;
+    border: 2px solid var(--ink);
+    border-radius: 8px;
+    padding: 12px 16px;
+    font-family: 'Caveat', cursive;
+    font-size: 22px;
+    color: var(--ink);
+    text-align: center;
+    box-shadow: 3px 3px 0 var(--ink);
+    position: relative;
+    z-index: 1;
+    max-width: 86%;
+    line-height: 1.2;
+  }
+  .fine .bubble small { display: block; font-family: 'Patrick Hand', cursive; font-size: 12px; color: var(--muted); margin-top: 6px; line-height: 1.3; }
+
+  /* IS THIS A PIGEON */
+  .pigeon { display: grid; grid-template-rows: 1fr auto; height: 230px; padding: 12px; gap: 10px; }
+  .pigeon-scene { display: grid; grid-template-columns: 1fr auto 1fr; align-items: center; gap: 12px; }
+  .pigeon-person { display: flex; flex-direction: column; align-items: center; gap: 6px; }
+  .pigeon-figure { width: 64px; height: 64px; border-radius: 50%; background: var(--c1); border: 3px solid var(--ink); display: flex; align-items: center; justify-content: center; font-family: 'Caveat', cursive; font-size: 24px; color: white; font-weight: 700; }
+  .pigeon-arrow { font-family: 'Caveat', cursive; font-size: 28px; color: var(--c1d); }
+  .pigeon-thing { display: flex; flex-direction: column; align-items: center; gap: 4px; }
+  .pigeon-butterfly { width: 64px; height: 64px; border-radius: 50%; background: linear-gradient(135deg, var(--shock), var(--c1)); border: 3px solid var(--ink); display: flex; align-items: center; justify-content: center; font-family: 'Caveat', cursive; font-size: 28px; color: var(--ink); }
+  .pigeon-label { font-family: 'Patrick Hand', cursive; font-size: 11px; text-align: center; line-height: 1.25; color: var(--ink); max-width: 110px; }
+  .pigeon-label strong { display: block; font-family: 'Caveat', cursive; font-size: 14px; color: var(--c1d); }
+  .pigeon-caption { font-family: 'Caveat', cursive; font-size: 18px; color: var(--ink); text-align: center; padding: 8px 12px; background: white; border: 2px solid var(--ink); border-radius: 6px; box-shadow: 2px 2px 0 var(--line); line-height: 1.2; }
+
+  /* TWO BUTTONS */
+  .tb { display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 14px; height: 230px; padding: 12px; }
+  .tb-sweat-row { display: flex; gap: 8px; font-family: 'Caveat', cursive; font-size: 18px; color: var(--tool); letter-spacing: 4px; }
+  .tb-buttons { display: flex; gap: 14px; }
+  .tb-btn { padding: 12px 14px; background: white; border: 2px solid var(--stop); border-radius: 6px; font-family: 'Patrick Hand', cursive; font-size: 12px; line-height: 1.3; max-width: 130px; box-shadow: 3px 3px 0 var(--ink); text-align: center; }
+  .tb-hand { text-align: center; font-family: 'Caveat', cursive; font-size: 16px; color: var(--c2); margin-top: 4px; }
+
+  /* PIKACHU */
+  .pk { background: var(--shock); height: 230px; border-radius: 8px; display: flex; align-items: center; justify-content: center; flex-direction: column; gap: 14px; border: 2px solid var(--ink); padding: 16px; }
+  .pk-face { font-family: 'Caveat', cursive; font-size: 56px; line-height: 1; color: var(--ink); letter-spacing: -2px; }
+  .pk-caption { font-family: 'Patrick Hand', cursive; font-size: 13px; color: var(--ink); text-align: center; line-height: 1.3; background: white; padding: 6px 10px; border-radius: 4px; border: 1px solid var(--ink); }
+
+  /* SPIDERMAN */
+  .sm { display: grid; grid-template-columns: 1fr 60px 1fr; align-items: center; height: 230px; padding: 12px; gap: 8px; }
+  .sm-fig { display: flex; flex-direction: column; align-items: center; gap: 8px; }
+  .sm-mask { width: 60px; height: 60px; border-radius: 50%; background: #dc2626; border: 3px solid var(--ink); display: flex; align-items: center; justify-content: center; font-family: 'Caveat', cursive; font-size: 26px; color: white; }
+  .sm-label { font-family: 'Patrick Hand', cursive; font-size: 12px; max-width: 130px; text-align: center; line-height: 1.3; }
+  .sm-cross { font-family: 'Caveat', cursive; font-size: 32px; color: var(--c1d); text-align: center; }
+
+  /* ASTRONAUT */
+  .ast { background: linear-gradient(to bottom, #1e3a8a, #312e81, #1e1b4b); height: 230px; border-radius: 8px; padding: 14px; display: flex; flex-direction: column; gap: 10px; justify-content: center; position: relative; overflow: hidden; border: 2px solid var(--ink); }
+  .ast::before { content: "·   ·     ·   ·    ·     ·    ·   ·    ·"; position: absolute; top: 10px; left: 0; right: 0; color: white; font-size: 16px; letter-spacing: 6px; opacity: 0.4; text-align: center; }
+  .ast::after { content: "·    ·   ·     ·    ·   ·    ·"; position: absolute; bottom: 10px; left: 0; right: 0; color: white; font-size: 14px; letter-spacing: 8px; opacity: 0.3; text-align: center; }
+  .ast-row { background: rgba(255,255,255,0.95); border: 2px solid var(--ink); border-radius: 6px; padding: 8px 12px; font-family: 'Patrick Hand', cursive; font-size: 13px; line-height: 1.3; position: relative; z-index: 1; }
+  .ast-row .name { font-family: 'Caveat', cursive; font-size: 17px; color: var(--c1d); display: block; margin-bottom: 2px; }
+  .ast-row.gun { background: rgba(220,38,38,0.95); color: white; border-color: var(--ink); }
+  .ast-row.gun .name { color: white; }
+
+  h2.section { font-family: 'Caveat', cursive; font-size: 28px; color: var(--c1d); margin: 32px 0 14px; letter-spacing: 0.5px; }
+
+  footer { margin-top: 40px; padding-top: 16px; border-top: 1px solid var(--line); text-align: center; font-size: 12px; color: var(--muted); }
+  footer a { color: var(--c1d); }
+
+  @media (max-width: 760px) {
+    .meme-card { grid-template-columns: 1fr; }
+    .meme-visual { border-right: none; border-bottom: 2px dashed var(--line); }
+  }
+  @media print {
+    body { background: white; padding: 16px; }
+    .meme-card { page-break-inside: avoid; box-shadow: none; }
+  }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <h1>Decision Memes <span class="asof">As of 2026-05</span></h1>
+    <div class="sub">Eight ice-breakers for getting Claude conversations going. Each meme points at a real decision the rest of this repo takes seriously.</div>
+  </header>
+
+  <div class="intro">
+    <strong>Read this first.</strong> These are ice-breakers, not arguments. Comedy lowers activation energy for execs who think AI strategy decks are dry; the artifacts each meme links to do the actual work — anti-use lists, scoring frameworks, governance overlays, eval templates. <strong>The artifacts are not jokes.</strong> Use the memes to start the conversation; use the artifacts to make the decision.
+  </div>
+
+  <!-- 1. DRAKE -->
+  <div class="meme-card">
+    <div class="meme-visual">
+      <div class="drake-row no">
+        <div class="drake-disc no">×</div>
+        <div class="drake-list">Sole-decider on credit denial<br>Sub-100ms trading loop<br>Generating prod SQL, no review</div>
+      </div>
+      <div class="drake-row yes">
+        <div class="drake-disc yes">✓</div>
+        <div class="drake-list">50-page contract → human-reviewed summary<br>Ticket triage with confidence threshold<br>Batch + cache where $/task math survives</div>
+      </div>
+    </div>
+    <div class="meme-point">
+      <div class="label"><span class="num">1</span><span class="template">drake</span></div>
+      <h3>Where Claude is "no" vs "yes"</h3>
+      <div class="quote">"Anywhere a human still has to take the blame? Yes. Anywhere the machine takes the blame? No."</div>
+      <div class="point">The first decision in this repo isn't <strong>which model</strong> — it's <strong>whether to use Claude here at all</strong>. Five categories of reject: hard nos, wrong tool, wrong economics, governance no-go, premature.</div>
+      <a class="artifact-link" href="anti-use-cases.md"><strong>→ anti-use-cases.md</strong> — 5 reject categories with cite columns (HIPAA, EEOC, EU AI Act, GDPR).</a>
+    </div>
+  </div>
+
+  <!-- 2. GALAXY BRAIN -->
+  <div class="meme-card">
+    <div class="meme-visual">
+      <div class="galaxy">
+        <div class="gb-row gb-1"><div class="gb-brain">◉</div><div class="gb-text">"Use Opus for everything."</div></div>
+        <div class="gb-row gb-2"><div class="gb-brain">◉◉</div><div class="gb-text">"Use Sonnet for everything — cost!"</div></div>
+        <div class="gb-row gb-3"><div class="gb-brain">◉◉◉</div><div class="gb-text">"Use the right model per task."</div></div>
+        <div class="gb-row gb-4"><div class="gb-brain">◉◉◉◉</div><div class="gb-text">"Score 8 patterns × 12 features. Mix Haiku/Sonnet/Opus by step. Gate $/task. Wire evals before launch."</div></div>
+      </div>
+    </div>
+    <div class="meme-point">
+      <div class="label"><span class="num">2</span><span class="template">galaxy brain</span></div>
+      <h3>Model selection enlightenment ladder</h3>
+      <div class="quote">"There is no smartest model. There's a model mix that survives the cost gate."</div>
+      <div class="point">Sonnet 4.6 wins ~80% of production patterns at ~5× lower cost than Opus. Opus 4.7 earns its keep on agentic + deep-reasoning paths. Haiku 4.5 wins high-volume classification. <strong>Mix beats max.</strong></div>
+      <a class="artifact-link" href="feature-decision-matrix.html"><strong>→ feature-decision-matrix.html</strong> — 8 patterns × 12 features with model fit per cell.</a>
+    </div>
+  </div>
+
+  <!-- 3. THIS IS FINE -->
+  <div class="meme-card">
+    <div class="meme-visual">
+      <div class="fine">
+        <div class="bubble">"We'll add governance next sprint."<small>(no eval baseline · no kill switch · no audit log · no rollback path)</small></div>
+      </div>
+    </div>
+    <div class="meme-point">
+      <div class="label"><span class="num">3</span><span class="template">this is fine</span></div>
+      <h3>Shipping without guardrails</h3>
+      <div class="quote">"Adding governance after launch costs 3–5× what it costs at Week 0."</div>
+      <div class="point">"Evals exist but nobody runs them" is named failure mode #2 in the adoption playbook. The 90-day arc is <strong>pilot → guardrails → scale</strong> for a reason — guardrails are not optional, they are step 2.</div>
+      <a class="artifact-link" href="adoption-playbook.md"><strong>→ adoption-playbook.md</strong> — 8-failure-mode heatmap with probability × cost × early signal.</a>
+    </div>
+  </div>
+
+  <!-- 4. IS THIS A PIGEON -->
+  <div class="meme-card">
+    <div class="meme-visual">
+      <div class="pigeon">
+        <div class="pigeon-scene">
+          <div class="pigeon-person">
+            <div class="pigeon-figure">EA</div>
+            <div class="pigeon-label"><strong>Enterprise architect</strong></div>
+          </div>
+          <div class="pigeon-arrow">→</div>
+          <div class="pigeon-thing">
+            <div class="pigeon-butterfly">✦</div>
+            <div class="pigeon-label"><strong>3-day-old GitHub repo</strong>47 stars · no tests · MIT</div>
+          </div>
+        </div>
+        <div class="pigeon-caption">"Is this our production agentic framework?"</div>
+      </div>
+    </div>
+    <div class="meme-point">
+      <div class="label"><span class="num">4</span><span class="template">is this a pigeon</span></div>
+      <h3>The shiny-framework misclassification</h3>
+      <div class="quote">"The framework you tweet about is rarely the framework you ship."</div>
+      <div class="point">Production patterns are boring on purpose: typed inputs, retry budgets, refusal calibration, cost gates, eval coverage. The premise-check section of the decision spine names this trap — <strong>"Pick the smartest model and tune later"</strong> is Myth #3. New ≠ production-ready. Star count ≠ governance review.</div>
+      <a class="artifact-link" href="decision-spine.html"><strong>→ decision-spine.html</strong> — premise-check section, Myth #3.</a>
+    </div>
+  </div>
+
+  <!-- 5. TWO BUTTONS SWEATING -->
+  <div class="meme-card">
+    <div class="meme-visual">
+      <div class="tb">
+        <div class="tb-sweat-row">~ ~ sweat ~ ~</div>
+        <div class="tb-buttons">
+          <div class="tb-btn">Build it on direct API</div>
+          <div class="tb-btn">Buy the packaged SaaS</div>
+        </div>
+        <div class="tb-hand">"…we don't have a moat in this domain."</div>
+      </div>
+    </div>
+    <div class="meme-point">
+      <div class="label"><span class="num">5</span><span class="template">two buttons</span></div>
+      <h3>Build vs buy without the moat axis</h3>
+      <div class="quote">"Build where you have a moat. Buy where you don't. The button you can't press tells you which one."</div>
+      <div class="point">Most build-vs-buy worksheets score 4–5 axes (regulation, latency, customization, scale, expertise). <strong>The 6th axis is strategic moat depth.</strong> If your candidate is pure commodity, the answer is buy — even if you <em>could</em> build.</div>
+      <a class="artifact-link" href="build-vs-buy-worksheet.html"><strong>→ build-vs-buy-worksheet.html</strong> — 6-axis scorer with ranked verdict + rationale.</a>
+    </div>
+  </div>
+
+  <!-- 6. PIKACHU -->
+  <div class="meme-card">
+    <div class="meme-visual">
+      <div class="pk">
+        <div class="pk-face">⊙﹏⊙</div>
+        <div class="pk-caption">"You shipped Claude in prod without a regression eval?"</div>
+      </div>
+    </div>
+    <div class="meme-point">
+      <div class="label"><span class="num">6</span><span class="template">pikachu</span></div>
+      <h3>The shocked face when silent drift hits</h3>
+      <div class="quote">"Without a regression eval, you can't tell model drift from prompt drift from data drift."</div>
+      <div class="point">Eight categories of eval cover the surface: regression · format · tool-call · grounding · adversarial · cost · latency · refusal. Each has a blocking-vs-advisory posture. <strong>Wire them before pilot launch</strong>, not after.</div>
+      <a class="artifact-link" href="eval-starter-pack.md"><strong>→ eval-starter-pack.md</strong> — 8 eval templates with blocking/advisory matrix.</a>
+    </div>
+  </div>
+
+  <!-- 7. SPIDER-MAN POINTING -->
+  <div class="meme-card">
+    <div class="meme-visual">
+      <div class="sm">
+        <div class="sm-fig">
+          <div class="sm-mask">→</div>
+          <div class="sm-label"><strong>The RAG copilot we built</strong></div>
+        </div>
+        <div class="sm-cross">⇄</div>
+        <div class="sm-fig">
+          <div class="sm-mask">←</div>
+          <div class="sm-label"><strong>The RAG copilot the vendor sold us</strong></div>
+        </div>
+      </div>
+    </div>
+    <div class="meme-point">
+      <div class="label"><span class="num">7</span><span class="template">spider-man pointing</span></div>
+      <h3>Build vs buy converges to the same shape</h3>
+      <div class="quote">"By month 18, your custom build looks like the SaaS you rejected. Plan accordingly."</div>
+      <div class="point">Convergence is not failure — it's evidence the SaaS solved the same problem. The build-vs-buy worksheet exists to surface <em>which</em> axes justify the build delta (regulated data, custom workflows, scale economics, moat depth) before you spend 18 months proving the convergence.</div>
+      <a class="artifact-link" href="build-vs-buy-worksheet.html"><strong>→ build-vs-buy-worksheet.html</strong> — score before you build, not after.</a>
+    </div>
+  </div>
+
+  <!-- 8. ALWAYS HAS BEEN -->
+  <div class="meme-card">
+    <div class="meme-visual">
+      <div class="ast">
+        <div class="ast-row"><span class="name">Astronaut 1:</span>"Wait — cached input still costs 10% of fresh? And the cache TTL is only 5 minutes?"</div>
+        <div class="ast-row gun"><span class="name">Astronaut 2 (with gun):</span>"Always has been."</div>
+      </div>
+    </div>
+    <div class="meme-point">
+      <div class="label"><span class="num">8</span><span class="template">always has been</span></div>
+      <h3>The prompt-cache reality check</h3>
+      <div class="quote">"Cache is a discount, not a free pass. Idle break = full re-pay."</div>
+      <div class="point">Cached input ≈ 10% of fresh, not 0%. Cache TTL is 5 minutes — step away for coffee, come back, your next turn pays full price. Long-context calls at scale still cost real money. <strong>The cost calculator models the math; the governance overlay names the kill-switch volume cap.</strong></div>
+      <a class="artifact-link" href="cost-calculator.html"><strong>→ cost-calculator.html</strong> — cache-hit-rate slider with monthly $ output.</a>
+    </div>
+  </div>
+
+  <!-- HOW TO USE -->
+  <h2 class="section">How to use these</h2>
+  <div class="meme-card" style="grid-template-columns: 1fr;">
+    <div class="meme-point" style="padding: 22px 26px;">
+      <div class="point">
+        <strong>Slide-deck opener.</strong> Drop one meme into slide 1 of an AI strategy deck. The room laughs; the meme dissolves to the artifact link; you're three minutes ahead of where you'd be with a feature list.<br><br>
+        <strong>Skeptic disarmer.</strong> When a CIO says "I've seen 47 AI strategy decks this month," send them the meme page. Comedy as Trojan horse for governance discipline.<br><br>
+        <strong>Onboarding ice-breaker.</strong> New hire on the AI team. Walk them through 8 memes. They have the repo's mental model in 12 minutes — anti-use → patterns → cost → ship → measure → CLI → premises.<br><br>
+        <strong>Workshop opener.</strong> Print 8 cards. Hand them out face-down. Each attendee picks one, reads the punchline, then together you debate which artifact it points to and why. The repo turns into a 30-minute facilitation.
+      </div>
+      <div class="point" style="background: #fef9ee; border-left: 3px solid var(--c1); padding: 12px 14px; border-radius: 4px; margin-top: 10px;"><strong>What this is not.</strong> Not a substitute for the artifacts. Not a marketing piece. Not a victory lap. The memes mock the bad decisions the rest of this repo helps you avoid — that's the point.</div>
+    </div>
+  </div>
+
+  <footer>
+    <p>© gmanch94 · CC-BY-4.0 · As of 2026-05. Verify pricing/models at <a href="https://www.anthropic.com">anthropic.com</a>.</p>
+    <p style="margin-top:6px;">Single source of truth for feature status: <a href="../docs/feature-inventory.md">docs/feature-inventory.md</a>.</p>
+    <p style="margin-top:6px;">All visuals CSS-drawn. No third-party meme templates or stock images. Original work, CC-BY-4.0.</p>
+  </footer>
+</div>
+</body>
+</html>

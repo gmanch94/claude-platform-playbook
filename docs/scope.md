@@ -221,6 +221,14 @@ Session 1: items 1-4 (skeleton + 3 anchors). Session 2: items 5-9 (depth + ship)
 
 **Posture.** Decision-frame first (each branch states the question + who's asking + 1-line frame + artifact links + next decision). Hand-drawn flowchart at top mirrors the `reference-architectures.html` aesthetic — same fonts, same color taxonomy, same hand-drawn rough-line geometry. Print-friendly. No JS dependencies; pure HTML + SVG + anchor navigation. Cross-linked from README (front-door promotion).
 
+### `decision-memes.html` (added 2026-05)
+
+**Why it earns its place.** Every other artifact assumes the reader has already decided to engage with the repo. This artifact handles the activation step before that — the moment when a CIO who has seen 47 AI strategy decks this month opens the 48th. Eight memes, each pointing at a real decision the rest of the repo treats seriously: anti-use filter, model selection, governance discipline, shiny-framework attractor, build-vs-buy moat axis, eval discipline, build-vs-buy convergence, prompt-cache reality. Comedy is the Trojan horse for governance discipline — every visual mocks a bad decision the artifacts help you avoid.
+
+**Why it's not in the original 8.** Original scope assumed executive-grade tone meant no humor. Empirically: tone-deafness is its own off-ramp. A repo that takes itself entirely seriously gets bookmarked and never returned to. A single deliberately-irreverent surface that points back to the serious artifacts increases the chance the artifacts get read at all. Used as a slide-deck opener, skeptic disarmer, onboarding ice-breaker, or workshop facilitation prompt.
+
+**Posture.** Each meme is a 2-column card: visual panel (CSS-drawn, no third-party templates or stock images, no copyright risk) + "the actual point" panel (punchline → 1-line decision frame → artifact link). Distracted-boyfriend template explicitly excluded — the gendered baseline is built into the original meme regardless of how it's relabeled, and the audience includes CHROs and risk leads. Replaced with "Is this a pigeon?" which carries the same misclassification punchline without identity baggage. Footer reiterates: <em>"All visuals CSS-drawn. No third-party meme templates or stock images. Original work, CC-BY-4.0."</em>
+
 ### Pattern for future starter packs
 
 The starter-skills + eval-pack + hooks-pack + mcp-pack + pilot-worksheet quintuple establishes a **template artifact pattern**: when the existing playbook/guide names a failure mode but offers no scaffolding, a starter pack with structured templates (when-to-use / failure-mode / owner / body) — or in the worksheet case, scored axes + verdict logic — earns its place. Candidate future packs to evaluate against this bar:

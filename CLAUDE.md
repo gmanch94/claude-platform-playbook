@@ -32,6 +32,7 @@ claude-platform-playbook/
 │   └── backlog.md                       Deferred enhancements with trigger-to-revisit conditions
 └── artifacts/
     ├── decision-spine.html              Front-door flowchart · 7 branches · routes reader to right artifact at each decision
+    ├── decision-memes.html              8 ice-breaker memes · CSS-drawn · each points at a real decision artifact (slide-1 opener, skeptic disarmer)
     ├── anti-use-cases.md                Where NOT to use Claude · 5 categories · explicit reject filter (runs before pilot-selection)
     ├── executive-briefing.html          10-slide deck (arrow-key nav, print-PDF)
     ├── cost-calculator.html             Live $/mo · Chart.js · 4 presets
