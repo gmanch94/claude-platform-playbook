@@ -58,7 +58,9 @@ claude-platform-playbook/
     ├── claude-code-starter-skills.md    8 team-grade Skill templates (when-to-use / failure-mode / owner / prompt body)
     ├── hooks-starter-pack.md            10 hook templates (block-secrets, PII scrub, branch guard, license, audit log, etc.) — phased 1→4 rollout
     ├── mcp-starter-pack.md              7 read-only MCP server templates (issue tracker, docs, CI logs, DB read, observability, API catalog, code search)
-    └── eval-starter-pack.md             8 eval templates (regression, format, tool-call, grounding, adversarial, cost, latency, refusal)
+    ├── eval-starter-pack.md             8 eval templates (regression, format, tool-call, grounding, adversarial, cost, latency, refusal)
+    ├── claude-misconceptions.md         ~15 myths that drive mis-budget / mis-architect / mis-staff calls — text-form skeptic disarmer
+    └── data-advisory.md                 Pre-pilot data sizing — context window vs RAG, eval corpus counts, distillation trigger, cache eligibility, source taxonomy + governance flags
 ```
 
 ## Working in this repo
