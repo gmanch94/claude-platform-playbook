@@ -38,7 +38,7 @@ Three abstraction layers. Same artifacts, three lenses — pick the lens that ma
 | **Architecture** — *how it fits together* | "Which pattern? Which features? What governance shape?" | [`reference-architectures.html`](artifacts/reference-architectures.html) · [`feature-decision-matrix.html`](artifacts/feature-decision-matrix.html) · [`governance-overlay.md`](artifacts/governance-overlay.md) |
 | **Execution** — *how it ships* | "How do we run the pilot? Score candidates? Roll out the CLI? Measure quality?" | [`adoption-playbook.md`](artifacts/adoption-playbook.md) · [`pilot-selection-worksheet.html`](artifacts/pilot-selection-worksheet.html) · [`claude-code-adoption-guide.md`](artifacts/claude-code-adoption-guide.md) · [`claude-code-starter-skills.md`](artifacts/claude-code-starter-skills.md) · [`hooks-starter-pack.md`](artifacts/hooks-starter-pack.md) · [`mcp-starter-pack.md`](artifacts/mcp-starter-pack.md) · [`eval-starter-pack.md`](artifacts/eval-starter-pack.md) |
 
-**Cross-cutting:** [`decision-spine.html`](artifacts/decision-spine.html) (entry-point flow across all three layers) · [`decision-memes.html`](artifacts/decision-memes.html) (8 ice-breaker memes, each pointing at a real artifact) · [`docs/feature-inventory.md`](docs/feature-inventory.md) (single source of truth, cited by every artifact above).
+**Cross-cutting:** [`decision-spine.html`](artifacts/decision-spine.html) (entry-point flow across all three layers) · [`decision-memes.html`](artifacts/decision-memes.html) (8 ice-breaker memes, each pointing at a real artifact) · [`claude-misconceptions.md`](artifacts/claude-misconceptions.md) (skeptic disarmer in text form — myths that drive mis-budget / mis-architect calls) · [`docs/feature-inventory.md`](docs/feature-inventory.md) (single source of truth, cited by every artifact above).
 
 Different roles enter at different layers. CIOs/CTOs read Strategy first. Architects start at Architecture. Transformation leads + engineering managers live in Execution. The spine is for anyone who doesn't already know which layer they're in.
 
@@ -48,6 +48,7 @@ Different roles enter at different layers. CIOs/CTOs read Strategy first. Archit
 |---|---|
 | Anyone, first time | [`decision-spine.html`](artifacts/decision-spine.html) |
 | Anyone, skeptical / wants the 30-second tour | [`decision-memes.html`](artifacts/decision-memes.html) |
+| Anyone arriving with priors ("Claude refuses everything," "context is 200K," "Pro covers the API") | [`claude-misconceptions.md`](artifacts/claude-misconceptions.md) |
 | CEO / board sponsor for AI bets | [`executive-briefing.html`](artifacts/executive-briefing.html) |
 | CIO / CTO sizing Claude TCO | [`cost-calculator.html`](artifacts/cost-calculator.html) → [`build-vs-buy-worksheet.html`](artifacts/build-vs-buy-worksheet.html) |
 | Architect choosing patterns | [`reference-architectures.html`](artifacts/reference-architectures.html) → [`feature-decision-matrix.html`](artifacts/feature-decision-matrix.html) |
@@ -66,6 +67,7 @@ Different roles enter at different layers. CIOs/CTOs read Strategy first. Archit
 |---|---|---|
 | [`decision-spine.html`](artifacts/decision-spine.html) | Reference (entry-point flow) | Single front-door flowchart routing to the right artifact for the question at hand. 7 branches (anti-use → pattern → build-vs-buy → cost → ship safely → CLI rollout → measurement). Hand-drawn SVG; print-friendly; no JS deps. |
 | [`decision-memes.html`](artifacts/decision-memes.html) | Ice-breaker (8 memes) | Eight CSS-drawn memes, each pointing at a real decision artifact. Slide-1 opener, skeptic disarmer, onboarding ice-breaker, workshop facilitation prompt. The artifacts the memes point to are not jokes. |
+| [`claude-misconceptions.md`](artifacts/claude-misconceptions.md) | Reference (skeptic disarmer) | ~15 myths about Claude that drive *measurable* mis-budget / mis-architect / mis-staff calls — context window, hooks, sandbox, caching, batch, refusal, rate limits, Computer Use. Format: myth → reality → what you'd mis-decide → cite. All cites primary (`docs.claude.com` / `anthropic.com`). Text-form companion to `decision-memes.html`. |
 | [`anti-use-cases.md`](artifacts/anti-use-cases.md) | Reference (reject filter) | Explicit list of where Claude should *not* be used — 5 categories (Hard nos, Wrong tool, Wrong economics, Governance no-go, Premature). Each entry: pattern → why not → do this instead → cite. Runs *before* pilot-selection-worksheet. |
 | [`executive-briefing.html`](artifacts/executive-briefing.html) | 10-slide deck | Full-screen leadership deck: platform shift, Claude in 60s, when Claude wins, cost economics, time-to-value, governance, 90-day plan, risks. Arrow-key nav, print-to-PDF. |
 | [`cost-calculator.html`](artifacts/cost-calculator.html) | Interactive | Inputs: monthly volume × token mix × model mix × cache hit rate × batch eligible %. Outputs: monthly $, per-request cost, savings vs naive baseline. |

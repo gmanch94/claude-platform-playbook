@@ -26,13 +26,13 @@
 
 | Feature | Status | As-of | Doc anchor | Used in artifacts |
 |---|---|---|---|---|
-| Prompt caching | GA | 2026-05 | docs.claude.com/en/docs/build-with-claude/prompt-caching | calculator, matrix, briefing, arch, eval-pack |
+| Prompt caching | GA | 2026-05 | docs.claude.com/en/docs/build-with-claude/prompt-caching | calculator, matrix, briefing, arch, eval-pack, misconceptions |
 | Extended thinking | GA | 2026-05 | docs.claude.com/en/docs/build-with-claude/extended-thinking | matrix, arch |
 | Tool use | GA | 2026-05 | docs.claude.com/en/docs/agents-and-tools/tool-use | matrix, arch, eval-pack |
-| Computer use 2.0 | GA | 2026-05 | docs.claude.com/en/docs/agents-and-tools/computer-use | matrix, arch |
+| Computer use 2.0 | GA | 2026-05 | docs.claude.com/en/docs/agents-and-tools/computer-use | matrix, arch, misconceptions |
 | Files API | GA | 2026-05 | docs.claude.com/en/docs/build-with-claude/files | matrix, arch, eval-pack |
 | Citations | GA | 2026-05 | docs.claude.com/en/docs/build-with-claude/citations | matrix, arch, eval-pack |
-| Batch API | GA | 2026-05 | docs.claude.com/en/api/messages-batch | calculator, matrix, arch, eval-pack |
+| Batch API | GA | 2026-05 | docs.claude.com/en/api/messages-batch | calculator, matrix, arch, eval-pack, misconceptions |
 | Memory tool | beta | 2026-05 | docs.claude.com/en/docs/agents-and-tools/memory-tool | matrix, arch |
 | Web search tool (server-side) | GA | 2026-05 | docs.claude.com/en/docs/agents-and-tools/web-search | arch:rag, claude-code-guide |
 | Code execution tool (server-side) | GA | 2026-05 | docs.claude.com/en/docs/agents-and-tools/code-execution | arch:agent, claude-code-guide, eval-pack |
@@ -45,7 +45,7 @@
 
 | Capability | Status | As-of | Doc anchor | Used in artifacts |
 |---|---|---|---|---|
-| Skills | GA | 2026-05 | docs.claude.com/en/docs/agents-and-tools/skills | matrix, playbook, arch, claude-code-guide, starter-skills, eval-pack |
+| Skills | GA | 2026-05 | docs.claude.com/en/docs/agents-and-tools/skills | matrix, playbook, arch, claude-code-guide, starter-skills, eval-pack, misconceptions |
 | MCP (Model Context Protocol) | GA | 2026-05 | modelcontextprotocol.io | matrix, playbook, arch, claude-code-guide, starter-skills, mcp-pack |
 | Agent SDK | GA | 2026-05 | docs.claude.com/en/api/agent-sdk | matrix, arch, claude-code-guide |
 | Plugins (bundled commands + skills + hooks + MCP servers) | GA | 2026-05 | docs.claude.com/en/docs/claude-code/plugins | matrix, arch, claude-code-guide, starter-skills, eval-pack |
@@ -57,9 +57,9 @@
 
 | Surface | Status | As-of | Doc anchor | Used in artifacts |
 |---|---|---|---|---|
-| Claude Code CLI | GA | 2026-05 | docs.claude.com/en/docs/claude-code | claude-code-guide |
-| Slash commands | GA | 2026-05 | docs.claude.com/en/docs/claude-code/slash-commands | claude-code-guide |
-| Hooks (PreToolUse / PostToolUse / SessionStart / Stop / UserPromptSubmit) | GA | 2026-05 | docs.claude.com/en/docs/claude-code/hooks | claude-code-guide, starter-skills, hooks-pack |
+| Claude Code CLI | GA | 2026-05 | docs.claude.com/en/docs/claude-code | claude-code-guide, misconceptions |
+| Slash commands | GA | 2026-05 | docs.claude.com/en/docs/claude-code/slash-commands | claude-code-guide, misconceptions |
+| Hooks (PreToolUse / PostToolUse / SessionStart / Stop / UserPromptSubmit) | GA | 2026-05 | docs.claude.com/en/docs/claude-code/hooks | claude-code-guide, starter-skills, hooks-pack, misconceptions |
 | Settings hierarchy (user / project / local) | GA | 2026-05 | docs.claude.com/en/docs/claude-code/settings | claude-code-guide, hooks-pack |
 | Output styles | GA | 2026-05 | docs.claude.com/en/docs/claude-code/output-styles | claude-code-guide |
 | Background tasks / scheduled routines | GA | 2026-05 | docs.claude.com/en/docs/claude-code/background-tasks | claude-code-guide, starter-skills |
