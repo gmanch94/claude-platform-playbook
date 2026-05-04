@@ -23,7 +23,7 @@ This pack closes the gap with 7 decision-framed read-only server templates. The 
 1. **Read-only first, mutate later.** Every server in this pack is read-only by design. Mutation patterns (post comment, write doc, run query) belong in Phase 3+ after governance is comfortable — see the adoption guide's phased rollout.
 2. **One server per system worth automating.** Don't bundle three systems behind one server — debugging tool failures gets 10× harder. One Jira server, one Confluence server, one DB server.
 3. **Each server needs a named owner.** A server with no owner gets disabled the first time it leaks credentials or 429s the agent. The owner is the person who will fix it within 24h, not "the platform team."
-4. **Tool returns are untrusted input.** Anything an MCP server returns (a Jira ticket body, a wiki page, a DB row) can carry prompt injection — see [`governance-overlay.md`](governance-overlay.md) §11. Sandbox tool execution; treat returns as user-controlled content for safety filters.
+4. **Tool returns are untrusted input.** Anything an MCP server returns (a Jira ticket body, a wiki page, a DB row) can carry prompt injection — see [`governance-overlay.md`](governance-overlay.md) §14. Sandbox tool execution; treat returns as user-controlled content for safety filters.
 5. **Cache the cheap calls.** Issue tracker reads, doc fetches, CI log tails are all read-heavy and cache-friendly. Use prompt caching on the system prompt that includes tool definitions; cache the static parts of returns where the protocol allows.
 
 Each template below is structured the same way:
@@ -382,7 +382,7 @@ Don't ship 7 MCP servers on day 1. Mirror the [`claude-code-adoption-guide.md`](
 - **Org-wide search servers** without allow-lists. A "search everything" server that includes HR, legal, executive content is a leak channel. Always scope.
 - **MCP servers as a substitute for direct API tools.** If the system has a clean API and only one agent uses it, sometimes a direct tool definition is simpler than an MCP server. MCP earns its keep when ≥2 agents need the same system.
 - **Production system mutate access via MCP.** Production writes go through normal CI/CD with human review, not through an agent's tool loop. The agent can *propose* the write (a PR, a deploy ticket); humans approve.
-- **Server-side prompt injection defenses for free.** Returns are untrusted user input. Treat them with the same prompt-injection defenses you'd apply to any user-controlled string. See [`governance-overlay.md`](governance-overlay.md) §11.
+- **Server-side prompt injection defenses for free.** Returns are untrusted user input. Treat them with the same prompt-injection defenses you'd apply to any user-controlled string. See [`governance-overlay.md`](governance-overlay.md) §14.
 
 ---
 
@@ -392,7 +392,7 @@ Don't ship 7 MCP servers on day 1. Mirror the [`claude-code-adoption-guide.md`](
 - [`claude-code-starter-skills.md`](claude-code-starter-skills.md) — Skills + MCP compose: a Skill says *what to do*, an MCP server says *what to read*. Pair the `pr-review` Skill with servers 1–2; pair `refactor-scout` with server 7.
 - [`hooks-starter-pack.md`](hooks-starter-pack.md) — Hooks defend the agent's loop; MCP servers extend the agent's reach. The `block-secrets` and `pii-scrub-prompt` hooks complement the redaction logic in servers 1–6 — defense in depth.
 - [`eval-starter-pack.md`](eval-starter-pack.md) — `tool-call-accuracy` and `grounding` evals are how you catch a server that returns junk or that the agent invokes wrong. Eval each server's tool surface before promoting past Phase 2.
-- [`governance-overlay.md`](governance-overlay.md) — §1 data flow taxonomy applies (tool returns leave your network embedded in the prompt); §11 prompt injection treats tool returns as untrusted; §3 BAA scope question for any server returning PHI.
+- [`governance-overlay.md`](governance-overlay.md) — §1 data flow taxonomy applies (tool returns leave your network embedded in the prompt); §14 prompt injection treats tool returns as untrusted; §4 BAA per-feature scope question for any server returning PHI.
 - [`feature-decision-matrix.html`](feature-decision-matrix.html) — MCP column shows which patterns benefit; this pack tells you which server to ship first.
 - [`reference-architectures.html`](reference-architectures.html) — agentic + domain-expert + code-automation patterns all assume an MCP layer; servers in this pack populate it.
 - [`../docs/feature-inventory.md`](../docs/feature-inventory.md) — canonical MCP status + doc anchor; cross-check before shipping.

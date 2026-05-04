@@ -158,10 +158,10 @@ Each failure mode scored on **probability** (Low / Med / High) and **cost-if-hit
 |---|---------|------|------|--------------|-------------------|-----------|
 | 1 | **Pilot purgatory** | High | ★★ | Week 4 retro: nobody can name the 2nd use case | Weeks | Pre-commit 2nd use case in Week 0 charter — see [`pilot-selection-worksheet.html`](pilot-selection-worksheet.html). Score 2–6 candidates so a backup exists. |
 | 2 | **Eval debt** | High | ★★★ | Prompt or Skill change merged without eval run | Months | Block CI on missing eval pass — see [`eval-starter-pack.md`](eval-starter-pack.md) blocking-vs-advisory matrix. |
-| 3 | **Cost surprise** | Med | ★★★★ | Daily $ trending up >20% week-over-week, or single workload >50% of total | Days | Wire 4 numeric gates ($/task, $/day, cache floor, batch floor) — see [`governance-overlay.md`](governance-overlay.md#12-cost-as-a-governance-constraint) §12. Hook-enforced, not invoice-discovered. |
+| 3 | **Cost surprise** | Med | ★★★★ | Daily $ trending up >20% week-over-week, or single workload >50% of total | Days | Wire 4 numeric gates ($/task, $/day, cache floor, batch floor) — see [`governance-overlay.md`](governance-overlay.md#15-cost-as-a-governance-constraint) §15. Hook-enforced, not invoice-discovered. |
 | 4 | **Prompt sprawl** | High | ★★ | Two teams shipping similar Skills independently; no shared registry | Weeks | Canonical Skills library + COE registry by Week 10 — see [`claude-code-starter-skills.md`](claude-code-starter-skills.md). |
 | 5 | **Governance afterthought** | High | ★★★★ | Risk function not on Week 1 stand-up; no DPA/BAA log | Months | Embed risk reviewer in Week 1 (advisory not blocking) — see [`governance-overlay.md`](governance-overlay.md). Issues surface early, cheaply. |
-| 6 | **Vendor concentration panic** | Med | ★★ | CFO/board ask "what if Anthropic disappears?" in QBR | Weeks | [`governance-overlay.md`](governance-overlay.md) §9 multi-model abstraction at the right layer. Don't pre-build a 3-model fallback you'll never use. |
+| 6 | **Vendor concentration panic** | Med | ★★ | CFO/board ask "what if Anthropic disappears?" in QBR | Weeks | [`governance-overlay.md`](governance-overlay.md) §12 multi-model abstraction at the right layer. Don't pre-build a 3-model fallback you'll never use. |
 | 7 | **Model deprecation thrash** | Med | ★★★ | Anthropic announces deprecation date for a pinned model | Hours | COE owns model-bump runbook; pin family not point release; gate on regression eval pass — see [`eval-starter-pack.md`](eval-starter-pack.md). |
 | 8 | **The "AI committee" tax** | High | ★★★ | Decision queue >7 days; no single sponsor name on use case | Weeks | Single named sponsor with veto — see [`pilot-selection-worksheet.html`](pilot-selection-worksheet.html) sponsor-clarity axis. Committee informs, doesn't decide. |
 
@@ -178,7 +178,7 @@ Below: each mode in prose, with the original symptom + fix framing. Use the heat
 | 3 | **Cost surprise** | Month 4 bill is 5× the pilot's monthly run rate. | Cost dashboard live by Week 6, weekly review. Cap-with-alert per use case. |
 | 4 | **Prompt sprawl** | Every team writes its own copy of the same instruction set. | Skills + plugins library by Week 10. COE owns the canonical versions. |
 | 5 | **Governance afterthought** | Risk function shows up in Month 5 with blocking issues. | Embed risk reviewer in Week 1 (advisory, not blocking). Issues surface early, cheaply. |
-| 6 | **Vendor concentration panic** | CFO/board asks "what if Anthropic disappears?" | Address in [`governance-overlay.md`](governance-overlay.md) §9. Multi-model abstraction at the right layer. Don't pre-build a 3-model fallback you'll never use. |
+| 6 | **Vendor concentration panic** | CFO/board asks "what if Anthropic disappears?" | Address in [`governance-overlay.md`](governance-overlay.md) §12. Multi-model abstraction at the right layer. Don't pre-build a 3-model fallback you'll never use. |
 | 7 | **Model deprecation thrash** | Anthropic rev-bumps; quality moves; nobody owns re-eval. | COE owns the model bump runbook. Pin model family, not point release. |
 | 8 | **The "AI committee" tax** | Decisions take weeks. Nothing ships. | Single named sponsor with veto. Committee informs, doesn't decide. |
 

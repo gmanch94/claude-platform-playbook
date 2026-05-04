@@ -53,7 +53,7 @@ claude-platform-playbook/
     ├── reference-architectures.html     6 hand-drawn SVG patterns (Caveat font)
     ├── adoption-playbook.md             90-day rollout · 8 failure modes
     ├── pilot-selection-worksheet.html   Week 0 use-case scorer · 5 axes · ranked verdicts + blocker flags
-    ├── governance-overlay.md            Data flow · BAA · NIST · EU AI Act
+    ├── governance-overlay.md            Data flow · No-train · ZDR · HIPAA/BAA · Residency · Retention · Certs · NIST · EU AI Act
     ├── claude-code-adoption-guide.md    Engineering CLI rollout
     ├── claude-code-starter-skills.md    8 team-grade Skill templates (when-to-use / failure-mode / owner / prompt body)
     ├── hooks-starter-pack.md            10 hook templates (block-secrets, PII scrub, branch guard, license, audit log, etc.) — phased 1→4 rollout

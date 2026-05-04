@@ -8,7 +8,7 @@ Ideas surfaced during work but explicitly deferred. Each entry: what · why defe
 
 ## #2-deeper — unit-economics gate banner in `cost-calculator.html`
 
-**What.** Extend `cost-calculator.html` with a live unit-economics gate banner: user enters their $/task ceiling + $/day cap, the calculator surfaces a red banner when computed values exceed thresholds. Companion: tighten the `anti-use-cases.md` Wrong-economics row "Pilot with no defined volume cap or kill-switch" to cite the four numeric gates from `governance-overlay.md §12` directly (instead of pointing at the governance overlay generically).
+**What.** Extend `cost-calculator.html` with a live unit-economics gate banner: user enters their $/task ceiling + $/day cap, the calculator surfaces a red banner when computed values exceed thresholds. Companion: tighten the `anti-use-cases.md` Wrong-economics row "Pilot with no defined volume cap or kill-switch" to cite the four numeric gates from `governance-overlay.md §15` directly (instead of pointing at the governance overlay generically).
 
 **Why deferred.** The lean version of #2 (governance-overlay §12 + cost-calculator subtitle cross-link) covers the conceptual move — cost is a constraint, not a curiosity — without bloating cost-calculator UX. The banner adds visceral feedback but expands the calculator's scope from *modeling* to *gating*, which is a different artifact contract. Hold until evidence the conceptual move alone isn't enough.
 

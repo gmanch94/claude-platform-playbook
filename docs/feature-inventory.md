@@ -80,13 +80,18 @@
 
 ## Compliance + governance posture
 
-| Item | Status | As-of | Notes | Used in artifacts |
-|---|---|---|---|---|
-| No-train (API + Console default) | Confirmed | 2026-05 | Verify policy version when signing. Re-check quarterly. | governance-overlay, anti-use-cases, briefing |
-| BAA (HIPAA workloads) | Available | 2026-05 | Direct procurement path. Verify scope per workload. | governance-overlay, anti-use-cases, build-vs-buy |
-| Data residency (regions) | Multiple | 2026-05 | Region availability differs across direct / Bedrock / Vertex. | governance-overlay, anti-use-cases, build-vs-buy |
-| SOC 2 Type II | Held | 2026-05 | Refresh cycle annual. Request current report before audit. | governance-overlay |
-| ISO 27001 | Held | 2026-05 | Same as SOC 2. | governance-overlay |
+| Item | Status | As-of | Doc anchor | Notes | Used in artifacts |
+|---|---|---|---|---|---|
+| No-train (commercial API + Console default) | Confirmed | 2026-05 | privacy.claude.com/en/articles/7996868-is-my-data-used-for-model-training | Verify policy version when signing. Re-check quarterly. Consumer plans (Free/Pro/Max) are a separate policy surface. | governance-overlay, anti-use-cases, briefing, misconceptions |
+| Standard retention (commercial API) | Confirmed | 2026-05 | privacy.claude.com/en/articles/7996866-how-long-do-you-store-my-organization-s-data | 30-day backend deletion default. AUP-flagged: inputs/outputs up to 2 years, T&S classifier scores up to 7 years. Feedback: 5 years. | governance-overlay |
+| Zero Data Retention (ZDR) | Available (enterprise, approval required) | 2026-05 | platform.claude.com/docs/en/build-with-claude/api-and-data-retention | Covers Messages + Token Counting APIs, Claude Code (Commercial org key, or Enterprise w/ ZDR). T&S classifier results still retained. Consumer plans + Teams/Enterprise UI not eligible. | governance-overlay, anti-use-cases, build-vs-buy |
+| HIPAA-ready API access | GA | 2026-05 | platform.claude.com/docs/en/build-with-claude/api-and-data-retention#hipaa-readiness | Separate from BAA. HIPAA-enabled orgs get 400 error on non-eligible features. ZDR no longer prerequisite. | governance-overlay, anti-use-cases, build-vs-buy |
+| BAA (HIPAA workloads) | Available | 2026-05 | privacy.claude.com/en/articles/8114513-business-associate-agreements-baa-for-commercial-customers | Covers first-party API + Enterprise plans (chat, projects, artifacts, file creation w/o network, voice). Excludes: Workbench, Console, Free/Pro/Max/Team, beta (Cowork, Claude for Office). Per-feature eligibility — verify Implementation Guide. | governance-overlay, anti-use-cases, build-vs-buy |
+| Data residency — `inference_geo` | GA | 2026-05 | platform.claude.com/docs/en/build-with-claude/data-residency | Per-request inference geo (`global` default, or `us`). Opus 4.6+. First-party API only — Bedrock/Vertex use their own region selection. | governance-overlay, anti-use-cases, build-vs-buy |
+| Data residency — Workspace geo | GA | 2026-05 | platform.claude.com/docs/en/build-with-claude/data-residency | Controls at-rest storage and endpoint processing (image transcoding, code execution). Set in Console at workspace level. | governance-overlay |
+| SOC 2 Type I & Type II | Held | 2026-05 | trust.anthropic.com | Refresh annual. Request current report from Trust Portal. | governance-overlay |
+| ISO 27001:2022 | Held | 2026-05 | trust.anthropic.com | Information Security Management. | governance-overlay |
+| ISO/IEC 42001:2023 | Held | 2026-05 | trust.anthropic.com | AI Management Systems — AI-specific certification. | governance-overlay |
 
 ---
 
