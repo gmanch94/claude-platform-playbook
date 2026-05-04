@@ -51,7 +51,7 @@
 <div class="wrap">
   <header>
     <h1>Reference Architectures <span class="asof">As of 2026-05</span></h1>
-    <div class="sub">6 canonical Claude patterns. Hand-drawn diagrams — meant to be re-drawn on a whiteboard, not pasted into a slide. See <a href="../docs/feature-inventory.md">feature-inventory.md</a> for canonical feature status.</div>
+    <div class="sub">6 canonical Claude patterns. Hand-drawn diagrams — meant to be re-drawn on a whiteboard, not pasted into a slide. See <a href="../docs/feature-inventory.html">feature-inventory.md</a> for canonical feature status.</div>
   </header>
 
   <div class="legend-row">
@@ -160,9 +160,9 @@
 
     <div class="companions">
       <strong>Operationalize with:</strong>
-      <a href="eval-starter-pack.md">eval-starter-pack.md</a> — <em>grounding</em> + <em>format-compliance</em> evals are how you catch citation drift and untethered answers ·
-      <a href="mcp-starter-pack.md">mcp-starter-pack.md</a> — <em>internal-docs</em> server is the live-data MCP for this pattern ·
-      <a href="governance-overlay.md">governance-overlay.md</a> §6 — what to log per request when citations are mandatory.
+      <a href="eval-starter-pack.html">eval-starter-pack.md</a> — <em>grounding</em> + <em>format-compliance</em> evals are how you catch citation drift and untethered answers ·
+      <a href="mcp-starter-pack.html">mcp-starter-pack.md</a> — <em>internal-docs</em> server is the live-data MCP for this pattern ·
+      <a href="governance-overlay.html">governance-overlay.md</a> §6 — what to log per request when citations are mandatory.
     </div>
   </div>
 
@@ -281,10 +281,10 @@
 
     <div class="companions">
       <strong>Operationalize with:</strong>
-      <a href="mcp-starter-pack.md">mcp-starter-pack.md</a> — 7 read-only server templates populate the MCP layer in the diagram ·
-      <a href="eval-starter-pack.md">eval-starter-pack.md</a> — <em>tool-call-accuracy</em> + <em>grounding</em> + <em>cost-per-task</em> evals are non-negotiable for agentic loops ·
-      <a href="claude-code-starter-skills.md">claude-code-starter-skills.md</a> — Skills template structure (when-to-use / failure-mode / owner) is portable beyond Claude Code ·
-      <a href="governance-overlay.md">governance-overlay.md</a> §11 — sandbox tool runtime, treat tool returns as untrusted.
+      <a href="mcp-starter-pack.html">mcp-starter-pack.md</a> — 7 read-only server templates populate the MCP layer in the diagram ·
+      <a href="eval-starter-pack.html">eval-starter-pack.md</a> — <em>tool-call-accuracy</em> + <em>grounding</em> + <em>cost-per-task</em> evals are non-negotiable for agentic loops ·
+      <a href="claude-code-starter-skills.html">claude-code-starter-skills.md</a> — Skills template structure (when-to-use / failure-mode / owner) is portable beyond Claude Code ·
+      <a href="governance-overlay.html">governance-overlay.md</a> §11 — sandbox tool runtime, treat tool returns as untrusted.
     </div>
   </div>
 
@@ -370,8 +370,8 @@
     <div class="companions">
       <strong>Operationalize with:</strong>
       <a href="cost-calculator.html">cost-calculator.html</a> — model the Haiku + batch + cache compounding before you commit a job size ·
-      <a href="eval-starter-pack.md">eval-starter-pack.md</a> — <em>format-compliance</em> + <em>regression</em> evals run cheaply on the Batch API itself ·
-      <a href="governance-overlay.md">governance-overlay.md</a> §6 + §8 — per-job audit trail and retention policy for batch outputs.
+      <a href="eval-starter-pack.html">eval-starter-pack.md</a> — <em>format-compliance</em> + <em>regression</em> evals run cheaply on the Batch API itself ·
+      <a href="governance-overlay.html">governance-overlay.md</a> §6 + §8 — per-job audit trail and retention policy for batch outputs.
     </div>
   </div>
 
@@ -468,10 +468,10 @@
 
     <div class="companions">
       <strong>Operationalize with:</strong>
-      <a href="claude-code-starter-skills.md">claude-code-starter-skills.md</a> — Skills template shape (when-to-use / failure-mode / owner) ports directly to domain Skills ·
-      <a href="mcp-starter-pack.md">mcp-starter-pack.md</a> — read-only servers (issue tracker, internal docs, observability, API catalog) populate the systems-of-record layer ·
-      <a href="eval-starter-pack.md">eval-starter-pack.md</a> — <em>grounding</em> + <em>refusal-calibration</em> evals are mandatory for high-stakes verticals ·
-      <a href="governance-overlay.md">governance-overlay.md</a> §4 + §6 — EU AI Act high-risk deployer obligations + audit log requirements.
+      <a href="claude-code-starter-skills.html">claude-code-starter-skills.md</a> — Skills template shape (when-to-use / failure-mode / owner) ports directly to domain Skills ·
+      <a href="mcp-starter-pack.html">mcp-starter-pack.md</a> — read-only servers (issue tracker, internal docs, observability, API catalog) populate the systems-of-record layer ·
+      <a href="eval-starter-pack.html">eval-starter-pack.md</a> — <em>grounding</em> + <em>refusal-calibration</em> evals are mandatory for high-stakes verticals ·
+      <a href="governance-overlay.html">governance-overlay.md</a> §4 + §6 — EU AI Act high-risk deployer obligations + audit log requirements.
     </div>
   </div>
 
@@ -573,7 +573,7 @@
       <div class="cell"><h4>Time to disruption</h4><div class="v">0–3 mo · ship now.</div></div>
     </div>
 
-    <p>Engineering teams use Claude Code (CLI + IDE) day-to-day. Sonnet 4.6 is the default; Opus 4.7 handles hard refactors. Sub-agents (Task tool) parallelize investigation work. The team plugin bundles slash commands, Skills (repo conventions, language patterns), hooks (PreToolUse policy enforcement), and MCP servers (issue tracker, internal docs) so a new engineer's setup is a one-line install. Headless mode runs the same loop in CI. Detail in <a href="claude-code-adoption-guide.md">claude-code-adoption-guide.md</a>.</p>
+    <p>Engineering teams use Claude Code (CLI + IDE) day-to-day. Sonnet 4.6 is the default; Opus 4.7 handles hard refactors. Sub-agents (Task tool) parallelize investigation work. The team plugin bundles slash commands, Skills (repo conventions, language patterns), hooks (PreToolUse policy enforcement), and MCP servers (issue tracker, internal docs) so a new engineer's setup is a one-line install. Headless mode runs the same loop in CI. Detail in <a href="claude-code-adoption-guide.html">claude-code-adoption-guide.md</a>.</p>
 
     <div class="when">
       <div class="yes"><h4>Use when</h4>Engineering teams shipping software. Repo-aware tasks. Refactors, migrations, code review, scheduled maintenance.</div>
@@ -582,11 +582,11 @@
 
     <div class="companions">
       <strong>Operationalize with:</strong>
-      <a href="claude-code-adoption-guide.md">claude-code-adoption-guide.md</a> — phased rollout, settings hierarchy, sub-agents ·
-      <a href="claude-code-starter-skills.md">claude-code-starter-skills.md</a> — 8 team-grade Skill templates (PR review, test gen, migration guard, refactor scout, etc.) ·
-      <a href="hooks-starter-pack.md">hooks-starter-pack.md</a> — 10 hook templates with phased Phase 1→4 rollout matrix ·
-      <a href="mcp-starter-pack.md">mcp-starter-pack.md</a> — 7 read-only server templates (issue tracker, docs, CI logs, code search) ·
-      <a href="eval-starter-pack.md">eval-starter-pack.md</a> — Phase 3 governance gate before plugin promotion.
+      <a href="claude-code-adoption-guide.html">claude-code-adoption-guide.md</a> — phased rollout, settings hierarchy, sub-agents ·
+      <a href="claude-code-starter-skills.html">claude-code-starter-skills.md</a> — 8 team-grade Skill templates (PR review, test gen, migration guard, refactor scout, etc.) ·
+      <a href="hooks-starter-pack.html">hooks-starter-pack.md</a> — 10 hook templates with phased Phase 1→4 rollout matrix ·
+      <a href="mcp-starter-pack.html">mcp-starter-pack.md</a> — 7 read-only server templates (issue tracker, docs, CI logs, code search) ·
+      <a href="eval-starter-pack.html">eval-starter-pack.md</a> — Phase 3 governance gate before plugin promotion.
     </div>
   </div>
 
@@ -717,10 +717,10 @@
 
     <div class="companions">
       <strong>Operationalize with:</strong>
-      <a href="claude-code-starter-skills.md">claude-code-starter-skills.md</a> — Skills package in-app procedures (drafting, summarizing, classifying) ·
-      <a href="mcp-starter-pack.md">mcp-starter-pack.md</a> — host-app MCP server (read-only by default, gated mutate via Phase 4) ·
-      <a href="eval-starter-pack.md">eval-starter-pack.md</a> — refusal-calibration + grounding evals matter most for in-app responses ·
-      <a href="governance-overlay.md">governance-overlay.md</a> — §1 data flow when prompts include app context, §8 memory tool retention.
+      <a href="claude-code-starter-skills.html">claude-code-starter-skills.md</a> — Skills package in-app procedures (drafting, summarizing, classifying) ·
+      <a href="mcp-starter-pack.html">mcp-starter-pack.md</a> — host-app MCP server (read-only by default, gated mutate via Phase 4) ·
+      <a href="eval-starter-pack.html">eval-starter-pack.md</a> — refusal-calibration + grounding evals matter most for in-app responses ·
+      <a href="governance-overlay.html">governance-overlay.md</a> — §1 data flow when prompts include app context, §8 memory tool retention.
     </div>
   </div>
 
@@ -733,7 +733,7 @@
     <div class="companions" style="margin-top: 10px;">
       <strong>Start here:</strong>
       <a href="pilot-selection-worksheet.html">pilot-selection-worksheet.html</a> — Week 0 use-case scorer ·
-      <a href="adoption-playbook.md">adoption-playbook.md</a> — 90-day rollout arc that wraps the pattern you pick ·
+      <a href="adoption-playbook.html">adoption-playbook.md</a> — 90-day rollout arc that wraps the pattern you pick ·
       <a href="build-vs-buy-worksheet.html">build-vs-buy-worksheet.html</a> — 5-axis Claude-vs-alternatives scorer for the same use case.
     </div>
   </div>
@@ -741,7 +741,7 @@
 </div>
 
 <footer>
-  © gmanch94 · CC-BY-4.0 · As of 2026-05. Verify feature surface at <a href="https://docs.claude.com">docs.claude.com</a>. Source-of-truth status in <a href="../docs/feature-inventory.md">feature-inventory.md</a>.
+  © gmanch94 · CC-BY-4.0 · As of 2026-05. Verify feature surface at <a href="https://docs.claude.com">docs.claude.com</a>. Source-of-truth status in <a href="../docs/feature-inventory.html">feature-inventory.md</a>.
 </footer>
 </body>
 </html>

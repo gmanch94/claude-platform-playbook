@@ -120,7 +120,7 @@
     <div class="premise">
       <div class="myth"><strong>Myth 1:</strong> "Enterprise contract = governance done."</div>
       <div class="reality"><strong>Reality:</strong> BAA + zero-retention + data residency cover the data-flow surface. They do not cover bias testing, audit trail, refusal calibration, prompt versioning, or eval discipline. Procurement is one of seven branches — not the whole spine.</div>
-      <div class="see">→ See <a href="governance-overlay.md">governance-overlay.md</a> for the full posture map.</div>
+      <div class="see">→ See <a href="governance-overlay.html">governance-overlay.md</a> for the full posture map.</div>
     </div>
 
     <div class="premise">
@@ -144,7 +144,7 @@
     <div class="premise">
       <div class="myth"><strong>Myth 5:</strong> "We'll wire evals after the pilot ships."</div>
       <div class="reality"><strong>Reality:</strong> "Evals exist but nobody runs them" is the #2 named failure mode in the adoption playbook. Without a regression eval at pilot launch, you cannot tell silent quality drift from model updates apart from prompt drift apart from data drift. Wire evals <em>before</em> pilot launch — the cost of retrofitting them is 3–5× the cost of standing them up at Week 0.</div>
-      <div class="see">→ See <a href="eval-starter-pack.md">eval-starter-pack.md</a> for the 8-template starter pack.</div>
+      <div class="see">→ See <a href="eval-starter-pack.html">eval-starter-pack.md</a> for the 8-template starter pack.</div>
     </div>
 
     <div class="premise">
@@ -276,7 +276,7 @@
     <div class="who"><strong>Who's asking:</strong> Risk / compliance reviewer · transformation lead in Week 0 · CTO scoping a candidate use case.</div>
     <div class="frame">If the candidate is sole-decider on a regulated decision (credit denial, sentencing, hiring rejection), needs sub-100ms latency, runs at sub-cent unit cost, exposes prompt-injection surface without sandboxing, or arrives without an eval baseline / rollback path / named owner — stop. Re-route, narrow scope, or kill. The reject filter is upstream of every other branch.</div>
     <div class="artifacts">
-      <a href="anti-use-cases.md"><strong>anti-use-cases.md</strong><br><span class="path">artifacts/anti-use-cases.md</span> — 5 categories: Hard nos · Wrong tool · Wrong economics · Governance no-go · Premature.</a>
+      <a href="anti-use-cases.html"><strong>anti-use-cases.md</strong><br><span class="path">artifacts/anti-use-cases.md</span> — 5 categories: Hard nos · Wrong tool · Wrong economics · Governance no-go · Premature.</a>
     </div>
     <div class="stop-step"><strong>If you fail this filter:</strong> stop here. Don't proceed to branch 2. Document the rejection reason; come back when the blocker is gone.</div>
     <div class="next-step"><strong>If you pass:</strong> go to branch <a href="#b2">2 — pattern fit</a>.</div>
@@ -323,8 +323,8 @@
     <div class="frame">Three sub-decisions, in order: (a) <strong>Score candidate pilots</strong> on 5 axes (value · time-to-signal · data readiness · risk · sponsor clarity); pick the strongest. (b) <strong>Run the 90-day arc</strong> — Week 0 pre-flight, Weeks 1–4 pilot, 5–8 guardrails, 9–13 scale, 8 named failure modes to watch. (c) <strong>Map governance posture</strong> — BAA / DPA / data residency / no-train / EU AI Act + NIST AI RMF mapping / audit trail / prompt versioning / vendor concentration mitigation.</div>
     <div class="artifacts">
       <a href="pilot-selection-worksheet.html"><strong>pilot-selection-worksheet.html</strong><br><span class="path">artifacts/pilot-selection-worksheet.html</span> — Week 0 use-case scorer with blocker flags.</a>
-      <a href="adoption-playbook.md"><strong>adoption-playbook.md</strong><br><span class="path">artifacts/adoption-playbook.md</span> — 90-day rollout, 8 failure modes, reference team structure.</a>
-      <a href="governance-overlay.md"><strong>governance-overlay.md</strong><br><span class="path">artifacts/governance-overlay.md</span> — risk + compliance overlay specific to Claude.</a>
+      <a href="adoption-playbook.html"><strong>adoption-playbook.md</strong><br><span class="path">artifacts/adoption-playbook.md</span> — 90-day rollout, 8 failure modes, reference team structure.</a>
+      <a href="governance-overlay.html"><strong>governance-overlay.md</strong><br><span class="path">artifacts/governance-overlay.md</span> — risk + compliance overlay specific to Claude.</a>
     </div>
     <div class="next-step"><strong>Parallel:</strong> if engineering is also adopting Claude Code, run branch <a href="#b6">6</a> alongside this. Don't wait for Week 13 to start the CLI rollout. Always wire branch <a href="#b7">7 — measurement</a> before pilot launch, not after.</div>
   </div>
@@ -335,10 +335,10 @@
     <div class="who"><strong>Who's asking:</strong> Engineering manager rolling out Claude Code · platform engineer wiring MCP · security / privacy engineer hardening the CLI surface.</div>
     <div class="frame">Five-part rollout: pilot selection (which team, which use case) · hooks (block-secrets, PII scrub, branch guard, audit log) · skills (team-grade Skill templates, not per-engineer plugins) · MCP servers (read-only by design; mutate variants deferred to Phase 4) · evals (regression, format, tool-call accuracy, cost-per-task). Phased Phase 1→4 rollout matrix prevents the "ship 12 hooks on day 1" failure mode.</div>
     <div class="artifacts">
-      <a href="claude-code-adoption-guide.md"><strong>claude-code-adoption-guide.md</strong><br><span class="path">artifacts/claude-code-adoption-guide.md</span> — engineering rollout, security model, measurement.</a>
-      <a href="claude-code-starter-skills.md"><strong>claude-code-starter-skills.md</strong><br><span class="path">artifacts/claude-code-starter-skills.md</span> — 8 team-grade Skill templates.</a>
-      <a href="hooks-starter-pack.md"><strong>hooks-starter-pack.md</strong><br><span class="path">artifacts/hooks-starter-pack.md</span> — 10 hook templates with phased rollout matrix.</a>
-      <a href="mcp-starter-pack.md"><strong>mcp-starter-pack.md</strong><br><span class="path">artifacts/mcp-starter-pack.md</span> — 7 read-only MCP server templates.</a>
+      <a href="claude-code-adoption-guide.html"><strong>claude-code-adoption-guide.md</strong><br><span class="path">artifacts/claude-code-adoption-guide.md</span> — engineering rollout, security model, measurement.</a>
+      <a href="claude-code-starter-skills.html"><strong>claude-code-starter-skills.md</strong><br><span class="path">artifacts/claude-code-starter-skills.md</span> — 8 team-grade Skill templates.</a>
+      <a href="hooks-starter-pack.html"><strong>hooks-starter-pack.md</strong><br><span class="path">artifacts/hooks-starter-pack.md</span> — 10 hook templates with phased rollout matrix.</a>
+      <a href="mcp-starter-pack.html"><strong>mcp-starter-pack.md</strong><br><span class="path">artifacts/mcp-starter-pack.md</span> — 7 read-only MCP server templates.</a>
     </div>
     <div class="next-step"><strong>After this:</strong> wire branch <a href="#b7">7 — evaluation</a> for the CLI surface (eval-trigger hook + eval-starter-pack), then converge with the executive track at "Pilot → Guardrails → Scale."</div>
   </div>
@@ -349,7 +349,7 @@
     <div class="who"><strong>Who's asking:</strong> ML / platform lead setting up CI for prompts + Skills · transformation lead defining success metrics · engineering lead hardening the CLI rollout.</div>
     <div class="frame">Eight eval categories: regression · format compliance · tool-call accuracy · grounding · adversarial · cost-per-task · latency · refusal calibration. Each framed by what it catches / failure-mode of the eval itself / owner. Blocking-vs-advisory matrix prevents eval-bypass culture. <strong>Wire evals before pilot launch</strong>, not after — "evals exist but nobody runs them" is the #2 failure mode in the adoption playbook.</div>
     <div class="artifacts">
-      <a href="eval-starter-pack.md"><strong>eval-starter-pack.md</strong><br><span class="path">artifacts/eval-starter-pack.md</span> — 8 eval templates with blocking/advisory matrix.</a>
+      <a href="eval-starter-pack.html"><strong>eval-starter-pack.md</strong><br><span class="path">artifacts/eval-starter-pack.md</span> — 8 eval templates with blocking/advisory matrix.</a>
     </div>
     <div class="next-step"><strong>After this:</strong> branches converge at "Pilot → Guardrails → Scale." All seven branches are required; skipping any is a named failure mode.</div>
   </div>
@@ -359,14 +359,14 @@
     <div class="frame">
       <strong>Trigger 1 — Anthropic ships a new capability</strong> that changes the cost / latency / governance math (new model tier, new BAA-by-default region, deterministic mode). Re-walk branches 2 → 4.<br><br>
       <strong>Trigger 2 — A regulator publishes a new framework</strong> (EU AI Act delegated act, US state law, NIST AI RMF revision). Re-walk branch 1 to confirm anti-use list is still complete; re-walk branch 5 governance overlay.<br><br>
-      <strong>Trigger 3 — A pilot fails for a reason not in the playbook's 8 failure modes.</strong> Add the new failure mode to <a href="adoption-playbook.md">adoption-playbook.md</a>; if the failure was a missed reject, add the row to <a href="anti-use-cases.md">anti-use-cases.md</a>.<br><br>
-      <strong>Trigger 4 — Monthly refresh.</strong> Scheduled remote agent runs first Monday of each month; opens a PR if drift detected. Manual fallback: run <code>/bump-as-of</code>; verify <a href="../docs/feature-inventory.md">feature-inventory.md</a> against <code>docs.claude.com</code> and <code>anthropic.com/pricing</code>; bump downstream artifacts on any drift.
+      <strong>Trigger 3 — A pilot fails for a reason not in the playbook's 8 failure modes.</strong> Add the new failure mode to <a href="adoption-playbook.html">adoption-playbook.md</a>; if the failure was a missed reject, add the row to <a href="anti-use-cases.html">anti-use-cases.md</a>.<br><br>
+      <strong>Trigger 4 — Monthly refresh.</strong> Scheduled remote agent runs first Monday of each month; opens a PR if drift detected. Manual fallback: run <code>/bump-as-of</code>; verify <a href="../docs/feature-inventory.html">feature-inventory.md</a> against <code>docs.claude.com</code> and <code>anthropic.com/pricing</code>; bump downstream artifacts on any drift.
     </div>
   </div>
 
   <footer>
     <p>© gmanch94 · CC-BY-4.0 · As of 2026-05. Verify pricing/models at <a href="https://www.anthropic.com">anthropic.com</a>.</p>
-    <p style="margin-top:6px;">Single source of truth for feature status: <a href="../docs/feature-inventory.md">docs/feature-inventory.md</a>.</p>
+    <p style="margin-top:6px;">Single source of truth for feature status: <a href="../docs/feature-inventory.html">docs/feature-inventory.md</a>.</p>
   </footer>
 </div>
 </body>
