@@ -10,6 +10,18 @@ Public, CC-BY-4.0, vendor-explicit, decision-oriented. **Not** Anthropic marketi
 
 There is no build system or test suite. This is a content repo of static HTML + Markdown.
 
+## Session-start protocol
+
+**Before any tool calls beyond orientation:**
+
+1. Read [`scratch/NEXT_SESSION.md`](scratch/NEXT_SESSION.md) — resume bookmark (HEAD, recent landings, backlog with triggers, "things to NOT do without explicit instruction"). `scratch/` is gitignored; this is the user's personal aid.
+2. Read [`LESSONS_LEARNED.md`](LESSONS_LEARNED.md) — process lessons compound; re-reading prevents repeat misses.
+3. Read this file (CLAUDE.md) — repo posture, tone, things to avoid.
+4. `git status` + `git log --oneline -5` — confirm state matches the bookmark's HEAD.
+5. Only then ask the user what they want to work on.
+
+This protocol is repeated in `LESSONS_LEARNED.md` as the canonical reference.
+
 ## Single source of truth
 
 **`docs/feature-inventory.md`** is the canonical list of every Claude platform feature, model, status, pricing, and doc URL. The `Used in artifacts` column maps each row to the downstream artifacts that cite it.
