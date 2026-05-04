@@ -50,6 +50,10 @@
   details .body li { margin-bottom: 4px; }
   footer { margin-top: 40px; padding-top: 16px; border-top: 1px solid var(--line); text-align: center; font-size: 12px; color: var(--muted); }
   footer a { color: var(--c1d); }
+  .warn-banner { display: none; background: #fef2f2; border-left: 3px solid #dc2626; border-radius: 4px; padding: 10px 14px; font-size: 13px; margin-top: 10px; color: #991b1b; }
+  .warn-banner.show { display: block; }
+  .gate-warn { font-size: 12px; color: var(--warn); margin-top: 4px; display: none; }
+  .gate-warn.show { display: block; }
   .preset-row { display: flex; gap: 6px; flex-wrap: wrap; margin-bottom: 14px; }
   .preset-row button { padding: 6px 12px; background: white; border: 1px solid var(--line); border-radius: 6px; font-size: 12px; cursor: pointer; color: var(--ink); }
   .preset-row button:hover { border-color: var(--c1); color: var(--c1d); }
@@ -116,12 +120,14 @@
         <label>Prompt cache hit rate <span class="val" id="cache-val">70%</span></label>
         <input type="range" id="cache" min="0" max="95" value="70">
         <div class="hint">% of input tokens served from cache (90% cheaper). Realistic: 50–85% once warm. New conversations start cold.</div>
+        <div class="gate-warn" id="cache-gate-warn"></div>
       </div>
 
       <div class="field">
         <label>Batch-eligible % <span class="val" id="batch-val">0%</span></label>
         <input type="range" id="batch" min="0" max="100" value="0">
         <div class="hint">% of traffic that can wait up to 24h (50% off). Interactive copilots: 0%. Nightly enrichment: 100%.</div>
+        <div class="gate-warn" id="batch-gate-warn"></div>
       </div>
     </div>
 
@@ -130,6 +136,22 @@
       <h2>Monthly cost</h2>
       <div class="big" id="total">$<span id="total-num">0</span><small>/mo</small></div>
       <div class="perreq" id="perreq">— per request</div>
+
+      <div style="margin-top:16px;border-top:1px solid var(--line);padding-top:14px;">
+        <div style="font-size:13px;font-weight:600;color:var(--c1d);margin-bottom:10px;">Governance gates &mdash; <a href="governance-overlay.html#15-cost-as-a-governance-constraint" style="font-weight:400;font-size:12px;color:var(--muted);">§15.1</a></div>
+        <div class="field">
+          <label style="font-size:13px;font-weight:600;">$/task ceiling</label>
+          <input type="number" id="ceiling" min="0" step="0.0001" placeholder="e.g. 0.015">
+          <div class="hint">Set at 1.5× modeled $/task. Current $/req: <strong id="perreq-ref">—</strong>. Leave blank to disable.</div>
+        </div>
+        <div class="field">
+          <label style="font-size:13px;font-weight:600;">$/day cap</label>
+          <input type="number" id="daycap" min="0" step="1" placeholder="e.g. 500">
+          <div class="hint">Auto-throttle at 80%, auto-disable at 100%. Est. $/day (monthly ÷ 30): <strong id="dailycost-ref">—</strong>. Leave blank to disable.</div>
+        </div>
+      </div>
+      <div class="warn-banner" id="banner-task"><strong>$/task ceiling breached.</strong> Computed <span id="banner-task-val"></span>/req exceeds your <span id="banner-ceiling-display"></span> ceiling. Reduce output tokens, shift mix toward Haiku, or raise cache hit rate. See <a href="governance-overlay.html#15-cost-as-a-governance-constraint" style="color:#991b1b;">governance-overlay §15.1</a>.</div>
+      <div class="warn-banner" id="banner-day"><strong>$/day cap breached.</strong> Est. $/day <span id="banner-day-val"></span> (monthly ÷ 30) exceeds your <span id="banner-daycap-display"></span> cap. Wire auto-throttle at 80% of cap before launch. See <a href="governance-overlay.html#15-cost-as-a-governance-constraint" style="color:#991b1b;">governance-overlay §15.1</a>.</div>
 
       <div class="savings" id="savings-box">
         <strong id="savings-pct">0%</strong> saved vs. naive baseline (all-Opus, no caching, no batch): <span id="savings-amt">$0</span>/mo
@@ -310,6 +332,40 @@ function recompute() {
   const totalCost = h.total + s.total + o.total;
   $('total-num').textContent = totalCost >= 1e6 ? (totalCost/1e6).toFixed(2) + 'M' : totalCost >= 1e3 ? (totalCost/1e3).toFixed(1) + 'k' : Math.round(totalCost).toLocaleString();
   $('perreq').textContent = vol > 0 ? fmtUSD(totalCost / vol) + ' per request' : '— per request';
+
+  // Governance gate checks (§15.1)
+  const perReqCost = vol > 0 ? totalCost / vol : 0;
+  const dailyCost = totalCost / 30;
+  $('perreq-ref').textContent = vol > 0 ? fmtUSD(perReqCost) : '—';
+  $('dailycost-ref').textContent = fmtUSDk(dailyCost);
+
+  const ceiling = parseFloat($('ceiling').value);
+  const taskBanner = $('banner-task');
+  if (!isNaN(ceiling) && ceiling > 0 && perReqCost > ceiling) {
+    $('banner-task-val').textContent = fmtUSD(perReqCost);
+    $('banner-ceiling-display').textContent = fmtUSD(ceiling);
+    taskBanner.classList.add('show');
+  } else { taskBanner.classList.remove('show'); }
+
+  const daycap = parseFloat($('daycap').value);
+  const dayBanner = $('banner-day');
+  if (!isNaN(daycap) && daycap > 0 && dailyCost > daycap) {
+    $('banner-day-val').textContent = fmtUSDk(dailyCost);
+    $('banner-daycap-display').textContent = fmtUSDk(daycap);
+    dayBanner.classList.add('show');
+  } else { dayBanner.classList.remove('show'); }
+
+  const cacheWarnEl = $('cache-gate-warn');
+  if (cacheRate < 0.60) {
+    cacheWarnEl.textContent = Math.round(cacheRate*100) + '% is below the §15.1 floor (≥60% on stable workloads). Steady-state cost will run higher than this model assumes.';
+    cacheWarnEl.classList.add('show');
+  } else { cacheWarnEl.classList.remove('show'); }
+
+  const batchWarnEl = $('batch-gate-warn');
+  if (batchPct > 0 && batchPct < 0.80) {
+    batchWarnEl.textContent = Math.round(batchPct*100) + '% is below the §15.1 floor (≥80% for non-interactive). You\'re paying real-time rates on batch-eligible work.';
+    batchWarnEl.classList.add('show');
+  } else { batchWarnEl.classList.remove('show'); }
 
   // Naive baseline: all Opus, no cache, no batch
   const naive = computeForModel('opus', 1, vol, inTok, outTok, 0, 0);

@@ -237,6 +237,10 @@ Session 1: items 1-4 (skeleton + 3 anchors). Session 2: items 5-9 (depth + ship)
 
 **Posture.** Decision-frame strict — every entry ends in **What you'd mis-decide** (mis-budget / mis-architect / mis-staff) before the cite. Comparative claims against GPT/Gemini explicitly excluded (the cost-calculator already excludes those by repo decision; consistency matters). All cites resolve to `docs.claude.com`, `anthropic.com`, or this repo's own `feature-inventory.md` — no third-party blog/Medium/aggregator sources. Pinned to the current model surface; refreshed monthly with the feature-inventory pass. Cross-linked from `decision-spine.html`, `decision-memes.html`, `executive-briefing.html` Slide 9, `feature-inventory.md`.
 
+### `cost-calculator.html` — governance gate extension (backlog #2-deeper, shipped 2026-05)
+
+**What shipped.** $/task ceiling and $/day cap inputs with live red banners when computed values exceed thresholds. Inline warnings on cache hit-rate slider (<60%) and batch eligibility slider (>0% and <80%). Calculator's contract shifts from modeling-only to modeling + gating — the four numeric gates from `governance-overlay.md §15.1` are now surfaced in the same UI as the spend estimate. Original lean-version reasoning (conceptual move without bloating UX) still stands as the prior layer; this extension adds visceral feedback for the breach case.
+
 ### Pattern for future starter packs
 
 The starter-skills + eval-pack + hooks-pack + mcp-pack + pilot-worksheet quintuple establishes a **template artifact pattern**: when the existing playbook/guide names a failure mode but offers no scaffolding, a starter pack with structured templates (when-to-use / failure-mode / owner / body) — or in the worksheet case, scored axes + verdict logic — earns its place. Candidate future packs to evaluate against this bar:
