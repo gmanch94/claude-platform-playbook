@@ -32,7 +32,7 @@
 | Computer use 2.0 | GA | 2026-05 | docs.claude.com/en/docs/agents-and-tools/computer-use | matrix, arch, misconceptions |
 | Files API | GA | 2026-05 | docs.claude.com/en/docs/build-with-claude/files | matrix, arch, eval-pack |
 | Citations | GA | 2026-05 | docs.claude.com/en/docs/build-with-claude/citations | matrix, arch, eval-pack |
-| Batch API | GA | 2026-05 | docs.claude.com/en/api/messages-batch | calculator, matrix, arch, eval-pack, misconceptions |
+| Batch API | GA | 2026-05 | docs.claude.com/en/docs/build-with-claude/batch-processing | calculator, matrix, arch, eval-pack, misconceptions |
 | Memory tool | beta | 2026-05 | docs.claude.com/en/docs/agents-and-tools/memory-tool | matrix, arch |
 | Web search tool (server-side) | GA | 2026-05 | docs.claude.com/en/docs/agents-and-tools/web-search | arch:rag, claude-code-guide |
 | Code execution tool (server-side) | GA | 2026-05 | docs.claude.com/en/docs/agents-and-tools/code-execution | arch:agent, claude-code-guide, eval-pack |

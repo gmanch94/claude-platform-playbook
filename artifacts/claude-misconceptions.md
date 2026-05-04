@@ -69,7 +69,7 @@
 ### "Batch API is just a queue — same price."
 - **Reality.** Batch API delivers 50% off all rates with a 24-hour SLA. Stackable with caching. Async by design — fire-and-forget for evals, enrichment, and regression suites.
 - **Mis-decide.** Running overnight evals on real-time pricing; forgoing the cheapest path for every workload that does not need synchronous latency.
-- **Cite.** [docs.claude.com — message batches](https://docs.claude.com/en/api/messages-batch); [`eval-starter-pack.md`](eval-starter-pack.md).
+- **Cite.** [docs.claude.com — batch processing](https://docs.claude.com/en/docs/build-with-claude/batch-processing); [`eval-starter-pack.md`](eval-starter-pack.md).
 
 ### "Haiku is too weak for production."
 - **Reality.** Haiku 4.5 prices ~5–15× cheaper than Opus and is the right tier for triage, classification, format conversion, and the cheap leg of cascade patterns. Production systems commonly run Haiku-first and escalate to Sonnet or Opus only when triage demands it.
