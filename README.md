@@ -96,7 +96,7 @@ Or fork the repo, customize for your org, host wherever you want.
 - All technical claims cite [docs.claude.com](https://docs.claude.com) by URL + as-of date
 - No reproducing Anthropic marketing copy verbatim — paraphrase + cite
 - Footer pattern on every artifact: `© gmanch94 · CC-BY-4.0 · As of 2026-05. Verify at anthropic.com.`
-- Quarterly refresh discipline — pricing/model surface drifts fast
+- Monthly refresh discipline (scheduled remote agent, first Monday) — pricing/model surface drifts fast
 
 ---
 

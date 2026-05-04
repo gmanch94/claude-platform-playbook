@@ -56,6 +56,26 @@
   .stop-step { margin-top: 10px; padding: 10px 14px; background: rgba(154,52,18,0.06); border-left: 3px solid var(--stop); border-radius: 4px; font-size: 13px; }
   .stop-step strong { color: var(--stop); font-family: 'Caveat', cursive; font-size: 16px; }
 
+  /* Premise check */
+  .premise-intro { background: #fef9ee; border-left: 3px solid var(--stop); padding: 12px 16px; border-radius: 4px; margin-bottom: 14px; font-size: 14px; line-height: 1.6; }
+  .premise-intro strong { color: var(--stop); font-family: 'Caveat', cursive; font-size: 17px; letter-spacing: 0.3px; }
+  details.premise-toggle { margin-bottom: 28px; }
+  details.premise-toggle > summary { cursor: pointer; list-style: none; padding: 10px 14px; background: white; border: 1px solid var(--line); border-radius: 6px; font-family: 'Caveat', cursive; font-size: 17px; color: var(--c1d); letter-spacing: 0.3px; user-select: none; transition: background 0.15s; }
+  details.premise-toggle > summary:hover { background: #fef9ee; }
+  details.premise-toggle > summary::-webkit-details-marker { display: none; }
+  details.premise-toggle > summary::before { content: "▾ "; display: inline-block; transition: transform 0.15s; color: var(--c1d); }
+  details.premise-toggle:not([open]) > summary::before { content: "▸ "; }
+  details.premise-toggle[open] > summary { margin-bottom: 10px; }
+  .premises { display: grid; grid-template-columns: 1fr; gap: 10px; margin-bottom: 0; }
+  .premise { background: white; border: 1px solid var(--line); border-left: 4px solid var(--stop); border-radius: 6px; padding: 14px 18px; }
+  .premise .myth { font-size: 14px; color: var(--ink); margin-bottom: 5px; }
+  .premise .myth strong { color: var(--stop); font-family: 'Caveat', cursive; font-size: 17px; letter-spacing: 0.3px; }
+  .premise .reality { font-size: 14px; color: var(--ink); margin-bottom: 5px; line-height: 1.55; }
+  .premise .reality strong { color: var(--good); font-family: 'Caveat', cursive; font-size: 17px; letter-spacing: 0.3px; }
+  .premise .see { font-size: 13px; color: var(--muted); }
+  .premise .see a { color: var(--tool); font-family: 'Caveat', cursive; font-size: 16px; letter-spacing: 0.3px; text-decoration: none; }
+  .premise .see a:hover { text-decoration: underline; }
+
   footer { margin-top: 40px; padding-top: 16px; border-top: 1px solid var(--line); text-align: center; font-size: 12px; color: var(--muted); }
   footer a { color: var(--c1d); }
 
@@ -85,6 +105,55 @@
     <div class="item"><span class="swatch" style="border-color:var(--claude); background:rgba(124,94,72,0.15)"></span>Decision branch</div>
     <div class="item"><span class="swatch" style="border-color:var(--good); background:rgba(21,128,61,0.15)"></span>Ship gate</div>
   </div>
+
+  <!-- ====================================================================== -->
+  <!-- Premise check — read before walking the spine                          -->
+  <!-- ====================================================================== -->
+  <h2 class="section">Premise check — read before you walk the spine</h2>
+  <div class="premise-intro">
+    <strong>Six premises that derail Claude pilots before branch 1 even runs.</strong> Each is a real belief I've heard from CIOs, CDOs, and CTOs sizing Claude adoption. The corrective is short; the linked artifact carries the full reasoning. If your team holds any of these, fix the premise before scoring use cases — wrong premise, right method, wrong answer.
+  </div>
+
+  <details class="premise-toggle" open>
+    <summary>Show / hide 6 misconceptions</summary>
+  <div class="premises">
+    <div class="premise">
+      <div class="myth"><strong>Myth 1:</strong> "Enterprise contract = governance done."</div>
+      <div class="reality"><strong>Reality:</strong> BAA + zero-retention + data residency cover the data-flow surface. They do not cover bias testing, audit trail, refusal calibration, prompt versioning, or eval discipline. Procurement is one of seven branches — not the whole spine.</div>
+      <div class="see">→ See <a href="governance-overlay.md">governance-overlay.md</a> for the full posture map.</div>
+    </div>
+
+    <div class="premise">
+      <div class="myth"><strong>Myth 2:</strong> "Prompt cache makes long context free."</div>
+      <div class="reality"><strong>Reality:</strong> Cache TTL is 5 minutes. Idle break = full re-pay. Cached input ≈ 10% of fresh input price, not 0%. Long-context calls at scale still cost real money — and idle workflows are the silent budget-killer.</div>
+      <div class="see">→ See <a href="cost-calculator.html">cost-calculator.html</a> for cache-hit math.</div>
+    </div>
+
+    <div class="premise">
+      <div class="myth"><strong>Myth 3:</strong> "Pick the smartest model (Opus) and tune later."</div>
+      <div class="reality"><strong>Reality:</strong> Sonnet 4.6 wins ~80% of production patterns at ~5× lower cost. Opus 4.7 earns its keep on agentic + deep-reasoning paths; Haiku 4.5 wins high-volume classification and routing. Model mix beats model max — and the mix decision happens at architecture-time, not at "we'll downgrade later."</div>
+      <div class="see">→ See <a href="feature-decision-matrix.html">feature-decision-matrix.html</a> for pattern-by-pattern model fit.</div>
+    </div>
+
+    <div class="premise">
+      <div class="myth"><strong>Myth 4:</strong> "We can swap Claude for OpenAI later if we need to."</div>
+      <div class="reality"><strong>Reality:</strong> True for plain chat completion. False the moment you depend on Skills, MCP, computer use, prompt-caching semantics, thinking budgets, or the Files API. Portability is an architecture-time decision, not a model-swap-time decision. If lock-in matters, score it on the build-vs-buy worksheet now.</div>
+      <div class="see">→ See <a href="build-vs-buy-worksheet.html">build-vs-buy-worksheet.html</a> (axis: customization depth + strategic moat).</div>
+    </div>
+
+    <div class="premise">
+      <div class="myth"><strong>Myth 5:</strong> "We'll wire evals after the pilot ships."</div>
+      <div class="reality"><strong>Reality:</strong> "Evals exist but nobody runs them" is the #2 named failure mode in the adoption playbook. Without a regression eval at pilot launch, you cannot tell silent quality drift from model updates apart from prompt drift apart from data drift. Wire evals <em>before</em> pilot launch — the cost of retrofitting them is 3–5× the cost of standing them up at Week 0.</div>
+      <div class="see">→ See <a href="eval-starter-pack.md">eval-starter-pack.md</a> for the 8-template starter pack.</div>
+    </div>
+
+    <div class="premise">
+      <div class="myth"><strong>Myth 6:</strong> "AI agents will replace headcount fast — plan accordingly."</div>
+      <div class="reality"><strong>Reality:</strong> Process-innovation patterns (RAG, batch, copilot) compress cycle time in 0–3 months. Product-innovation patterns (autonomous agents owning end-to-end workflows) are 12+ months out for most enterprises. Time-to-disruption mix matters more than aggregate "AI replaces humans" framing — and the mix is uneven across the pattern catalog.</div>
+      <div class="see">→ See <a href="feature-decision-matrix.html">feature-decision-matrix.html</a> Time-to-disruption column + <a href="reference-architectures.html">reference-architectures.html</a> meta cells.</div>
+    </div>
+  </div>
+  </details>
 
   <!-- ====================================================================== -->
   <!-- Flowchart                                                              -->
@@ -291,7 +360,7 @@
       <strong>Trigger 1 — Anthropic ships a new capability</strong> that changes the cost / latency / governance math (new model tier, new BAA-by-default region, deterministic mode). Re-walk branches 2 → 4.<br><br>
       <strong>Trigger 2 — A regulator publishes a new framework</strong> (EU AI Act delegated act, US state law, NIST AI RMF revision). Re-walk branch 1 to confirm anti-use list is still complete; re-walk branch 5 governance overlay.<br><br>
       <strong>Trigger 3 — A pilot fails for a reason not in the playbook's 8 failure modes.</strong> Add the new failure mode to <a href="adoption-playbook.md">adoption-playbook.md</a>; if the failure was a missed reject, add the row to <a href="anti-use-cases.md">anti-use-cases.md</a>.<br><br>
-      <strong>Trigger 4 — Quarterly refresh.</strong> Run <code>/bump-as-of</code>; verify <a href="../docs/feature-inventory.md">feature-inventory.md</a> against <code>docs.claude.com</code> and <code>anthropic.com/pricing</code>; bump downstream artifacts on any drift.
+      <strong>Trigger 4 — Monthly refresh.</strong> Scheduled remote agent runs first Monday of each month; opens a PR if drift detected. Manual fallback: run <code>/bump-as-of</code>; verify <a href="../docs/feature-inventory.md">feature-inventory.md</a> against <code>docs.claude.com</code> and <code>anthropic.com/pricing</code>; bump downstream artifacts on any drift.
     </div>
   </div>
 

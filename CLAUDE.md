@@ -6,7 +6,7 @@ Guidance for Claude Code (and any other AI agent) working in this repo.
 
 **`claude-platform-playbook`** — executive-grade decision tools for AI transformation **on the Claude platform**. Audience: CIOs, CDOs, CTOs, CHROs sizing Claude adoption + architects defending the choice to leadership.
 
-Public, CC-BY-4.0, vendor-explicit, decision-oriented. **Not** Anthropic marketing recap. Pin to current Claude model surface (Opus 4.7 / Sonnet 4.6 / Haiku 4.5 as of 2026-05) — refresh quarterly.
+Public, CC-BY-4.0, vendor-explicit, decision-oriented. **Not** Anthropic marketing recap. Pin to current Claude model surface (Opus 4.7 / Sonnet 4.6 / Haiku 4.5 as of 2026-05) — refresh monthly.
 
 There is no build system or test suite. This is a content repo of static HTML + Markdown.
 
@@ -97,7 +97,7 @@ These exist; don't duplicate their content here. This repo's job is **Claude-spe
 ## Automation
 
 - **Monthly refresh routine** (`trig_019PnZmQxwkS5r9iLU9aWthe`): first Monday of each month, audits `feature-inventory.md` against `docs.claude.com` + `anthropic.com/pricing`, opens a PR if drift detected. Manage at https://claude.ai/code/routines.
-- **`/bump-as-of` slash command:** sweeps `As of YYYY-MM` stamps across all artifacts. Use for quarterly refresh.
+- **`/bump-as-of` slash command:** sweeps `As of YYYY-MM` stamps across all artifacts. Use for the monthly refresh sweep.
 
 ## Things to avoid
 

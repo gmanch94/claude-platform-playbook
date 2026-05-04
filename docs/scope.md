@@ -134,7 +134,7 @@ Each diagram: 1-paragraph description, cost band, governance notes, when-to-use 
 | Model deprecation | Pin to model family (Sonnet 4.x), not specific point release |
 | Reads as Anthropic ad | Lead with decision frame, not features. Compare to OpenAI/DIY in calculator + build-vs-buy |
 | Vendor lock-in framing | Governance overlay explicitly addresses concentration risk + multi-model abstraction |
-| Stale within 6 months | Quarterly refresh discipline; "as-of" badge on every artifact |
+| Stale within 6 months | Monthly refresh discipline (scheduled remote agent, first Monday); "as-of" badge on every artifact |
 
 ---
 

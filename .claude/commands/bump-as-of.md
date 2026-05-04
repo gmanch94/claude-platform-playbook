@@ -42,4 +42,4 @@ Sweep all `As of YYYY-MM` references across the repo and bump them to the curren
 
 ## Why this exists
 
-Quarterly refresh discipline requires a sweep across 11+ files. Doing it by hand misses occurrences. This command standardizes the sweep + adds the drift-check guard so the stamp never lies about underlying content freshness.
+Monthly refresh discipline requires a sweep across 15+ files. Doing it by hand misses occurrences. This command standardizes the sweep + adds the drift-check guard so the stamp never lies about underlying content freshness. Pairs with the scheduled remote agent that runs first Monday of each month.

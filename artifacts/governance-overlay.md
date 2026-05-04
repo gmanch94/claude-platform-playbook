@@ -1,6 +1,6 @@
 # Claude Governance Overlay
 
-**As of 2026-05.** Pin to current model surface (Opus 4.7 / Sonnet 4.6 / Haiku 4.5) — refresh quarterly. See [`../docs/feature-inventory.md`](../docs/feature-inventory.md) for canonical feature + status list.
+**As of 2026-05.** Pin to current model surface (Opus 4.7 / Sonnet 4.6 / Haiku 4.5) — refresh monthly. See [`../docs/feature-inventory.md`](../docs/feature-inventory.md) for canonical feature + status list.
 
 This is a **risk + compliance overlay** — not a generic AI governance framework. It tells you what changes when your AI runs on Claude specifically, and where the standard NIST / EU AI Act controls map onto Claude's surface.
 

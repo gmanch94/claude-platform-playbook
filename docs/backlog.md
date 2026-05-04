@@ -15,7 +15,7 @@ Ideas surfaced during work but explicitly deferred. Each entry: what · why defe
 **Trigger to revisit.**
 - A reader asks "where do I see if my projected $/task is too high?" — the conceptual move didn't land
 - A pilot fails because the calculator showed a number that should have been a kill signal
-- Quarterly refresh and the calculator already needs updates for new pricing — bundle the banner work with the touch
+- Monthly refresh detects new pricing and the calculator needs updating — bundle the banner work with the touch
 
 **Effort.** ~45 min. Add 2 number inputs (ceiling + cap), 2 conditional banner divs, ~30 lines JS to compare computed values against inputs.
 

@@ -1,6 +1,6 @@
 # Anti-Use Cases — Where Claude Should *Not* Be Used
 
-**As of 2026-05.** Pin to current model surface (Opus 4.7 / Sonnet 4.6 / Haiku 4.5) — refresh quarterly with [`../docs/feature-inventory.md`](../docs/feature-inventory.md).
+**As of 2026-05.** Pin to current model surface (Opus 4.7 / Sonnet 4.6 / Haiku 4.5) — refresh monthly with [`../docs/feature-inventory.md`](../docs/feature-inventory.md).
 
 > If your candidate use case fits any row below, **stop**. Re-route, narrow scope, or kill. Most of these are not "Claude is bad at this" — they are "no LLM is the right primitive for this decision class, and shipping one anyway destroys trust faster than any cost saving recovers."
 
@@ -98,7 +98,7 @@ This list is not static. Three triggers for a re-read:
 2. **Regulator publishes a new framework** (NIST AI RMF revision, EU AI Act delegated act, state law) — update Cite columns + add new rows.
 3. **A pilot fails for a reason not captured here** — add a row. The list is grown by post-mortem, not by speculation.
 
-Refresh cadence: quarterly with the rest of the repo, plus reactive on the three triggers above.
+Refresh cadence: monthly with the rest of the repo (scheduled remote agent, first Monday), plus reactive on the three triggers above.
 
 ---
 
