@@ -2,14 +2,14 @@
 
 **As of 2026-05.** A skeptic-disarmer companion to [`decision-memes.html`](decision-memes.html). Every entry below is a misread that drives a *measurable* mis-budget, mis-architecture, or mis-staffing call. If a myth doesn't change a decision, it's not in this list.
 
-> **How to read this.** Format: **Myth** → **Reality** → **What you'd mis-decide** → **Cite**. Pinned to the current model surface (Opus 4.7 / Sonnet 4.6 / Haiku 4.5). Refreshed monthly against [`docs/feature-inventory.md`](../docs/feature-inventory.md) — the single source of truth.
+> **How to read this.** Format: **Myth** → **Reality** → **What you'd mis-decide** → **Cite**. Pinned to the current model surface (Opus 4.8 / Sonnet 4.6 / Haiku 4.5). Refreshed monthly against [`docs/feature-inventory.md`](../docs/feature-inventory.md) — the single source of truth.
 
 ---
 
 ## 1. Model + capability misreads
 
 ### "Claude's context window is still 200K tokens."
-- **Reality.** Opus 4.7, Opus 4.6, and Sonnet 4.6 ship 1M tokens (GA). Sonnet 4.5 and Haiku 4.5 remain at 200K.
+- **Reality.** Opus 4.8, Opus 4.7, Opus 4.6, and Sonnet 4.6 ship 1M tokens (GA) — Opus 4.8 defaults to the 1M window on the API. Sonnet 4.5 and Haiku 4.5 remain at 200K.
 - **Mis-decide.** Architecting RAG chunking + retrieval ceilings against 200K when the workhorse model already supports 1M — over-engineered retrieval, under-used cache.
 - **Cite.** [docs.claude.com — context windows](https://docs.claude.com/en/docs/build-with-claude/context-windows); [`docs/feature-inventory.md`](../docs/feature-inventory.md) Models table.
 
@@ -57,12 +57,12 @@
 - **Cite.** [docs.claude.com — pricing](https://docs.claude.com/en/about-claude/pricing).
 
 ### "Prompt caching is too complex / not worth it."
-- **Reality.** Cache reads bill at ~10% of the input rate; 5-min writes 1.25×, 1-hr writes 2×. For chat copilots and RAG patterns with stable system prompts or shared retrieved context, steady-state cost drops 60–80%.
+- **Reality.** Cache reads bill at ~10% of the input rate; 5-min writes 1.25×, 1-hr writes 2×. For chat copilots and RAG patterns with stable system prompts or shared retrieved context, steady-state cost drops 60–80%. Opus 4.8 lowered the minimum cacheable prompt to 1,024 tokens (was 4,096 on Opus 4.7 / 4.6), so smaller system prompts now qualify — verify your prefix clears the floor.
 - **Mis-decide.** Skipping the dominant cost lever; the cost-calculator numbers in [`executive-briefing.html`](executive-briefing.html) cease to apply, and unit economics quietly fail at scale.
 - **Cite.** [docs.claude.com — prompt caching](https://docs.claude.com/en/docs/build-with-claude/prompt-caching); [`cost-calculator.html`](cost-calculator.html).
 
 ### "Long context costs 2× once you cross 200K tokens."
-- **Reality.** The long-context surcharge has been eliminated on Opus 4.7, Opus 4.6, and Sonnet 4.6. A 900K-token request bills the same per-token rate as a 9K request on these models. Older / legacy models still apply the 200K break — verify per model.
+- **Reality.** The long-context surcharge has been eliminated on Opus 4.8, Opus 4.7, Opus 4.6, and Sonnet 4.6. A 900K-token request bills the same per-token rate as a 9K request on these models. Older / legacy models still apply the 200K break — verify per model.
 - **Mis-decide.** Ruling out long-context patterns on cost grounds that no longer hold for the workhorse models.
 - **Cite.** [docs.claude.com — pricing](https://docs.claude.com/en/about-claude/pricing); [`docs/feature-inventory.md`](../docs/feature-inventory.md) Models table.
 

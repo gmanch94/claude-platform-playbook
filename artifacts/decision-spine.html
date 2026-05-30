@@ -131,7 +131,7 @@
 
     <div class="premise">
       <div class="myth"><strong>Myth 3:</strong> "Pick the smartest model (Opus) and tune later."</div>
-      <div class="reality"><strong>Reality:</strong> Sonnet 4.6 wins ~80% of production patterns at ~5× lower cost. Opus 4.7 earns its keep on agentic + deep-reasoning paths; Haiku 4.5 wins high-volume classification and routing. Model mix beats model max — and the mix decision happens at architecture-time, not at "we'll downgrade later."</div>
+      <div class="reality"><strong>Reality:</strong> Sonnet 4.6 wins ~80% of production patterns at ~5× lower cost. Opus 4.8 earns its keep on agentic + deep-reasoning paths; Haiku 4.5 wins high-volume classification and routing. Model mix beats model max — and the mix decision happens at architecture-time, not at "we'll downgrade later."</div>
       <div class="see">→ See <a href="feature-decision-matrix.html">feature-decision-matrix.html</a> for pattern-by-pattern model fit.</div>
     </div>
 
@@ -286,7 +286,7 @@
     <h3>2. Which pattern fits?</h3>
     <div class="question">Pattern + feature-stack selection — what shape is the solution?</div>
     <div class="who"><strong>Who's asking:</strong> Architect · platform engineer · tech lead.</div>
-    <div class="frame">Six canonical patterns cover the steady-state Claude surface: RAG copilot · agentic workflow · batch enrichment · domain expert assistant · code automation · embedded copilot. Each has a default stack (Sonnet 4.6 vs Opus 4.7 vs Haiku 4.5; caching · thinking · tool use · Files API · MCP · Skills · memory tool · batch). Pick the closest pattern; the matrix names which features earn their keep for that pattern.</div>
+    <div class="frame">Six canonical patterns cover the steady-state Claude surface: RAG copilot · agentic workflow · batch enrichment · domain expert assistant · code automation · embedded copilot. Each has a default stack (Sonnet 4.6 vs Opus 4.8 vs Haiku 4.5; caching · thinking · tool use · Files API · MCP · Skills · memory tool · batch). Pick the closest pattern; the matrix names which features earn their keep for that pattern.</div>
     <div class="artifacts">
       <a href="reference-architectures.html"><strong>reference-architectures.html</strong><br><span class="path">artifacts/reference-architectures.html</span> — 6 hand-drawn patterns with cost band + governance notes.</a>
       <a href="feature-decision-matrix.html"><strong>feature-decision-matrix.html</strong><br><span class="path">artifacts/feature-decision-matrix.html</span> — patterns × features grid with conditional rationale.</a>
@@ -309,7 +309,7 @@
     <h3>4. What will it cost?</h3>
     <div class="question">Unit economics — does the math survive contact with real volume?</div>
     <div class="who"><strong>Who's asking:</strong> CIO / CFO budgeting the pilot · architect validating the cost-per-task target · transformation lead defending the business case.</div>
-    <div class="frame">Calculator inputs: monthly volume × avg input/output tokens × model mix (Haiku 4.5 / Sonnet 4.6 / Opus 4.7) × cache hit rate × batch eligibility. Outputs: monthly $, per-request cost, savings vs naive baseline. Treat <em>cost as a constraint</em>, not a curiosity — define a $/task gate and a kill-switch volume cap before pilot launch. If the numbers don't survive at projected scale, branch back to 2 or revisit anti-use Wrong-economics rows.</div>
+    <div class="frame">Calculator inputs: monthly volume × avg input/output tokens × model mix (Haiku 4.5 / Sonnet 4.6 / Opus 4.8) × cache hit rate × batch eligibility. Outputs: monthly $, per-request cost, savings vs naive baseline. Treat <em>cost as a constraint</em>, not a curiosity — define a $/task gate and a kill-switch volume cap before pilot launch. If the numbers don't survive at projected scale, branch back to 2 or revisit anti-use Wrong-economics rows.</div>
     <div class="artifacts">
       <a href="cost-calculator.html"><strong>cost-calculator.html</strong><br><span class="path">artifacts/cost-calculator.html</span> — interactive estimator with prompt cache + batch math.</a>
     </div>

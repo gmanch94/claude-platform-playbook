@@ -119,7 +119,7 @@ Each diagram: 1-paragraph description, cost band, governance notes, when-to-use 
 
 - All technical claims cite Anthropic docs (`docs.claude.com` / `docs.anthropic.com`) by URL + as-of date
 - Pricing claims dated and link to pricing page
-- Model versions pinned (4.6 / 4.7 / Sonnet 4.5 / Haiku 4.5 etc.) — never "latest"
+- Model versions pinned (Opus 4.8 / Sonnet 4.6 / Haiku 4.5 etc.) — never "latest"
 - No reproducing Anthropic marketing copy verbatim — paraphrase + cite
 - Footer pattern: `© gmanch94 · CC-BY-4.0 · As of YYYY-MM. Verify pricing/models at anthropic.com.`
 - Cross-link to `ai-architect-showcase` (vendor-neutral strategy) and `ai-enablement-ws` (operational reference)

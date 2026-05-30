@@ -12,7 +12,7 @@ Most "use Claude" content is developer tutorials. This repo fills the **executiv
 
 - **Anti-use cases** — explicit list of where Claude should *not* be used (sole-decider on regulated decisions, sub-100ms latency, sub-cent unit-cost workloads, prompt-injection-exposed agents)
 - Build vs buy vs platform — when Claude beats DIY / OpenAI / in-house
-- Cost economics — prompt caching (90% off cached input), batch (50% off), Haiku 4.5 / Sonnet 4.6 / Opus 4.7 mix
+- Cost economics — prompt caching (90% off cached input), batch (50% off), Haiku 4.5 / Sonnet 4.6 / Opus 4.8 mix
 - Time-to-value — Skills + MCP + Files API + Agent SDK + plugins + memory tool = weeks not quarters
 - Governance fit — no-train, BAA paths, prompt versioning, audit trail, EU AI Act + NIST AI RMF mapping
 - 90-day adoption arc — pilot → guardrails → scale

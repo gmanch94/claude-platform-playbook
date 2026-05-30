@@ -1,6 +1,6 @@
 # Claude Model Selection Guide
 
-**As of 2026-05.** Pinned to Opus 4.7 / Sonnet 4.6 / Haiku 4.5. Refresh monthly with [`../docs/feature-inventory.md`](../docs/feature-inventory.md).
+**As of 2026-05.** Pinned to Opus 4.8 / Sonnet 4.6 / Haiku 4.5. Refresh monthly with [`../docs/feature-inventory.md`](../docs/feature-inventory.md).
 
 > **The decision upstream of everything else.** Before the feature-decision-matrix, before the cost-calculator, there is one question: *which model tier fits this task?* Getting it wrong costs money (over-tiering) or quality (under-tiering). This guide answers it in four questions.
 
@@ -11,7 +11,7 @@
 Answer in order. Stop at the first match.
 
 **Q1. Does this task require extended multi-step reasoning, deep code analysis, or nuanced judgment on ambiguous inputs?**
-→ Yes: start at **Opus 4.7**. Validate in eval before committing.
+→ Yes: start at **Opus 4.8**. Validate in eval before committing.
 → No: continue to Q2.
 
 **Q2. Does this task require reliable instruction-following, structured output, tool use, or RAG synthesis across long context?**
@@ -32,8 +32,8 @@ Answer in order. Stop at the first match.
 
 | Task type | Default tier | Rationale | Failure mode if wrong |
 |---|---|---|---|
-| Complex code reasoning, architecture review | Opus 4.7 | Needs multi-step reasoning + nuanced judgment | Sonnet misses non-obvious bugs; Haiku hallucinates logic |
-| Agentic workflow orchestration (planning step) | Opus 4.7 or Sonnet 4.6 | Planning quality determines downstream execution quality | Under-tiering cascades errors through the whole pipeline |
+| Complex code reasoning, architecture review | Opus 4.8 | Needs multi-step reasoning + nuanced judgment | Sonnet misses non-obvious bugs; Haiku hallucinates logic |
+| Agentic workflow orchestration (planning step) | Opus 4.8 or Sonnet 4.6 | Planning quality determines downstream execution quality | Under-tiering cascades errors through the whole pipeline |
 | RAG synthesis, document Q&A, long-form drafting | Sonnet 4.6 | Strong instruction-following + 1M context | Haiku degrades on long retrieved context |
 | Structured output generation (JSON, tables, reports) | Sonnet 4.6 | Consistent schema adherence across edge inputs | Haiku drifts on complex schemas |
 | Tool use / function calling (multi-step) | Sonnet 4.6 | Reliable tool selection + parameter accuracy | Haiku drops required params on ambiguous tool definitions |
@@ -41,7 +41,7 @@ Answer in order. Stop at the first match.
 | Intent classification, routing, triage | Haiku 4.5 | Bounded task, high volume, latency-sensitive | Sonnet cost 3–15× higher for equivalent accuracy |
 | Short-form generation (push notifications, titles, summaries) | Haiku 4.5 | Fast, cheap, adequate quality | Opus/Sonnet is pure cost overhead |
 | Batch enrichment (tagging, extraction, scoring) | Haiku 4.5 + Batch API | Max cost efficiency; async SLA acceptable | Sonnet/Opus inflates batch budget by 3–15× |
-| Extended thinking tasks (proofs, complex math, strategic analysis) | Opus 4.7 with thinking enabled | Extended thinking only available on Opus 4.x in agentic contexts | Thinking on Sonnet adds cost without depth gain on hardest problems |
+| Extended thinking tasks (proofs, complex math, strategic analysis) | Opus 4.8 with thinking enabled | Extended thinking only available on Opus 4.x in agentic contexts | Thinking on Sonnet adds cost without depth gain on hardest problems |
 
 ---
 

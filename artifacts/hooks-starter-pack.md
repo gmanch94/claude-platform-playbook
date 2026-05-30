@@ -1,6 +1,6 @@
 # Claude Code Hooks Starter Pack
 
-> 10 team-grade hook templates for Claude Code. Each framed by **when-to-use / failure-mode / owner / hook body** before the body itself. Pinned to the current Claude Code surface (Opus 4.7 / Sonnet 4.6 / Haiku 4.5, hooks GA as of 2026-05).
+> 10 team-grade hook templates for Claude Code. Each framed by **when-to-use / failure-mode / owner / hook body** before the body itself. Pinned to the current Claude Code surface (Opus 4.8 / Sonnet 4.6 / Haiku 4.5, hooks GA as of 2026-05).
 
 ---
 

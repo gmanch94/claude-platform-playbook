@@ -1,6 +1,6 @@
 # Claude Adoption Playbook — 90-day rollout
 
-**As of 2026-05.** Pin to current model surface (Opus 4.7 / Sonnet 4.6 / Haiku 4.5) — refresh monthly.
+**As of 2026-05.** Pin to current model surface (Opus 4.8 / Sonnet 4.6 / Haiku 4.5) — refresh monthly.
 
 A 90-day arc from "we want to use Claude" to "Claude is in production with guardrails and a Center of Excellence pattern." Built for transformation leads, not for engineers — engineers should pair this with [`claude-code-adoption-guide.md`](claude-code-adoption-guide.md).
 
@@ -91,7 +91,7 @@ For the 8-category eval scaffolding (regression, format compliance, tool-call ac
 
 #### 2. Cost controls
 - Caching strategy locked in (cache hits should be ≥ 60% in steady state for any production workload — see [`cost-calculator.html`](cost-calculator.html))
-- Model tier routing (Haiku 4.5 triage → Sonnet 4.6 default → Opus 4.7 escalation only when justified)
+- Model tier routing (Haiku 4.5 triage → Sonnet 4.6 default → Opus 4.8 escalation only when justified)
 - Batch eligibility audit — anything that can wait 24h moves to batch
 - Per-team or per-product cost dashboards with weekly review cadence
 

@@ -2,7 +2,7 @@
 
 **Single source of truth.** All artifacts in this repo reference this file. Update this first, propagate second.
 
-**Last verified:** 2026-05-19 against [docs.claude.com](https://docs.claude.com) and [anthropic.com/pricing](https://www.anthropic.com/pricing).
+**Last verified:** 2026-05-29 against [docs.claude.com](https://docs.claude.com) and [anthropic.com/pricing](https://www.anthropic.com/pricing). **Opus 4.8 shipped 2026-05-28 — now the current top tier.**
 
 **Refresh cadence:** weekly. Bump status, as-of dates, and pricing rows. Cross-check `Used in` column to find every artifact that needs a touch.
 
@@ -14,21 +14,23 @@
 
 | Model | Tier | Status | As-of | Notes |
 |---|---|---|---|---|
-| Opus 4.7 | Top | GA | 2026-05 | Most capable. Step-change in agentic coding. Uses adaptive thinking (manual `budget_tokens` returns 400 on 4.7). |
-| Opus 4.6 | Top | GA | 2026-05 | Previous top tier. Still available; adaptive thinking recommended, manual deprecated. |
+| Opus 4.8 | Top | GA | 2026-05 | `claude-opus-4-8`. Most capable GA model. Builds on 4.7: better long-horizon agentic coding, fewer compactions + better compaction recovery, effort-calibrated reasoning. 1M context default. Adaptive thinking only (`budget_tokens` → 400); use `effort` param. Rejects `temperature`/`top_p`/`top_k` (400). Fast mode in research preview. Min cacheable prompt 1,024 tokens. |
+| Opus 4.7 | Top (prev) | GA | 2026-05 | `claude-opus-4-7`. Previous top tier, still available. Same adaptive-thinking + no-sampling-params constraints as 4.8. Min cacheable prompt 4,096 tokens. |
+| Opus 4.6 | Top (prev) | GA | 2026-05 | Older top tier. Still available; adaptive thinking recommended, manual deprecated. |
 | Sonnet 4.6 | Mid | GA | 2026-05 | Workhorse. Default for production copilots + agentic loops. |
 | Haiku 4.5 | Fast | GA | 2026-05 | Triage, batch, high-volume. ~5–15× cheaper than Sonnet. |
 
-**Pricing (per million tokens, USD, as-of 2026-05-19 — verified against anthropic.com/pricing):**
+**Pricing (per million tokens, USD, as-of 2026-05-29 — verified against anthropic.com/pricing):**
 
 | Model | Input | Output | Cache read | Cache write 5m | Cache write 1h |
 |---|---|---|---|---|---|
+| Opus 4.8 | $5.00 | $25.00 | $0.50 | $6.25 | $10.00 |
 | Opus 4.7 | $5.00 | $25.00 | $0.50 | $6.25 | $10.00 |
 | Opus 4.6 | $5.00 | $25.00 | $0.50 | $6.25 | $10.00 |
 | Sonnet 4.6 | $3.00 | $15.00 | $0.30 | $3.75 | $6.00 |
 | Haiku 4.5 | $1.00 | $5.00 | $0.10 | $1.25 | $2.00 |
 
-See also [`../artifacts/cost-calculator.html`](../artifacts/cost-calculator.html). ⚠ **Cost calculator Opus 4.7 pricing was wrong ($15/$75) — corrected to $5/$25 in this update.**
+**Opus 4.8 pricing is identical to 4.7** — the model upgrade does not move cost. Cost-calculator headline Opus tier relabelled 4.7 → 4.8; numbers unchanged. Batch (50%): Opus $2.50/$12.50, Sonnet $1.50/$7.50, Haiku $0.50/$2.50. See [`../artifacts/cost-calculator.html`](../artifacts/cost-calculator.html).
 
 ---
 
@@ -49,7 +51,11 @@ See also [`../artifacts/cost-calculator.html`](../artifacts/cost-calculator.html
 
 **Token economics** — see [`../artifacts/cost-calculator.html`](../artifacts/cost-calculator.html). Cache read ≈ 10% of input. Cache write 5m ≈ 125% of input. Cache write 1h ≈ 200% of input. Batch ≈ 50% of all rates.
 
-**Extended thinking note** — Opus 4.7 requires adaptive thinking (`thinking.type: "auto"` + `budget_tokens`). Manual `budget_tokens` alone returns HTTP 400 on Opus 4.7. Opus 4.6: manual budget still works but adaptive is recommended.
+**Minimum cacheable prompt** — Opus 4.8 lowered to **1,024 tokens** (was 4,096 on Opus 4.7 / 4.6). Sonnet 4.6 + Haiku 4.5 are 1,024. Prompts shorter than the floor are processed uncached with no error. Lower floor on 4.8 = more small prompts become cache-eligible. See [`../artifacts/data-advisory.md`](../artifacts/data-advisory.md) cache-eligibility shape.
+
+**Extended thinking note** — Opus 4.7 and 4.8 support **adaptive thinking only**: `thinking: {"type": "adaptive"}` plus the `effort` parameter to control depth. Setting `thinking: {"type": "enabled", "budget_tokens": N}` returns HTTP 400. They also reject non-default `temperature` / `top_p` / `top_k` (400). Opus 4.6 and earlier: manual `budget_tokens` still works but adaptive is recommended.
+
+**Fast mode (Opus 4.8)** — research preview on the Claude API. Lower-latency response path. Preview status — do not pin production SLAs to it. Doc anchor: docs.claude.com/en/docs/about-claude/models/whats-new-claude-4-8.
 
 ---
 

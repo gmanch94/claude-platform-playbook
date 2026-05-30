@@ -115,7 +115,7 @@
         <span class="pct" id="mix-s-val">35%</span>
       </div>
       <div class="mix-row">
-        <span class="name">Opus 4.7</span>
+        <span class="name">Opus 4.8</span>
         <input type="range" id="mix-o" min="0" max="100" value="5">
         <span class="pct" id="mix-o-val">5%</span>
       </div>
@@ -181,7 +181,7 @@
             <tbody>
               <tr><td>Haiku 4.5</td><td class="num">$1.00</td><td class="num">$5.00</td><td class="num">$0.10</td><td class="num">$1.25</td></tr>
               <tr><td>Sonnet 4.6</td><td class="num">$3.00</td><td class="num">$15.00</td><td class="num">$0.30</td><td class="num">$3.75</td></tr>
-              <tr><td>Opus 4.7</td><td class="num">$5.00</td><td class="num">$25.00</td><td class="num">$0.50</td><td class="num">$6.25</td></tr>
+              <tr><td>Opus 4.8</td><td class="num">$5.00</td><td class="num">$25.00</td><td class="num">$0.50</td><td class="num">$6.25</td></tr>
             </tbody>
           </table>
           <p style="margin-top:10px;">Batch API: 50% off all rates. Cache read = 10% of input price. Cache write 5m = 125% of input price (one-time per cached prefix).</p>
@@ -406,7 +406,7 @@ function recompute() {
   const rows = [
     ['Haiku 4.5',  h.tokens, h.total],
     ['Sonnet 4.6', s.tokens, s.total],
-    ['Opus 4.7',   o.tokens, o.total],
+    ['Opus 4.8',   o.tokens, o.total],
   ];
   tb.innerHTML = rows.map(r =>
     `<tr><td>${r[0]}</td><td class="num">${fmt(r[1])}</td><td class="num">${fmtUSDk(r[2])}</td></tr>`
@@ -431,7 +431,7 @@ function recompute() {
         datasets: [
           { label: 'Haiku 4.5',  data: haikuData,  backgroundColor: '#f3c5a8' },
           { label: 'Sonnet 4.6', data: sonnetData, backgroundColor: '#D97757' },
-          { label: 'Opus 4.7',   data: opusData,   backgroundColor: '#7C5E48' }
+          { label: 'Opus 4.8',   data: opusData,   backgroundColor: '#7C5E48' }
         ]
       },
       options: {

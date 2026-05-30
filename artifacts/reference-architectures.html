@@ -171,7 +171,7 @@
   <!-- ====================================================================== -->
   <div class="pattern">
     <h2>2. Agentic workflow</h2>
-    <div class="stack-line">Sonnet 4.6 (Opus 4.7 escalation) · Agent SDK · MCP · Skills · memory tool · plugins for distribution</div>
+    <div class="stack-line">Sonnet 4.6 (Opus 4.8 escalation) · Agent SDK · MCP · Skills · memory tool · plugins for distribution</div>
 
     <div class="diagram">
       <svg viewBox="0 0 980 420" xmlns="http://www.w3.org/2000/svg">
@@ -236,7 +236,7 @@
 
         <!-- Escalation -->
         <path class="box claude" d="M260,290 Q260,282 272,280 L425,284 Q437,282 435,293 L435,338 Q437,350 425,348 L272,346 Q258,350 260,336 Z"/>
-        <text class="lbl" x="347" y="310" text-anchor="middle">Escalate to Opus 4.7</text>
+        <text class="lbl" x="347" y="310" text-anchor="middle">Escalate to Opus 4.8</text>
         <text class="sub" x="347" y="328" text-anchor="middle">when stuck / high-stakes</text>
 
         <!-- Plugin distribution box -->
@@ -272,7 +272,7 @@
       <div class="cell"><h4>Time to disruption</h4><div class="v">3–12 mo · eval discipline first.</div></div>
     </div>
 
-    <p>The Agent SDK runs the plan-act-observe loop. Sonnet 4.6 is the default planner; escalate to Opus 4.7 when the agent flags a hard step. Tools come through MCP servers (one connector per system, reused across agents). Skills hold the domain playbook so the agent has expert procedures, not just primitives. Memory tool persists state across runs for long-running agents. Distribute the whole bundle as a plugin so other teams install one thing.</p>
+    <p>The Agent SDK runs the plan-act-observe loop. Sonnet 4.6 is the default planner; escalate to Opus 4.8 when the agent flags a hard step. Tools come through MCP servers (one connector per system, reused across agents). Skills hold the domain playbook so the agent has expert procedures, not just primitives. Memory tool persists state across runs for long-running agents. Distribute the whole bundle as a plugin so other teams install one thing.</p>
 
     <div class="when">
       <div class="yes"><h4>Use when</h4>Multi-step task that decomposes naturally into tool calls. Domain has stable procedures worth encoding as Skills. Async-tolerant.</div>
@@ -480,7 +480,7 @@
   <!-- ====================================================================== -->
   <div class="pattern">
     <h2>5. Code automation</h2>
-    <div class="stack-line">Claude Code · Opus 4.7 + Sonnet 4.6 · plugins (commands + skills + hooks + MCP) · sub-agents · computer use 2.0 (optional)</div>
+    <div class="stack-line">Claude Code · Opus 4.8 + Sonnet 4.6 · plugins (commands + skills + hooks + MCP) · sub-agents · computer use 2.0 (optional)</div>
 
     <div class="diagram">
       <svg viewBox="0 0 980 400" xmlns="http://www.w3.org/2000/svg">
@@ -514,7 +514,7 @@
         <!-- Models -->
         <path class="box claude" d="M240,90 Q240,82 252,80 L380,84 Q392,82 390,93 L390,150 Q392,162 380,160 L252,158 Q238,162 240,148 Z"/>
         <text class="lbl" x="315" y="112" text-anchor="middle">Sonnet 4.6 default</text>
-        <text class="sub" x="315" y="130" text-anchor="middle">+ Opus 4.7 escalate</text>
+        <text class="sub" x="315" y="130" text-anchor="middle">+ Opus 4.8 escalate</text>
         <text class="sub" x="315" y="148" text-anchor="middle">extended thinking</text>
 
         <!-- Built-in tools -->
@@ -573,7 +573,7 @@
       <div class="cell"><h4>Time to disruption</h4><div class="v">0–3 mo · ship now.</div></div>
     </div>
 
-    <p>Engineering teams use Claude Code (CLI + IDE) day-to-day. Sonnet 4.6 is the default; Opus 4.7 handles hard refactors. Sub-agents (Task tool) parallelize investigation work. The team plugin bundles slash commands, Skills (repo conventions, language patterns), hooks (PreToolUse policy enforcement), and MCP servers (issue tracker, internal docs) so a new engineer's setup is a one-line install. Headless mode runs the same loop in CI. Detail in <a href="claude-code-adoption-guide.html">claude-code-adoption-guide.md</a>.</p>
+    <p>Engineering teams use Claude Code (CLI + IDE) day-to-day. Sonnet 4.6 is the default; Opus 4.8 handles hard refactors. Sub-agents (Task tool) parallelize investigation work. The team plugin bundles slash commands, Skills (repo conventions, language patterns), hooks (PreToolUse policy enforcement), and MCP servers (issue tracker, internal docs) so a new engineer's setup is a one-line install. Headless mode runs the same loop in CI. Detail in <a href="claude-code-adoption-guide.html">claude-code-adoption-guide.md</a>.</p>
 
     <div class="when">
       <div class="yes"><h4>Use when</h4>Engineering teams shipping software. Repo-aware tasks. Refactors, migrations, code review, scheduled maintenance.</div>

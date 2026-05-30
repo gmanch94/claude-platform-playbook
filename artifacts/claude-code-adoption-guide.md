@@ -1,6 +1,6 @@
 # Claude Code Adoption Guide — engineering team rollout
 
-**As of 2026-05.** Pin to current model surface (Opus 4.7 / Sonnet 4.6 / Haiku 4.5). See [`../docs/feature-inventory.md`](../docs/feature-inventory.md) for canonical Claude Code surface inventory.
+**As of 2026-05.** Pin to current model surface (Opus 4.8 / Sonnet 4.6 / Haiku 4.5). See [`../docs/feature-inventory.md`](../docs/feature-inventory.md) for canonical Claude Code surface inventory.
 
 For engineering managers and platform leads rolling out **Claude Code** (the CLI/IDE harness) across a team. This is a tactical companion to [`adoption-playbook.md`](adoption-playbook.md) — that doc covers business adoption; this one covers the engineering surface.
 
@@ -8,7 +8,7 @@ For engineering managers and platform leads rolling out **Claude Code** (the CLI
 
 ## What Claude Code is, in one paragraph
 
-A CLI tool (also runnable in VS Code / JetBrains / desktop / web) that runs an agentic loop in a developer's repo. It has built-in tools (file edit, bash, grep, web fetch, git, sub-agents) and extensible surfaces (slash commands, hooks, Skills, MCP servers, plugins). Default model is Sonnet 4.6; escalate to Opus 4.7 for hard problems; Haiku 4.5 for triage. Settings hierarchy is user → project → local (each shadows the previous). Headless mode runs the same loop in CI.
+A CLI tool (also runnable in VS Code / JetBrains / desktop / web) that runs an agentic loop in a developer's repo. It has built-in tools (file edit, bash, grep, web fetch, git, sub-agents) and extensible surfaces (slash commands, hooks, Skills, MCP servers, plugins). Default model is Sonnet 4.6; escalate to Opus 4.8 for hard problems; Haiku 4.5 for triage. Settings hierarchy is user → project → local (each shadows the previous). Headless mode runs the same loop in CI.
 
 ---
 
