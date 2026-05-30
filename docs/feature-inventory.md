@@ -2,7 +2,7 @@
 
 **Single source of truth.** All artifacts in this repo reference this file. Update this first, propagate second.
 
-**Last verified:** 2026-05-01 against [docs.claude.com](https://docs.claude.com) and [anthropic.com/pricing](https://www.anthropic.com/pricing).
+**Last verified:** 2026-05-19 against [docs.claude.com](https://docs.claude.com) and [anthropic.com/pricing](https://www.anthropic.com/pricing).
 
 **Refresh cadence:** weekly. Bump status, as-of dates, and pricing rows. Cross-check `Used in` column to find every artifact that needs a touch.
 
@@ -14,11 +14,21 @@
 
 | Model | Tier | Status | As-of | Notes |
 |---|---|---|---|---|
-| Opus 4.7 | Top | GA | 2026-05 | Deepest reasoning. Default for hard agentic + code refactor. |
+| Opus 4.7 | Top | GA | 2026-05 | Most capable. Step-change in agentic coding. Uses adaptive thinking (manual `budget_tokens` returns 400 on 4.7). |
+| Opus 4.6 | Top | GA | 2026-05 | Previous top tier. Still available; adaptive thinking recommended, manual deprecated. |
 | Sonnet 4.6 | Mid | GA | 2026-05 | Workhorse. Default for production copilots + agentic loops. |
-| Haiku 4.5 | Fast | GA | 2026-05 | Triage, batch, high-volume. ~5–15× cheaper than Opus. |
+| Haiku 4.5 | Fast | GA | 2026-05 | Triage, batch, high-volume. ~5–15× cheaper than Sonnet. |
 
-**Pricing (per million tokens, USD, as-of 2026-05):** see [`../artifacts/cost-calculator.html`](../artifacts/cost-calculator.html) — pricing table embedded with same as-of stamp.
+**Pricing (per million tokens, USD, as-of 2026-05-19 — verified against anthropic.com/pricing):**
+
+| Model | Input | Output | Cache read | Cache write 5m | Cache write 1h |
+|---|---|---|---|---|---|
+| Opus 4.7 | $5.00 | $25.00 | $0.50 | $6.25 | $10.00 |
+| Opus 4.6 | $5.00 | $25.00 | $0.50 | $6.25 | $10.00 |
+| Sonnet 4.6 | $3.00 | $15.00 | $0.30 | $3.75 | $6.00 |
+| Haiku 4.5 | $1.00 | $5.00 | $0.10 | $1.25 | $2.00 |
+
+See also [`../artifacts/cost-calculator.html`](../artifacts/cost-calculator.html). ⚠ **Cost calculator Opus 4.7 pricing was wrong ($15/$75) — corrected to $5/$25 in this update.**
 
 ---
 
@@ -29,15 +39,17 @@
 | Prompt caching | GA | 2026-05 | docs.claude.com/en/docs/build-with-claude/prompt-caching | calculator, matrix, briefing, arch, eval-pack, misconceptions, data-advisory |
 | Extended thinking | GA | 2026-05 | docs.claude.com/en/docs/build-with-claude/extended-thinking | matrix, arch |
 | Tool use | GA | 2026-05 | docs.claude.com/en/docs/agents-and-tools/tool-use | matrix, arch, eval-pack |
-| Computer use 2.0 | GA | 2026-05 | docs.claude.com/en/docs/agents-and-tools/computer-use | matrix, arch, misconceptions |
-| Files API | GA | 2026-05 | docs.claude.com/en/docs/build-with-claude/files | matrix, arch, eval-pack |
+| Computer use 2.0 | beta | 2026-05 | docs.claude.com/en/docs/agents-and-tools/computer-use | matrix, arch, misconceptions |
+| Files API | beta | 2026-05 | docs.claude.com/en/docs/build-with-claude/files | matrix, arch, eval-pack |
 | Citations | GA | 2026-05 | docs.claude.com/en/docs/build-with-claude/citations | matrix, arch, eval-pack |
 | Batch API | GA | 2026-05 | docs.claude.com/en/docs/build-with-claude/batch-processing | calculator, matrix, arch, eval-pack, misconceptions, data-advisory |
-| Memory tool | beta | 2026-05 | docs.claude.com/en/docs/agents-and-tools/memory-tool | matrix, arch |
-| Web search tool (server-side) | GA | 2026-05 | docs.claude.com/en/docs/agents-and-tools/web-search | arch:rag, claude-code-guide |
+| Memory tool | beta | 2026-05 | docs.claude.com/en/docs/agents-and-tools/memory | matrix, arch |
+| Web search tool (server-side) | GA | 2026-05 | docs.claude.com/en/docs/agents-and-tools/web-search-tool | arch:rag, claude-code-guide |
 | Code execution tool (server-side) | GA | 2026-05 | docs.claude.com/en/docs/agents-and-tools/code-execution | arch:agent, claude-code-guide, eval-pack |
 
-**Token economics** — see [`../artifacts/cost-calculator.html`](../artifacts/cost-calculator.html). Cache read ≈ 10% of input. Cache write 5m ≈ 125% of input. Batch ≈ 50% of all rates.
+**Token economics** — see [`../artifacts/cost-calculator.html`](../artifacts/cost-calculator.html). Cache read ≈ 10% of input. Cache write 5m ≈ 125% of input. Cache write 1h ≈ 200% of input. Batch ≈ 50% of all rates.
+
+**Extended thinking note** — Opus 4.7 requires adaptive thinking (`thinking.type: "auto"` + `budget_tokens`). Manual `budget_tokens` alone returns HTTP 400 on Opus 4.7. Opus 4.6: manual budget still works but adaptive is recommended.
 
 ---
 
@@ -47,9 +59,9 @@
 |---|---|---|---|---|
 | Skills | GA | 2026-05 | docs.claude.com/en/docs/agents-and-tools/skills | matrix, playbook, arch, claude-code-guide, starter-skills, eval-pack, misconceptions |
 | MCP (Model Context Protocol) | GA | 2026-05 | modelcontextprotocol.io | matrix, playbook, arch, claude-code-guide, starter-skills, mcp-pack |
-| Agent SDK | GA | 2026-05 | docs.claude.com/en/api/agent-sdk | matrix, arch, claude-code-guide |
+| Agent SDK | GA | 2026-05 | docs.claude.com/en/api/agent-sdk | matrix, arch, claude-code-guide, multi-agent-patterns |
 | Plugins (bundled commands + skills + hooks + MCP servers) | GA | 2026-05 | docs.claude.com/en/docs/claude-code/plugins | matrix, arch, claude-code-guide, starter-skills, eval-pack |
-| Sub-agents (Task tool / parallel agents in Claude Code) | GA | 2026-05 | docs.claude.com/en/docs/claude-code/sub-agents | claude-code-guide, arch:code |
+| Sub-agents (Task tool / parallel agents in Claude Code) | GA | 2026-05 | docs.claude.com/en/docs/claude-code/sub-agents | claude-code-guide, arch:code, multi-agent-patterns |
 
 ---
 
@@ -75,6 +87,8 @@
 | Direct API (`console.anthropic.com`) | GA | 2026-05 | Fastest model availability. Default. |
 | Amazon Bedrock | GA | 2026-05 | Hyperscaler procurement. Model version lag possible. |
 | Google Vertex AI | GA | 2026-05 | Hyperscaler procurement. Model version lag possible. |
+| Microsoft Azure AI Foundry | GA | 2026-05 | Claude models via Azure marketplace. Enterprise procurement path for Microsoft shops. |
+| Claude Platform on AWS | GA | 2026-05 | Native AWS marketplace listing. Separate from Bedrock; direct billing via AWS. |
 
 ---
 

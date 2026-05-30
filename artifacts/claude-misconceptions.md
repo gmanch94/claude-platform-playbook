@@ -99,6 +99,21 @@
 - **Mis-decide.** Procurement waits for a "Computer Use SKU" that doesn't exist; pilot blocked behind a non-existent contract step.
 - **Cite.** [docs.claude.com — computer use](https://docs.claude.com/en/docs/agents-and-tools/computer-use); [`governance-overlay.md`](governance-overlay.md) prompt-injection section.
 
+### "Extended thinking always improves output quality."
+- **Reality.** Extended thinking measurably improves multi-step math, complex code reasoning, and structured analysis — but adds noise on classification, routing, formatting, and short-form generation tasks where the model already performs at ceiling. Cost and latency increase 2–5× regardless of task type.
+- **Mis-decide.** Defaulting extended thinking on for all production traffic; paying 2–5× more on a workload where 80% of tasks are format conversion or intent routing that Haiku at baseline would have matched.
+- **Cite.** [docs.claude.com — extended thinking](https://docs.claude.com/en/docs/build-with-claude/extended-thinking); [`feature-decision-matrix.html`](feature-decision-matrix.html) extended-thinking row.
+
+### "Multi-agent systems are more reliable than single-agent calls."
+- **Reality.** Each agent call introduces its own error probability. A 5-step pipeline where each step is 95% accurate yields ~77% end-to-end accuracy — lower than a single careful call at 90%. Reliability improves only when every step includes explicit output validation, error-handling, and retry logic. See [`multi-agent-patterns.md`](multi-agent-patterns.md) for the compounding math and mitigation patterns.
+- **Mis-decide.** Decomposing all complex tasks into agent graphs under the assumption that "more agents = more reliable"; shipping agentic pipelines without per-step validation and debugging cascading failures in production.
+- **Cite.** [docs.claude.com — agent SDK](https://docs.claude.com/en/api/agent-sdk); [`reference-architectures.html`](reference-architectures.html) agentic workflow pattern.
+
+### "We need to fine-tune Claude for our domain before we can ship."
+- **Reality.** Anthropic does not expose fine-tuning on Claude models. Domain performance is achieved through prompt engineering (system prompt, few-shot examples), Skills (reusable prompt modules), RAG (retrieved context), and cascade patterns (Haiku triage → Sonnet/Opus for hard cases). Fine-tuning applies to open-source models — it is not available on the Claude platform.
+- **Mis-decide.** Delaying pilot launch 6–12 weeks waiting for a "fine-tuning phase" that does not exist; over-investing in training infrastructure when prompt engineering + RAG would close the domain gap in days.
+- **Cite.** [docs.claude.com — models overview](https://docs.claude.com/en/docs/about-claude/models/overview); [`data-advisory.md`](data-advisory.md) distillation vs. RAG vs. prompting decision.
+
 ---
 
 ## How this artifact connects to the rest

@@ -123,6 +123,19 @@ Two **independent** controls determine where data is processed and stored. Sourc
 - Treating `inference_geo: "us"` as a substitute for a workspace-geo policy. Inference geo controls where the model **runs**; workspace geo controls where data is **stored**. Both must be set for an end-to-end US-only posture.
 - Assuming Bedrock / Vertex regions inherit `inference_geo` semantics. They do not — those paths are governed by the hyperscaler's region choice, with their own residency commitments.
 
+**Cross-border data sovereignty quick-reference** — laws that impose additional controls on top of GDPR + `inference_geo`:
+
+| Jurisdiction | Law | Key obligation for Claude workloads | Verify at |
+|---|---|---|---|
+| EU | GDPR Art. 28 + SCCs | DPA required; SCCs for cross-border transfer | EDPB guidance |
+| India | DPDP Act 2023 | Consent + purpose limitation for personal data; cross-border transfer subject to government-notified countries list (not yet published at 2026-05 — monitor) | meity.gov.in |
+| Australia | Privacy Act 1988 (amended) | APP 8 cross-border disclosure obligations; likely adequacy-style mechanism for transfers | oaic.gov.au |
+| UAE | PDPL (Federal Law No. 45/2021) | Data localisation for sensitive categories; transfer requires equivalent protection | uaeprivacy.gov.ae |
+| Saudi Arabia | PDPL (Royal Decree M/19) | Sensitive data localisation; cross-border transfer requires SDAIA approval | sdaia.gov.sa |
+| China | PIPL | Cross-border transfer requires security assessment or standard contracts; govt approval for large-scale exports | cac.gov.cn |
+
+> ⚠ These laws evolve quickly. Verify current transfer mechanism requirements at signing and re-check annually.
+
 ---
 
 ## 6. Compliance certifications
@@ -155,6 +168,10 @@ EU AI Act sorts AI systems into 4 risk classes. Claude (the model) is a general-
 - *Provider* obligations (registration, conformity assessment, post-market monitoring) attach if you build the high-risk system
 - *Deployer* obligations (human oversight, data input quality, monitoring) attach if you deploy a high-risk system
 - *GPAI* obligations (technical documentation of foundation model) sit with Anthropic — you can request the GPAI documentation package for your conformity assessment
+
+**GPAI Code of Practice:** Anthropic is a signatory to the EU AI Act GPAI Code of Practice (verify current status at [ai-act.eu](https://digital-strategy.ec.europa.eu/en/policies/ai-act)). For deployers building high-risk applications: the GPAI Code imposes upstream transparency and safety obligations on Anthropic as model provider; your conformity assessment can reference Anthropic's Code of Practice commitments as evidence of GPAI-layer compliance. Request the current GPAI documentation package from Anthropic when preparing a conformity assessment file.
+
+**Responsible Scaling Policy (RSP) and Model Card:** Anthropic publishes a Responsible Scaling Policy and per-model model cards covering safety evaluations, capability thresholds, and deployment commitments. For high-risk application assessments (EU AI Act Annex III, NIST AI RMF Map), these documents are primary evidence of upstream risk management. Source: [anthropic.com/responsible-scaling-policy](https://www.anthropic.com/responsible-scaling-policy); model cards at [anthropic.com/research/model-specification](https://www.anthropic.com/model-card) — verify current URLs at signing.
 
 ---
 

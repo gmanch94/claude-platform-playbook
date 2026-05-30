@@ -97,6 +97,12 @@
         <div class="hint">Tool-calling agents accumulate output across turns. A 5-turn agent w/ 800 tok/turn ≈ 4,000.</div>
       </div>
 
+      <div class="field">
+        <label>Agent turns per task <span class="val" id="turns-val">1×</span></label>
+        <input type="range" id="turns" min="1" max="20" step="1" value="1">
+        <div class="hint">For agentic workflows, each user task spawns multiple model calls. 1 = single call (copilot). 5–15 = typical agentic loop. Effective API calls = requests × turns: <strong id="eff-vol-ref">—</strong>.</div>
+      </div>
+
       <h2 style="margin-top:18px;">Model mix</h2>
       <div class="mix-row">
         <span class="name">Haiku 4.5</span>
@@ -175,7 +181,7 @@
             <tbody>
               <tr><td>Haiku 4.5</td><td class="num">$1.00</td><td class="num">$5.00</td><td class="num">$0.10</td><td class="num">$1.25</td></tr>
               <tr><td>Sonnet 4.6</td><td class="num">$3.00</td><td class="num">$15.00</td><td class="num">$0.30</td><td class="num">$3.75</td></tr>
-              <tr><td>Opus 4.7</td><td class="num">$15.00</td><td class="num">$75.00</td><td class="num">$1.50</td><td class="num">$18.75</td></tr>
+              <tr><td>Opus 4.7</td><td class="num">$5.00</td><td class="num">$25.00</td><td class="num">$0.50</td><td class="num">$6.25</td></tr>
             </tbody>
           </table>
           <p style="margin-top:10px;">Batch API: 50% off all rates. Cache read = 10% of input price. Cache write 5m = 125% of input price (one-time per cached prefix).</p>
@@ -205,11 +211,27 @@
       <summary>Common modeling mistakes</summary>
       <div class="body">
         <ul>
-          <li>Forgetting agent fan-out — a single user request can become 5–20 model calls with tool use. Multiply.</li>
+          <li>Forgetting agent fan-out — a single user request can become 5–20 model calls with tool use. Use the turns slider above.</li>
           <li>Treating cache hit rate as a constant — real workloads vary 30–80% depending on conversation reset frequency.</li>
           <li>Pricing all output at the highest tier — if you're routing 80% of traffic to Haiku, output blends accordingly.</li>
           <li>Ignoring extended thinking budget — when enabled, thinking tokens count as output. Budget separately.</li>
         </ul>
+      </div>
+    </details>
+    <details>
+      <summary>Claude.ai seat cost (separate from API inference)</summary>
+      <div class="body">
+        <p style="margin-bottom:10px;">The calculator above models <strong>API inference cost only</strong>. Claude.ai product seat licenses are a separate billing surface and do not cover API usage — budget both lines.</p>
+        <table>
+          <thead><tr><th>Plan</th><th class="num">Per seat/mo</th><th>Covers</th></tr></thead>
+          <tbody>
+            <tr><td>Pro</td><td class="num">~$20</td><td>claude.ai individual usage. Does not unlock API quota.</td></tr>
+            <tr><td>Max</td><td class="num">~$100</td><td>Higher claude.ai usage limits. Does not unlock API quota.</td></tr>
+            <tr><td>Teams</td><td class="num">~$30</td><td>claude.ai collaboration + admin. API billed separately.</td></tr>
+            <tr><td>Enterprise</td><td class="num">Custom</td><td>Volume pricing + SSO + SCIM. API credits billed separately.</td></tr>
+          </tbody>
+        </table>
+        <p style="margin-top:8px;">Engineering teams using Claude Code typically need both: a seat plan (claude.ai usage limits) <em>and</em> API credits (production inference). Verify current pricing at <a href="https://www.anthropic.com/pricing">anthropic.com/pricing</a>.</p>
       </div>
     </details>
   </div>
@@ -225,14 +247,14 @@
 const PRICING = {
   haiku:  { in: 1.00,  out: 5.00,  cacheRead: 0.10,  cacheWrite: 1.25 },
   sonnet: { in: 3.00,  out: 15.00, cacheRead: 0.30,  cacheWrite: 3.75 },
-  opus:   { in: 15.00, out: 75.00, cacheRead: 1.50,  cacheWrite: 18.75 }
+  opus:   { in: 5.00,  out: 25.00, cacheRead: 0.50,  cacheWrite: 6.25 }
 };
 
 const PRESETS = {
-  copilot: { vol: 1_000_000, in: 8000, out: 600,  mixH: 60, mixS: 35, mixO: 5,  cache: 70, batch: 0 },
-  rag:     { vol: 500_000,   in: 25000, out: 800, mixH: 30, mixS: 65, mixO: 5,  cache: 80, batch: 0 },
-  agent:   { vol: 200_000,   in: 4000, out: 3000, mixH: 20, mixS: 60, mixO: 20, cache: 60, batch: 0 },
-  batch:   { vol: 5_000_000, in: 3000, out: 400,  mixH: 90, mixS: 10, mixO: 0,  cache: 40, batch: 100 }
+  copilot: { vol: 1_000_000, turns: 1,  in: 8000,  out: 600,  mixH: 60, mixS: 35, mixO: 5,  cache: 70, batch: 0 },
+  rag:     { vol: 500_000,   turns: 1,  in: 25000, out: 800,  mixH: 30, mixS: 65, mixO: 5,  cache: 80, batch: 0 },
+  agent:   { vol: 200_000,   turns: 7,  in: 4000,  out: 3000, mixH: 20, mixS: 60, mixO: 20, cache: 60, batch: 0 },
+  batch:   { vol: 5_000_000, turns: 1,  in: 3000,  out: 400,  mixH: 90, mixS: 10, mixO: 0,  cache: 40, batch: 100 }
 };
 
 const $ = id => document.getElementById(id);
@@ -246,6 +268,7 @@ function applyPreset(name) {
   const p = PRESETS[name];
   if (!p) return;
   $('vol').value = p.vol;
+  $('turns').value = p.turns ?? 1;
   $('in').value = p.in;
   $('out').value = p.out;
   $('mix-h').value = p.mixH;
@@ -291,6 +314,8 @@ function computeForModel(modelKey, share, vol, inTok, outTok, cacheRate, batchPc
 
 function recompute() {
   const vol = +$('vol').value;
+  const turns = +$('turns').value;
+  const effVol = vol * turns;
   const inTok = +$('in').value;
   const outTok = +$('out').value;
   let mixH = +$('mix-h').value;
@@ -300,6 +325,8 @@ function recompute() {
   const batchPct = +$('batch').value / 100;
 
   // Display raw mix values
+  $('turns-val').textContent = turns + '×';
+  $('eff-vol-ref').textContent = effVol.toLocaleString() + ' API calls/mo';
   $('vol-val').textContent = vol.toLocaleString();
   $('in-val').textContent = inTok.toLocaleString();
   $('out-val').textContent = outTok.toLocaleString();
@@ -325,13 +352,13 @@ function recompute() {
   const total = sum || 1;
   const sH = mixH / total, sS = mixS / total, sO = mixO / total;
 
-  const h = computeForModel('haiku',  sH, vol, inTok, outTok, cacheRate, batchPct);
-  const s = computeForModel('sonnet', sS, vol, inTok, outTok, cacheRate, batchPct);
-  const o = computeForModel('opus',   sO, vol, inTok, outTok, cacheRate, batchPct);
+  const h = computeForModel('haiku',  sH, effVol, inTok, outTok, cacheRate, batchPct);
+  const s = computeForModel('sonnet', sS, effVol, inTok, outTok, cacheRate, batchPct);
+  const o = computeForModel('opus',   sO, effVol, inTok, outTok, cacheRate, batchPct);
 
   const totalCost = h.total + s.total + o.total;
   $('total-num').textContent = totalCost >= 1e6 ? (totalCost/1e6).toFixed(2) + 'M' : totalCost >= 1e3 ? (totalCost/1e3).toFixed(1) + 'k' : Math.round(totalCost).toLocaleString();
-  $('perreq').textContent = vol > 0 ? fmtUSD(totalCost / vol) + ' per request' : '— per request';
+  $('perreq').textContent = vol > 0 ? fmtUSD(totalCost / vol) + ' per task' + (turns > 1 ? ` (${turns} API calls/task)` : '') : '— per task';
 
   // Governance gate checks (§15.1)
   const perReqCost = vol > 0 ? totalCost / vol : 0;
@@ -367,8 +394,8 @@ function recompute() {
     batchWarnEl.classList.add('show');
   } else { batchWarnEl.classList.remove('show'); }
 
-  // Naive baseline: all Opus, no cache, no batch
-  const naive = computeForModel('opus', 1, vol, inTok, outTok, 0, 0);
+  // Naive baseline: all Opus, no cache, no batch (use effVol to keep comparison fair)
+  const naive = computeForModel('opus', 1, effVol, inTok, outTok, 0, 0);
   const savingsAmt = naive.total - totalCost;
   const savingsPct = naive.total > 0 ? Math.max(0, savingsAmt / naive.total) * 100 : 0;
   $('savings-pct').textContent = savingsPct.toFixed(0) + '%';

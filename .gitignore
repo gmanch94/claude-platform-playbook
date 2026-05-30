@@ -11,3 +11,7 @@ __pycache__/
 
 # Local-only working files (drafts, social posts, notes — never published)
 scratch/
+
+# Tool caches + personal local settings (never published)
+.lean-ctx/
+.claude/settings.local.json

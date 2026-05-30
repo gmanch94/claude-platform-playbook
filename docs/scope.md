@@ -254,7 +254,30 @@ Session 1: items 1-4 (skeleton + 3 anchors). Session 2: items 5-9 (depth + ship)
 The starter-skills + eval-pack + hooks-pack + mcp-pack + pilot-worksheet quintuple establishes a **template artifact pattern**: when the existing playbook/guide names a failure mode but offers no scaffolding, a starter pack with structured templates (when-to-use / failure-mode / owner / body) — or in the worksheet case, scored axes + verdict logic — earns its place. Candidate future packs to evaluate against this bar:
 
 - **Slash-command starter pack** — 6–8 portable slash commands (review-pr, run-eval, gen-changelog) — only earns place if the adoption guide's slash-command section grows past the current sketch
-- **Incident response runbook pack** — Claude-specific incident patterns (prompt regression, model deprecation, MCP server compromise, cost spike) — earns place if a real incident category emerges from playbook readers
 - **COE charter template** — adoption playbook Weeks 9–13 names "COE pattern operating: intake → triage → support → graduate" without showing the charter. Earns place if asked.
+
+### `model-selection-guide.md` (added 2026-05)
+
+**Why it earns its place.** The `feature-decision-matrix.html` encodes which Claude features fit which patterns, but the upstream question — *which model tier?* — is answered only in tooltips. Executives and architects consistently ask "which tier do we buy?" before they reach the matrix. Without a standalone guide, the answer is scattered across the briefing, calculator, and matrix. This artifact consolidates the decision into one place: 4-question framework, task-type → tier table, cascade pattern, and cost impact of over-tiering.
+
+**Why it's not in the original 8.** Original scope assumed the cost-calculator + feature-decision-matrix covered model selection. Empirically they don't: the calculator shows cost *given* a mix; the matrix shows features *given* a pattern. Neither answers the upstream "which tier for this task?" question that precedes both.
+
+**Posture.** Decision-frame first. Every recommendation includes the failure mode (what goes wrong if you over-tier or under-tier). Numeric cost impact for each tier-swap. Pinned to current model surface; refreshed monthly.
+
+### `multi-agent-patterns.md` (added 2026-05)
+
+**Why it earns its place.** `reference-architectures.html` has one agentic workflow pattern diagram. The feature-inventory lists sub-agents as GA. But neither artifact addresses the question architects face when designing agentic systems: *which decomposition pattern fits, and what are the failure modes?* The `claude-misconceptions.md` addition ("multi-agent ≠ more reliable") names the error-compounding problem but offers no scaffolding. This artifact provides 5 named patterns (orchestrator-worker, parallel fan-out, sequential pipeline, validator-retry, human-in-loop gate), the compounding accuracy math, sub-agent configuration shape, and the decision criteria for when to use each.
+
+**Why it's not in the original 8.** Original scope's agentic pattern in `reference-architectures.html` assumed one pattern was enough. Empirically, teams building agentic systems face 5+ distinct decomposition choices and routinely pick the wrong one. The structural decision — which pattern, which error-handling posture — is what belongs here; the code is in the SDK docs.
+
+**Posture.** Pattern-first (name → diagram sketch → when-to-use → failure mode → mitigation). Error-compounding math is explicit — not hidden. Cross-linked from `reference-architectures.html` (agentic pattern), `eval-starter-pack.md` (tool-call accuracy eval), `cost-calculator.html` (turns multiplier). Pinned to current model surface.
+
+### `incident-response-runbook.md` (added 2026-05)
+
+**Why it earns its place.** `governance-overlay.md §10` covers prompt versioning and rollback. `adoption-playbook.md` names failure modes. Neither answers "what do we do *right now*?" when something breaks in production. The gap is the reactive layer: symptoms → immediate actions → root cause → remediation → post-mortem, per incident class. Five classes cover the realistic failure space: prompt regression, model deprecation, cost spike, agent loop runaway, MCP server compromise.
+
+**Why it's not in the original 8.** Original scope assumed governance-overlay + adoption-playbook failure modes covered incident response. Empirically they don't: the overlay is a design-time reference, the playbook is a planning artifact. Neither is a runbook. The runbook belongs here because it unlocks the governance investments (audit log, rollback, kill-switch) already documented in the overlay.
+
+**Posture.** Runbook format: symptoms → immediate actions (time-boxed) → root cause investigation → remediation → post-mortem template. Five incident classes, each self-contained. Cross-linked from `governance-overlay.md` (§10 rollback, §15 cost gates), `hooks-starter-pack.md` (log-cost + block-secrets), `adoption-playbook.md` (failure modes). Pinned to current model surface.
 
 Bar for inclusion: existing artifact must already name the failure mode the pack would address; the structure must be portable across teams while the content remains team-specific.

@@ -59,8 +59,11 @@ claude-platform-playbook/
     ├── hooks-starter-pack.md            10 hook templates (block-secrets, PII scrub, branch guard, license, audit log, etc.) — phased 1→4 rollout
     ├── mcp-starter-pack.md              7 read-only MCP server templates (issue tracker, docs, CI logs, DB read, observability, API catalog, code search)
     ├── eval-starter-pack.md             8 eval templates (regression, format, tool-call, grounding, adversarial, cost, latency, refusal)
-    ├── claude-misconceptions.md         ~15 myths that drive mis-budget / mis-architect / mis-staff calls — text-form skeptic disarmer
-    └── data-advisory.md                 Pre-pilot data sizing — context window vs RAG, eval corpus counts, distillation trigger, cache eligibility, source taxonomy + governance flags
+    ├── claude-misconceptions.md         ~18 myths that drive mis-budget / mis-architect / mis-staff calls — text-form skeptic disarmer
+    ├── data-advisory.md                 Pre-pilot data sizing — context window vs RAG, eval corpus counts, distillation trigger, cache eligibility, source taxonomy + governance flags
+    ├── model-selection-guide.md         Opus / Sonnet / Haiku decision guide — 4-question framework, cascade pattern, tier-swap cost impact
+    ├── multi-agent-patterns.md          5 multi-agent patterns · error-compounding math · sub-agent config · pattern decision table
+    └── incident-response-runbook.md     5 incident classes · symptoms → immediate actions → remediation → post-mortem template
 ```
 
 ## Working in this repo
