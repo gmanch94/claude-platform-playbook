@@ -2,7 +2,9 @@
 
 **Single source of truth.** All artifacts in this repo reference this file. Update this first, propagate second.
 
-**Last verified:** 2026-05-29 against [docs.claude.com](https://docs.claude.com) and [anthropic.com/pricing](https://www.anthropic.com/pricing). **Opus 4.8 shipped 2026-05-28 — now the current top tier.**
+**Last verified:** 2026-06-01 against [platform.claude.com/docs](https://platform.claude.com/docs) and [anthropic.com/pricing](https://www.anthropic.com/pricing). Opus 4.8 remains current top tier. Memory tool confirmed GA. Claude Managed Agents, Structured outputs, Compaction API, and Advisor tool added.
+
+> **Doc URL migration (2025-11-19):** `docs.claude.com` permanently redirects (301) to `platform.claude.com/docs`. Rows updated during this refresh use the canonical `platform.claude.com/docs` base. Rows not yet verified against the new path still show the `docs.claude.com` form — all redirects are functional.
 
 **Refresh cadence:** weekly. Bump status, as-of dates, and pricing rows. Cross-check `Used in` column to find every artifact that needs a touch.
 
@@ -45,9 +47,12 @@
 | Files API | beta | 2026-05 | docs.claude.com/en/docs/build-with-claude/files | matrix, arch, eval-pack |
 | Citations | GA | 2026-05 | docs.claude.com/en/docs/build-with-claude/citations | matrix, arch, eval-pack |
 | Batch API | GA | 2026-05 | docs.claude.com/en/docs/build-with-claude/batch-processing | calculator, matrix, arch, eval-pack, misconceptions, data-advisory |
-| Memory tool | beta | 2026-05 | docs.claude.com/en/docs/agents-and-tools/memory | matrix, arch |
-| Web search tool (server-side) | GA | 2026-05 | docs.claude.com/en/docs/agents-and-tools/web-search-tool | arch:rag, claude-code-guide |
-| Code execution tool (server-side) | GA | 2026-05 | docs.claude.com/en/docs/agents-and-tools/code-execution | arch:agent, claude-code-guide, eval-pack |
+| Memory tool | GA | 2026-06 | platform.claude.com/docs/en/agents-and-tools/tool-use/memory-tool | matrix, arch |
+| Web search tool (server-side) | GA | 2026-06 | platform.claude.com/docs/en/agents-and-tools/tool-use/web-search-tool | arch:rag, claude-code-guide |
+| Code execution tool (server-side) | GA | 2026-06 | platform.claude.com/docs/en/agents-and-tools/tool-use/code-execution-tool | arch:agent, claude-code-guide, eval-pack |
+| Structured outputs | GA | 2026-06 | platform.claude.com/docs/en/build-with-claude/structured-outputs | matrix |
+| Compaction API | beta | 2026-06 | platform.claude.com/docs/en/build-with-claude/compaction | arch |
+| Advisor tool | beta | 2026-06 | platform.claude.com/docs/en/agents-and-tools/tool-use/advisor-tool | matrix, arch |
 
 **Token economics** — see [`../artifacts/cost-calculator.html`](../artifacts/cost-calculator.html). Cache read ≈ 10% of input. Cache write 5m ≈ 125% of input. Cache write 1h ≈ 200% of input. Batch ≈ 50% of all rates.
 
@@ -68,6 +73,7 @@
 | Agent SDK | GA | 2026-05 | docs.claude.com/en/api/agent-sdk | matrix, arch, claude-code-guide, multi-agent-patterns |
 | Plugins (bundled commands + skills + hooks + MCP servers) | GA | 2026-05 | docs.claude.com/en/docs/claude-code/plugins | matrix, arch, claude-code-guide, starter-skills, eval-pack |
 | Sub-agents (Task tool / parallel agents in Claude Code) | GA | 2026-05 | docs.claude.com/en/docs/claude-code/sub-agents | claude-code-guide, arch:code, multi-agent-patterns |
+| Claude Managed Agents | beta | 2026-06 | platform.claude.com/docs/en/managed-agents/overview | governance-overlay |
 
 ---
 
@@ -83,6 +89,7 @@
 | Background tasks / scheduled routines | GA | 2026-05 | docs.claude.com/en/docs/claude-code/background-tasks | claude-code-guide, starter-skills |
 | IDE integrations (VS Code, JetBrains) | GA | 2026-05 | docs.claude.com/en/docs/claude-code/ide-integrations | claude-code-guide |
 | Headless mode (CI / non-interactive) | GA | 2026-05 | docs.claude.com/en/docs/claude-code/headless | claude-code-guide, hooks-pack |
+| Workflows (multi-step agentic plans) | research preview | 2026-06 | code.claude.com/docs | claude-code-guide |
 
 ---
 
@@ -126,4 +133,4 @@
 
 ---
 
-`© gmanch94 · CC-BY-4.0 · As of 2026-05.`
+`© gmanch94 · CC-BY-4.0 · As of 2026-06.`

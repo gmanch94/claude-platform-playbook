@@ -1,6 +1,6 @@
 # Claude Model Selection Guide
 
-**As of 2026-05.** Pinned to Opus 4.8 / Sonnet 4.6 / Haiku 4.5. Refresh monthly with [`../docs/feature-inventory.md`](../docs/feature-inventory.md).
+**As of 2026-06.** Pinned to Opus 4.8 / Sonnet 4.6 / Haiku 4.5. Refresh monthly with [`../docs/feature-inventory.md`](../docs/feature-inventory.md).
 
 > **The decision upstream of everything else.** Before the feature-decision-matrix, before the cost-calculator, there is one question: *which model tier fits this task?* Getting it wrong costs money (over-tiering) or quality (under-tiering). This guide answers it in four questions.
 
@@ -131,4 +131,4 @@ Extended thinking is not a model tier — it's a feature available on Opus 4.x (
 
 ---
 
-`© gmanch94 · CC-BY-4.0 · As of 2026-05. Verify pricing/models at anthropic.com.`
+`© gmanch94 · CC-BY-4.0 · As of 2026-06. Verify pricing/models at anthropic.com.`

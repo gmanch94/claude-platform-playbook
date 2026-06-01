@@ -399,4 +399,4 @@ Don't ship 7 MCP servers on day 1. Mirror the [`claude-code-adoption-guide.md`](
 
 ---
 
-`© gmanch94 · CC-BY-4.0 · As of 2026-05. Verify MCP protocol shape at modelcontextprotocol.io and docs.claude.com/en/docs/claude-code/plugins.`
+`© gmanch94 · CC-BY-4.0 · As of 2026-06. Verify MCP protocol shape at modelcontextprotocol.io and docs.claude.com/en/docs/claude-code/plugins.`

@@ -1,6 +1,6 @@
 # Claude Code Adoption Guide — engineering team rollout
 
-**As of 2026-05.** Pin to current model surface (Opus 4.8 / Sonnet 4.6 / Haiku 4.5). See [`../docs/feature-inventory.md`](../docs/feature-inventory.md) for canonical Claude Code surface inventory.
+**As of 2026-06.** Pin to current model surface (Opus 4.8 / Sonnet 4.6 / Haiku 4.5). See [`../docs/feature-inventory.md`](../docs/feature-inventory.md) for canonical Claude Code surface inventory.
 
 For engineering managers and platform leads rolling out **Claude Code** (the CLI/IDE harness) across a team. This is a tactical companion to [`adoption-playbook.md`](adoption-playbook.md) — that doc covers business adoption; this one covers the engineering surface.
 
@@ -299,4 +299,4 @@ For recurring work (weekly sweep, on-cadence reports), use scheduled tasks rathe
 
 ---
 
-`© gmanch94 · CC-BY-4.0 · As of 2026-05. Verify Claude Code surface at docs.claude.com/en/docs/claude-code.`
+`© gmanch94 · CC-BY-4.0 · As of 2026-06. Verify Claude Code surface at docs.claude.com/en/docs/claude-code.`
