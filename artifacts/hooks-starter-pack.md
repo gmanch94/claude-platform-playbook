@@ -544,4 +544,4 @@ If your team needs any of the above, the structure here (when-to-use / failure-m
 
 ---
 
-`© gmanch94 · CC-BY-4.0 · As of 2026-05. Verify hook event surface at docs.claude.com/en/docs/claude-code/hooks.`
+`© gmanch94 · CC-BY-4.0 · As of 2026-06. Verify hook event surface at docs.claude.com/en/docs/claude-code/hooks.`

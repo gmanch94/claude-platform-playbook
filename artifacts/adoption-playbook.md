@@ -1,6 +1,6 @@
 # Claude Adoption Playbook — 90-day rollout
 
-**As of 2026-05.** Pin to current model surface (Opus 4.8 / Sonnet 4.6 / Haiku 4.5) — refresh monthly.
+**As of 2026-06.** Pin to current model surface (Opus 4.8 / Sonnet 4.6 / Haiku 4.5) — refresh monthly.
 
 A 90-day arc from "we want to use Claude" to "Claude is in production with guardrails and a Center of Excellence pattern." Built for transformation leads, not for engineers — engineers should pair this with [`claude-code-adoption-guide.md`](claude-code-adoption-guide.md).
 
@@ -223,4 +223,4 @@ You can run a small adoption with 4–6 people. Larger orgs will scale each func
 
 ---
 
-`© gmanch94 · CC-BY-4.0 · As of 2026-05. Verify model surface + pricing at anthropic.com.`
+`© gmanch94 · CC-BY-4.0 · As of 2026-06. Verify model surface + pricing at anthropic.com.`

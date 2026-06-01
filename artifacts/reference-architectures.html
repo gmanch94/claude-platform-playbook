@@ -50,7 +50,7 @@
 <body>
 <div class="wrap">
   <header>
-    <h1>Reference Architectures <span class="asof">As of 2026-05</span></h1>
+    <h1>Reference Architectures <span class="asof">As of 2026-06</span></h1>
     <div class="sub">6 canonical Claude patterns. Hand-drawn diagrams — meant to be re-drawn on a whiteboard, not pasted into a slide. See <a href="../docs/feature-inventory.html">feature-inventory.md</a> for canonical feature status.</div>
   </header>
 
@@ -705,7 +705,7 @@
       <div class="cell"><h4>Cost band</h4><div class="v">Mid — Haiku triage + 90% cached input on system + app schema compounds. ~$0.001–$0.01 per interaction typical.</div></div>
       <div class="cell"><h4>Latency</h4><div class="v">Sub-2s for triaged answers (Haiku). 2–6s when Sonnet handles tool use. Streaming UI hides the rest.</div></div>
       <div class="cell"><h4>Governance</h4><div class="v">Memory tool retention + per-user/per-tenant isolation. App-context redaction before send. MCP server scoped to current user.</div></div>
-      <div class="cell"><h4>Time to disruption</h4><div class="v">3–12 mo · memory tool beta + app integration cost.</div></div>
+      <div class="cell"><h4>Time to disruption</h4><div class="v">3–12 mo · memory tool + app integration cost.</div></div>
     </div>
 
     <p>The copilot lives <em>inside</em> an existing app — CRM record sidebar, ticketing detail page, IDE panel — not as a standalone chat. Haiku 4.5 triages: simple lookups answer immediately; complex reasoning routes to Sonnet 4.6 with tool use. The system prompt + tool definitions + app schema are cached (90% off cached input on hit). An MCP server scoped to the host app reads the current record, searches related records, and drafts (but does not commit) actions. Memory tool persists per-user preferences across sessions. The response renders inline — never as a popup the user has to context-switch to.</p>
@@ -741,7 +741,7 @@
 </div>
 
 <footer>
-  © gmanch94 · CC-BY-4.0 · As of 2026-05. Verify feature surface at <a href="https://docs.claude.com">docs.claude.com</a>. Source-of-truth status in <a href="../docs/feature-inventory.html">feature-inventory.md</a>.
+  © gmanch94 · CC-BY-4.0 · As of 2026-06. Verify feature surface at <a href="https://docs.claude.com">docs.claude.com</a>. Source-of-truth status in <a href="../docs/feature-inventory.html">feature-inventory.md</a>.
 </footer>
 </body>
 </html>

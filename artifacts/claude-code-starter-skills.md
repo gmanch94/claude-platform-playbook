@@ -1,6 +1,6 @@
 # Claude Code Starter Skills Pack
 
-**As of 2026-05.** Pin to current model surface (Opus 4.8 / Sonnet 4.6 / Haiku 4.5). Companion to [`claude-code-adoption-guide.md`](claude-code-adoption-guide.md). See [`../docs/feature-inventory.md`](../docs/feature-inventory.md) for the canonical Skills + plugin surface inventory.
+**As of 2026-06.** Pin to current model surface (Opus 4.8 / Sonnet 4.6 / Haiku 4.5). Companion to [`claude-code-adoption-guide.md`](claude-code-adoption-guide.md). See [`../docs/feature-inventory.md`](../docs/feature-inventory.md) for the canonical Skills + plugin surface inventory.
 
 Eight team-grade Skill templates an engineering lead can drop into a plugin on day one. Each Skill is framed by **decision** first (when it earns its keep, what it costs you, who owns it) — the prompt body is last, because the prompt is the cheapest part to write and the most expensive part to govern.
 
@@ -372,4 +372,4 @@ You scope refactors. Output is a plan, not a changelist.
 
 ---
 
-`© gmanch94 · CC-BY-4.0 · As of 2026-05. Verify Skills surface at docs.claude.com/en/docs/agents-and-tools/skills.`
+`© gmanch94 · CC-BY-4.0 · As of 2026-06. Verify Skills surface at docs.claude.com/en/docs/agents-and-tools/skills.`

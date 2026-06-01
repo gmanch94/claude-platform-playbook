@@ -1,6 +1,6 @@
 # Claude Eval Starter Pack
 
-**As of 2026-05.** Pin to current model surface (Opus 4.8 / Sonnet 4.6 / Haiku 4.5). Companion to [`adoption-playbook.md`](adoption-playbook.md) (Weeks 5–8 guardrails) and [`claude-code-adoption-guide.md`](claude-code-adoption-guide.md) (Phase 3 governance). See [`../docs/feature-inventory.md`](../docs/feature-inventory.md) for canonical feature surface.
+**As of 2026-06.** Pin to current model surface (Opus 4.8 / Sonnet 4.6 / Haiku 4.5). Companion to [`adoption-playbook.md`](adoption-playbook.md) (Weeks 5–8 guardrails) and [`claude-code-adoption-guide.md`](claude-code-adoption-guide.md) (Phase 3 governance). See [`../docs/feature-inventory.md`](../docs/feature-inventory.md) for canonical feature surface.
 
 Eight evaluation templates an engineering or COE lead can drop into CI on day one. Each eval is framed by **decision** first (what regression it catches, what it costs, who owns it) — the eval body is last, because eval mechanics are the cheapest part to build and the most expensive part to govern.
 
@@ -455,4 +455,4 @@ When in doubt: start advisory, promote to blocking after 60 days of stable signa
 
 ---
 
-`© gmanch94 · CC-BY-4.0 · As of 2026-05. Verify Batch API + Code execution surface at docs.claude.com.`
+`© gmanch94 · CC-BY-4.0 · As of 2026-06. Verify Batch API + Code execution surface at docs.claude.com.`
