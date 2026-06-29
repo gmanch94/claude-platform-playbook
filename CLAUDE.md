@@ -52,9 +52,11 @@ claude-platform-playbook/
     ├── build-vs-buy-worksheet.html      5-axis score → ranked 6-option rec
     ├── reference-architectures.html     6 hand-drawn SVG patterns (Caveat font)
     ├── adoption-playbook.md             90-day rollout · 8 failure modes
+    ├── surface-rollout-matrix.md        Which surface (chat/Projects/Claude Code/Cowork/Design) for whom, in what order · governance flag + failure mode per surface · sequenced by blast radius
     ├── pilot-selection-worksheet.html   Week 0 use-case scorer · 5 axes · ranked verdicts + blocker flags
     ├── governance-overlay.md            Data flow · No-train · ZDR · HIPAA/BAA · Residency · Retention · Certs · NIST · EU AI Act
     ├── claude-code-adoption-guide.md    Engineering CLI rollout
+    ├── cowork-adoption-guide.md         Cowork (desktop agent) rollout for non-engineers · 3 gates · 4-phase arc · folder-scope/egress/review-before-act governance · BAA-excluded (no PHI)
     ├── claude-code-starter-skills.md    8 team-grade Skill templates (when-to-use / failure-mode / owner / prompt body)
     ├── hooks-starter-pack.md            10 hook templates (block-secrets, PII scrub, branch guard, license, audit log, etc.) — phased 1→4 rollout
     ├── mcp-starter-pack.md              7 read-only MCP server templates (issue tracker, docs, CI logs, DB read, observability, API catalog, code search)
@@ -79,7 +81,7 @@ claude-platform-playbook/
 
 ### When adding a new artifact
 
-Don't, without updating `docs/scope.md` first. The original scope agreed 8 artifacts; the repo currently ships 22 (all post-v1 additions are justified in `scope.md`). New artifacts need a written justification block in `scope.md` and a row in `feature-inventory.md`'s `Used in artifacts` column.
+Don't, without updating `docs/scope.md` first. The original scope agreed 8 artifacts; the repo currently ships 24 (all post-v1 additions are justified in `scope.md`). New artifacts need a written justification block in `scope.md` and a row in `feature-inventory.md`'s `Used in artifacts` column.
 
 ### When the model surface changes
 

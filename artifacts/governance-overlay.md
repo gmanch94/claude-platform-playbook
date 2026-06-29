@@ -75,7 +75,9 @@ ZDR is a **separate enterprise agreement** distinct from no-train. Source: [Anth
 1. **HIPAA-ready API access (without ZDR)** — Anthropic now supports HIPAA-ready API integrations without a ZDR prerequisite. The Claude API enforces feature eligibility automatically: a HIPAA-enabled organization that sends a request with a non-eligible feature receives a `400` error explicitly naming the disallowed feature. Source: [API and data retention](https://platform.claude.com/docs/en/build-with-claude/api-and-data-retention#hipaa-readiness).
 2. **HIPAA-ready services + signed BAA** — for production PHI workloads. Anthropic provides a BAA covering HIPAA-ready services across the first-party API and Enterprise plans, after review of compliance items and use case. Source: [BAA article](https://privacy.claude.com/en/articles/8114513-business-associate-agreements-baa-for-commercial-customers).
 
-**What the BAA covers (first-party API features marked eligible at the time of signing — verify the [Implementation Guide](https://trust.anthropic.com/) at signing):**
+**The BAA covers two distinct surfaces — the first-party API *and* the Enterprise product — each with its own eligible-feature list. Do not reconcile the two tables: the same capability (e.g. code execution) can be covered on one surface and not the other.** Enterprise coverage is **not automatic** — an admin must activate HIPAA compliance (admin settings → Data & Privacy) **and** sign the BAA; a standard Enterprise plan carries no BAA without that action. Verify the [Implementation Guide](https://trust.anthropic.com/) at signing. [H — [BAA article](https://privacy.claude.com/en/articles/8114513-business-associate-agreements-baa-for-commercial-customers), re-verified 2026-06-29 (source updated this week)]
+
+**First-party API surface — BAA-covered features (eligible at time of signing):**
 
 | API surface | BAA-covered |
 |---|---|
@@ -88,10 +90,22 @@ ZDR is a **separate enterprise agreement** distinct from no-train. Source: [Anth
 | Advisor tool | Not covered |
 | Code execution tool | Not covered (and network access excluded even where the surrounding feature is covered) |
 
-**What the BAA does NOT cover (product surface):**
+**Enterprise product surface — BAA-covered features:**
+
+| Enterprise feature | BAA-covered |
+|---|---|
+| Chat | Covered |
+| Projects | Covered |
+| Artifacts | Covered |
+| File creation & code execution | Covered |
+
+⚠ **Surface split, not a contradiction:** code execution is **covered** on the Enterprise product surface but **not** on the first-party API surface above — same BAA article, two different tables. A future editor should NOT "reconcile" them into a single value. This Enterprise enumeration is the parent for the BAA claims in [`surface-rollout-matrix.md`](surface-rollout-matrix.md) and [`cowork-adoption-guide.md`](cowork-adoption-guide.md).
+
+**What the BAA does NOT cover:**
 - Workbench, Console (use the API directly with a HIPAA-enabled org instead)
 - Claude Free, Pro, Max, Team plans
-- Beta features (e.g., Cowork, Claude for Office at the time of writing)
+- **Cowork** — a paid-plan product surface (GA, not beta), but BAA-excluded
+- Beta features such as **Claude in Office** and **Claude Design**
 
 **PHI handling rules carried over from Anthropic's HIPAA configuration:**
 - Patient-specific information must appear **only in message content** (where HIPAA safeguards apply)

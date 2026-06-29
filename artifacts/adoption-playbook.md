@@ -2,7 +2,7 @@
 
 **As of 2026-06.** Pin to current model surface (Opus 4.8 / Sonnet 4.6 / Haiku 4.5) — refresh monthly.
 
-A 90-day arc from "we want to use Claude" to "Claude is in production with guardrails and a Center of Excellence pattern." Built for transformation leads, not for engineers — engineers should pair this with [`claude-code-adoption-guide.md`](claude-code-adoption-guide.md).
+A 90-day arc from "we want to use Claude" to "Claude is in production with guardrails and a Center of Excellence pattern." Built for transformation leads, not for engineers — engineers should pair this with [`claude-code-adoption-guide.md`](claude-code-adoption-guide.md). This playbook is **surface-agnostic** (the *how* of a rollout); for *which* surface to enable first — chat, Projects, Cowork, Claude Design, or Claude Code — and in what order, pair it with [`surface-rollout-matrix.md`](surface-rollout-matrix.md).
 
 > 🛑 **Before Week 0:** run candidate use cases through [`anti-use-cases.md`](anti-use-cases.md). The "Premature" rows there are the same pre-flight gates this playbook names — but blocking, with cited frameworks. If a candidate hits any row, kill or re-route before scoring.
 
