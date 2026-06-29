@@ -89,15 +89,21 @@ ZDR is a **separate enterprise agreement** distinct from no-train. Source: [Anth
 | Web fetch tool | Not covered |
 | Advisor tool | Not covered |
 | Code execution tool | Not covered (and network access excluded even where the surrounding feature is covered) |
+| Files API, Batch API, Computer use, Skills API | Not covered (and not accessible to HIPAA-ready API users) |
 
-**Enterprise product surface — BAA-covered features:**
+**Enterprise product surface — BAA-covered features** (from the live article's detailed "Product BAA coverage by surface" table, re-verified 2026-06-29; verify the full current list in the Implementation Guide at signing — the eligible set grows):
 
 | Enterprise feature | BAA-covered |
 |---|---|
 | Chat | Covered |
 | Projects | Covered |
 | Artifacts | Covered |
-| File creation & code execution | Covered |
+| File creation & code execution | Covered (excluding network access & external websites) |
+| Voice | Covered |
+| Web search | Covered |
+| Research | Covered |
+
+**3rd-party integrations** (MCPs / Connectors / Enterprise Search / Claude in Chrome): available, but their **3rd-party data flows are not covered** by the BAA — verify per-integration at signing. (This is the same principle as the API-side "BAA does not extend to your MCP servers.")
 
 ⚠ **Surface split, not a contradiction:** code execution is **covered** on the Enterprise product surface but **not** on the first-party API surface above — same BAA article, two different tables. A future editor should NOT "reconcile" them into a single value. This Enterprise enumeration is the parent for the BAA claims in [`surface-rollout-matrix.md`](surface-rollout-matrix.md) and [`cowork-adoption-guide.md`](cowork-adoption-guide.md).
 
