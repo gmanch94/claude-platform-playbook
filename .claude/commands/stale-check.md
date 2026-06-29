@@ -33,21 +33,23 @@ Count: X OK, Y stale.
 
 ### 3. Model pin audit
 
-Canonical pins (from CLAUDE.md): **Opus 4.7 / Sonnet 4.6 / Haiku 4.5**
+Canonical pins (from CLAUDE.md): **Opus 4.8 / Sonnet 4.6 / Haiku 4.5** — the current deployable (GA) tier.
 
 Grep across all artifacts for any occurrence of:
-- `Opus 4\.\d` — flag if not `4.7`
+- `Opus 4\.\d` — flag if not `4.8`
 - `Sonnet 4\.\d` — flag if not `4.6`
 - `Haiku 4\.\d` — flag if not `4.5`
 - `claude-opus-[0-9]`, `claude-sonnet-[0-9]`, `claude-haiku-[0-9]` — report exact strings found
 
 Also flag any floating aliases: `latest Claude`, `most recent model`, `newest model`.
 
+**Fable 5 / Mythos 5 are NOT pin errors.** As of 2026-06 a next-gen line exists above the 4.x family: Claude Fable 5 (`claude-fable-5`, most capable widely released but currently *unavailable*) and Claude Mythos 5 (`claude-mythos-5`, invite-only via Project Glasswing). They are not GA-deployable, so this repo's operational recs stay on Opus 4.8. Do NOT flag Fable/Mythos references as stale; DO flag if an artifact claims Opus 4.8 is the "most capable Claude model" without acknowledging the Fable/Mythos line exists.
+
 Report:
 
 ```
 MODEL PINS
-  OK    artifacts/executive-briefing.html    Opus 4.7, Sonnet 4.6, Haiku 4.5
+  OK    artifacts/executive-briefing.html    Opus 4.8, Sonnet 4.6, Haiku 4.5
   STALE artifacts/feature-decision-matrix.html  found "Opus 4.6" ← wrong pin
   FLOAT artifacts/adoption-playbook.md      found "latest Claude" ← pin to specific version
   ...

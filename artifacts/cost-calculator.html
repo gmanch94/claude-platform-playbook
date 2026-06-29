@@ -63,7 +63,7 @@
 <body>
 <div class="wrap">
   <header>
-    <h1>Claude Cost Calculator <span class="asof">As of 2026-05</span></h1>
+    <h1>Claude Cost Calculator <span class="asof">As of 2026-06</span></h1>
     <div class="sub">Model your monthly Claude API spend. Sliders are interactive — outputs update live. Treat the result as a <strong>governance constraint</strong>, not a curiosity: define $/task ceiling, $/day cap, cache hit-rate floor, batch eligibility floor before pilot launch (see <a href="governance-overlay.html#15-cost-as-a-governance-constraint" style="color:var(--c1d);">governance-overlay §15</a>).</div>
   </header>
 
@@ -225,10 +225,10 @@
         <table>
           <thead><tr><th>Plan</th><th class="num">Per seat/mo</th><th>Covers</th></tr></thead>
           <tbody>
-            <tr><td>Pro</td><td class="num">~$20</td><td>claude.ai individual usage. Does not unlock API quota.</td></tr>
-            <tr><td>Max</td><td class="num">~$100</td><td>Higher claude.ai usage limits. Does not unlock API quota.</td></tr>
-            <tr><td>Teams</td><td class="num">~$30</td><td>claude.ai collaboration + admin. API billed separately.</td></tr>
-            <tr><td>Enterprise</td><td class="num">Custom</td><td>Volume pricing + SSO + SCIM. API credits billed separately.</td></tr>
+            <tr><td>Pro</td><td class="num">$17–20</td><td>claude.ai individual usage + Claude Code. $17/mo annual, $20 monthly. Does not unlock API quota.</td></tr>
+            <tr><td>Max</td><td class="num">from $100</td><td>5× or 20× Pro usage limits. Does not unlock API quota.</td></tr>
+            <tr><td>Team</td><td class="num">$20 std / $100 prem</td><td>5–150 seats (per seat/mo annual). SSO, central admin, no-train default. API billed separately.</td></tr>
+            <tr><td>Enterprise</td><td class="num">Custom</td><td>Volume pricing + SSO + SCIM + BAA. API credits billed separately.</td></tr>
           </tbody>
         </table>
         <p style="margin-top:8px;">Engineering teams using Claude Code typically need both: a seat plan (claude.ai usage limits) <em>and</em> API credits (production inference). Verify current pricing at <a href="https://www.anthropic.com/pricing">anthropic.com/pricing</a>.</p>
@@ -238,12 +238,12 @@
 </div>
 
 <footer>
-  © gmanch94 · CC-BY-4.0 · As of 2026-05. Verify pricing/models at <a href="https://www.anthropic.com/pricing">anthropic.com/pricing</a>. Calculator gives an order-of-magnitude estimate — production patterns vary.
+  © gmanch94 · CC-BY-4.0 · As of 2026-06. Verify pricing/models at <a href="https://www.anthropic.com/pricing">anthropic.com/pricing</a>. Calculator gives an order-of-magnitude estimate — production patterns vary.
 </footer>
 
 <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
 <script>
-// Pricing per million tokens (USD), as of 2026-05
+// Pricing per million tokens (USD), as of 2026-06
 const PRICING = {
   haiku:  { in: 1.00,  out: 5.00,  cacheRead: 0.10,  cacheWrite: 1.25 },
   sonnet: { in: 3.00,  out: 15.00, cacheRead: 0.30,  cacheWrite: 3.75 },

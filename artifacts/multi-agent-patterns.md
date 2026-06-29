@@ -1,6 +1,6 @@
 # Multi-Agent Patterns for Claude
 
-**As of 2026-05.** Pinned to Opus 4.8 / Sonnet 4.6 / Haiku 4.5. Companion to [`reference-architectures.html`](reference-architectures.html) (agentic workflow pattern) and [`eval-starter-pack.md`](eval-starter-pack.md) (tool-call accuracy eval). See [`../docs/feature-inventory.md`](../docs/feature-inventory.md) for canonical sub-agents / Agent SDK status.
+**As of 2026-06.** Pinned to Opus 4.8 / Sonnet 4.6 / Haiku 4.5. Companion to [`reference-architectures.html`](reference-architectures.html) (agentic workflow pattern) and [`eval-starter-pack.md`](eval-starter-pack.md) (tool-call accuracy eval). See [`../docs/feature-inventory.md`](../docs/feature-inventory.md) for canonical sub-agents / Agent SDK status.
 
 > **Read this before decomposing.** Multi-agent architectures are powerful and fragile. Each decomposition choice has a distinct failure mode. This artifact names 5 patterns, the error-compounding math that makes agents less reliable by default, and the mitigations that reverse the math.
 
@@ -188,4 +188,4 @@ See [`../docs/feature-inventory.md`](../docs/feature-inventory.md) sub-agents ro
 
 ---
 
-`© gmanch94 · CC-BY-4.0 · As of 2026-05. Verify Agent SDK + sub-agent surface at docs.claude.com.`
+`© gmanch94 · CC-BY-4.0 · As of 2026-06. Verify Agent SDK + sub-agent surface at docs.claude.com.`
