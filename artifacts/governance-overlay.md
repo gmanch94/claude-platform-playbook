@@ -102,10 +102,11 @@ ZDR is a **separate enterprise agreement** distinct from no-train. Source: [Anth
 | Voice | Covered |
 | Web search | Covered |
 | Research | Covered |
+| Skills | Covered (Enterprise product only — the first-party-API "Skills API" row above stays Not covered; surface split) |
 
 **3rd-party integrations** (MCPs / Connectors / Enterprise Search / Claude in Chrome): available, but their **3rd-party data flows are not covered** by the BAA — verify per-integration at signing. (This is the same principle as the API-side "BAA does not extend to your MCP servers.")
 
-⚠ **Surface split, not a contradiction:** code execution is **covered** on the Enterprise product surface but **not** on the first-party API surface above — same BAA article, two different tables. A future editor should NOT "reconcile" them into a single value. This Enterprise enumeration is the parent for the BAA claims in [`surface-rollout-matrix.md`](surface-rollout-matrix.md) and [`cowork-adoption-guide.md`](cowork-adoption-guide.md).
+⚠ **Surface split, not a contradiction:** code execution **and Skills** are **covered** on the Enterprise product surface but **not** on the first-party API surface above — same BAA article, two different tables. A future editor should NOT "reconcile" them into a single value. This Enterprise enumeration is the parent for the BAA claims in [`surface-rollout-matrix.md`](surface-rollout-matrix.md) and [`cowork-adoption-guide.md`](cowork-adoption-guide.md).
 
 **What the BAA does NOT cover:**
 - Workbench, Console (use the API directly with a HIPAA-enabled org instead)

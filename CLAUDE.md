@@ -67,7 +67,13 @@ claude-platform-playbook/
     ├── model-selection-guide.md         Opus / Sonnet / Haiku decision guide — 4-question framework, cascade pattern, tier-swap cost impact
     ├── subscription-selection-guide.md  Which Claude plan to buy — three-gate framework (compliance → size → build) across Free/Pro/Max/Team/Enterprise, plan-comparison table, seat-vs-API "need both" pattern
     ├── multi-agent-patterns.md          5 multi-agent patterns · error-compounding math · sub-agent config · pattern decision table
-    └── incident-response-runbook.md     5 incident classes · symptoms → immediate actions → remediation → post-mortem template
+    ├── incident-response-runbook.md     5 incident classes · symptoms → immediate actions → remediation → post-mortem template
+    ├── roi-worksheet.html               Value side of cost-calculator · net ROI vs spend · payback · value/cost ratio · realized-capture discount · "five ways this number lies"
+    ├── procurement-pack.md              Vendor-risk Q&A · security-questionnaire answers · DPA/BAA pre-sign checklist · SLA terms · surface-split · every row cites a governance § or "verify at signing"
+    ├── workforce-change-guide.md        CHRO/people rollout · role-impact map · augmentation-vs-replacement comms · tiered reskilling · measure-without-surveillance · works-council gate
+    ├── agentic-threat-model.md          Preventive attack surface · 10 OWASP-LLM-shape threats mapped to existing repo controls · 4-layer defense · 5-question pre-ship gate (vs incident-runbook's reactive)
+    ├── maturity-model.md                L0→L4 self-locator · weakest-link self-assessment · one next-move per rung · routes by capability (spine routes by question)
+    └── operating-model-guide.md         Who owns Claude · shape choice (centralized/federated/hub-spoke CoE/CoP) + decision×role RACI + paved-road boundary · cross-refs playbook 3-function (not re-derived)
 ```
 
 ## Working in this repo
@@ -82,7 +88,7 @@ claude-platform-playbook/
 
 ### When adding a new artifact
 
-Don't, without updating `docs/scope.md` first. The original scope agreed 8 artifacts; the repo currently ships 25 (all post-v1 additions are justified in `scope.md`). New artifacts need a written justification block in `scope.md` and a row in `feature-inventory.md`'s `Used in artifacts` column.
+Don't, without updating `docs/scope.md` first. The original scope agreed 8 artifacts; the repo currently ships 31 (all post-v1 additions are justified in `scope.md`). New artifacts need a written justification block in `scope.md` and a row in `feature-inventory.md`'s `Used in artifacts` column.
 
 ### When the model surface changes
 
