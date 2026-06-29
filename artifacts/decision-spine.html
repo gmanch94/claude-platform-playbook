@@ -95,7 +95,7 @@
   </header>
 
   <div class="intro">
-    <strong>Read this first.</strong> Most readers land in the README's audience map and pick a row. That works once you know which row you are. The spine is for the case where you don't — or where your decision spans multiple rows. Each branch resolves with: <em>1-line frame → linked artifact(s) → next decision after this one</em>. The order matters: <strong>question 1 (anti-use) is always first</strong>. If a candidate use case fails the anti-use filter, no other branch is worth running.
+    <strong>Read this first.</strong> Most readers land in the README's audience map and pick a row. That works once you know which row you are. The spine is for the case where you don't — or where your decision spans multiple rows. Each branch resolves with: <em>1-line frame → linked artifact(s) → next decision after this one</em>. The order matters: <strong>question 1 (anti-use) is always first</strong>. If a candidate use case fails the anti-use filter, no other branch is worth running.<br><br>The seven core branches feed downstream decisions, now routed here too: <strong>locate yourself first</strong> (branch 0 — maturity-model, L0→L4), <strong>what you sign</strong> (branch 3 — procurement-pack), <strong>the value side</strong> (branch 4 — roi-worksheet), and — once you're shipping (branch 5) — <strong>securing the agent</strong> (agentic-threat-model), <strong>bringing people along</strong> (workforce-change-guide), and <strong>who owns it</strong> (operating-model-guide).
   </div>
 
   <div class="legend-row">
@@ -261,6 +261,15 @@
       <text x="710" y="500" class="anno">cost is a constraint, not a calculator</text>
       <text x="40" y="608" class="anno">parallel track once</text>
       <text x="40" y="624" class="anno">decision is "we're shipping"</text>
+
+      <!-- Spine extensions — the 6 downstream artifacts mapped to their branch -->
+      <text x="45" y="346" class="anno" style="font-size:16px; fill:#9a3412;">+ also on the spine:</text>
+      <text x="45" y="368" class="anno">0 · locate yourself → maturity-model</text>
+      <text x="45" y="388" class="anno">3 · what you sign → procurement-pack</text>
+      <text x="45" y="408" class="anno">4 · the value side → roi-worksheet</text>
+      <text x="45" y="428" class="anno">5 · secure the agent → threat-model</text>
+      <text x="45" y="448" class="anno">5 · bring people → workforce-change</text>
+      <text x="45" y="468" class="anno">5 · who owns it → operating-model</text>
     </svg>
   </div>
 
@@ -269,6 +278,17 @@
   <!-- ====================================================================== -->
 
   <h2 class="section">Branch detail</h2>
+
+  <div class="branch" id="b0">
+    <h3>0. Where are you starting from?</h3>
+    <div class="question">Locate yourself by capability before you walk the branches — the spine routes by question, this locates by rung.</div>
+    <div class="who"><strong>Who's asking:</strong> Any leader unsure whether they're greenfield or already running Claude in production · transformation lead setting a roadmap.</div>
+    <div class="frame">The branches below assume you know which decision you're on. If you're not sure how far along your org already is — shadow usage, one governed pilot, a running platform — locate yourself first: L0 ad-hoc → L1 pilot → L2 governed production → L3 platform → L4 agentic-at-scale. A weakest-link self-assessment names the single highest-leverage next move, so you walk the right branches instead of all of them.</div>
+    <div class="artifacts">
+      <a href="maturity-model.html"><strong>maturity-model.md</strong><br><span class="path">artifacts/maturity-model.md</span> — L0→L4 self-locator, weakest-link rule, one next-move per rung.</a>
+    </div>
+    <div class="next-step"><strong>After this:</strong> go to branch <a href="#b1">1 — anti-use filter</a>. Maturity tells you <em>where</em>; the spine tells you <em>what to decide next</em>.</div>
+  </div>
 
   <div class="branch" id="b1">
     <h3>1. Should we use Claude here at all?</h3>
@@ -301,17 +321,19 @@
     <div class="frame">Score the use case on 6 axes (regulated data · latency · customization depth · scale · internal expertise · strategic moat). Verdict: Claude direct (fastest model availability) · Claude via Bedrock or Vertex (hyperscaler procurement, model-version lag) · OpenAI · open-source self-hosted · packaged SaaS. The worksheet outputs a ranked list with TCO band — not a single answer. Anchor heuristic: <strong>build where you have a moat, buy where you don't.</strong></div>
     <div class="artifacts">
       <a href="build-vs-buy-worksheet.html"><strong>build-vs-buy-worksheet.html</strong><br><span class="path">artifacts/build-vs-buy-worksheet.html</span> — 5-axis scorer with ranked verdict + rationale.</a>
+      <a href="procurement-pack.html"><strong>procurement-pack.md</strong><br><span class="path">artifacts/procurement-pack.md</span> — once you've picked the path: security-questionnaire answers, DPA/BAA pre-signature checklist, SLA terms. Surface-split; cite-per-row.</a>
     </div>
-    <div class="next-step"><strong>After this:</strong> go to branch <a href="#b4">4 — cost</a> to size the unit economics for the chosen path.</div>
+    <div class="next-step"><strong>After this:</strong> go to branch <a href="#b4">4 — cost</a> to size the unit economics for the chosen path. Hand the vendor-risk team <a href="procurement-pack.html">procurement-pack.md</a> in parallel.</div>
   </div>
 
   <div class="branch" id="b4">
     <h3>4. What will it cost?</h3>
     <div class="question">Unit economics — does the math survive contact with real volume?</div>
     <div class="who"><strong>Who's asking:</strong> CIO / CFO budgeting the pilot · architect validating the cost-per-task target · transformation lead defending the business case.</div>
-    <div class="frame">Calculator inputs: monthly volume × avg input/output tokens × model mix (Haiku 4.5 / Sonnet 4.6 / Opus 4.8) × cache hit rate × batch eligibility. Outputs: monthly $, per-request cost, savings vs naive baseline. Treat <em>cost as a constraint</em>, not a curiosity — define a $/task gate and a kill-switch volume cap before pilot launch. If the numbers don't survive at projected scale, branch back to 2 or revisit anti-use Wrong-economics rows.</div>
+    <div class="frame">Calculator inputs: monthly volume × avg input/output tokens × model mix (Haiku 4.5 / Sonnet 4.6 / Opus 4.8) × cache hit rate × batch eligibility. Outputs: monthly $, per-request cost, savings vs naive baseline. Treat <em>cost as a constraint</em>, not a curiosity — define a $/task gate and a kill-switch volume cap before pilot launch. If the numbers don't survive at projected scale, branch back to 2 or revisit anti-use Wrong-economics rows. Cost is only half the math: pair the calculator with the ROI worksheet to net value against spend — payback, value-to-cost ratio, the number a CFO actually signs.</div>
     <div class="artifacts">
-      <a href="cost-calculator.html"><strong>cost-calculator.html</strong><br><span class="path">artifacts/cost-calculator.html</span> — interactive estimator with prompt cache + batch math.</a>
+      <a href="cost-calculator.html"><strong>cost-calculator.html</strong><br><span class="path">artifacts/cost-calculator.html</span> — interactive estimator with prompt cache + batch math. What you pay.</a>
+      <a href="roi-worksheet.html"><strong>roi-worksheet.html</strong><br><span class="path">artifacts/roi-worksheet.html</span> — the value side: net ROI, payback, value-to-cost ratio, capture sensitivity. What you get. Conservative by design.</a>
     </div>
     <div class="next-step"><strong>After this:</strong> go to branch <a href="#b5">5 — ship safely</a> to wire the pilot end-to-end.</div>
   </div>
@@ -320,11 +342,14 @@
     <h3>5. How do we ship safely?</h3>
     <div class="question">90-day rollout with guardrails — pilot → guardrails → scale.</div>
     <div class="who"><strong>Who's asking:</strong> Transformation lead running the pilot · risk / compliance reviewer · COE owner.</div>
-    <div class="frame">Three sub-decisions, in order: (a) <strong>Score candidate pilots</strong> on 5 axes (value · time-to-signal · data readiness · risk · sponsor clarity); pick the strongest. (b) <strong>Run the 90-day arc</strong> — Week 0 pre-flight, Weeks 1–4 pilot, 5–8 guardrails, 9–13 scale, 8 named failure modes to watch. (c) <strong>Map governance posture</strong> — BAA / DPA / data residency / no-train / EU AI Act + NIST AI RMF mapping / audit trail / prompt versioning / vendor concentration mitigation.</div>
+    <div class="frame">Three sub-decisions, in order: (a) <strong>Score candidate pilots</strong> on 5 axes (value · time-to-signal · data readiness · risk · sponsor clarity); pick the strongest. (b) <strong>Run the 90-day arc</strong> — Week 0 pre-flight, Weeks 1–4 pilot, 5–8 guardrails, 9–13 scale, 8 named failure modes to watch. (c) <strong>Map governance posture</strong> — BAA / DPA / data residency / no-train / EU AI Act + NIST AI RMF mapping / audit trail / prompt versioning / vendor concentration mitigation. Once you're shipping, three more decisions land here: (d) <strong>secure the agent</strong> — if it takes actions (tools, MCP, Cowork, Claude Code), threat-model the attack surface <em>before</em> launch; (e) <strong>bring people along</strong> — role impact, comms, reskilling, and measuring productivity without surveilling staff; (f) <strong>decide who owns it</strong> — the operating-model shape (centralized / federated / hub-spoke COE) + a decision RACI.</div>
     <div class="artifacts">
       <a href="pilot-selection-worksheet.html"><strong>pilot-selection-worksheet.html</strong><br><span class="path">artifacts/pilot-selection-worksheet.html</span> — Week 0 use-case scorer with blocker flags.</a>
       <a href="adoption-playbook.html"><strong>adoption-playbook.md</strong><br><span class="path">artifacts/adoption-playbook.md</span> — 90-day rollout, 8 failure modes, reference team structure.</a>
       <a href="governance-overlay.html"><strong>governance-overlay.md</strong><br><span class="path">artifacts/governance-overlay.md</span> — risk + compliance overlay specific to Claude.</a>
+      <a href="agentic-threat-model.html"><strong>agentic-threat-model.md</strong><br><span class="path">artifacts/agentic-threat-model.md</span> — (d) preventive attack surface: 10 OWASP-LLM-shape threats → existing repo controls.</a>
+      <a href="workforce-change-guide.html"><strong>workforce-change-guide.md</strong><br><span class="path">artifacts/workforce-change-guide.md</span> — (e) CHRO people-side: role impact, comms, reskilling, measure-without-surveillance.</a>
+      <a href="operating-model-guide.html"><strong>operating-model-guide.md</strong><br><span class="path">artifacts/operating-model-guide.md</span> — (f) who owns Claude: shape choice + RACI + paved-road boundary.</a>
     </div>
     <div class="next-step"><strong>Parallel:</strong> if engineering is also adopting Claude Code, run branch <a href="#b6">6</a> alongside this. Don't wait for Week 13 to start the CLI rollout. Always wire branch <a href="#b7">7 — measurement</a> before pilot launch, not after.</div>
   </div>
