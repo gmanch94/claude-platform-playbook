@@ -1,0 +1,288 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>ROI / Value Worksheet — Claude Platform</title>
+<style>
+  :root { --c1:#D97757; --c1d:#B45309; --c2:#7C5E48; --bg:#faf7f3; --ink:#2a2017; --line:#e8e0d3; --muted:#8a7e6e; --good:#15803d; --warn:#b45309; --bad:#dc2626; }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; background: var(--bg); color: var(--ink); padding: 32px 24px 80px; line-height: 1.55; }
+  .wrap { max-width: 1120px; margin: 0 auto; }
+  header { border-bottom: 2px solid var(--c1); padding-bottom: 16px; margin-bottom: 24px; }
+  header h1 { font-size: 32px; font-weight: 700; }
+  header .sub { color: var(--muted); font-size: 15px; margin-top: 6px; }
+  .asof { display: inline-block; background: var(--c1); color: white; padding: 3px 10px; border-radius: 12px; font-size: 12px; font-weight: 600; margin-left: 8px; vertical-align: middle; }
+  .grid { display: grid; grid-template-columns: 1fr 1fr; gap: 24px; }
+  @media (max-width: 900px) { .grid { grid-template-columns: 1fr; } }
+  .card { background: white; border: 1px solid var(--line); border-radius: 10px; padding: 22px; }
+  .card h2 { font-size: 19px; margin-bottom: 14px; color: var(--c1d); border-bottom: 1px solid var(--line); padding-bottom: 8px; }
+  .field { margin-bottom: 15px; }
+  .field label { display: block; font-weight: 600; font-size: 14px; margin-bottom: 3px; }
+  .field .desc { font-size: 12px; color: var(--muted); margin-bottom: 6px; }
+  .field input[type=text], .field input[type=number] { width: 100%; padding: 9px 11px; border: 1px solid var(--line); border-radius: 6px; font-size: 14px; font-variant-numeric: tabular-nums; }
+  .field input:focus { outline: none; border-color: var(--c1); }
+  .field .row { display: flex; align-items: center; gap: 10px; }
+  .field input[type=range] { flex: 1; accent-color: var(--c1); }
+  .field .val { font-variant-numeric: tabular-nums; font-weight: 700; color: var(--c1d); min-width: 52px; text-align: right; font-size: 14px; }
+  .out-big { background: linear-gradient(135deg, #fef3ec 0%, #fdfaf6 100%); border: 2px solid var(--c1); border-radius: 10px; padding: 18px; margin-bottom: 14px; }
+  .out-big .lbl { font-size: 13px; color: var(--c2); font-weight: 600; text-transform: uppercase; letter-spacing: .04em; }
+  .out-big .num { font-size: 34px; font-weight: 800; color: var(--c1d); font-variant-numeric: tabular-nums; line-height: 1.1; margin: 2px 0; }
+  .out-big .note { font-size: 13px; color: var(--muted); }
+  .out-row { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 14px; }
+  .out-sm { background: white; border: 1px solid var(--line); border-radius: 8px; padding: 13px; }
+  .out-sm .lbl { font-size: 12px; color: var(--muted); font-weight: 600; }
+  .out-sm .num { font-size: 22px; font-weight: 700; color: var(--ink); font-variant-numeric: tabular-nums; }
+  .out-sm .num.good { color: var(--good); }
+  .out-sm .num.warn { color: var(--warn); }
+  .out-sm .num.bad { color: var(--bad); }
+  .sens { border: 1px solid var(--line); border-radius: 8px; overflow: hidden; margin-bottom: 14px; }
+  .sens table { width: 100%; border-collapse: collapse; font-size: 13px; }
+  .sens th, .sens td { padding: 8px 11px; text-align: right; border-bottom: 1px solid var(--line); font-variant-numeric: tabular-nums; }
+  .sens th:first-child, .sens td:first-child { text-align: left; }
+  .sens thead th { background: #fdf6f0; color: var(--c2); font-size: 12px; }
+  .sens tr:last-child td { border-bottom: none; }
+  .sens .base { background: #fef3ec; font-weight: 600; }
+  .banner { border-radius: 8px; padding: 11px 13px; font-size: 13px; margin-bottom: 10px; line-height: 1.45; }
+  .banner.warn { background: #fff7ed; border: 1px solid #fdba74; color: #9a3412; }
+  .banner.bad { background: #fef2f2; border: 1px solid #fca5a5; color: #991b1b; }
+  .banner.ok { background: #f0fdf4; border: 1px solid #86efac; color: #166534; }
+  .banner b { font-weight: 700; }
+  details { margin-top: 16px; }
+  details summary { cursor: pointer; font-weight: 600; color: var(--c1d); font-size: 14px; padding: 6px 0; }
+  details .body { padding: 10px 0 0; font-size: 13px; }
+  .full { margin-top: 24px; }
+  .full ul { padding-left: 22px; font-size: 14px; line-height: 1.7; }
+  .reset { background: transparent; border: 1px solid var(--line); color: var(--muted); padding: 6px 12px; border-radius: 6px; font-size: 12px; cursor: pointer; margin-left: 8px; }
+  .reset:hover { color: var(--ink); }
+  footer { margin-top: 40px; padding-top: 16px; border-top: 1px solid var(--line); text-align: center; font-size: 12px; color: var(--muted); }
+  footer a { color: var(--c1d); }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <h1>ROI / Value Worksheet <span class="asof">As of 2026-06</span></h1>
+    <div class="sub">The value side of the decision. <a href="cost-calculator.html">cost-calculator.html</a> sizes what you <em>pay</em>; this sizes what you <em>get</em> — and nets the two into payback and a value-to-cost ratio. Built to be <strong>defensible to a CFO</strong>, not to flatter the project: conservative defaults, an explicit realized-capture discount, and the soft-value trap called out. Garbage baseline in, garbage ROI out.</div>
+  </header>
+
+  <div class="grid">
+    <div class="card">
+      <h2>1. The workload <button class="reset" onclick="resetAll()">reset</button></h2>
+      <div class="field">
+        <label>Use case</label>
+        <input type="text" id="usecase" placeholder="e.g., Tier-1 support draft replies" />
+      </div>
+
+      <div class="field">
+        <label>People doing this task</label>
+        <div class="desc">Headcount whose time the workload touches.</div>
+        <input type="number" id="people" value="20" min="0" />
+      </div>
+
+      <div class="field">
+        <label>Hours per person per week on it</label>
+        <div class="desc">Time spent on the part Claude could assist — not the whole job.</div>
+        <input type="number" id="hours" value="8" min="0" step="0.5" />
+      </div>
+
+      <div class="field">
+        <label>Loaded cost per hour ($)</label>
+        <div class="desc">Fully-loaded (salary + benefits + overhead), not base pay. Default ≈ $75.</div>
+        <input type="number" id="rate" value="75" min="0" />
+      </div>
+
+      <h2 style="margin-top:20px;">2. The honest discounts</h2>
+
+      <div class="field">
+        <label>Share of that time Claude can assist <span class="val" id="assistV">35%</span></label>
+        <div class="desc">Fraction of the task Claude actually touches. Capped low on purpose — whole-job automation is rare.</div>
+        <div class="row"><input type="range" id="assist" min="0" max="80" value="35" /></div>
+      </div>
+
+      <div class="field">
+        <label>Realized capture of that saving <span class="val" id="captureV">50%</span></label>
+        <div class="desc"><strong>The anti-theater dial.</strong> Time "saved" only counts if it converts to more output or fewer hires. Most orgs realize 40–60% of the theoretical saving in year one. Leave low until you have evidence.</div>
+        <div class="row"><input type="range" id="capture" min="0" max="100" value="50" /></div>
+      </div>
+
+      <div class="field">
+        <label>Ramp to full value (months) <span class="val" id="rampV">3</span></label>
+        <div class="desc">Value does not start in month 1. Linear ramp assumed over this window.</div>
+        <div class="row"><input type="range" id="ramp" min="0" max="12" value="3" /></div>
+      </div>
+
+      <h2 style="margin-top:20px;">3. Costs + hard value</h2>
+
+      <div class="field">
+        <label>Annual Claude spend ($/yr)</label>
+        <div class="desc">Steady-state, from <a href="cost-calculator.html">cost-calculator.html</a> — not the pilot month. Include seats + API + a build/maintenance line.</div>
+        <input type="number" id="spend" value="60000" min="0" />
+      </div>
+
+      <div class="field">
+        <label>Other hard value ($/yr, optional)</label>
+        <div class="desc">Only <em>measurable</em> non-time value: avoided penalty, recovered revenue, deflected vendor cost. Leave 0 if you'd have to hand-wave it.</div>
+        <input type="number" id="hard" value="0" min="0" />
+      </div>
+    </div>
+
+    <div class="card">
+      <h2>Verdict</h2>
+      <div id="banners"></div>
+
+      <div class="out-big">
+        <div class="lbl">Net annual value (steady state)</div>
+        <div class="num" id="netNum">—</div>
+        <div class="note" id="netNote">Time value + hard value − Claude spend.</div>
+      </div>
+
+      <div class="out-row">
+        <div class="out-sm">
+          <div class="lbl">Payback period</div>
+          <div class="num" id="payback">—</div>
+        </div>
+        <div class="out-sm">
+          <div class="lbl">Value-to-cost ratio</div>
+          <div class="num" id="ratio">—</div>
+        </div>
+      </div>
+
+      <div class="out-row">
+        <div class="out-sm">
+          <div class="lbl">Gross time value /yr</div>
+          <div class="num" id="gross">—</div>
+        </div>
+        <div class="out-sm">
+          <div class="lbl">First-year value (ramp-adj.)</div>
+          <div class="num" id="year1">—</div>
+        </div>
+      </div>
+
+      <div class="sens">
+        <table>
+          <thead><tr><th>Capture scenario</th><th>Net /yr</th><th>Ratio</th></tr></thead>
+          <tbody id="sensBody"></tbody>
+        </table>
+      </div>
+
+      <details>
+        <summary>How this is computed</summary>
+        <div class="body">
+          <p><strong>Gross time value</strong> = people × hours/wk × 52 × assist% × capture% × loaded rate.</p>
+          <p style="margin-top:6px;"><strong>Net</strong> = gross + other hard value − annual Claude spend. <strong>Ratio</strong> = (gross + hard) ÷ spend. <strong>Payback</strong> = spend ÷ steady-state monthly net (ignores ramp; the ramp-adjusted first-year figure is shown separately).</p>
+          <p style="margin-top:6px;">The sensitivity table re-runs the net at capture −20 / as-set / +20 points. If the case only works at the optimistic row, it doesn't work. Order-of-magnitude estimate, not a commitment — the inputs are yours to defend.</p>
+        </div>
+      </details>
+    </div>
+  </div>
+
+  <div class="card full">
+    <h2>Five ways this number lies (read before you present it)</h2>
+    <ul>
+      <li><strong>Double-count.</strong> The same hour saved cannot appear in two use cases' ROI. Maintain one value ledger across the portfolio; sum nets there, not in separate worksheets.</li>
+      <li><strong>No baseline.</strong> If you can't measure today's cycle time / cost-per-task, the "before" is a guess and the ROI is fiction. Measure the current state for two weeks first — that's a Week 0 task in <a href="adoption-playbook.html">adoption-playbook.md</a>.</li>
+      <li><strong>Productivity theater.</strong> 30 minutes saved per person per day is not value until it becomes shipped output or an avoided hire. The realized-capture dial is where you discount it — keep it honest.</li>
+      <li><strong>Soft value dominating.</strong> If "other hard value" is carrying the case, the case is weak. A banner fires when it exceeds the time value. Strip it back to what you'd defend in an audit.</li>
+      <li><strong>Pilot-cost optimism.</strong> The pilot month understates steady-state spend (low volume, no maintenance, no second team). Pull the spend figure from cost-calculator's steady-state projection, then add a maintenance line.</li>
+    </ul>
+    <p style="font-size:13px; color:var(--muted); margin-top:12px;">What this worksheet deliberately does <em>not</em> count: brand/morale halo, "future optionality," and time saved that you can't tie to output. Leaving them out is the point — an ROI a finance lead can't poke holes in beats a bigger one they can.</p>
+  </div>
+</div>
+
+<footer>
+  © gmanch94 · CC-BY-4.0 · As of 2026-06. Estimates are order-of-magnitude; inputs are yours to defend. Verify pricing/models at anthropic.com. Pair with <a href="cost-calculator.html">cost-calculator.html</a> (the cost side) and <a href="build-vs-buy-worksheet.html">build-vs-buy-worksheet.html</a>. See <a href="../docs/feature-inventory.html">feature-inventory.md</a> for source-of-truth feature status.
+</footer>
+
+<script>
+const $ = id => document.getElementById(id);
+const ids = ['people','hours','rate','assist','capture','ramp','spend','hard'];
+const fmt = n => {
+  if (!isFinite(n)) return '—';
+  const a = Math.abs(n);
+  if (a >= 1e6) return (n<0?'-':'') + '$' + (a/1e6).toFixed(2) + 'M';
+  if (a >= 1e3) return (n<0?'-':'') + '$' + Math.round(a/1e3) + 'k';
+  return (n<0?'-':'') + '$' + Math.round(a);
+};
+
+function calc(captureOverride) {
+  const people = +$('people').value || 0;
+  const hours = +$('hours').value || 0;
+  const rate = +$('rate').value || 0;
+  const assist = (+$('assist').value || 0) / 100;
+  const capture = (captureOverride != null ? captureOverride : (+$('capture').value || 0)) / 100;
+  const spend = +$('spend').value || 0;
+  const hard = +$('hard').value || 0;
+  const gross = people * hours * 52 * assist * capture * rate;
+  const net = gross + hard - spend;
+  const ratio = spend > 0 ? (gross + hard) / spend : Infinity;
+  return { gross, net, ratio, spend, hard };
+}
+
+function render() {
+  $('assistV').textContent = $('assist').value + '%';
+  $('captureV').textContent = $('capture').value + '%';
+  $('rampV').textContent = $('ramp').value;
+
+  const r = calc();
+  const ramp = +$('ramp').value || 0;
+  // ramp-adjusted year 1: linear ramp over `ramp` months, full for the rest
+  const rampFrac = ramp > 0 ? Math.min(ramp, 12) : 0;
+  const grossYear1 = (r.gross + r.hard) * (1 - (rampFrac / 24)); // avg of linear ramp = half-credit over ramp window
+  const netYear1 = grossYear1 - r.spend;
+
+  $('netNum').textContent = fmt(r.net) + '/yr';
+  $('netNum').className = 'num';
+  $('gross').textContent = fmt(r.gross);
+  $('year1').textContent = fmt(netYear1);
+
+  // payback in months: annual spend recouped by monthly NET value (gross + hard − spend); "never" if value ≤ cost
+  const monthlyNet = (r.gross + r.hard - r.spend) / 12;
+  let pb, pbClass;
+  if (monthlyNet <= 0) { pb = 'never'; pbClass = 'bad'; }
+  else {
+    const m = r.spend / monthlyNet;
+    pb = m < 0.5 ? '<1 mo' : (m > 60 ? '5 yr+' : (m < 12 ? m.toFixed(1) + ' mo' : (m/12).toFixed(1) + ' yr'));
+    pbClass = m <= 12 ? 'good' : (m <= 24 ? 'warn' : 'bad');
+  }
+  $('payback').textContent = pb;
+  $('payback').className = 'num ' + pbClass;
+
+  $('ratio').textContent = isFinite(r.ratio) ? r.ratio.toFixed(1) + '×' : '∞';
+  $('ratio').className = 'num ' + (r.ratio>=3?'good':(r.ratio>=1.5?'warn':'bad'));
+
+  // sensitivity
+  const baseCap = +$('capture').value || 0;
+  const rows = [
+    { lbl: 'Conservative (−20 pts)', cap: Math.max(0, baseCap - 20) },
+    { lbl: 'As set (' + baseCap + '%)', cap: baseCap, base: true },
+    { lbl: 'Optimistic (+20 pts)', cap: Math.min(100, baseCap + 20) },
+  ];
+  $('sensBody').innerHTML = rows.map(row => {
+    const x = calc(row.cap);
+    return `<tr class="${row.base?'base':''}"><td>${row.lbl}</td><td>${fmt(x.net)}</td><td>${isFinite(x.ratio)?x.ratio.toFixed(1)+'×':'∞'}</td></tr>`;
+  }).join('');
+
+  // banners
+  const b = [];
+  if (baseCap > 70) b.push(`<div class="banner warn"><b>Optimistic capture.</b> ${baseCap}% realized is above what most year-one rollouts see (40–60%). Defend it with pilot evidence or dial it back.</div>`);
+  if ((+$('assist').value||0) > 60) b.push(`<div class="banner warn"><b>High assist share.</b> Claude touching >60% of the task implies near-full automation — usually a sign the task scope is drawn too narrow. Sanity-check against <a href="anti-use-cases.html">anti-use-cases.md</a>.</div>`);
+  if (r.hard > r.gross && r.hard > 0) b.push(`<div class="banner bad"><b>Soft value is carrying the case.</b> "Other hard value" exceeds the time value. If you can't defend it line-by-line in an audit, strip it back.</div>`);
+  if (isFinite(r.ratio) && r.ratio < 1.5 && r.spend > 0) b.push(`<div class="banner bad"><b>Thin margin.</b> Under 1.5× return — one bad assumption flips this negative. Re-examine baseline and capture before pitching it.</div>`);
+  const consRatio = calc(Math.max(0, baseCap - 20)).ratio;
+  if (isFinite(consRatio) && consRatio >= 3 && r.net > 0) b.push(`<div class="banner ok"><b>Holds up.</b> Clears 3× even on the conservative −20pt row — a case that survives the sensitivity floor is one a CFO can sign.</div>`);
+  if (r.spend === 0) b.push(`<div class="banner warn"><b>No cost entered.</b> Pull steady-state annual spend from <a href="cost-calculator.html">cost-calculator.html</a> — a ratio without a denominator isn't an ROI.</div>`);
+  $('banners').innerHTML = b.join('');
+}
+
+ids.forEach(id => $(id).addEventListener('input', render));
+function resetAll() {
+  const d = { people:20, hours:8, rate:75, assist:35, capture:50, ramp:3, spend:60000, hard:0 };
+  for (const k in d) $(k).value = d[k];
+  $('usecase').value = '';
+  render();
+}
+render();
+</script>
+</body>
+</html>

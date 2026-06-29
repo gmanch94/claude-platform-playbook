@@ -59,13 +59,13 @@ The seat surface is billed per user, separate from per-token API usage. **A subs
 
 | Feature | Status | As-of | Doc anchor | Used in artifacts |
 |---|---|---|---|---|
-| Prompt caching | GA | 2026-05 | docs.claude.com/en/docs/build-with-claude/prompt-caching | calculator, matrix, briefing, arch, eval-pack, misconceptions, data-advisory |
+| Prompt caching | GA | 2026-05 | docs.claude.com/en/docs/build-with-claude/prompt-caching | calculator, matrix, briefing, arch, eval-pack, misconceptions, data-advisory, roi-worksheet |
 | Extended thinking | GA | 2026-05 | docs.claude.com/en/docs/build-with-claude/extended-thinking | matrix, arch |
-| Tool use | GA | 2026-05 | docs.claude.com/en/docs/agents-and-tools/tool-use | matrix, arch, eval-pack |
-| Computer use 2.0 | beta | 2026-05 | docs.claude.com/en/docs/agents-and-tools/computer-use | matrix, arch, misconceptions |
+| Tool use | GA | 2026-05 | docs.claude.com/en/docs/agents-and-tools/tool-use | matrix, arch, eval-pack, agentic-threat-model |
+| Computer use 2.0 | beta | 2026-05 | docs.claude.com/en/docs/agents-and-tools/computer-use | matrix, arch, misconceptions, agentic-threat-model |
 | Files API | beta | 2026-05 | docs.claude.com/en/docs/build-with-claude/files | matrix, arch, eval-pack |
 | Citations | GA | 2026-05 | docs.claude.com/en/docs/build-with-claude/citations | matrix, arch, eval-pack |
-| Batch API | GA | 2026-05 | docs.claude.com/en/docs/build-with-claude/batch-processing | calculator, matrix, arch, eval-pack, misconceptions, data-advisory |
+| Batch API | GA | 2026-05 | docs.claude.com/en/docs/build-with-claude/batch-processing | calculator, matrix, arch, eval-pack, misconceptions, data-advisory, roi-worksheet |
 | Memory tool | beta | 2026-05 | docs.claude.com/en/docs/agents-and-tools/memory | matrix, arch |
 | Web search tool (server-side) | GA | 2026-05 | docs.claude.com/en/docs/agents-and-tools/web-search-tool | arch:rag, claude-code-guide |
 | Code execution tool (server-side) | GA | 2026-05 | docs.claude.com/en/docs/agents-and-tools/code-execution | arch:agent, claude-code-guide, eval-pack |
@@ -84,9 +84,9 @@ The seat surface is billed per user, separate from per-token API usage. **A subs
 
 | Capability | Status | As-of | Doc anchor | Used in artifacts |
 |---|---|---|---|---|
-| Skills | GA | 2026-05 | docs.claude.com/en/docs/agents-and-tools/skills | matrix, playbook, arch, claude-code-guide, starter-skills, eval-pack, misconceptions |
-| MCP (Model Context Protocol) | GA | 2026-05 | modelcontextprotocol.io | matrix, playbook, arch, claude-code-guide, starter-skills, mcp-pack |
-| Agent SDK | GA | 2026-05 | docs.claude.com/en/api/agent-sdk | matrix, arch, claude-code-guide, multi-agent-patterns |
+| Skills | GA | 2026-05 | docs.claude.com/en/docs/agents-and-tools/skills | matrix, playbook, arch, claude-code-guide, starter-skills, eval-pack, misconceptions, operating-model, maturity-model |
+| MCP (Model Context Protocol) | GA | 2026-05 | modelcontextprotocol.io | matrix, playbook, arch, claude-code-guide, starter-skills, mcp-pack, agentic-threat-model, operating-model |
+| Agent SDK | GA | 2026-05 | docs.claude.com/en/api/agent-sdk | matrix, arch, claude-code-guide, multi-agent-patterns, maturity-model |
 | Plugins (bundled commands + skills + hooks + MCP servers) | GA | 2026-05 | docs.claude.com/en/docs/claude-code/plugins | matrix, arch, claude-code-guide, starter-skills, eval-pack |
 | Sub-agents (Task tool / parallel agents in Claude Code) | GA | 2026-05 | docs.claude.com/en/docs/claude-code/sub-agents | claude-code-guide, arch:code, multi-agent-patterns |
 
@@ -96,9 +96,9 @@ The seat surface is billed per user, separate from per-token API usage. **A subs
 
 | Surface | Status | As-of | Doc anchor | Used in artifacts |
 |---|---|---|---|---|
-| Claude Code CLI | GA | 2026-05 | docs.claude.com/en/docs/claude-code | claude-code-guide, misconceptions |
+| Claude Code CLI | GA | 2026-05 | docs.claude.com/en/docs/claude-code | claude-code-guide, misconceptions, workforce-change |
 | Slash commands | GA | 2026-05 | docs.claude.com/en/docs/claude-code/slash-commands | claude-code-guide, misconceptions |
-| Hooks (PreToolUse / PostToolUse / SessionStart / Stop / UserPromptSubmit) | GA | 2026-05 | docs.claude.com/en/docs/claude-code/hooks | claude-code-guide, starter-skills, hooks-pack, misconceptions |
+| Hooks (PreToolUse / PostToolUse / SessionStart / Stop / UserPromptSubmit) | GA | 2026-05 | docs.claude.com/en/docs/claude-code/hooks | claude-code-guide, starter-skills, hooks-pack, misconceptions, agentic-threat-model |
 | Settings hierarchy (user / project / local) | GA | 2026-05 | docs.claude.com/en/docs/claude-code/settings | claude-code-guide, hooks-pack |
 | Output styles | GA | 2026-05 | docs.claude.com/en/docs/claude-code/output-styles | claude-code-guide |
 | Background tasks / scheduled routines | GA | 2026-05 | docs.claude.com/en/docs/claude-code/background-tasks | claude-code-guide, starter-skills |
@@ -113,7 +113,7 @@ Seat-plan product surfaces beyond chat. Plan gating + governance flags drive the
 
 | Surface | Status | Plan gate | As-of | Doc anchor | Governance flag | Used in artifacts |
 |---|---|---|---|---|---|---|
-| Cowork (desktop agent) | GA (paid plans) | Pro / Max / Team / Enterprise; desktop app (mac/Win), not web/mobile | 2026-06 | support.claude.com/en/articles/13345190-get-started-with-claude-cowork | Takes real actions on local files; folder-scoped + egress-controlled + review-before-act; isolated VM for code; enterprise admin controls (feature access, spend, usage, private plugin marketplace). **Not BAA-covered.** | cowork-adoption-guide, surface-rollout-matrix |
+| Cowork (desktop agent) | GA (paid plans) | Pro / Max / Team / Enterprise; desktop app (mac/Win), not web/mobile | 2026-06 | support.claude.com/en/articles/13345190-get-started-with-claude-cowork | Takes real actions on local files; folder-scoped + egress-controlled + review-before-act; isolated VM for code; enterprise admin controls (feature access, spend, usage, private plugin marketplace). **Not BAA-covered.** | cowork-adoption-guide, surface-rollout-matrix, workforce-change |
 | Claude Design | Beta (Anthropic Labs) | Team / Enterprise (org toggle, custom-role gated) | 2026-06 | support.claude.com/en/articles/14604406-claude-design-admin-guide-for-team-and-enterprise-plans | Uploaded assets stored persistently; **no data residency support**; **not BAA-covered (beta)**; Anthropic publishes recommended rollout phases. | surface-rollout-matrix |
 | Projects | GA | All plans (Free capped at 5 projects); RAG + sharing + org instructions on paid / Team+ | 2026-06 | support.claude.com/en/articles/9517075-what-are-projects | RAG auto-scales knowledge ~10× on paid; org-wide sharing is a data-leak vector (use can-use/can-edit perms, disable public projects); **BAA-covered on Enterprise** (w/ admin HIPAA activation). | surface-rollout-matrix |
 
@@ -137,14 +137,14 @@ Seat-plan product surfaces beyond chat. Plan gating + governance flags drive the
 
 | Item | Status | As-of | Doc anchor | Notes | Used in artifacts |
 |---|---|---|---|---|---|
-| No-train (commercial API + Console default) | Confirmed | 2026-05 | privacy.claude.com/en/articles/7996868-is-my-data-used-for-model-training | Verify policy version when signing. Re-check quarterly. Consumer plans (Free/Pro/Max) are a separate policy surface. | governance-overlay, anti-use-cases, briefing, misconceptions, enterprise-data-boundaries |
+| No-train (commercial API + Console default) | Confirmed | 2026-05 | privacy.claude.com/en/articles/7996868-is-my-data-used-for-model-training | Verify policy version when signing. Re-check quarterly. Consumer plans (Free/Pro/Max) are a separate policy surface. | governance-overlay, anti-use-cases, briefing, misconceptions, enterprise-data-boundaries, procurement-pack |
 | Standard retention (commercial API) | Confirmed | 2026-05 | privacy.claude.com/en/articles/7996866-how-long-do-you-store-my-organization-s-data | 30-day backend deletion default. AUP-flagged: inputs/outputs up to 2 years, T&S classifier scores up to 7 years. Feedback: 5 years. | governance-overlay, enterprise-data-boundaries |
-| Zero Data Retention (ZDR) | Available (enterprise, approval required) | 2026-05 | platform.claude.com/docs/en/build-with-claude/api-and-data-retention | Covers Messages + Token Counting APIs, Claude Code (Commercial org key, or Enterprise w/ ZDR). T&S classifier results still retained. Consumer plans + Teams/Enterprise UI not eligible. | governance-overlay, anti-use-cases, build-vs-buy, enterprise-data-boundaries |
+| Zero Data Retention (ZDR) | Available (enterprise, approval required) | 2026-05 | platform.claude.com/docs/en/build-with-claude/api-and-data-retention | Covers Messages + Token Counting APIs, Claude Code (Commercial org key, or Enterprise w/ ZDR). T&S classifier results still retained. Consumer plans + Teams/Enterprise UI not eligible. | governance-overlay, anti-use-cases, build-vs-buy, enterprise-data-boundaries, procurement-pack |
 | HIPAA-ready API access | GA | 2026-05 | platform.claude.com/docs/en/build-with-claude/api-and-data-retention#hipaa-readiness | Separate from BAA. HIPAA-enabled orgs get 400 error on non-eligible features. ZDR no longer prerequisite. | governance-overlay, anti-use-cases, build-vs-buy |
-| BAA (HIPAA workloads) | Available | 2026-06 | privacy.claude.com/en/articles/8114513-business-associate-agreements-baa-for-commercial-customers | Covers first-party API + Enterprise plans. **Enterprise is not automatic — an admin must activate HIPAA compliance (admin settings → Data & Privacy) and sign the BAA.** Covered Enterprise features: Chat, Projects, Artifacts, file creation & code execution (excl. network/external sites), Voice, Web search, Research (eligible list grows — verify at signing). 3rd-party integrations (MCPs/Connectors/Enterprise Search/Claude in Chrome) available but their 3rd-party data flows are not covered. **Excludes: Workbench/Console, Free/Pro/Max/Team, Cowork, and beta features (Claude in Office, Claude Design).** Per-feature eligibility — verify Implementation Guide. Re-verified 2026-06-29 (source updated this week). | governance-overlay, anti-use-cases, build-vs-buy, surface-rollout-matrix, cowork-adoption-guide, enterprise-data-boundaries |
+| BAA (HIPAA workloads) | Available | 2026-06 | privacy.claude.com/en/articles/8114513-business-associate-agreements-baa-for-commercial-customers | Covers first-party API + Enterprise plans. **Enterprise is not automatic — an admin must activate HIPAA compliance (admin settings → Data & Privacy) and sign the BAA.** Covered Enterprise features: Chat, Projects, Artifacts, file creation & code execution (excl. network/external sites), Voice, Web search, Research, Skills (Skills covered on the Enterprise product surface, not the first-party-API "Skills API"; eligible list grows — verify at signing). 3rd-party integrations (MCPs/Connectors/Enterprise Search/Claude in Chrome) available but their 3rd-party data flows are not covered. **Excludes: Workbench/Console, Free/Pro/Max/Team, Cowork, and beta features (Claude in Office, Claude Design).** Per-feature eligibility — verify Implementation Guide. Re-verified 2026-06-29 (source updated this week). | governance-overlay, anti-use-cases, build-vs-buy, surface-rollout-matrix, cowork-adoption-guide, enterprise-data-boundaries, procurement-pack, agentic-threat-model |
 | Data residency — `inference_geo` | GA | 2026-05 | platform.claude.com/docs/en/build-with-claude/data-residency | Per-request inference geo (`global` default, or `us`). Opus 4.6+. First-party API only — Bedrock/Vertex use their own region selection. | governance-overlay, anti-use-cases, build-vs-buy, enterprise-data-boundaries |
 | Data residency — Workspace geo | GA | 2026-05 | platform.claude.com/docs/en/build-with-claude/data-residency | Controls at-rest storage and endpoint processing (image transcoding, code execution). Set in Console at workspace level. | governance-overlay, enterprise-data-boundaries |
-| SOC 2 Type I & Type II | Held | 2026-05 | trust.anthropic.com | Refresh annual. Request current report from Trust Portal. | governance-overlay |
+| SOC 2 Type I & Type II | Held | 2026-05 | trust.anthropic.com | Refresh annual. Request current report from Trust Portal. | governance-overlay, procurement-pack |
 | ISO 27001:2022 | Held | 2026-05 | trust.anthropic.com | Information Security Management. | governance-overlay |
 | ISO/IEC 42001:2023 | Held | 2026-05 | trust.anthropic.com | AI Management Systems — AI-specific certification. | governance-overlay |
 
