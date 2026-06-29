@@ -2,7 +2,7 @@
 
 **Single source of truth.** All artifacts in this repo reference this file. Update this first, propagate second.
 
-**Last verified:** 2026-05-29 against [docs.claude.com](https://docs.claude.com) and [anthropic.com/pricing](https://www.anthropic.com/pricing). **Opus 4.8 shipped 2026-05-28 — now the current top tier.**
+**Last verified:** 2026-06-29 against [docs.claude.com](https://docs.claude.com) and [anthropic.com/pricing](https://www.anthropic.com/pricing). **Opus 4.8 is the current top GA / deployable tier. A next-gen line — Claude Fable 5 + Mythos 5 — now exists above the 4.x family but is not GA-deployable (Fable 5 unavailable, Mythos 5 invite-only); operational recs stay on Opus 4.8.** Opus/Sonnet/Haiku pricing + IDs re-verified unchanged this cycle.
 
 **Refresh cadence:** weekly. Bump status, as-of dates, and pricing rows. Cross-check `Used in` column to find every artifact that needs a touch.
 
@@ -14,7 +14,9 @@
 
 | Model | Tier | Status | As-of | Notes |
 |---|---|---|---|---|
-| Opus 4.8 | Top | GA | 2026-05 | `claude-opus-4-8`. Most capable GA model. Builds on 4.7: better long-horizon agentic coding, fewer compactions + better compaction recovery, effort-calibrated reasoning. 1M context default. Adaptive thinking only (`budget_tokens` → 400); use `effort` param. Rejects `temperature`/`top_p`/`top_k` (400). Fast mode in research preview. Min cacheable prompt 1,024 tokens. |
+| Fable 5 | Next-gen | **Unavailable** | 2026-06 | `claude-fable-5`. Anthropic's most capable *widely released* model (most demanding reasoning + long-horizon agentic work). **Currently unavailable** — gated access ([anthropic.com/news/fable-mythos-access](https://www.anthropic.com/news/fable-mythos-access)). 1M context; adaptive thinking always-on (no extended thinking). **Not deployable for enterprise pilots yet — this repo's operational recs stay on Opus 4.8.** Acknowledged so buyers aren't blindsided; revisit when GA. |
+| Mythos 5 | Next-gen | **Invite-only** | 2026-06 | `claude-mythos-5`. Successor to Mythos Preview; available only through invite-only [Project Glasswing](https://anthropic.com/glasswing). Limited availability on Bedrock/Vertex. Not generally usable — informational only. |
+| Opus 4.8 | Top GA | GA | 2026-06 | `claude-opus-4-8`. Most capable GA / **deployable** model; top Opus-tier. Builds on 4.7: better long-horizon agentic coding, fewer compactions + better compaction recovery, effort-calibrated reasoning. 1M context default. Adaptive thinking only (`budget_tokens` → 400); use `effort` param. Rejects `temperature`/`top_p`/`top_k` (400). Fast mode in research preview. Min cacheable prompt 1,024 tokens. |
 | Opus 4.7 | Top (prev) | GA | 2026-05 | `claude-opus-4-7`. Previous top tier, still available. Same adaptive-thinking + no-sampling-params constraints as 4.8. Min cacheable prompt 4,096 tokens. |
 | Opus 4.6 | Top (prev) | GA | 2026-05 | Older top tier. Still available; adaptive thinking recommended, manual deprecated. |
 | Sonnet 4.6 | Mid | GA | 2026-05 | Workhorse. Default for production copilots + agentic loops. |
@@ -24,6 +26,7 @@
 
 | Model | Input | Output | Cache read | Cache write 5m | Cache write 1h |
 |---|---|---|---|---|---|
+| Fable 5 (unavailable) | $10.00 | $50.00 | $1.00 | $12.50 | n/a |
 | Opus 4.8 | $5.00 | $25.00 | $0.50 | $6.25 | $10.00 |
 | Opus 4.7 | $5.00 | $25.00 | $0.50 | $6.25 | $10.00 |
 | Opus 4.6 | $5.00 | $25.00 | $0.50 | $6.25 | $10.00 |
@@ -31,6 +34,24 @@
 | Haiku 4.5 | $1.00 | $5.00 | $0.10 | $1.25 | $2.00 |
 
 **Opus 4.8 pricing is identical to 4.7** — the model upgrade does not move cost. Cost-calculator headline Opus tier relabelled 4.7 → 4.8; numbers unchanged. Batch (50%): Opus $2.50/$12.50, Sonnet $1.50/$7.50, Haiku $0.50/$2.50. See [`../artifacts/cost-calculator.html`](../artifacts/cost-calculator.html).
+
+**Fable 5 is listed for awareness, not modelled.** At ~2× Opus input / output it would change cost sizing materially, but it is currently unavailable — the cost-calculator deliberately omits it until GA so estimates reflect what an enterprise can actually deploy. Re-evaluate adding a Fable 5 preset when status flips to GA.
+
+---
+
+## Claude.ai subscription plans (seat surface — distinct from the API)
+
+The seat surface is billed per user, separate from per-token API usage. **A subscription never unlocks API quota.** Prices list/USD, exclude tax, "subject to change at Anthropic's discretion" — verify at [anthropic.com/pricing](https://www.anthropic.com/pricing).
+
+| Plan | Price (list) | Seats | Claude Code | SSO / SCIM | No-train default | BAA | As-of | Used in artifacts |
+|---|---|---|---|---|---|---|---|---|
+| Free | $0 | 1 | ✗ | ✗ / ✗ | ✗ (consumer surface) | ✗ | 2026-06 | subscription-selection, cost-calculator |
+| Pro | $17/mo annual ($20 monthly) | 1 | ✓ | ✗ / ✗ | ✗ (consumer) | ✗ | 2026-06 | subscription-selection, cost-calculator, misconceptions |
+| Max | from $100/mo (5× or 20× Pro) | 1 | ✓ | ✗ / ✗ | ✗ (consumer) | ✗ | 2026-06 | subscription-selection, cost-calculator, misconceptions |
+| Team | $20 std · $100 premium /seat/mo annual ($25 / $125 monthly) | 5–150 | ✓ | ✓ / ✗ | ✓ | ✗ | 2026-06 | subscription-selection, cost-calculator, governance-overlay |
+| Enterprise | Custom (sales + self-serve) | Org-wide | ✓ | ✓ / ✓ | ✓ | ✓ | 2026-06 | subscription-selection, governance-overlay |
+
+**Seat-vs-API:** an engineering team on Claude Code typically needs both a seat plan (interactive) and API credits (production inference) — two invoices. Claude Code requires a paid seat (Pro+) **or** API credits; Free does not include it. BAA covers first-party API + Enterprise only (excludes Free/Pro/Max/Team — see no-train + BAA rows below). SCIM/audit shown as Enterprise-tier [inferred from plan-compare matrix; verify per contract]. Source: [anthropic.com/pricing](https://www.anthropic.com/pricing), verified 2026-06-29. See [`../artifacts/subscription-selection-guide.md`](../artifacts/subscription-selection-guide.md).
 
 ---
 
@@ -126,4 +147,4 @@
 
 ---
 
-`© gmanch94 · CC-BY-4.0 · As of 2026-05.`
+`© gmanch94 · CC-BY-4.0 · As of 2026-06.`

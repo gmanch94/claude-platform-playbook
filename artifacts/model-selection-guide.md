@@ -1,8 +1,10 @@
 # Claude Model Selection Guide
 
-**As of 2026-05.** Pinned to Opus 4.8 / Sonnet 4.6 / Haiku 4.5. Refresh monthly with [`../docs/feature-inventory.md`](../docs/feature-inventory.md).
+**As of 2026-06.** Pinned to Opus 4.8 / Sonnet 4.6 / Haiku 4.5. Refresh monthly with [`../docs/feature-inventory.md`](../docs/feature-inventory.md).
 
 > **The decision upstream of everything else.** Before the feature-decision-matrix, before the cost-calculator, there is one question: *which model tier fits this task?* Getting it wrong costs money (over-tiering) or quality (under-tiering). This guide answers it in four questions.
+
+> **A note on the next-gen line.** Anthropic has announced a tier above the 4.x family — **Claude Fable 5** (most capable widely released) and **Claude Mythos 5** (Project Glasswing). As of this writing neither is deployable: Fable 5 is **unavailable** (gated access) and Mythos 5 is **invite-only**. This guide stays on Opus 4.8 because it's the most capable model you can actually put into production today. Re-tier the hardest tasks to Fable 5 once it reaches GA — at ~2× Opus pricing ($10/$50 per MTok), validate the quality delta against Opus 4.8 in eval before paying for it. Track status in [`../docs/feature-inventory.md`](../docs/feature-inventory.md).
 
 ---
 
@@ -71,7 +73,7 @@ Request → Haiku triage
 
 ## Cost impact of getting it wrong
 
-Based on pricing as of 2026-05 (verify at [`cost-calculator.html`](cost-calculator.html)):
+Based on pricing as of 2026-06 (verify at [`cost-calculator.html`](cost-calculator.html)):
 
 | Tier swap | Input cost ratio | Output cost ratio | Monthly $ impact at 1M req, 8k in / 600 out |
 |---|---|---|---|
@@ -131,4 +133,4 @@ Extended thinking is not a model tier — it's a feature available on Opus 4.x (
 
 ---
 
-`© gmanch94 · CC-BY-4.0 · As of 2026-05. Verify pricing/models at anthropic.com.`
+`© gmanch94 · CC-BY-4.0 · As of 2026-06. Verify pricing/models at anthropic.com.`

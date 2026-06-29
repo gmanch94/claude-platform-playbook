@@ -6,7 +6,7 @@ Guidance for Claude Code (and any other AI agent) working in this repo.
 
 **`claude-platform-playbook`** — executive-grade decision tools for AI transformation **on the Claude platform**. Audience: CIOs, CDOs, CTOs, CHROs sizing Claude adoption + architects defending the choice to leadership.
 
-Public, CC-BY-4.0, vendor-explicit, decision-oriented. **Not** Anthropic marketing recap. Pin to current Claude model surface (Opus 4.8 / Sonnet 4.6 / Haiku 4.5 as of 2026-05) — refresh monthly.
+Public, CC-BY-4.0, vendor-explicit, decision-oriented. **Not** Anthropic marketing recap. Pin to current Claude model surface (Opus 4.8 / Sonnet 4.6 / Haiku 4.5 as of 2026-06) — refresh monthly.
 
 There is no build system or test suite. This is a content repo of static HTML + Markdown.
 
@@ -62,6 +62,7 @@ claude-platform-playbook/
     ├── claude-misconceptions.md         ~18 myths that drive mis-budget / mis-architect / mis-staff calls — text-form skeptic disarmer
     ├── data-advisory.md                 Pre-pilot data sizing — context window vs RAG, eval corpus counts, distillation trigger, cache eligibility, source taxonomy + governance flags
     ├── model-selection-guide.md         Opus / Sonnet / Haiku decision guide — 4-question framework, cascade pattern, tier-swap cost impact
+    ├── subscription-selection-guide.md  Which Claude plan to buy — three-gate framework (compliance → size → build) across Free/Pro/Max/Team/Enterprise, plan-comparison table, seat-vs-API "need both" pattern
     ├── multi-agent-patterns.md          5 multi-agent patterns · error-compounding math · sub-agent config · pattern decision table
     └── incident-response-runbook.md     5 incident classes · symptoms → immediate actions → remediation → post-mortem template
 ```
@@ -78,7 +79,7 @@ claude-platform-playbook/
 
 ### When adding a new artifact
 
-Don't, without updating `docs/scope.md` first. The original scope agreed 8 artifacts; the repo currently ships 15 (all post-v1 additions are justified in `scope.md`). New artifacts need a written justification block in `scope.md` and a row in `feature-inventory.md`'s `Used in artifacts` column.
+Don't, without updating `docs/scope.md` first. The original scope agreed 8 artifacts; the repo currently ships 22 (all post-v1 additions are justified in `scope.md`). New artifacts need a written justification block in `scope.md` and a row in `feature-inventory.md`'s `Used in artifacts` column.
 
 ### When the model surface changes
 

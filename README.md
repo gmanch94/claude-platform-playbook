@@ -2,7 +2,7 @@
 
 Executive-grade decision tools for AI transformation **on the Claude platform**. Built for CIOs, CDOs, CTOs, and CHROs sizing Claude adoption — and architects defending the choice to leadership.
 
-> **As of 2026-05.** Pricing, model versions, and feature surface change. Verify at [anthropic.com](https://www.anthropic.com) and [docs.claude.com](https://docs.claude.com) before final decisions.
+> **As of 2026-06.** Pricing, model versions, and feature surface change. Verify at [anthropic.com](https://www.anthropic.com) and [docs.claude.com](https://docs.claude.com) before final decisions.
 
 ---
 
@@ -34,7 +34,7 @@ Three abstraction layers. Same artifacts, three lenses — pick the lens that ma
 
 | Layer | Reader's question | Artifacts |
 |---|---|---|
-| **Strategy** — *why and whether* | "Should we use Claude here? At what cost? Build or buy?" | [`executive-briefing.html`](artifacts/executive-briefing.html) · [`anti-use-cases.md`](artifacts/anti-use-cases.md) · [`build-vs-buy-worksheet.html`](artifacts/build-vs-buy-worksheet.html) · [`cost-calculator.html`](artifacts/cost-calculator.html) |
+| **Strategy** — *why and whether* | "Should we use Claude here? At what cost? Build or buy? Which plan?" | [`executive-briefing.html`](artifacts/executive-briefing.html) · [`anti-use-cases.md`](artifacts/anti-use-cases.md) · [`build-vs-buy-worksheet.html`](artifacts/build-vs-buy-worksheet.html) · [`cost-calculator.html`](artifacts/cost-calculator.html) · [`subscription-selection-guide.md`](artifacts/subscription-selection-guide.md) |
 | **Architecture** — *how it fits together* | "Which pattern? Which features? What governance shape?" | [`reference-architectures.html`](artifacts/reference-architectures.html) · [`feature-decision-matrix.html`](artifacts/feature-decision-matrix.html) · [`governance-overlay.md`](artifacts/governance-overlay.md) |
 | **Execution** — *how it ships* | "How do we run the pilot? Score candidates? Roll out the CLI? Measure quality?" | [`adoption-playbook.md`](artifacts/adoption-playbook.md) · [`pilot-selection-worksheet.html`](artifacts/pilot-selection-worksheet.html) · [`claude-code-adoption-guide.md`](artifacts/claude-code-adoption-guide.md) · [`claude-code-starter-skills.md`](artifacts/claude-code-starter-skills.md) · [`hooks-starter-pack.md`](artifacts/hooks-starter-pack.md) · [`mcp-starter-pack.md`](artifacts/mcp-starter-pack.md) · [`eval-starter-pack.md`](artifacts/eval-starter-pack.md) |
 
@@ -51,6 +51,7 @@ Different roles enter at different layers. CIOs/CTOs read Strategy first. Archit
 | Anyone arriving with priors ("Claude refuses everything," "context is 200K," "Pro covers the API") | [`claude-misconceptions.md`](artifacts/claude-misconceptions.md) |
 | CEO / board sponsor for AI bets | [`executive-briefing.html`](artifacts/executive-briefing.html) |
 | CIO / CTO sizing Claude TCO | [`cost-calculator.html`](artifacts/cost-calculator.html) → [`build-vs-buy-worksheet.html`](artifacts/build-vs-buy-worksheet.html) |
+| IT / procurement lead choosing seat plans | [`subscription-selection-guide.md`](artifacts/subscription-selection-guide.md) → [`cost-calculator.html`](artifacts/cost-calculator.html) |
 | Architect choosing patterns | [`reference-architectures.html`](artifacts/reference-architectures.html) → [`feature-decision-matrix.html`](artifacts/feature-decision-matrix.html) → [`data-advisory.md`](artifacts/data-advisory.md) |
 | Transformation lead running rollout | [`anti-use-cases.md`](artifacts/anti-use-cases.md) → [`pilot-selection-worksheet.html`](artifacts/pilot-selection-worksheet.html) → [`data-advisory.md`](artifacts/data-advisory.md) → [`adoption-playbook.md`](artifacts/adoption-playbook.md) → [`eval-starter-pack.md`](artifacts/eval-starter-pack.md) |
 | Risk / compliance reviewer | [`anti-use-cases.md`](artifacts/anti-use-cases.md) → [`governance-overlay.md`](artifacts/governance-overlay.md) → [`eval-starter-pack.md`](artifacts/eval-starter-pack.md) |
@@ -84,6 +85,7 @@ Different roles enter at different layers. CIOs/CTOs read Strategy first. Archit
 | [`mcp-starter-pack.md`](artifacts/mcp-starter-pack.md) | Templates | 7 read-only MCP server templates (issue tracker, internal docs, CI logs, DB read replica, observability, API catalog, code search). Each framed by when-to-use / failure-mode / owner / scope. Read-only by design; mutate variants explicitly deferred to Phase 4. |
 | [`eval-starter-pack.md`](artifacts/eval-starter-pack.md) | Templates | 8 evaluation templates (regression, format compliance, tool-call accuracy, grounding, adversarial, cost-per-task, latency, refusal calibration). Each framed by what it catches / failure-mode of the eval itself / owner. Plus a blocking-vs-advisory matrix. |
 | [`model-selection-guide.md`](artifacts/model-selection-guide.md) | Reference (decision guide) | 4-question framework for Opus / Sonnet / Haiku selection. Task-type → tier table, cascade pattern, cost impact of over/under-tiering, and signals for when to move tiers. |
+| [`subscription-selection-guide.md`](artifacts/subscription-selection-guide.md) | Reference (decision guide) | Which Claude subscription to buy. Three-gate framework (compliance → team size → build) across Free / Pro / Max / Team / Enterprise, plan-comparison table (price · seats · Claude Code · SSO/SCIM · no-train · BAA · API quota), persona→plan with failure modes, and the seat-vs-API "you need both" pattern. |
 | [`multi-agent-patterns.md`](artifacts/multi-agent-patterns.md) | Reference (patterns) | 5 named multi-agent patterns (orchestrator-worker, parallel fan-out, sequential pipeline, validator-retry, human-in-loop gate). Error-compounding math, sub-agent configuration, and decision table for choosing a pattern. |
 | [`incident-response-runbook.md`](artifacts/incident-response-runbook.md) | Operational (runbook) | 5 Claude-specific incident classes (prompt regression, model deprecation, cost spike, agent loop runaway, MCP server compromise). Each: symptoms → immediate actions → root cause → remediation → post-mortem template. |
 
@@ -103,7 +105,7 @@ Or fork the repo, customize for your org, host wherever you want.
 - Model versions pinned (Sonnet 4.x, Haiku 4.x, Opus 4.x) — never "latest"
 - All technical claims cite [docs.claude.com](https://docs.claude.com) by URL + as-of date
 - No reproducing Anthropic marketing copy verbatim — paraphrase + cite
-- Footer pattern on every artifact: `© gmanch94 · CC-BY-4.0 · As of 2026-05. Verify at anthropic.com.`
+- Footer pattern on every artifact: `© gmanch94 · CC-BY-4.0 · As of 2026-06. Verify at anthropic.com.`
 - Monthly refresh discipline (scheduled remote agent, first Monday) — pricing/model surface drifts fast
 
 ---
@@ -119,4 +121,4 @@ Or fork the repo, customize for your org, host wherever you want.
 
 [CC-BY-4.0](LICENSE) — free to share, adapt, and reuse with attribution.
 
-`© gmanch94 · CC-BY-4.0 · As of 2026-05.`
+`© gmanch94 · CC-BY-4.0 · As of 2026-06.`
