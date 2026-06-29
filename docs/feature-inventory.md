@@ -107,6 +107,20 @@ The seat surface is billed per user, separate from per-token API usage. **A subs
 
 ---
 
+## Product surfaces (Claude.ai apps)
+
+Seat-plan product surfaces beyond chat. Plan gating + governance flags drive the rollout decision — see [`../artifacts/surface-rollout-matrix.md`](../artifacts/surface-rollout-matrix.md) and (for Cowork) [`../artifacts/cowork-adoption-guide.md`](../artifacts/cowork-adoption-guide.md).
+
+| Surface | Status | Plan gate | As-of | Doc anchor | Governance flag | Used in artifacts |
+|---|---|---|---|---|---|---|
+| Cowork (desktop agent) | GA (paid plans) | Pro / Max / Team / Enterprise; desktop app (mac/Win), not web/mobile | 2026-06 | support.claude.com/en/articles/13345190-get-started-with-claude-cowork | Takes real actions on local files; folder-scoped + egress-controlled + review-before-act; isolated VM for code; enterprise admin controls (feature access, spend, usage, private plugin marketplace). **Not BAA-covered.** | cowork-adoption-guide, surface-rollout-matrix |
+| Claude Design | Beta (Anthropic Labs) | Team / Enterprise (org toggle, custom-role gated) | 2026-06 | support.claude.com/en/articles/14604406-claude-design-admin-guide-for-team-and-enterprise-plans | Uploaded assets stored persistently; **no data residency support**; **not BAA-covered (beta)**; Anthropic publishes recommended rollout phases. | surface-rollout-matrix |
+| Projects | GA | All plans (Free capped at 5 projects); RAG + sharing + org instructions on paid / Team+ | 2026-06 | support.claude.com/en/articles/9517075-what-are-projects | RAG auto-scales knowledge ~10× on paid; org-wide sharing is a data-leak vector (use can-use/can-edit perms, disable public projects); **BAA-covered on Enterprise** (w/ admin HIPAA activation). | surface-rollout-matrix |
+
+**Surface drift caught 2026-06-29:** **Cowork graduated** from the beta it was previously logged as — now GA on all paid plans, with enterprise admin controls shipped (Apr 2026); still **BAA-excluded**. **Claude Design** is a real Team/Enterprise surface (beta, under Anthropic Labs), also BAA-excluded with no residency. Verified against support.claude.com + privacy.claude.com.
+
+---
+
 ## Procurement paths
 
 | Path | Status | As-of | Notes |
@@ -127,7 +141,7 @@ The seat surface is billed per user, separate from per-token API usage. **A subs
 | Standard retention (commercial API) | Confirmed | 2026-05 | privacy.claude.com/en/articles/7996866-how-long-do-you-store-my-organization-s-data | 30-day backend deletion default. AUP-flagged: inputs/outputs up to 2 years, T&S classifier scores up to 7 years. Feedback: 5 years. | governance-overlay |
 | Zero Data Retention (ZDR) | Available (enterprise, approval required) | 2026-05 | platform.claude.com/docs/en/build-with-claude/api-and-data-retention | Covers Messages + Token Counting APIs, Claude Code (Commercial org key, or Enterprise w/ ZDR). T&S classifier results still retained. Consumer plans + Teams/Enterprise UI not eligible. | governance-overlay, anti-use-cases, build-vs-buy |
 | HIPAA-ready API access | GA | 2026-05 | platform.claude.com/docs/en/build-with-claude/api-and-data-retention#hipaa-readiness | Separate from BAA. HIPAA-enabled orgs get 400 error on non-eligible features. ZDR no longer prerequisite. | governance-overlay, anti-use-cases, build-vs-buy |
-| BAA (HIPAA workloads) | Available | 2026-05 | privacy.claude.com/en/articles/8114513-business-associate-agreements-baa-for-commercial-customers | Covers first-party API + Enterprise plans (chat, projects, artifacts, file creation w/o network, voice). Excludes: Workbench, Console, Free/Pro/Max/Team, beta (Cowork, Claude for Office). Per-feature eligibility — verify Implementation Guide. | governance-overlay, anti-use-cases, build-vs-buy |
+| BAA (HIPAA workloads) | Available | 2026-06 | privacy.claude.com/en/articles/8114513-business-associate-agreements-baa-for-commercial-customers | Covers first-party API + Enterprise plans. **Enterprise is not automatic — an admin must activate HIPAA compliance (admin settings → Data & Privacy) and sign the BAA.** Covered Enterprise features: Chat, Projects, Artifacts, file creation & code execution. **Excludes: Workbench/Console, Free/Pro/Max/Team, Cowork, and beta features (Claude in Office, Claude Design).** Per-feature eligibility — verify Implementation Guide. Re-verified 2026-06-29 (source updated this week). | governance-overlay, anti-use-cases, build-vs-buy, surface-rollout-matrix, cowork-adoption-guide |
 | Data residency — `inference_geo` | GA | 2026-05 | platform.claude.com/docs/en/build-with-claude/data-residency | Per-request inference geo (`global` default, or `us`). Opus 4.6+. First-party API only — Bedrock/Vertex use their own region selection. | governance-overlay, anti-use-cases, build-vs-buy |
 | Data residency — Workspace geo | GA | 2026-05 | platform.claude.com/docs/en/build-with-claude/data-residency | Controls at-rest storage and endpoint processing (image transcoding, code execution). Set in Console at workspace level. | governance-overlay |
 | SOC 2 Type I & Type II | Held | 2026-05 | trust.anthropic.com | Refresh annual. Request current report from Trust Portal. | governance-overlay |
