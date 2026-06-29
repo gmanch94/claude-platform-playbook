@@ -1,0 +1,659 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Enterprise Data Boundaries — per-feature trust-zone diagrams</title>
+<link href="https://fonts.googleapis.com/css2?family=Caveat:wght@500;700&family=Patrick+Hand&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --c1:#D97757; --c1d:#B45309; --c2:#7C5E48; --bg:#faf7f3; --ink:#2a2017;
+    --line:#e8e0d3; --muted:#8a7e6e; --good:#15803d; --warn:#b45309; --bad:#b91c1c;
+    --user:#D97757; --claude:#7C5E48; --tool:#1E40AF; --store:#15803d; --out:#9a3412;
+    --cust:#15803d; --proc:#7C5E48; --stor:#1E40AF; --ext:#9a3412;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; background: var(--bg); color: var(--ink); padding: 32px 24px 80px; line-height: 1.55; }
+  .wrap { max-width: 1180px; margin: 0 auto; }
+  header { border-bottom: 2px solid var(--c1); padding-bottom: 16px; margin-bottom: 20px; }
+  header h1 { font-size: 31px; font-weight: 700; }
+  header .sub { color: var(--muted); font-size: 15px; margin-top: 6px; }
+  .asof { display: inline-block; background: var(--c1); color: white; padding: 3px 10px; border-radius: 12px; font-size: 12px; font-weight: 600; margin-left: 8px; vertical-align: middle; }
+  .thesis { background: #fff; border: 1px solid var(--line); border-left: 4px solid var(--c1); border-radius: 8px; padding: 14px 18px; margin-bottom: 18px; font-size: 14.5px; }
+  .thesis strong { color: var(--c1d); }
+  .controls { background: #fdf6ed; border: 1px solid var(--line); border-radius: 8px; padding: 12px 16px; margin-bottom: 18px; font-size: 13px; }
+  .controls h3 { font-family: 'Caveat', cursive; font-size: 19px; color: var(--c1d); margin-bottom: 6px; }
+  .controls ul { margin: 0 0 0 18px; }
+  .controls li { margin-bottom: 3px; }
+  .legend-row { display: flex; gap: 16px; flex-wrap: wrap; padding: 10px 14px; background: white; border: 1px solid var(--line); border-radius: 8px; margin-bottom: 22px; font-size: 13px; align-items: center; }
+  .legend-row .item { display: flex; align-items: center; gap: 6px; }
+  .legend-row .swatch { width: 18px; height: 14px; border: 2px solid; border-radius: 3px; }
+  .sec-h { font-family: 'Caveat', cursive; font-size: 24px; color: var(--ink); margin: 26px 0 4px; border-bottom: 2px dashed var(--line); padding-bottom: 4px; }
+  .sec-sub { font-size: 13px; color: var(--muted); margin-bottom: 14px; }
+  .feature { background: white; border: 1px solid var(--line); border-radius: 10px; padding: 20px 22px; margin-bottom: 20px; }
+  .feature h2 { font-size: 22px; color: var(--c1d); margin-bottom: 3px; font-family: 'Caveat', cursive; font-weight: 700; letter-spacing: 0.4px; }
+  .surf { display:inline-block; font-family:-apple-system,sans-serif; font-size:11px; font-weight:600; text-transform:uppercase; letter-spacing:0.04em; padding:2px 8px; border-radius:10px; vertical-align:middle; margin-left:8px; }
+  .surf.prod { background: rgba(124,94,72,0.13); color: var(--c2); }
+  .surf.api { background: rgba(30,64,175,0.12); color: var(--tool); }
+  .surf.proc { background: rgba(154,52,18,0.12); color: var(--out); }
+  .feature .stack-line { font-family: 'Patrick Hand', cursive; font-size: 15.5px; color: var(--c2); margin: 6px 0 14px; }
+  .diagram { background: #fffefb; border: 2px solid var(--ink); border-radius: 8px; padding: 10px; margin-bottom: 16px; box-shadow: 4px 4px 0 var(--line); }
+  .diagram svg { width: 100%; height: auto; max-width: 920px; display: block; margin: 0 auto; font-family: 'Patrick Hand', 'Caveat', cursive; }
+  svg .zone { opacity: 0.5; }
+  svg .ztitle { font-size: 12px; fill: var(--muted); font-family: -apple-system, sans-serif; font-weight: 600; letter-spacing: 0.04em; }
+  svg .lbl { font-size: 15px; fill: var(--ink); }
+  svg .sub { font-size: 12px; fill: #5a4a3a; }
+  svg .box { fill: #fffefb; stroke-width: 2.5; }
+  svg .b-user { stroke: var(--user); } svg .b-claude { stroke: var(--claude); }
+  svg .b-store { stroke: var(--store); } svg .b-tool { stroke: var(--tool); } svg .b-out { stroke: var(--out); }
+  svg .flow { stroke: var(--ink); stroke-width: 2; fill: none; }
+  svg .flow.dash { stroke-dasharray: 5 4; }
+  svg .flab { font-size: 11.5px; fill: #5a4a3a; }
+  svg .boundary { stroke: var(--bad); stroke-width: 2; stroke-dasharray: 6 4; }
+  svg .blab { font-size: 12px; fill: var(--bad); font-family: 'Caveat', cursive; font-weight: 700; }
+  svg .badge { font-size: 11px; fill: var(--ink); }
+  .meta { display: grid; grid-template-columns: repeat(6, 1fr); gap: 8px; margin-bottom: 12px; }
+  @media (max-width: 900px) { .meta { grid-template-columns: 1fr 1fr 1fr; } }
+  @media (max-width: 560px) { .meta { grid-template-columns: 1fr 1fr; } }
+  .meta .cell { background: #fef9ee; border-left: 3px solid var(--c1); padding: 7px 9px; font-size: 12px; border-radius: 4px; }
+  .meta .cell h4 { font-size: 10px; color: var(--c1d); text-transform: uppercase; letter-spacing: 0.04em; margin-bottom: 3px; }
+  .meta .cell .v { font-weight: 600; font-size: 12.5px; line-height: 1.35; }
+  .meta .cell .v.no { color: var(--bad); } .meta .cell .v.yes { color: var(--good); } .meta .cell .v.warn { color: var(--warn); }
+  .bites { padding: 9px 13px; border-radius: 6px; font-size: 13px; background: rgba(180,83,9,0.07); border-left: 3px solid var(--warn); margin-bottom: 10px; }
+  .bites b { color: var(--warn); }
+  .companions { padding: 8px 13px; background: #fdf6ed; border-left: 3px solid var(--c1d); border-radius: 4px; font-size: 12.5px; }
+  .companions a { color: var(--c1d); text-decoration: underline; }
+  table.cov { width: 100%; border-collapse: collapse; font-size: 12.5px; margin: 8px 0 18px; background: white; }
+  table.cov th, table.cov td { border: 1px solid var(--line); padding: 6px 9px; text-align: left; vertical-align: top; }
+  table.cov th { background: #fef9ee; color: var(--c1d); font-size: 11px; text-transform: uppercase; letter-spacing: 0.03em; }
+  table.cov td.no { color: var(--bad); font-weight: 600; } table.cov td.yes { color: var(--good); font-weight: 600; }
+  footer { margin-top: 40px; padding-top: 16px; border-top: 1px solid var(--line); text-align: center; font-size: 12px; color: var(--muted); }
+  footer a { color: var(--c1d); }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <h1>Enterprise Data Boundaries <span class="asof">As of 2026-06</span></h1>
+    <div class="sub">Per-feature trust-zone diagrams for a Claude <strong>Enterprise</strong> deployment — where data crosses, where it's processed, where it's stored, and what the BAA covers. For CISOs, security architects, and compliance leads. Every boundary claim traces to <a href="governance-overlay.html">governance-overlay.md</a> (the source of truth); verify at <a href="https://privacy.claude.com">privacy.claude.com</a>.</div>
+  </header>
+
+  <div class="thesis">
+    <strong>The prompt is the trust boundary.</strong> Anything you put in a prompt (or a connected tool result, or an uploaded file) is on Anthropic's infrastructure for the duration of the request — and longer if you use Files API, Memory, or caching. Everything left in your VPC, databases, and source systems stays yours. These diagrams show, per feature, exactly what crosses that line. <em>Architect tool layers to retrieve only what the model must see.</em> [governance-overlay.md §1]
+  </div>
+
+  <div class="controls">
+    <h3>Cross-cutting controls — read these before the per-feature cells</h3>
+    <ul>
+      <li><strong>No-train ≠ no-store.</strong> Commercial default is no-training-on-your-data; it does <em>not</em> mean data isn't stored. Default at-rest retention is 30 days (§11). [§2]</li>
+      <li><strong>ZDR is not default, and not on the Enterprise product UI.</strong> Zero Data Retention covers the <em>Messages API + Claude Code</em> only (enterprise agreement, Anthropic approval) — never chat / projects / artifacts. Trust &amp; Safety classifier scores are retained up to 7 years <em>even under ZDR</em>. [§3]</li>
+      <li><strong><code>inference_geo</code> is first-party-API-only</strong> (Opus 4.6 / Sonnet 4.6+). It does not apply to the product UI, to Managed Agents, or to Bedrock/Vertex (those use the hyperscaler region). Workspace geo governs at-rest storage + processing (code exec, image transcoding). [§5]</li>
+      <li><strong>The BAA is not automatic and is per-surface.</strong> An Enterprise admin must activate HIPAA compliance + sign. Covered features differ between the first-party API and the Enterprise product surface — <em>the same capability (code execution) is covered on one and not the other.</em> The BAA does not extend to your MCP servers. [§4]</li>
+    </ul>
+  </div>
+
+  <div class="legend-row">
+    <strong style="font-family:'Caveat',cursive; font-size:18px;">Zones:</strong>
+    <div class="item"><span class="swatch" style="border-color:var(--cust); background:rgba(21,128,61,0.10)"></span>Customer trust zone (stays)</div>
+    <div class="item"><span class="swatch" style="border-color:var(--proc); background:rgba(124,94,72,0.10)"></span>Anthropic processing</div>
+    <div class="item"><span class="swatch" style="border-color:var(--stor); background:rgba(30,64,175,0.09)"></span>Anthropic storage / retention</div>
+    <div class="item"><span class="swatch" style="border-color:var(--ext); background:rgba(154,52,18,0.09)"></span>Third-party / your-external / hyperscaler</div>
+    <div class="item"><span style="color:var(--bad); font-family:'Caveat',cursive; font-weight:700; font-size:16px;">- - -</span> trust boundary (prompt)</div>
+  </div>
+
+  <!-- =================================================================== -->
+  <div class="sec-h">A · Enterprise product surface (the UI)</div>
+  <div class="sec-sub">Chat, Projects, Artifacts, file creation. BAA-covered when an admin activates HIPAA + signs. <strong>Not ZDR-eligible</strong> (ZDR is API + Claude Code only). Residency = Workspace geo; <code>inference_geo</code> does not apply to the UI.</div>
+
+  <!-- 1. CHAT -->
+  <div class="feature">
+    <h2>1. Chat<span class="surf prod">Enterprise product</span></h2>
+    <div class="stack-line">prompt in → inference → response out · nothing persists beyond retention window</div>
+    <div class="diagram">
+      <svg viewBox="0 0 900 200" xmlns="http://www.w3.org/2000/svg">
+        <defs><marker id="ar" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0,1 L9,5 L0,9 L2,5 z" fill="#2a2017"/></marker></defs>
+        <rect class="zone" x="8" y="8" width="210" height="184" rx="8" fill="rgba(21,128,61,0.08)"/>
+        <rect class="zone" x="300" y="8" width="300" height="184" rx="8" fill="rgba(124,94,72,0.08)"/>
+        <rect class="zone" x="640" y="8" width="250" height="184" rx="8" fill="rgba(30,64,175,0.07)"/>
+        <text class="ztitle" x="113" y="26" text-anchor="middle">CUSTOMER TRUST ZONE</text>
+        <text class="ztitle" x="450" y="26" text-anchor="middle">ANTHROPIC PROCESSING</text>
+        <text class="ztitle" x="765" y="26" text-anchor="middle">ANTHROPIC STORAGE</text>
+        <line class="boundary" x1="259" y1="14" x2="259" y2="186"/>
+        <text class="blab" x="259" y="190" text-anchor="middle">prompt = boundary</text>
+        <rect class="box b-user" x="28" y="78" width="168" height="56" rx="9"/>
+        <text class="lbl" x="112" y="100" text-anchor="middle">User (org SSO)</text>
+        <text class="sub" x="112" y="118" text-anchor="middle">types prompt in chat UI</text>
+        <rect class="box b-claude" x="330" y="78" width="180" height="56" rx="9"/>
+        <text class="lbl" x="420" y="100" text-anchor="middle" font-weight="700">Claude (Enterprise)</text>
+        <text class="sub" x="420" y="118" text-anchor="middle">inference · Workspace geo</text>
+        <rect class="box b-store" x="670" y="78" width="190" height="56" rx="9"/>
+        <text class="lbl" x="765" y="100" text-anchor="middle">Logs</text>
+        <text class="sub" x="765" y="118" text-anchor="middle">30-day / custom retention</text>
+        <path class="flow" d="M198,106 L326,106" marker-end="url(#ar)"/>
+        <text class="flab" x="262" y="98" text-anchor="middle">prompt</text>
+        <path class="flow dash" d="M510,118 Q590,150 668,124" marker-end="url(#ar)"/>
+        <text class="flab" x="590" y="155" text-anchor="middle">response logged</text>
+      </svg>
+    </div>
+    <div class="meta">
+      <div class="cell"><h4>Surface</h4><div class="v">Enterprise product UI</div></div>
+      <div class="cell"><h4>No-train</h4><div class="v yes">Yes (default)</div></div>
+      <div class="cell"><h4>Retention</h4><div class="v">30-day; custom on Enterprise</div></div>
+      <div class="cell"><h4>ZDR</h4><div class="v no">No (UI surface)</div></div>
+      <div class="cell"><h4>Residency</h4><div class="v">Workspace geo</div></div>
+      <div class="cell"><h4>BAA</h4><div class="v yes">Covered*</div></div>
+    </div>
+    <div class="bites"><b>Where it bites:</b> teams assume "we have Enterprise + ZDR" makes chat zero-retention. It doesn't — ZDR never covers the chat UI. Use custom retention controls for the UI, ZDR for the API. *BAA only after admin activates HIPAA + signs.</div>
+    <div class="companions">Trace: <a href="governance-overlay.html">governance-overlay.md</a> §2 (no-train), §3 (ZDR scope), §4 (BAA), §11 (retention).</div>
+  </div>
+
+  <!-- 2. PROJECTS -->
+  <div class="feature">
+    <h2>2. Projects<span class="surf prod">Enterprise product</span></h2>
+    <div class="stack-line">curated knowledge persists · org-sharing is the second boundary</div>
+    <div class="diagram">
+      <svg viewBox="0 0 900 210" xmlns="http://www.w3.org/2000/svg">
+        <defs><marker id="ar2" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0,1 L9,5 L0,9 L2,5 z" fill="#2a2017"/></marker></defs>
+        <rect class="zone" x="8" y="8" width="210" height="194" rx="8" fill="rgba(21,128,61,0.08)"/>
+        <rect class="zone" x="300" y="8" width="300" height="194" rx="8" fill="rgba(124,94,72,0.08)"/>
+        <rect class="zone" x="640" y="8" width="250" height="194" rx="8" fill="rgba(30,64,175,0.07)"/>
+        <text class="ztitle" x="113" y="26" text-anchor="middle">CUSTOMER TRUST ZONE</text>
+        <text class="ztitle" x="450" y="26" text-anchor="middle">ANTHROPIC PROCESSING</text>
+        <text class="ztitle" x="765" y="26" text-anchor="middle">ANTHROPIC STORAGE</text>
+        <line class="boundary" x1="259" y1="14" x2="259" y2="196"/>
+        <text class="blab" x="259" y="200" text-anchor="middle">prompt = boundary</text>
+        <rect class="box b-user" x="24" y="56" width="176" height="50" rx="9"/>
+        <text class="lbl" x="112" y="76" text-anchor="middle">Uploaded knowledge</text>
+        <text class="sub" x="112" y="93" text-anchor="middle">docs, PDFs, context</text>
+        <rect class="box b-user" x="24" y="128" width="176" height="48" rx="9"/>
+        <text class="lbl" x="112" y="148" text-anchor="middle">Org members</text>
+        <text class="sub" x="112" y="165" text-anchor="middle">can-use / can-edit</text>
+        <rect class="box b-claude" x="330" y="92" width="180" height="56" rx="9"/>
+        <text class="lbl" x="420" y="114" text-anchor="middle" font-weight="700">Claude + RAG</text>
+        <text class="sub" x="420" y="132" text-anchor="middle">retrieves over project</text>
+        <rect class="box b-store" x="670" y="92" width="190" height="56" rx="9"/>
+        <text class="lbl" x="765" y="114" text-anchor="middle">Project store</text>
+        <text class="sub" x="765" y="132" text-anchor="middle">persists while project lives</text>
+        <path class="flow" d="M202,82 Q270,90 326,108" marker-end="url(#ar2)"/>
+        <path class="flow" d="M510,120 L668,120" marker-end="url(#ar2)"/>
+        <text class="flab" x="589" y="112" text-anchor="middle">indexed</text>
+        <path class="flow dash" d="M112,128 L112,112" marker-end="url(#ar2)"/>
+        <text class="flab" x="150" y="120" text-anchor="middle">shared view</text>
+      </svg>
+    </div>
+    <div class="meta">
+      <div class="cell"><h4>Surface</h4><div class="v">Enterprise product UI</div></div>
+      <div class="cell"><h4>No-train</h4><div class="v yes">Yes (default)</div></div>
+      <div class="cell"><h4>Retention</h4><div class="v">While project exists; custom</div></div>
+      <div class="cell"><h4>ZDR</h4><div class="v no">No (UI surface)</div></div>
+      <div class="cell"><h4>Residency</h4><div class="v">Workspace geo</div></div>
+      <div class="cell"><h4>BAA</h4><div class="v yes">Covered*</div></div>
+    </div>
+    <div class="bites"><b>Where it bites:</b> the real exposure is the <b>org-sharing boundary</b>, not Anthropic's infra — an org-wide-shared project exposes its curated knowledge to everyone. Use can-use/can-edit perms and disable public projects for sensitive knowledge.</div>
+    <div class="companions">Trace: <a href="governance-overlay.html">governance-overlay.md</a> §4 (BAA), §11 (retention) · <a href="surface-rollout-matrix.html">surface-rollout-matrix.md</a> (Projects sharing flag).</div>
+  </div>
+
+  <!-- 3. ARTIFACTS -->
+  <div class="feature">
+    <h2>3. Artifacts<span class="surf prod">Enterprise product</span></h2>
+    <div class="stack-line">generated content rendered in a sandboxed preview, isolated from your account</div>
+    <div class="diagram">
+      <svg viewBox="0 0 900 200" xmlns="http://www.w3.org/2000/svg">
+        <defs><marker id="ar3" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0,1 L9,5 L0,9 L2,5 z" fill="#2a2017"/></marker></defs>
+        <rect class="zone" x="8" y="8" width="210" height="184" rx="8" fill="rgba(21,128,61,0.08)"/>
+        <rect class="zone" x="300" y="8" width="300" height="184" rx="8" fill="rgba(124,94,72,0.08)"/>
+        <rect class="zone" x="640" y="8" width="250" height="184" rx="8" fill="rgba(154,52,18,0.07)"/>
+        <text class="ztitle" x="113" y="26" text-anchor="middle">CUSTOMER TRUST ZONE</text>
+        <text class="ztitle" x="450" y="26" text-anchor="middle">ANTHROPIC PROCESSING</text>
+        <text class="ztitle" x="765" y="26" text-anchor="middle">SANDBOXED PREVIEW</text>
+        <line class="boundary" x1="259" y1="14" x2="259" y2="186"/>
+        <text class="blab" x="259" y="190" text-anchor="middle">prompt = boundary</text>
+        <rect class="box b-user" x="28" y="78" width="168" height="56" rx="9"/>
+        <text class="lbl" x="112" y="100" text-anchor="middle">Request</text>
+        <text class="sub" x="112" y="118" text-anchor="middle">"build a dashboard"</text>
+        <rect class="box b-claude" x="330" y="78" width="180" height="56" rx="9"/>
+        <text class="lbl" x="420" y="100" text-anchor="middle" font-weight="700">Claude generates</text>
+        <text class="sub" x="420" y="118" text-anchor="middle">code / doc artifact</text>
+        <rect class="box b-out" x="670" y="78" width="190" height="56" rx="9"/>
+        <text class="lbl" x="765" y="100" text-anchor="middle">Sandboxed iframe</text>
+        <text class="sub" x="765" y="118" text-anchor="middle">separate domain, isolated</text>
+        <path class="flow" d="M198,106 L326,106" marker-end="url(#ar3)"/>
+        <path class="flow" d="M510,106 L668,106" marker-end="url(#ar3)"/>
+        <text class="flab" x="589" y="98" text-anchor="middle">render</text>
+      </svg>
+    </div>
+    <div class="meta">
+      <div class="cell"><h4>Surface</h4><div class="v">Enterprise product UI</div></div>
+      <div class="cell"><h4>No-train</h4><div class="v yes">Yes (default)</div></div>
+      <div class="cell"><h4>Retention</h4><div class="v">30-day / custom</div></div>
+      <div class="cell"><h4>ZDR</h4><div class="v no">No (UI surface)</div></div>
+      <div class="cell"><h4>Residency</h4><div class="v">Workspace geo</div></div>
+      <div class="cell"><h4>BAA</h4><div class="v yes">Covered*</div></div>
+    </div>
+    <div class="bites"><b>Where it bites:</b> an artifact preview runs in a sandboxed iframe on a separate content domain — preview code can't reach your account or session. The data exposure is the <b>prompt that generated it</b>, not the preview pane.</div>
+    <div class="companions">Trace: <a href="governance-overlay.html">governance-overlay.md</a> §4 (BAA Enterprise product table), §11 (retention).</div>
+  </div>
+
+  <!-- 4. FILE CREATION + CODE EXEC (PRODUCT) -->
+  <div class="feature">
+    <h2>4. File creation &amp; code execution<span class="surf prod">Enterprise product</span></h2>
+    <div class="stack-line">runs in an isolated sandbox · <strong>covered on the product surface</strong> (the API code-exec tool is not — see #10)</div>
+    <div class="diagram">
+      <svg viewBox="0 0 900 200" xmlns="http://www.w3.org/2000/svg">
+        <defs><marker id="ar4" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0,1 L9,5 L0,9 L2,5 z" fill="#2a2017"/></marker></defs>
+        <rect class="zone" x="8" y="8" width="210" height="184" rx="8" fill="rgba(21,128,61,0.08)"/>
+        <rect class="zone" x="300" y="8" width="300" height="184" rx="8" fill="rgba(124,94,72,0.08)"/>
+        <rect class="zone" x="640" y="8" width="250" height="184" rx="8" fill="rgba(30,64,175,0.07)"/>
+        <text class="ztitle" x="113" y="26" text-anchor="middle">CUSTOMER TRUST ZONE</text>
+        <text class="ztitle" x="450" y="26" text-anchor="middle">ISOLATED SANDBOX (VM)</text>
+        <text class="ztitle" x="765" y="26" text-anchor="middle">FILE OUTPUT</text>
+        <line class="boundary" x1="259" y1="14" x2="259" y2="186"/>
+        <text class="blab" x="259" y="190" text-anchor="middle">prompt = boundary</text>
+        <rect class="box b-user" x="28" y="78" width="168" height="56" rx="9"/>
+        <text class="lbl" x="112" y="100" text-anchor="middle">Data + ask</text>
+        <text class="sub" x="112" y="118" text-anchor="middle">"make this XLSX"</text>
+        <rect class="box b-claude" x="330" y="78" width="180" height="56" rx="9"/>
+        <text class="lbl" x="420" y="100" text-anchor="middle" font-weight="700">Sandbox VM</text>
+        <text class="sub" x="420" y="118" text-anchor="middle">code runs, isolated from OS</text>
+        <rect class="box b-store" x="670" y="78" width="190" height="56" rx="9"/>
+        <text class="lbl" x="765" y="100" text-anchor="middle">Generated file</text>
+        <text class="sub" x="765" y="118" text-anchor="middle">download / retention policy</text>
+        <path class="flow" d="M198,106 L326,106" marker-end="url(#ar4)"/>
+        <path class="flow" d="M510,106 L668,106" marker-end="url(#ar4)"/>
+        <text class="flab" x="589" y="98" text-anchor="middle">output</text>
+      </svg>
+    </div>
+    <div class="meta">
+      <div class="cell"><h4>Surface</h4><div class="v">Enterprise product</div></div>
+      <div class="cell"><h4>No-train</h4><div class="v yes">Yes (default)</div></div>
+      <div class="cell"><h4>Retention</h4><div class="v">Per retention policy</div></div>
+      <div class="cell"><h4>ZDR</h4><div class="v no">No (UI surface)</div></div>
+      <div class="cell"><h4>Residency</h4><div class="v">Workspace geo</div></div>
+      <div class="cell"><h4>BAA</h4><div class="v yes">Covered — excl. network</div></div>
+    </div>
+    <div class="bites"><b>Where it bites:</b> the <b>surface split</b> — file creation &amp; code execution are BAA-covered on the Enterprise <em>product</em> surface, but the API <em>code execution tool</em> (#10) is <b>not</b> covered. And even on the product surface the BAA carve-out <b>excludes network access &amp; external websites</b> — a PHI workflow that calls out mid-run is outside coverage. Don't carry one verdict across both.</div>
+    <div class="companions">Trace: <a href="governance-overlay.html">governance-overlay.md</a> §4 (the two BAA tables + the surface-split warning).</div>
+  </div>
+
+  <!-- =================================================================== -->
+  <div class="sec-h">B · First-party API features</div>
+  <div class="sec-sub">Where <code>inference_geo</code> (Opus 4.6 / Sonnet 4.6+) and ZDR-on-Messages live. BAA coverage is per-feature — some tools are explicitly <strong>not</strong> covered.</div>
+
+  <!-- 5. MESSAGES API -->
+  <div class="feature">
+    <h2>5. Messages API (direct call)<span class="surf api">First-party API</span></h2>
+    <div class="stack-line">your app builds the prompt · the one surface where ZDR + <code>inference_geo</code> actually apply</div>
+    <div class="diagram">
+      <svg viewBox="0 0 900 210" xmlns="http://www.w3.org/2000/svg">
+        <defs><marker id="ar5" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0,1 L9,5 L0,9 L2,5 z" fill="#2a2017"/></marker></defs>
+        <rect class="zone" x="8" y="8" width="210" height="194" rx="8" fill="rgba(21,128,61,0.08)"/>
+        <rect class="zone" x="300" y="8" width="300" height="194" rx="8" fill="rgba(124,94,72,0.08)"/>
+        <rect class="zone" x="640" y="8" width="250" height="194" rx="8" fill="rgba(30,64,175,0.07)"/>
+        <text class="ztitle" x="113" y="26" text-anchor="middle">CUSTOMER TRUST ZONE</text>
+        <text class="ztitle" x="450" y="26" text-anchor="middle">api.anthropic.com</text>
+        <text class="ztitle" x="765" y="26" text-anchor="middle">STORAGE (or ZDR=none)</text>
+        <line class="boundary" x1="259" y1="14" x2="259" y2="196"/>
+        <text class="blab" x="259" y="200" text-anchor="middle">prompt = boundary</text>
+        <rect class="box b-user" x="22" y="58" width="178" height="48" rx="9"/>
+        <text class="lbl" x="111" y="77" text-anchor="middle">Your app / VPC</text>
+        <text class="sub" x="111" y="94" text-anchor="middle">DBs + source stay</text>
+        <rect class="box b-user" x="22" y="130" width="178" height="48" rx="9"/>
+        <text class="lbl" x="111" y="150" text-anchor="middle">Builds prompt</text>
+        <text class="sub" x="111" y="167" text-anchor="middle">retrieve only what's needed</text>
+        <rect class="box b-claude" x="330" y="92" width="180" height="58" rx="9"/>
+        <text class="lbl" x="420" y="114" text-anchor="middle" font-weight="700">Inference</text>
+        <text class="sub" x="420" y="132" text-anchor="middle">inference_geo: global / us</text>
+        <rect class="box b-store" x="670" y="92" width="190" height="58" rx="9"/>
+        <text class="lbl" x="765" y="114" text-anchor="middle">30-day logs</text>
+        <text class="sub" x="765" y="132" text-anchor="middle">ZDR removes the window</text>
+        <path class="flow" d="M200,120 L326,120" marker-end="url(#ar5)"/>
+        <text class="flab" x="262" y="112" text-anchor="middle">prompt + tools + files</text>
+        <path class="flow dash" d="M510,134 Q590,165 668,140" marker-end="url(#ar5)"/>
+      </svg>
+    </div>
+    <div class="meta">
+      <div class="cell"><h4>Surface</h4><div class="v">First-party API</div></div>
+      <div class="cell"><h4>No-train</h4><div class="v yes">Yes (default)</div></div>
+      <div class="cell"><h4>Retention</h4><div class="v">30-day, or none under ZDR</div></div>
+      <div class="cell"><h4>ZDR</h4><div class="v yes">Eligible (Messages)</div></div>
+      <div class="cell"><h4>Residency</h4><div class="v">inference_geo + workspace geo</div></div>
+      <div class="cell"><h4>BAA</h4><div class="v yes">Covered</div></div>
+    </div>
+    <div class="bites"><b>Where it bites:</b> <code>inference_geo:"us"</code> controls where the model <em>runs</em>; workspace geo controls where data is <em>stored</em>. Both must be set for end-to-end US-only. T&amp;S classifier scores persist 7 years even under ZDR.</div>
+    <div class="companions">Trace: <a href="governance-overlay.html">governance-overlay.md</a> §1 (data flow), §3 (ZDR), §5 (residency), §11 (retention).</div>
+  </div>
+
+  <!-- 6. FILES API -->
+  <div class="feature">
+    <h2>6. Files API<span class="surf api">First-party API</span></h2>
+    <div class="stack-line">a <strong>copy</strong> of the file lives at Anthropic until you delete it — longer than 30 days</div>
+    <div class="diagram">
+      <svg viewBox="0 0 900 200" xmlns="http://www.w3.org/2000/svg">
+        <defs><marker id="ar6" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0,1 L9,5 L0,9 L2,5 z" fill="#2a2017"/></marker></defs>
+        <rect class="zone" x="8" y="8" width="210" height="184" rx="8" fill="rgba(21,128,61,0.08)"/>
+        <rect class="zone" x="300" y="8" width="300" height="184" rx="8" fill="rgba(124,94,72,0.08)"/>
+        <rect class="zone" x="640" y="8" width="250" height="184" rx="8" fill="rgba(30,64,175,0.07)"/>
+        <text class="ztitle" x="113" y="26" text-anchor="middle">CUSTOMER TRUST ZONE</text>
+        <text class="ztitle" x="450" y="26" text-anchor="middle">ANTHROPIC PROCESSING</text>
+        <text class="ztitle" x="765" y="26" text-anchor="middle">FILES STORE (user-controlled)</text>
+        <line class="boundary" x1="259" y1="14" x2="259" y2="186"/>
+        <text class="blab" x="259" y="190" text-anchor="middle">upload = boundary</text>
+        <rect class="box b-user" x="28" y="78" width="168" height="56" rx="9"/>
+        <text class="lbl" x="112" y="100" text-anchor="middle">Original file</text>
+        <text class="sub" x="112" y="118" text-anchor="middle">stays in your storage</text>
+        <rect class="box b-claude" x="330" y="78" width="180" height="56" rx="9"/>
+        <text class="lbl" x="420" y="100" text-anchor="middle" font-weight="700">Referenced in calls</text>
+        <text class="sub" x="420" y="118" text-anchor="middle">reused across requests</text>
+        <rect class="box b-store" x="670" y="78" width="190" height="56" rx="9"/>
+        <text class="lbl" x="765" y="100" text-anchor="middle">Files store</text>
+        <text class="sub" x="765" y="118" text-anchor="middle">until explicit delete</text>
+        <path class="flow" d="M198,100 Q420,60 668,96" marker-end="url(#ar6)"/>
+        <text class="flab" x="430" y="66" text-anchor="middle">copy uploaded</text>
+        <path class="flow dash" d="M420,134 L420,150"/>
+        <text class="flab" x="470" y="150" text-anchor="middle">read at call time</text>
+      </svg>
+    </div>
+    <div class="meta">
+      <div class="cell"><h4>Surface</h4><div class="v">First-party API</div></div>
+      <div class="cell"><h4>No-train</h4><div class="v yes">Yes (default)</div></div>
+      <div class="cell"><h4>Retention</h4><div class="v warn">Until you delete (not 30-day)</div></div>
+      <div class="cell"><h4>ZDR</h4><div class="v">Per eligibility table</div></div>
+      <div class="cell"><h4>Residency</h4><div class="v">Workspace geo (at rest)</div></div>
+      <div class="cell"><h4>BAA</h4><div class="v no">Not covered (API)</div></div>
+    </div>
+    <div class="bites"><b>Where it bites:</b> Files API is <b>excluded from HIPAA-ready API use</b> — don't route PHI file uploads through it. Separately, its content lives <b>longer than the 30-day default</b> (persists until you call delete), so your GDPR erasure + retention drills must reach the Files store explicitly.</div>
+    <div class="companions">Trace: <a href="governance-overlay.html">governance-overlay.md</a> §1 (Files upload row), §11 (Files retention = until delete).</div>
+  </div>
+
+  <!-- 7. MEMORY TOOL -->
+  <div class="feature">
+    <h2>7. Memory tool<span class="surf api">First-party API</span></h2>
+    <div class="stack-line">memory blobs persist in a <strong>client-side</strong> store you host — only the read-back into each prompt crosses</div>
+    <div class="diagram">
+      <svg viewBox="0 0 900 200" xmlns="http://www.w3.org/2000/svg">
+        <defs><marker id="ar7" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0,1 L9,5 L0,9 L2,5 z" fill="#2a2017"/></marker></defs>
+        <rect class="zone" x="8" y="8" width="210" height="184" rx="8" fill="rgba(21,128,61,0.08)"/>
+        <rect class="zone" x="300" y="8" width="300" height="184" rx="8" fill="rgba(124,94,72,0.08)"/>
+        <rect class="zone" x="640" y="8" width="250" height="184" rx="8" fill="rgba(21,128,61,0.07)"/>
+        <text class="ztitle" x="113" y="26" text-anchor="middle">CUSTOMER TRUST ZONE</text>
+        <text class="ztitle" x="450" y="26" text-anchor="middle">ANTHROPIC PROCESSING</text>
+        <text class="ztitle" x="765" y="26" text-anchor="middle">CLIENT-SIDE MEMORY (you host)</text>
+        <line class="boundary" x1="259" y1="14" x2="259" y2="186"/>
+        <text class="blab" x="259" y="190" text-anchor="middle">prompt = boundary</text>
+        <rect class="box b-user" x="28" y="78" width="168" height="56" rx="9"/>
+        <text class="lbl" x="112" y="100" text-anchor="middle">Agent loop</text>
+        <text class="sub" x="112" y="118" text-anchor="middle">writes / reads memory</text>
+        <rect class="box b-claude" x="330" y="78" width="180" height="56" rx="9"/>
+        <text class="lbl" x="420" y="100" text-anchor="middle" font-weight="700">Memory ops</text>
+        <text class="sub" x="420" y="118" text-anchor="middle">read / write / delete</text>
+        <rect class="box b-store" x="670" y="78" width="190" height="56" rx="9"/>
+        <text class="lbl" x="765" y="100" text-anchor="middle">Memory blobs</text>
+        <text class="sub" x="765" y="118" text-anchor="middle">client-side · you control</text>
+        <path class="flow" d="M198,106 L326,106" marker-end="url(#ar7)"/>
+        <path class="flow" d="M510,100 L668,100" marker-end="url(#ar7)"/>
+        <path class="flow dash" d="M668,118 L510,118" marker-end="url(#ar7)"/>
+        <text class="flab" x="589" y="138" text-anchor="middle">read back next session</text>
+      </svg>
+    </div>
+    <div class="meta">
+      <div class="cell"><h4>Surface</h4><div class="v">First-party API</div></div>
+      <div class="cell"><h4>No-train</h4><div class="v yes">Yes (default)</div></div>
+      <div class="cell"><h4>Retention</h4><div class="v warn">Until you delete (you control)</div></div>
+      <div class="cell"><h4>ZDR</h4><div class="v">Per eligibility table</div></div>
+      <div class="cell"><h4>Residency</h4><div class="v">Client-side (you host)</div></div>
+      <div class="cell"><h4>BAA</h4><div class="v yes">Covered</div></div>
+    </div>
+    <div class="bites"><b>Where it bites:</b> memory is <b>persistent by design</b> — it survives the request and the 30-day window. Anything an agent writes to memory is your responsibility to scope, audit, and delete. Treat it like a database you own.</div>
+    <div class="companions">Trace: <a href="governance-overlay.html">governance-overlay.md</a> §1 (Memory row), §11 (memory retention = until delete).</div>
+  </div>
+
+  <!-- 8. PROMPT CACHING -->
+  <div class="feature">
+    <h2>8. Prompt caching<span class="surf api">First-party API</span></h2>
+    <div class="stack-line">a cached prefix is held for a short TTL, then evicted — the shortest-lived store</div>
+    <div class="diagram">
+      <svg viewBox="0 0 900 200" xmlns="http://www.w3.org/2000/svg">
+        <defs><marker id="ar8" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0,1 L9,5 L0,9 L2,5 z" fill="#2a2017"/></marker></defs>
+        <rect class="zone" x="8" y="8" width="210" height="184" rx="8" fill="rgba(21,128,61,0.08)"/>
+        <rect class="zone" x="300" y="8" width="300" height="184" rx="8" fill="rgba(124,94,72,0.08)"/>
+        <rect class="zone" x="640" y="8" width="250" height="184" rx="8" fill="rgba(30,64,175,0.07)"/>
+        <text class="ztitle" x="113" y="26" text-anchor="middle">CUSTOMER TRUST ZONE</text>
+        <text class="ztitle" x="450" y="26" text-anchor="middle">ANTHROPIC PROCESSING</text>
+        <text class="ztitle" x="765" y="26" text-anchor="middle">CACHE (5min / 1h TTL)</text>
+        <line class="boundary" x1="259" y1="14" x2="259" y2="186"/>
+        <text class="blab" x="259" y="190" text-anchor="middle">prompt = boundary</text>
+        <rect class="box b-user" x="28" y="78" width="168" height="56" rx="9"/>
+        <text class="lbl" x="112" y="100" text-anchor="middle">Stable prefix</text>
+        <text class="sub" x="112" y="118" text-anchor="middle">system + tools + docs</text>
+        <rect class="box b-claude" x="330" y="78" width="180" height="56" rx="9"/>
+        <text class="lbl" x="420" y="100" text-anchor="middle" font-weight="700">Inference</text>
+        <text class="sub" x="420" y="118" text-anchor="middle">reuses cached prefix</text>
+        <rect class="box b-store" x="670" y="78" width="190" height="56" rx="9"/>
+        <text class="lbl" x="765" y="100" text-anchor="middle">Cache entry</text>
+        <text class="sub" x="765" y="118" text-anchor="middle">evicted after TTL</text>
+        <path class="flow" d="M198,106 L326,106" marker-end="url(#ar8)"/>
+        <path class="flow" d="M510,100 L668,100" marker-end="url(#ar8)"/>
+        <path class="flow dash" d="M668,118 L510,118" marker-end="url(#ar8)"/>
+        <text class="flab" x="589" y="138" text-anchor="middle">reused within TTL</text>
+      </svg>
+    </div>
+    <div class="meta">
+      <div class="cell"><h4>Surface</h4><div class="v">First-party API</div></div>
+      <div class="cell"><h4>No-train</h4><div class="v yes">Yes (default)</div></div>
+      <div class="cell"><h4>Retention</h4><div class="v">Cache TTL: 5 min or 1 h</div></div>
+      <div class="cell"><h4>ZDR</h4><div class="v">Covered feature</div></div>
+      <div class="cell"><h4>Residency</h4><div class="v">Workspace geo</div></div>
+      <div class="cell"><h4>BAA</h4><div class="v yes">Covered</div></div>
+    </div>
+    <div class="bites"><b>Where it bites:</b> caching is a real (short-lived) store — the cached prefix is held server-side for the TTL. Not a leak concern under no-train + ZDR, but it's a storage surface a strict residency review should still acknowledge.</div>
+    <div class="companions">Trace: <a href="governance-overlay.html">governance-overlay.md</a> §4 (prompt caching = BAA-covered) · <a href="../docs/feature-inventory.html">feature-inventory.md</a> (cache TTLs).</div>
+  </div>
+
+  <!-- 9. WEB SEARCH -->
+  <div class="feature">
+    <h2>9. Web search tool<span class="surf api">First-party API</span></h2>
+    <div class="stack-line">the query <strong>leaves Anthropic for the open web</strong> — an egress boundary, not just a storage one</div>
+    <div class="diagram">
+      <svg viewBox="0 0 900 200" xmlns="http://www.w3.org/2000/svg">
+        <defs><marker id="ar9" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0,1 L9,5 L0,9 L2,5 z" fill="#2a2017"/></marker></defs>
+        <rect class="zone" x="8" y="8" width="180" height="184" rx="8" fill="rgba(21,128,61,0.08)"/>
+        <rect class="zone" x="250" y="8" width="240" height="184" rx="8" fill="rgba(124,94,72,0.08)"/>
+        <rect class="zone" x="640" y="8" width="250" height="184" rx="8" fill="rgba(154,52,18,0.08)"/>
+        <text class="ztitle" x="98" y="26" text-anchor="middle">CUSTOMER</text>
+        <text class="ztitle" x="370" y="26" text-anchor="middle">ANTHROPIC PROCESSING</text>
+        <text class="ztitle" x="765" y="26" text-anchor="middle">THIRD-PARTY WEB</text>
+        <line class="boundary" x1="219" y1="14" x2="219" y2="186"/>
+        <text class="blab" x="219" y="190" text-anchor="middle">prompt</text>
+        <line class="boundary" x1="565" y1="14" x2="565" y2="186"/>
+        <text class="blab" x="565" y="190" text-anchor="middle">egress!</text>
+        <rect class="box b-user" x="22" y="78" width="150" height="56" rx="9"/>
+        <text class="lbl" x="97" y="100" text-anchor="middle">Prompt</text>
+        <text class="sub" x="97" y="118" text-anchor="middle">needs fresh info</text>
+        <rect class="box b-claude" x="280" y="78" width="180" height="56" rx="9"/>
+        <text class="lbl" x="370" y="100" text-anchor="middle" font-weight="700">Claude</text>
+        <text class="sub" x="370" y="118" text-anchor="middle">forms a search query</text>
+        <rect class="box b-out" x="670" y="78" width="190" height="56" rx="9"/>
+        <text class="lbl" x="765" y="100" text-anchor="middle">Open web</text>
+        <text class="sub" x="765" y="118" text-anchor="middle">3rd-party results</text>
+        <path class="flow" d="M172,106 L276,106" marker-end="url(#ar9)"/>
+        <path class="flow" d="M460,106 L668,106" marker-end="url(#ar9)"/>
+        <text class="flab" x="560" y="98" text-anchor="middle">query leaves</text>
+        <path class="flow dash" d="M668,124 L460,124" marker-end="url(#ar9)"/>
+        <text class="flab" x="560" y="142" text-anchor="middle">results return</text>
+      </svg>
+    </div>
+    <div class="meta">
+      <div class="cell"><h4>Surface</h4><div class="v">First-party API</div></div>
+      <div class="cell"><h4>No-train</h4><div class="v yes">Yes (default)</div></div>
+      <div class="cell"><h4>Retention</h4><div class="v">Prompt: 30-day / ZDR</div></div>
+      <div class="cell"><h4>ZDR</h4><div class="v">Per eligibility table</div></div>
+      <div class="cell"><h4>Residency</h4><div class="v no">Egress not geo-bound</div></div>
+      <div class="cell"><h4>BAA</h4><div class="v yes">Covered (search)</div></div>
+    </div>
+    <div class="bites"><b>Where it bites:</b> the model's search query <b>egresses to the third-party web</b> — residency controls don't bound where that goes. Note the distinct <b>web fetch tool is NOT BAA-covered</b>, and web search's <em>dynamic filtering</em> sub-feature is not ZDR/HIPAA-eligible. For PHI workloads, treat web search as a data-exfil surface and gate it.</div>
+    <div class="companions">Trace: <a href="governance-overlay.html">governance-overlay.md</a> §4 (web search covered, web fetch not), §5 (residency limits).</div>
+  </div>
+
+  <!-- 10. CODE EXECUTION TOOL (API) -->
+  <div class="feature">
+    <h2>10. Code execution tool<span class="surf api">First-party API</span></h2>
+    <div class="stack-line"><strong>NOT BAA-covered on the API · network access excluded</strong> — the surface-split twin of #4</div>
+    <div class="diagram">
+      <svg viewBox="0 0 900 200" xmlns="http://www.w3.org/2000/svg">
+        <defs><marker id="ar10" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0,1 L9,5 L0,9 L2,5 z" fill="#2a2017"/></marker></defs>
+        <rect class="zone" x="8" y="8" width="210" height="184" rx="8" fill="rgba(21,128,61,0.08)"/>
+        <rect class="zone" x="300" y="8" width="320" height="184" rx="8" fill="rgba(124,94,72,0.08)"/>
+        <rect class="zone" x="660" y="8" width="230" height="184" rx="8" fill="rgba(154,52,18,0.06)"/>
+        <text class="ztitle" x="113" y="26" text-anchor="middle">CUSTOMER TRUST ZONE</text>
+        <text class="ztitle" x="460" y="26" text-anchor="middle">ISOLATED SANDBOX (no network)</text>
+        <text class="ztitle" x="775" y="26" text-anchor="middle">NETWORK — BLOCKED</text>
+        <line class="boundary" x1="259" y1="14" x2="259" y2="186"/>
+        <text class="blab" x="259" y="190" text-anchor="middle">prompt = boundary</text>
+        <rect class="box b-user" x="28" y="78" width="168" height="56" rx="9"/>
+        <text class="lbl" x="112" y="100" text-anchor="middle">Data + code ask</text>
+        <text class="sub" x="112" y="118" text-anchor="middle">analyze, compute</text>
+        <rect class="box b-claude" x="345" y="78" width="200" height="56" rx="9"/>
+        <text class="lbl" x="445" y="100" text-anchor="middle" font-weight="700">Sandbox VM</text>
+        <text class="sub" x="445" y="118" text-anchor="middle">ephemeral, no egress</text>
+        <rect class="box b-out" x="690" y="78" width="170" height="56" rx="9" stroke-dasharray="5 4"/>
+        <text class="lbl" x="775" y="100" text-anchor="middle">Internet</text>
+        <text class="sub" x="775" y="118" text-anchor="middle">excluded under BAA</text>
+        <path class="flow" d="M198,106 L341,106" marker-end="url(#ar10)"/>
+        <path class="flow dash" d="M545,106 L686,106"/>
+        <line x1="600" y1="92" x2="630" y2="120" class="boundary"/>
+        <line x1="630" y1="92" x2="600" y2="120" class="boundary"/>
+      </svg>
+    </div>
+    <div class="meta">
+      <div class="cell"><h4>Surface</h4><div class="v">First-party API</div></div>
+      <div class="cell"><h4>No-train</h4><div class="v yes">Yes (default)</div></div>
+      <div class="cell"><h4>Retention</h4><div class="v">Sandbox ephemeral</div></div>
+      <div class="cell"><h4>ZDR</h4><div class="v">Per eligibility table</div></div>
+      <div class="cell"><h4>Residency</h4><div class="v">Workspace geo (processing)</div></div>
+      <div class="cell"><h4>BAA</h4><div class="v no">Not covered (API)</div></div>
+    </div>
+    <div class="bites"><b>Where it bites:</b> the API <b>code execution tool is not BAA-covered, and network access is excluded even where the surrounding feature is covered.</b> The Bash tool <em>is</em> covered; file creation on the <em>product</em> surface (#4) <em>is</em> covered. Three near-identical-sounding capabilities, three different verdicts — read the §4 tables, don't generalize.</div>
+    <div class="companions">Trace: <a href="governance-overlay.html">governance-overlay.md</a> §4 (API table: code exec "Not covered", network excluded; Bash "Covered").</div>
+  </div>
+
+  <!-- 11. MCP / AGENT SDK -->
+  <div class="feature">
+    <h2>11. MCP / Agent SDK<span class="surf api">API + your infra</span></h2>
+    <div class="stack-line">tool I/O crosses into <strong>your own external systems</strong> — the BAA does not follow it there</div>
+    <div class="diagram">
+      <svg viewBox="0 0 900 200" xmlns="http://www.w3.org/2000/svg">
+        <defs><marker id="ar11" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0,1 L9,5 L0,9 L2,5 z" fill="#2a2017"/></marker></defs>
+        <rect class="zone" x="8" y="8" width="200" height="184" rx="8" fill="rgba(124,94,72,0.08)"/>
+        <rect class="zone" x="350" y="8" width="540" height="184" rx="8" fill="rgba(154,52,18,0.07)"/>
+        <text class="ztitle" x="108" y="26" text-anchor="middle">ANTHROPIC PROCESSING</text>
+        <text class="ztitle" x="620" y="26" text-anchor="middle">YOUR INFRASTRUCTURE (you govern)</text>
+        <line class="boundary" x1="280" y1="14" x2="280" y2="186"/>
+        <text class="blab" x="280" y="190" text-anchor="middle">tool call = your boundary</text>
+        <rect class="box b-claude" x="28" y="78" width="170" height="56" rx="9"/>
+        <text class="lbl" x="113" y="100" text-anchor="middle" font-weight="700">Claude</text>
+        <text class="sub" x="113" y="118" text-anchor="middle">emits tool input</text>
+        <rect class="box b-tool" x="370" y="78" width="180" height="56" rx="9"/>
+        <text class="lbl" x="460" y="100" text-anchor="middle">Your MCP server</text>
+        <text class="sub" x="460" y="118" text-anchor="middle">runs in your trust zone</text>
+        <rect class="box b-store" x="680" y="78" width="180" height="56" rx="9"/>
+        <text class="lbl" x="770" y="100" text-anchor="middle">Your DB / API</text>
+        <text class="sub" x="770" y="118" text-anchor="middle">creds + records stay</text>
+        <path class="flow" d="M198,106 L366,106" marker-end="url(#ar11)"/>
+        <text class="flab" x="280" y="98" text-anchor="middle">tool input</text>
+        <path class="flow" d="M550,106 L676,106" marker-end="url(#ar11)"/>
+        <path class="flow dash" d="M676,124 L550,124" marker-end="url(#ar11)"/>
+        <text class="flab" x="613" y="142" text-anchor="middle">only retrieved rows return</text>
+      </svg>
+    </div>
+    <div class="meta">
+      <div class="cell"><h4>Surface</h4><div class="v">API + your systems</div></div>
+      <div class="cell"><h4>No-train</h4><div class="v yes">Yes (Anthropic side)</div></div>
+      <div class="cell"><h4>Retention</h4><div class="v">Tool I/O follows API; rest is yours</div></div>
+      <div class="cell"><h4>ZDR</h4><div class="v">Anthropic side only</div></div>
+      <div class="cell"><h4>Residency</h4><div class="v">Your infra + API geo</div></div>
+      <div class="cell"><h4>BAA</h4><div class="v no">Does NOT extend to your MCP</div></div>
+    </div>
+    <div class="bites"><b>Where it bites:</b> the BAA covers Anthropic's surface, <b>not your MCP servers or the data they fetch</b>. Tool internals (DB credentials, the full record set) stay in your zone — but whatever the tool <em>returns</em> enters the prompt and crosses to Anthropic. Retrieve narrowly; the MCP server is your compliance responsibility.</div>
+    <div class="companions">Trace: <a href="governance-overlay.html">governance-overlay.md</a> §1 (Agent SDK / MCP row), §4 ("BAA does not extend to your MCP servers").</div>
+  </div>
+
+  <!-- =================================================================== -->
+  <div class="sec-h">C · Procurement-routed</div>
+  <div class="sec-sub">When you buy Claude through a hyperscaler, the region and the BAA are <strong>theirs</strong>, not Anthropic's.</div>
+
+  <!-- 12. BEDROCK / VERTEX -->
+  <div class="feature">
+    <h2>12. Bedrock / Vertex<span class="surf proc">Procurement path</span></h2>
+    <div class="stack-line">same prompt content, but processed in <strong>your AWS/GCP region</strong> under <strong>their</strong> BAA</div>
+    <div class="diagram">
+      <svg viewBox="0 0 900 200" xmlns="http://www.w3.org/2000/svg">
+        <defs><marker id="ar12" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0,1 L9,5 L0,9 L2,5 z" fill="#2a2017"/></marker></defs>
+        <rect class="zone" x="8" y="8" width="210" height="184" rx="8" fill="rgba(21,128,61,0.08)"/>
+        <rect class="zone" x="300" y="8" width="590" height="184" rx="8" fill="rgba(154,52,18,0.07)"/>
+        <text class="ztitle" x="113" y="26" text-anchor="middle">CUSTOMER TRUST ZONE</text>
+        <text class="ztitle" x="595" y="26" text-anchor="middle">HYPERSCALER REGION (AWS / GCP — their BAA)</text>
+        <line class="boundary" x1="259" y1="14" x2="259" y2="186"/>
+        <text class="blab" x="259" y="190" text-anchor="middle">prompt = boundary</text>
+        <rect class="box b-user" x="28" y="78" width="168" height="56" rx="9"/>
+        <text class="lbl" x="112" y="100" text-anchor="middle">Your app</text>
+        <text class="sub" x="112" y="118" text-anchor="middle">same prompt content</text>
+        <rect class="box b-tool" x="330" y="78" width="200" height="56" rx="9"/>
+        <text class="lbl" x="430" y="100" text-anchor="middle" font-weight="700">Bedrock / Vertex</text>
+        <text class="sub" x="430" y="118" text-anchor="middle">region YOU choose</text>
+        <rect class="box b-claude" x="610" y="78" width="200" height="56" rx="9"/>
+        <text class="lbl" x="710" y="100" text-anchor="middle">Claude (hosted)</text>
+        <text class="sub" x="710" y="118" text-anchor="middle">model-version lag possible</text>
+        <path class="flow" d="M198,106 L326,106" marker-end="url(#ar12)"/>
+        <path class="flow" d="M530,106 L606,106" marker-end="url(#ar12)"/>
+      </svg>
+    </div>
+    <div class="meta">
+      <div class="cell"><h4>Surface</h4><div class="v">Bedrock / Vertex</div></div>
+      <div class="cell"><h4>No-train</h4><div class="v yes">Yes (via their agreement)</div></div>
+      <div class="cell"><h4>Retention</h4><div class="v">Per hyperscaler policy</div></div>
+      <div class="cell"><h4>ZDR</h4><div class="v">Via their terms</div></div>
+      <div class="cell"><h4>Residency</h4><div class="v warn">AWS/GCP region (not inference_geo)</div></div>
+      <div class="cell"><h4>BAA</h4><div class="v warn">Their BAA, not Anthropic's</div></div>
+    </div>
+    <div class="bites"><b>Where it bites:</b> do <b>not</b> assume Bedrock/Vertex inherit Anthropic's BAA, no-train, or <code>inference_geo</code> semantics. Region is governed by your AWS/GCP region choice; HIPAA coverage runs through the hyperscaler's BAA. Paper the path you actually deploy on.</div>
+    <div class="companions">Trace: <a href="governance-overlay.html">governance-overlay.md</a> §1 (Bedrock/Vertex rows), §4 (own BAA paths), §5 (region, not inference_geo).</div>
+  </div>
+
+  <!-- =================================================================== -->
+  <div class="sec-h">Coverage table — the Enterprise-relevant feature set</div>
+  <div class="sec-sub">The 12 diagrams above cover the distinct boundary stories. This table catches the rest (Bash, Batch, Computer use, Web fetch, Advisor) and gives the per-feature verdict at a glance. BAA verdicts assume an activated + signed Enterprise/API BAA — and several API tools are explicitly <strong>not</strong> covered.</div>
+  <table class="cov">
+    <thead><tr><th>Feature</th><th>Surface</th><th>Crosses to</th><th>Retention</th><th>ZDR</th><th>Residency</th><th>BAA</th></tr></thead>
+    <tbody>
+      <tr><td>Chat</td><td>Ent. product</td><td>Anthropic infer</td><td>30-day / custom</td><td class="no">No (UI)</td><td>Workspace geo</td><td class="yes">Covered</td></tr>
+      <tr><td>Projects</td><td>Ent. product</td><td>Anthropic + org share</td><td>While project lives</td><td class="no">No (UI)</td><td>Workspace geo</td><td class="yes">Covered</td></tr>
+      <tr><td>Artifacts</td><td>Ent. product</td><td>Sandboxed preview</td><td>30-day / custom</td><td class="no">No (UI)</td><td>Workspace geo</td><td class="yes">Covered</td></tr>
+      <tr><td>File creation / code exec (product)</td><td>Ent. product</td><td>Isolated VM</td><td>Per policy</td><td class="no">No (UI)</td><td>Workspace geo</td><td class="yes">Covered (excl. network)</td></tr>
+      <tr><td>Messages API</td><td>API</td><td>api.anthropic.com</td><td>30-day / ZDR</td><td class="yes">Eligible</td><td>inference_geo + ws</td><td class="yes">Covered</td></tr>
+      <tr><td>Files API</td><td>API</td><td>Files store</td><td>Until delete</td><td>Per table</td><td>Workspace geo</td><td class="no">Not covered</td></tr>
+      <tr><td>Memory tool</td><td>API</td><td>Memory store</td><td>Until delete</td><td>Per table</td><td>Workspace geo</td><td class="yes">Covered</td></tr>
+      <tr><td>Prompt caching</td><td>API</td><td>Cache (TTL)</td><td>5 min / 1 h</td><td>Covered</td><td>Workspace geo</td><td class="yes">Covered</td></tr>
+      <tr><td>Web search</td><td>API</td><td class="no">Third-party web</td><td>Prompt: 30-day/ZDR</td><td>Per table</td><td class="no">Egress unbound</td><td class="yes">Covered</td></tr>
+      <tr><td>Code execution tool</td><td>API</td><td>Isolated VM (no net)</td><td>Ephemeral</td><td>Per table</td><td>Workspace geo</td><td class="no">Not covered</td></tr>
+      <tr><td>Bash tool</td><td>API</td><td>Isolated VM</td><td>Ephemeral</td><td>Per table</td><td>Workspace geo</td><td class="yes">Covered</td></tr>
+      <tr><td>MCP / Agent SDK</td><td>API + yours</td><td class="no">Your external systems</td><td>Yours</td><td>Anthropic side</td><td>Your infra</td><td class="no">Not on your MCP</td></tr>
+      <tr><td>Bedrock / Vertex</td><td>Procurement</td><td>Hyperscaler region</td><td>Per hyperscaler</td><td>Their terms</td><td class="warn">Their region</td><td class="warn">Their BAA</td></tr>
+      <tr><td>Batch API</td><td>API</td><td>Batch store</td><td>Per policy — verify</td><td>Per table</td><td>Workspace geo</td><td class="no">Not covered</td></tr>
+      <tr><td>Computer use 2.0</td><td>API (beta)</td><td>Anthropic infer</td><td>30-day / ZDR</td><td>Per table</td><td>Workspace geo</td><td class="no">Not covered</td></tr>
+      <tr><td>Web fetch tool</td><td>API</td><td class="no">Third-party web</td><td>30-day / ZDR</td><td>Per table</td><td class="no">Egress unbound</td><td class="no">Not covered</td></tr>
+      <tr><td>Advisor tool</td><td>API</td><td>Anthropic infer</td><td>30-day / ZDR</td><td class="yes">Eligible</td><td>Workspace geo</td><td class="no">Not covered</td></tr>
+    </tbody>
+  </table>
+
+  <div class="companions" style="margin-bottom:8px;">
+    <strong style="font-family:'Caveat',cursive; font-size:16px; color:var(--c1d);">Companions:</strong>
+    The compliance source of truth is <a href="governance-overlay.html">governance-overlay.md</a> (§1 data flow · §3 ZDR · §4 BAA · §5 residency · §11 retention). Pick a plan in <a href="subscription-selection-guide.html">subscription-selection-guide.md</a>; sequence surfaces in <a href="surface-rollout-matrix.html">surface-rollout-matrix.md</a>; feature status in <a href="../docs/feature-inventory.html">feature-inventory.md</a>.
+  </div>
+
+  <footer>
+    © gmanch94 · CC-BY-4.0 · As of 2026-06. Verify pricing/models at <a href="https://www.anthropic.com">anthropic.com</a>.<br>
+    Diagrams are boundary sketches, not a contract. The BAA's covered-feature tables and your signed agreement govern — verify at <a href="https://privacy.claude.com">privacy.claude.com</a> and <a href="https://trust.anthropic.com">trust.anthropic.com</a>.
+  </footer>
+</div>
+</body>
+</html>
