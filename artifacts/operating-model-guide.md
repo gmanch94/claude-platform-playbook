@@ -96,6 +96,7 @@ The test: if every team has to *ask* the platform team to ship, the road is too 
 - [`governance-overlay.md`](governance-overlay.md) — what Security/Risk is accountable for (§4 BAA, §9 audit, §14 safety).
 - [`procurement-pack.md`](procurement-pack.md) — the procurement RACI row, in execution detail.
 - [`workforce-change-guide.md`](workforce-change-guide.md) — the HR/People accountable row, in depth.
+- [`rollout-kickoff-kit.md`](rollout-kickoff-kit.md) — the RACI cast as a Week 0 → Week 4 swimlane: who **acts** when (this guide is who **decides**).
 
 ---
 
