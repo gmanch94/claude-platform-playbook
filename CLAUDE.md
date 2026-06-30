@@ -75,7 +75,8 @@ claude-platform-playbook/
     ├── maturity-model.md                L0→L4 self-locator · weakest-link self-assessment · one next-move per rung · routes by capability (spine routes by question)
     ├── operating-model-guide.md         Who owns Claude · shape choice (centralized/federated/hub-spoke CoE/CoP) + decision×role RACI + paved-road boundary · cross-refs playbook 3-function (not re-derived)
     ├── rollout-kickoff-kit.md           Who acts, in what order, first 30 days · persona × time swimlane (Week 0→4) + role quick-start (first artifact·deliverable·gate·failure mode) + between-lane handoff seams · persona-lensed first 30d of playbook (hands off Week 5)
-    └── user-mindset-cheatsheet.md       End-user week-1 handout · 7 before→after mindset shifts (direct-and-check · verify what it gets wrong · reach-first) each w/ its over-correction · daily task patterns by surface · always-verify list · data boundary · the practitioner-tier handout workforce-change names
+    ├── user-mindset-cheatsheet.md       End-user week-1 handout · 7 before→after mindset shifts (direct-and-check · verify what it gets wrong · reach-first) each w/ its over-correction · daily task patterns by surface · always-verify list · data boundary · the practitioner-tier handout workforce-change names
+    └── user-mindset-mindmap.html        Visual companion to the cheatsheet · 7 shifts as a one-glance radial mindmap (center: you direct & check, you own what ships) · reassurance banner + data-boundary strip · inline SVG, no JS, prints clean
 ```
 
 ## Working in this repo
@@ -90,7 +91,7 @@ claude-platform-playbook/
 
 ### When adding a new artifact
 
-Don't, without updating `docs/scope.md` first. The original scope agreed 8 artifacts; the repo currently ships 33 (all post-v1 additions are justified in `scope.md`). New artifacts need a written justification block in `scope.md` and a row in `feature-inventory.md`'s `Used in artifacts` column.
+Don't, without updating `docs/scope.md` first. The original scope agreed 8 artifacts; the repo currently ships 34 (all post-v1 additions are justified in `scope.md`). New artifacts need a written justification block in `scope.md` and a row in `feature-inventory.md`'s `Used in artifacts` column.
 
 ### When the model surface changes
 

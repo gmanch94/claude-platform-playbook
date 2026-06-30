@@ -1,0 +1,158 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>User Mindset Mindmap — How Your Work Changes with Claude</title>
+<style>
+  :root{
+    --ink:#2b2b2b; --muted:#8c8c8c; --new:#1f6f5c; --accent:#c2622d;
+    --trap:#9a5a12; --line2:#cdcabf;
+    --card:#ffffff; --cardbd:#e3dfd6; --bg:#faf8f4;
+    --hub:#fff3ea; --hubbd:#d8915f; --reassure:#eaf3ee; --reassurebd:#bcd8c8;
+    --boundary:#fbecec; --boundarybd:#e3b9b9; --boundaryink:#9e3636;
+    --badge:#c2622d;
+  }
+  *{box-sizing:border-box}
+  body{margin:0;background:var(--bg);color:var(--ink);
+    font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;
+    line-height:1.5;-webkit-font-smoothing:antialiased}
+  .wrap{max-width:1180px;margin:0 auto;padding:28px 22px 40px}
+  h1{font-size:25px;margin:0 0 4px;font-weight:700}
+  .sub{color:#5a5a5a;font-size:14px;margin:0 0 6px}
+  .asof{color:#777;font-size:12.5px;margin:0 0 18px}
+  .frame{font-size:14px;color:#444;margin:0 0 14px;max-width:880px}
+  .frame strong{color:var(--ink)}
+  svg{width:100%;height:auto;display:block;background:transparent}
+  .how{font-size:13px;color:#555;margin:16px 2px 0;max-width:900px}
+  .how b{color:var(--ink)}
+  .companion{font-size:13.5px;margin:18px 2px 0;padding-top:14px;border-top:1px solid #e7e3da;color:#444}
+  .companion a{color:var(--accent);text-decoration:none;font-weight:600}
+  .companion a:hover{text-decoration:underline}
+  footer{margin-top:22px;font-size:12px;color:#888;border-top:1px solid #e7e3da;padding-top:12px}
+  /* SVG type */
+  .t-old{fill:var(--muted);font-size:13px}
+  .t-new{fill:var(--new);font-size:16.5px;font-weight:700}
+  .t-trap{fill:var(--trap);font-size:12px}
+  .t-hub-k{fill:var(--accent);font-size:19px;font-weight:800;letter-spacing:.3px}
+  .t-hub-s{fill:#5a4636;font-size:13.5px}
+  .t-ribbon{fill:#fff;font-size:13px;font-weight:700}
+  .t-reassure{fill:#235c40;font-size:15px;font-weight:700}
+  .t-bound{fill:var(--boundaryink);font-size:13.5px;font-weight:600}
+  .t-badge{fill:#fff;font-size:13px;font-weight:700}
+  .conn{fill:none;stroke:var(--line2);stroke-width:2.4}
+  @media print{
+    body{background:#fff}
+    .wrap{max-width:none;padding:0}
+    .how,.companion,.frame{color:#000}
+    @page{margin:12mm}
+  }
+  @media (max-width:640px){ h1{font-size:21px} }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <h1>User Mindset Mindmap — How Your Work Changes with Claude</h1>
+  <p class="sub">The one-glance companion to the <strong>user-mindset cheatsheet</strong>. Same seven shifts, mapped to see at once. Print it, pin it.</p>
+  <p class="asof"><strong>As of 2026-06.</strong> Pin to current surface — refresh monthly.</p>
+  <p class="frame">Read the centre first, then the branches. <strong>The whole change is the middle box:</strong> you stop doing the task and start directing and checking it. Each branch is one reflex to shift — old habit on top, new habit in green. The small amber line is the trap if you swing too far; ignore it until you've made the basic shift.</p>
+
+  <svg viewBox="0 0 1180 880" role="img" aria-label="Mindmap of seven mindset shifts for using Claude, radiating from a central idea: you direct and check, Claude drafts, you own what ships.">
+    <!-- reassurance banner -->
+    <rect x="250" y="6" width="680" height="44" rx="22" fill="var(--reassure)" stroke="var(--reassurebd)"/>
+    <text x="590" y="33" text-anchor="middle" class="t-reassure">Changes WHAT you do — not WHETHER you're needed. The judgment is now yours.</text>
+
+    <!-- connectors (drawn first, behind cards) -->
+    <!-- left cards: hub left edge (470,440) to card right edge (290, cy) -->
+    <path class="conn" d="M470 440 C 400 440, 380 175, 290 175"/>
+    <path class="conn" d="M470 440 C 400 440, 360 440, 290 440"/>
+    <path class="conn" d="M470 440 C 400 440, 380 705, 290 705"/>
+    <!-- right cards: hub right edge (710,440) to card left edge (890, cy) -->
+    <path class="conn" d="M710 440 C 790 440, 800 150, 890 150"/>
+    <path class="conn" d="M710 440 C 790 440, 800 343, 890 343"/>
+    <path class="conn" d="M710 440 C 790 440, 800 537, 890 537"/>
+    <path class="conn" d="M710 440 C 790 440, 800 730, 890 730"/>
+
+    <!-- ===== central hub ===== -->
+    <rect x="470" y="356" width="240" height="168" rx="18" fill="var(--hub)" stroke="var(--hubbd)" stroke-width="2.5"/>
+    <text x="590" y="398" text-anchor="middle" class="t-hub-k">YOU DIRECT &amp; CHECK</text>
+    <text x="590" y="423" text-anchor="middle" class="t-hub-s">Claude drafts the work.</text>
+    <text x="590" y="442" text-anchor="middle" class="t-hub-s" style="font-weight:700;fill:#7a3f1c">You own what ships.</text>
+    <rect x="486" y="460" width="208" height="50" rx="9" fill="var(--accent)"/>
+    <text x="590" y="479" text-anchor="middle" class="t-ribbon">This week: take ONE task,</text>
+    <text x="590" y="497" text-anchor="middle" class="t-ribbon">do it with Claude, check it yourself.</text>
+
+    <!-- ===== LEFT CARDS (shifts 1-3) ===== -->
+    <!-- card 1 -->
+    <g>
+      <rect x="40" y="120" width="250" height="110" rx="13" fill="var(--card)" stroke="var(--cardbd)"/>
+      <circle cx="40" cy="120" r="15" fill="var(--badge)"/><text x="40" y="125" text-anchor="middle" class="t-badge">1</text>
+      <text x="60" y="151" class="t-old">Do the task myself</text>
+      <text x="60" y="178" class="t-new">Direct it &amp; check it</text>
+      <text x="60" y="206" class="t-trap">&#9888; don't rubber-stamp — you own it</text>
+    </g>
+    <!-- card 2 -->
+    <g>
+      <rect x="40" y="385" width="250" height="110" rx="13" fill="var(--card)" stroke="var(--cardbd)"/>
+      <circle cx="40" cy="385" r="15" fill="var(--badge)"/><text x="40" y="390" text-anchor="middle" class="t-badge">2</text>
+      <text x="60" y="416" class="t-old">Type a terse command</text>
+      <text x="60" y="443" class="t-new">Say what "good" looks like</text>
+      <text x="60" y="471" class="t-trap">&#9888; vague ask &#8594; wrong-shaped output</text>
+    </g>
+    <!-- card 3 -->
+    <g>
+      <rect x="40" y="650" width="250" height="110" rx="13" fill="var(--card)" stroke="var(--cardbd)"/>
+      <circle cx="40" cy="650" r="15" fill="var(--badge)"/><text x="40" y="655" text-anchor="middle" class="t-badge">3</text>
+      <text x="60" y="681" class="t-old">Expect a perfect first try</text>
+      <text x="60" y="708" class="t-new">Iterate in turns</text>
+      <text x="60" y="736" class="t-trap">&#9888; steer the near-miss, don't toss it</text>
+    </g>
+
+    <!-- ===== RIGHT CARDS (shifts 4-7) ===== -->
+    <!-- card 4 -->
+    <g>
+      <rect x="890" y="95" width="250" height="110" rx="13" fill="var(--card)" stroke="var(--cardbd)"/>
+      <circle cx="1140" cy="95" r="15" fill="var(--badge)"/><text x="1140" y="100" text-anchor="middle" class="t-badge">4</text>
+      <text x="910" y="126" class="t-old">Assume it knows my world</text>
+      <text x="910" y="153" class="t-new">Bring the context</text>
+      <text x="910" y="181" class="t-trap">&#9888; enough context — not everything</text>
+    </g>
+    <!-- card 5 -->
+    <g>
+      <rect x="890" y="288" width="250" height="110" rx="13" fill="var(--card)" stroke="var(--cardbd)"/>
+      <circle cx="1140" cy="288" r="15" fill="var(--badge)"/><text x="1140" y="293" text-anchor="middle" class="t-badge">5</text>
+      <text x="910" y="319" class="t-old">Send one giant ask</text>
+      <text x="910" y="346" class="t-new">Break it into steps</text>
+      <text x="910" y="374" class="t-trap">&#9888; mega-prompt hides which step broke</text>
+    </g>
+    <!-- card 6 -->
+    <g>
+      <rect x="890" y="482" width="250" height="110" rx="13" fill="var(--card)" stroke="var(--cardbd)"/>
+      <circle cx="1140" cy="482" r="15" fill="var(--badge)"/><text x="1140" y="487" text-anchor="middle" class="t-badge">6</text>
+      <text x="910" y="513" class="t-old">Trust it / distrust it</text>
+      <text x="910" y="540" class="t-new">Verify what it gets wrong</text>
+      <text x="910" y="568" class="t-trap">&#9888; calibrate — not blind faith or fear</text>
+    </g>
+    <!-- card 7 -->
+    <g>
+      <rect x="890" y="675" width="250" height="110" rx="13" fill="var(--card)" stroke="var(--cardbd)"/>
+      <circle cx="1140" cy="675" r="15" fill="var(--badge)"/><text x="1140" y="680" text-anchor="middle" class="t-badge">7</text>
+      <text x="910" y="706" class="t-old">Use it for all (or nothing)</text>
+      <text x="910" y="733" class="t-new">Reach first for the right task</text>
+      <text x="910" y="761" class="t-trap">&#9888; not where anti-use says no</text>
+    </g>
+
+    <!-- ===== boundary strip ===== -->
+    <rect x="120" y="812" width="940" height="46" rx="12" fill="var(--boundary)" stroke="var(--boundarybd)"/>
+    <text x="590" y="833" text-anchor="middle" class="t-bound">&#128721; Before you paste or connect: confirm your surface is cleared for the data — no PHI in Cowork.</text>
+    <text x="590" y="850" text-anchor="middle" class="t-bound" style="font-weight:500;font-size:12px">Not sure? Ask your governance owner first. Full detail in the cheatsheet.</text>
+  </svg>
+
+  <p class="how"><b>How to use it.</b> Hand it to someone in week one next to the cheatsheet — the map is the glance, the cheatsheet is the detail. The two things that have to land even at a glance are in the middle (you own what ships) and the bottom (the data boundary). Everything green is the direction to move.</p>
+
+  <p class="companion"><b>Companion:</b> the text version with the full daily-task patterns, the always-verify list, and the first-week plan is <a href="user-mindset-cheatsheet.html">user-mindset-cheatsheet.md</a>. For where <em>not</em> to reach for Claude (branch 7), see <a href="anti-use-cases.html">anti-use-cases.md</a>; for which surface you're cleared on, <a href="surface-rollout-matrix.html">surface-rollout-matrix.md</a>.</p>
+
+  <footer>&copy; gmanch94 &middot; CC-BY-4.0 &middot; As of 2026-06. Verify pricing/models at anthropic.com.</footer>
+</div>
+</body>
+</html>
