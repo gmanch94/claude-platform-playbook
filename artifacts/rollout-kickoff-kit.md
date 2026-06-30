@@ -76,6 +76,7 @@ Single-lane failure modes live in the [playbook's 8](adoption-playbook.md) and t
 - [`maturity-model.md`](maturity-model.md) — where you're starting from (a Week-0 input to the sponsor's mandate).
 - [`anti-use-cases.md`](anti-use-cases.md) + [`pilot-selection-worksheet.html`](pilot-selection-worksheet.html) — the Week-0 gates the transformation lead runs.
 - [`eval-starter-pack.md`](eval-starter-pack.md) — the baseline that gates go-live.
+- [`user-mindset-cheatsheet.md`](user-mindset-cheatsheet.md) — the one-page mindset handout the enablement lead deploys in their Week-0 → Week-4 lane; what you actually put in front of each user.
 
 ---
 
