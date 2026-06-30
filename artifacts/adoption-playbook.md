@@ -210,6 +210,7 @@ You can run a small adoption with 4–6 people. Larger orgs will scale each func
 
 ## Companion artifacts
 
+- [`rollout-kickoff-kit.md`](rollout-kickoff-kit.md) — this playbook's first 30 days as a **who-acts-when** swimlane across roles (Week 0 → Week 4), with the between-lane handoff seams; hands back here at Week 5
 - [`executive-briefing.html`](executive-briefing.html) — the 10-slide deck for sponsor + board
 - [`cost-calculator.html`](cost-calculator.html) — model your projected $/month
 - [`pilot-selection-worksheet.html`](pilot-selection-worksheet.html) — Week 0 use-case scoring (5 axes, ranked verdicts, blocker flags)
