@@ -4,13 +4,15 @@
 
 The one-page handout for the person actually using Claude. It's about *mindset*, not prompt mechanics: the few reflexes that have to change before the tool starts paying off for you. Read it once, then keep it where you'll see it. Print it, pin it, paste it in the team channel.
 
-> **The whole thing in one line:** you stop *doing* the task and start *directing and checking* it. Everything below is that shift, made concrete. The failure on every row is **over-correcting**: most people swing too far one way, so each shift names the trap on both sides.
+> **Start here — if you read nothing else.** This week, take one task you already do, do it *with* Claude, and check the result yourself before it goes anywhere. That's the shift in one move: **Claude drafts; you direct, check, and own what ships.** It changes *what* you do, not *whether* you're needed — the judgment is the part that's now yours.
 
 ---
 
 ## The seven shifts
 
-| Old reflex | New reflex | On Claude, that means | The over-correction to avoid |
+The basic shift is the box above. These seven reflexes turn it into a habit. Read the old→new shift and what it means on Claude first; treat the last column — the **trap if you overdo it** — as a caveat for once you're moving, not a step to take now.
+
+| Old reflex | New reflex | On Claude, that means | The trap if you overdo it |
 |---|---|---|---|
 | **Do the whole task yourself** | **Direct it, then check it** | Claude drafts; you edit and you stay accountable for what ships. Your value moves from typing to judging. | **Rubber-stamping** — you're accountable on paper but you stopped reading, so the mistake ships under your name and you never saw it. The "approve all" trap. |
 | **Type a terse command** | **Describe what "good" looks like** | Give the goal, the audience, the format, and one example of done-right — not step-by-step keystrokes. | **Vague ask, no success criteria** → confident output of the wrong shape, and you can't say why it's wrong. |
@@ -66,7 +68,7 @@ Know your sanctioned surface and what it's cleared for. **Don't put regulated, s
 
 1. **Pick one rote task** you do every week — a recurring report, a class of email, a cleanup job.
 2. **Do it with Claude this week**, then verify the output against how you'd have done it by hand. Compare honestly.
-3. **Keep the prompt that worked** and reuse it next week. One reliable habit beats ten experiments you never repeat.
+3. **Keep the prompt that worked**, reuse it next week — and keep checking the result each time, since the task (and the model) drift. One reliable habit beats ten experiments you never repeat.
 
 The goal of week one isn't to use Claude for everything. It's to move *one* task from "I do it" to "I direct and check it" — and feel the difference.
 
@@ -74,6 +76,7 @@ The goal of week one isn't to use Claude for everything. It's to move *one* task
 
 ## Companion artifacts
 
+- [`user-mindset-mindmap.html`](user-mindset-mindmap.html) — the one-glance **visual** version of this sheet: the same seven shifts as a mindmap, to pin on a wall or drop in a deck.
 - [`workforce-change-guide.md`](workforce-change-guide.md) — the CHRO/people strategy this is the user-facing handout for; this cheatsheet is its practitioner tier, made deployable.
 - [`claude-misconceptions.md`](claude-misconceptions.md) — the stale priors people arrive with ("it refuses everything," "it needs fine-tuning"); kill them alongside this.
 - [`anti-use-cases.md`](anti-use-cases.md) — where *not* to reach for Claude; the right-hand edge of shift seven.
