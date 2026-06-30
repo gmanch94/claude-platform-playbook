@@ -1,0 +1,228 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Claude Platform Playbook — User Mindset Cheatsheet</title>
+<style>
+  :root{
+    --ink:#2b2b2b; --muted:#8c8c8c; --new:#1a6e5a; --accent:#c2622d;
+    --trap:#9a5a12; --trapbg:#fbf3e6; --trapbd:#ecd9b3;
+    --newbg:#eef5f1; --newbd:#cfe4da;
+    --bg:#faf8f4; --card:#ffffff; --cardbd:#e3dfd6; --rule:#e7e3da;
+    --start:#fff3ea; --startbd:#d8915f;
+    --boundary:#fbecec; --boundarybd:#e3b9b9; --boundaryink:#9e3636;
+    --verify:#fff8ef; --verifybd:#e7c98f;
+    --surface:#2f6f8f; --surfacebg:#eaf2f6;
+  }
+  *{box-sizing:border-box}
+  body{margin:0;background:var(--bg);color:var(--ink);
+    font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;
+    line-height:1.55;-webkit-font-smoothing:antialiased;font-size:15px}
+  .wrap{max-width:1000px;margin:0 auto;padding:30px 24px 44px}
+  .brand{display:inline-block;font-size:12px;font-weight:700;text-transform:uppercase;letter-spacing:.8px;color:var(--accent);text-decoration:none;margin:0 0 12px;opacity:.85}
+  .brand:hover{opacity:1;text-decoration:underline}
+  h1{font-size:25px;margin:0 0 4px;font-weight:800;letter-spacing:-.2px}
+  h1 .acc{color:var(--accent)}
+  .asof{color:#777;font-size:12.5px;margin:0 0 16px}
+  .intro{font-size:15px;color:#444;margin:0 0 18px;max-width:760px}
+  h2{font-size:16px;margin:30px 0 10px;color:var(--accent);font-weight:800;
+    text-transform:uppercase;letter-spacing:.6px;border-bottom:2px solid var(--rule);padding-bottom:5px}
+  h2 .g{color:var(--boundaryink)}
+  a{color:var(--accent);text-decoration:none;font-weight:600}
+  a:hover{text-decoration:underline}
+  code{background:#f0ece4;padding:1px 5px;border-radius:4px;font-size:.9em;
+    font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace}
+  .note{font-size:14px;color:#555;margin:10px 2px 0}
+  /* Start-here box */
+  .start{background:var(--start);border:1px solid var(--startbd);border-left:6px solid var(--accent);
+    border-radius:10px;padding:14px 18px;margin:0 0 8px;font-size:15px}
+  .start .lead{color:var(--accent);font-weight:800;text-transform:uppercase;letter-spacing:.4px;font-size:13.5px}
+  .start strong{color:#7a3f1c}
+  /* tables */
+  table{border-collapse:collapse;width:100%;margin:6px 0 6px;font-size:14px}
+  th,td{text-align:left;vertical-align:top;padding:9px 12px;border-bottom:1px solid var(--rule)}
+  thead th{font-size:12px;text-transform:uppercase;letter-spacing:.5px;border-bottom:2px solid var(--cardbd)}
+  .shifts thead th:nth-child(1){color:var(--muted)}
+  .shifts thead th:nth-child(2){color:var(--new)}
+  .shifts thead th:nth-child(3){color:var(--ink)}
+  .shifts thead th:nth-child(4){color:var(--trap)}
+  .shifts td:nth-child(1){color:var(--muted);width:16%}
+  .shifts td:nth-child(1) strong{color:#6f6f6f}
+  .shifts td:nth-child(2){color:var(--new);width:18%}
+  .shifts td:nth-child(2) strong{color:var(--new)}
+  .shifts td:nth-child(3){width:34%}
+  .shifts td:nth-child(4){color:var(--trap);background:var(--trapbg);width:32%}
+  .shifts td:nth-child(4) strong{color:#7d4a0e}
+  .shifts tbody tr:hover td{background:#fcfbf8}
+  .shifts tbody tr:hover td:nth-child(4){background:#f7ecd7}
+  .arrow{color:var(--accent);font-weight:700}
+  .takeaway{font-size:14.5px;margin:10px 2px 0;color:#3a3a3a}
+  .takeaway strong{color:var(--new)}
+  /* daily patterns */
+  .daily td:nth-child(2){color:var(--new)}
+  .daily td:nth-child(4){white-space:nowrap}
+  .tag{display:inline-block;background:var(--surfacebg);color:var(--surface);
+    border:1px solid #cfe0e8;border-radius:5px;padding:1px 7px;font-size:12px;font-weight:600;margin:1px 2px 1px 0}
+  /* verify list */
+  .verify{background:var(--verify);border:1px solid var(--verifybd);border-left:6px solid var(--trap);
+    border-radius:10px;padding:6px 20px 10px;margin:6px 0}
+  .verify li{margin:7px 0}
+  .verify strong{color:#7d4a0e}
+  /* boundary */
+  .boundary{background:var(--boundary);border:1px solid var(--boundarybd);border-left:6px solid var(--boundaryink);
+    border-radius:10px;padding:8px 20px 12px;margin:6px 0}
+  .boundary strong{color:var(--boundaryink)}
+  .boundary .ask{font-weight:700;color:var(--boundaryink)}
+  /* first week */
+  ol.week{counter-reset:wk;list-style:none;padding-left:0;margin:6px 0}
+  ol.week li{position:relative;padding:6px 0 6px 40px;margin:2px 0}
+  ol.week li::before{counter-increment:wk;content:counter(wk);position:absolute;left:0;top:5px;
+    width:26px;height:26px;border-radius:50%;background:var(--accent);color:#fff;
+    font-weight:700;font-size:14px;display:flex;align-items:center;justify-content:center}
+  .companions li{margin:6px 0;font-size:14px}
+  footer{margin-top:26px;font-size:12px;color:#888;border-top:1px solid var(--rule);padding-top:12px}
+  @media (max-width:720px){
+    table,thead,tbody,th,td,tr{display:block}
+    thead{display:none}
+    .shifts td,.daily td{width:auto !important;border-bottom:none;padding:4px 12px}
+    .shifts tbody tr,.daily tbody tr{border:1px solid var(--cardbd);border-radius:8px;margin:8px 0;padding:6px 0;background:#fff}
+    .shifts td:nth-child(4){background:var(--trapbg);margin:4px 8px;border-radius:6px}
+    .shifts td::before,.daily td::before{content:attr(data-l);display:block;font-size:11px;
+      text-transform:uppercase;letter-spacing:.4px;color:#999;font-weight:700;margin-bottom:2px}
+  }
+  @media print{
+    body{background:#fff;font-size:11.5px}
+    .wrap{max-width:none;padding:0}
+    *{-webkit-print-color-adjust:exact;print-color-adjust:exact}
+    @page{margin:11mm}
+    h2{margin-top:16px}
+  }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <a class="brand" href="../">Claude Platform Playbook</a>
+  <h1>User Mindset Cheatsheet <span class="acc">— How Your Work Changes with Claude</span></h1>
+  <p class="asof"><strong>As of 2026-06.</strong> Pin to current surface — refresh monthly.</p>
+
+  <p class="intro">The one-page handout for the person actually using Claude. It's about <em>mindset</em>, not prompt mechanics: the few reflexes that have to change before the tool starts paying off for you. Read it once, then keep it where you'll see it. Print it, pin it, paste it in the team channel.</p>
+
+  <div class="start">
+    <span class="lead">Start here — if you read nothing else.</span> This week, take one task you already do, do it <em>with</em> Claude, and check the result yourself before it goes anywhere. That's the shift in one move: <strong>Claude drafts; you direct, check, and own what ships.</strong> It changes <em>what</em> you do, not <em>whether</em> you're needed — the judgment is the part that's now yours.
+  </div>
+
+  <h2>The seven shifts</h2>
+  <p class="note">The basic shift is the box above. These seven reflexes turn it into a habit. Read the <span style="color:var(--muted);font-weight:600">old</span><span class="arrow">&rarr;</span><span style="color:var(--new);font-weight:600">new</span> shift and what it means on Claude first; treat the last column — the <strong style="color:var(--trap)">trap if you overdo it</strong> — as a caveat for once you're moving, not a step to take now.</p>
+
+  <table class="shifts">
+    <thead>
+      <tr><th>Old reflex</th><th>New reflex</th><th>On Claude, that means</th><th>The trap if you overdo it</th></tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td data-l="Old reflex"><strong>Do the whole task yourself</strong></td>
+        <td data-l="New reflex"><strong>Direct it, then check it</strong></td>
+        <td data-l="On Claude">Claude drafts; you edit and you stay accountable for what ships. Your value moves from typing to judging.</td>
+        <td data-l="The trap"><strong>Rubber-stamping</strong> — you're accountable on paper but you stopped reading, so the mistake ships under your name and you never saw it. The "approve all" trap.</td>
+      </tr>
+      <tr>
+        <td data-l="Old reflex"><strong>Type a terse command</strong></td>
+        <td data-l="New reflex"><strong>Describe what "good" looks like</strong></td>
+        <td data-l="On Claude">Give the goal, the audience, the format, and one example of done-right — not step-by-step keystrokes.</td>
+        <td data-l="The trap"><strong>Vague ask, no success criteria</strong> <span class="arrow">&rarr;</span> confident output of the wrong shape, and you can't say why it's wrong.</td>
+      </tr>
+      <tr>
+        <td data-l="Old reflex"><strong>Expect a perfect first answer</strong></td>
+        <td data-l="New reflex"><strong>Treat the first reply as a draft and steer</strong></td>
+        <td data-l="On Claude">It's a conversation. Correct it, narrow it, add a constraint, ask for a redo — Claude holds the thread across turns.</td>
+        <td data-l="The trap"><strong>One-shot-or-abandon</strong> — tossing a near-miss instead of saying "tighter, drop the intro, keep the table."</td>
+      </tr>
+      <tr>
+        <td data-l="Old reflex"><strong>Assume it knows your world</strong></td>
+        <td data-l="New reflex"><strong>Bring the context to it</strong></td>
+        <td data-l="On Claude">It can't see your files, standards, or history unless you provide them — paste the standard, keep recurring context in a <strong>Project</strong>, connect the folder in <strong>Cowork</strong>.</td>
+        <td data-l="The trap"><strong>Two edges:</strong> under-context (generic guesswork) <em>and</em> over-stuffing (dumping everything in degrades quality and runs up cost — the context window is a tool, not a dumping ground).</td>
+      </tr>
+      <tr>
+        <td data-l="Old reflex"><strong>Send one giant ask</strong></td>
+        <td data-l="New reflex"><strong>Break it into steps</strong></td>
+        <td data-l="On Claude">Decompose: outline <span class="arrow">&rarr;</span> draft <span class="arrow">&rarr;</span> check <span class="arrow">&rarr;</span> format. Verify each step before the next builds on it.</td>
+        <td data-l="The trap"><strong>One mega-prompt</strong> that fails silently three requirements deep, where you can't tell which part broke.</td>
+      </tr>
+      <tr>
+        <td data-l="Old reflex"><strong>Trust it / distrust it (either extreme)</strong></td>
+        <td data-l="New reflex"><strong>Verify what it gets wrong</strong></td>
+        <td data-l="On Claude">Know the model's failure surface and check <em>those</em> outputs every time — it can be confidently wrong. The five things to always check are listed below.</td>
+        <td data-l="The trap"><strong>Trust-blind</strong> = a quality incident with your name on it. <strong>Trust-never</strong> = you never actually adopt. The skill is calibrated checking, not faith or fear.</td>
+      </tr>
+      <tr>
+        <td data-l="Old reflex"><strong>Reach for it for everything (or nothing)</strong></td>
+        <td data-l="New reflex"><strong>Reach first for the right class of task</strong></td>
+        <td data-l="On Claude">Rote, draft, transform, summarize, triage <span class="arrow">&rarr;</span> Claude-first. Judgment calls, relationships, the final accountable decision <span class="arrow">&rarr;</span> still you.</td>
+        <td data-l="The trap">Using it <strong>where <a href="anti-use-cases.html">anti-use-cases.md</a> says don't</strong> — high-stakes irreversible calls, unverifiable domains.</td>
+      </tr>
+    </tbody>
+  </table>
+  <p class="takeaway">The pattern down the whole column: <strong>the task shrinks, the judgment grows.</strong> What's left is the part that needs you.</p>
+
+  <h2>Daily task patterns — what to hand over, what to keep</h2>
+  <table class="daily">
+    <thead>
+      <tr><th>Task</th><th>Claude-first move</th><th>Keep it yours</th><th>Best surface</th></tr>
+    </thead>
+    <tbody>
+      <tr><td data-l="Task"><strong>Draft</strong></td><td data-l="Claude-first">First version of the email, doc, code, reply</td><td data-l="Keep it yours">The voice, the final call, anything that commits you</td><td data-l="Surface"><span class="tag">Chat</span><span class="tag">Projects</span></td></tr>
+      <tr><td data-l="Task"><strong>Summarize</strong></td><td data-l="Claude-first">Long thread, document, or meeting into the gist</td><td data-l="Keep it yours">Deciding what to <em>do</em> about it</td><td data-l="Surface"><span class="tag">Chat</span><span class="tag">Projects</span></td></tr>
+      <tr><td data-l="Task"><strong>Analyze</strong></td><td data-l="Claude-first">Wrangle data, reconcile feedback, surface patterns</td><td data-l="Keep it yours">The interpretation and the decision</td><td data-l="Surface"><span class="tag">Chat</span><span class="tag">Cowork</span> <small style="color:#8a8a8a">(your files)</small></td></tr>
+      <tr><td data-l="Task"><strong>Convert / reformat</strong></td><td data-l="Claude-first">Restructure, translate, change format, clean up</td><td data-l="Keep it yours">Verifying nothing was dropped or altered</td><td data-l="Surface"><span class="tag">Chat</span><span class="tag">Cowork</span></td></tr>
+      <tr><td data-l="Task"><strong>Brainstorm</strong></td><td data-l="Claude-first">Options, names, angles, counter-arguments</td><td data-l="Keep it yours">Choosing; killing the bad ideas</td><td data-l="Surface"><span class="tag">Chat</span></td></tr>
+      <tr><td data-l="Task"><strong>Review</strong></td><td data-l="Claude-first">A second pair of eyes on <em>your</em> draft</td><td data-l="Keep it yours">Whether to accept each suggestion</td><td data-l="Surface"><span class="tag">Chat</span><span class="tag">Claude Code</span> <small style="color:#8a8a8a">(eng)</small></td></tr>
+    </tbody>
+  </table>
+  <p class="note">Which surface is cleared for <em>you</em> is a rollout decision — see <a href="surface-rollout-matrix.html">surface-rollout-matrix.md</a>. Don't assume a surface is approved for your data just because you can open it.</p>
+
+  <h2>Always verify these <span style="text-transform:none;letter-spacing:0;font-weight:400;color:#888;font-size:13px">(the model can sound certain and be wrong)</span></h2>
+  <ul class="verify">
+    <li><strong>Facts and citations</strong> — names, dates, quotes, references. It can fabricate a plausible-looking source.</li>
+    <li><strong>Numbers and math</strong> — totals, percentages, anything that has to add up.</li>
+    <li><strong>Anything time-sensitive</strong> — events, prices, or releases after the model's training cutoff; it doesn't know what it doesn't know.</li>
+    <li><strong>Your internal specifics</strong> — your policies, your codebase, your customer data. It guesses unless you give it the real thing.</li>
+    <li><strong>Anything you'll be held accountable for</strong> — if your name goes on it, you check it. Full stop.</li>
+  </ul>
+  <p class="note">Verification <em>is</em> the practitioner skill — see <a href="workforce-change-guide.html">workforce-change-guide.md</a> §3. A team that can't verify never safely adopts; a team that verifies nothing ships errors faster.</p>
+
+  <h2><span class="g">&#128721; The boundary</span> — before you paste or connect anything</h2>
+  <div class="boundary">
+    <p style="margin:8px 0">Know your sanctioned surface and what it's cleared for. <strong>Don't put regulated, secret, or customer data into a surface that isn't covered for it.</strong> Two common traps:</p>
+    <ul style="margin:6px 0">
+      <li><strong>Cowork carries no BAA</strong> — no PHI in a folder Cowork can reach. (<a href="cowork-adoption-guide.html">cowork-adoption-guide.md</a> Gate 0.)</li>
+      <li><strong>Your chat surface may not be cleared</strong> for customer or regulated data — confirm before you paste it.</li>
+    </ul>
+    <p style="margin:8px 0">&#9888; When you're not sure whether data is allowed on a surface, <span class="ask">ask your governance owner first.</span> "Ask first" is cheap; "clean up a leak after" is not. The compliance picture lives in <a href="governance-overlay.html">governance-overlay.md</a> — you don't have to read it, but the person who provisioned you does.</p>
+  </div>
+
+  <h2>Your first week (build the habit on one task)</h2>
+  <ol class="week">
+    <li><strong>Pick one rote task</strong> you do every week — a recurring report, a class of email, a cleanup job.</li>
+    <li><strong>Do it with Claude this week</strong>, then verify the output against how you'd have done it by hand. Compare honestly.</li>
+    <li><strong>Keep the prompt that worked</strong>, reuse it next week — and keep checking the result each time, since the task (and the model) drift. One reliable habit beats ten experiments you never repeat.</li>
+  </ol>
+  <p class="takeaway">The goal of week one isn't to use Claude for everything. It's to move <em>one</em> task from "I do it" to "I direct and check it" — and feel the difference.</p>
+
+  <h2>Companion artifacts</h2>
+  <ul class="companions">
+    <li><a href="user-mindset-cheatsheet.md">user-mindset-cheatsheet.md</a> — the plain-text version of this page, to copy or paste into a channel.</li>
+    <li><a href="user-mindset-mindmap.html">user-mindset-mindmap.html</a> — the one-glance <strong>visual</strong> version: the same seven shifts as a mindmap, to pin on a wall or drop in a deck.</li>
+    <li><a href="workforce-change-guide.html">workforce-change-guide.md</a> — the CHRO/people strategy this is the user-facing handout for; this cheatsheet is its practitioner tier, made deployable.</li>
+    <li><a href="claude-misconceptions.html">claude-misconceptions.md</a> — the stale priors people arrive with ("it refuses everything," "it needs fine-tuning"); kill them alongside this.</li>
+    <li><a href="anti-use-cases.html">anti-use-cases.md</a> — where <em>not</em> to reach for Claude; the right-hand edge of shift seven.</li>
+    <li><a href="surface-rollout-matrix.html">surface-rollout-matrix.md</a> — which surface you're cleared for, and in what order.</li>
+    <li><a href="cowork-adoption-guide.html">cowork-adoption-guide.md</a> / <a href="claude-code-adoption-guide.html">claude-code-adoption-guide.md</a> — the deep guide for your surface (non-engineer / engineer).</li>
+    <li><a href="rollout-kickoff-kit.html">rollout-kickoff-kit.md</a> — the enablement lead deploys this cheatsheet in their Week-0 &rarr; Week-4 lane.</li>
+  </ul>
+
+  <footer>&copy; gmanch94 &middot; CC-BY-4.0 &middot; As of 2026-06. Verify pricing/models at anthropic.com.</footer>
+</div>
+</body>
+</html>
