@@ -76,6 +76,7 @@ The goal of week one isn't to use Claude for everything. It's to move *one* task
 
 ## Companion artifacts
 
+- [`user-mindset-cheatsheet-color.html`](user-mindset-cheatsheet-color.html) — this same sheet **colour-coded** for screen and print (green = the shift, amber = the trap, red = the boundary).
 - [`user-mindset-mindmap.html`](user-mindset-mindmap.html) — the one-glance **visual** version of this sheet: the same seven shifts as a mindmap, to pin on a wall or drop in a deck.
 - [`workforce-change-guide.md`](workforce-change-guide.md) — the CHRO/people strategy this is the user-facing handout for; this cheatsheet is its practitioner tier, made deployable.
 - [`claude-misconceptions.md`](claude-misconceptions.md) — the stale priors people arrive with ("it refuses everything," "it needs fine-tuning"); kill them alongside this.
