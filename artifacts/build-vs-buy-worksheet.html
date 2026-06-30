@@ -19,7 +19,7 @@
   .card h2 { font-size: 19px; margin-bottom: 14px; color: var(--c1d); border-bottom: 1px solid var(--line); padding-bottom: 8px; }
   .card h3 { font-size: 15px; margin: 14px 0 8px; color: var(--c2); }
   input[type=text] { width: 100%; padding: 10px 12px; border: 1px solid var(--line); border-radius: 6px; font-size: 14px; margin-bottom: 14px; }
-  .axis { margin-bottom: 16px; }
+  .axis { margin-bottom: 16px; border-left: 3px solid #efe3d4; padding-left: 12px; }
   .axis label { display: block; font-weight: 600; font-size: 14px; margin-bottom: 4px; }
   .axis .desc { font-size: 12px; color: var(--muted); margin-bottom: 6px; }
   .scale { display: flex; gap: 4px; }
@@ -28,7 +28,7 @@
   .scale button.active { background: var(--c1); color: white; border-color: var(--c1); font-weight: 600; }
   .axis .scale-labels { display: flex; justify-content: space-between; font-size: 11px; color: var(--muted); margin-top: 2px; }
   .out-rec { background: linear-gradient(135deg, #fef3ec 0%, #fdfaf6 100%); border: 1px solid var(--c1); border-radius: 10px; padding: 18px; margin-bottom: 14px; }
-  .out-rec.primary { border-width: 2px; }
+  .out-rec.primary { border-width: 2px; border-left: 5px solid var(--good); }
   .out-rec .rank { display: inline-block; background: var(--c1d); color: white; font-size: 12px; font-weight: 700; padding: 2px 9px; border-radius: 10px; margin-right: 8px; }
   .out-rec.primary .rank { background: var(--c1); }
   .out-rec h3 { font-size: 18px; color: var(--c1d); margin-bottom: 6px; display: flex; align-items: center; }
@@ -46,6 +46,19 @@
   footer a { color: var(--c1d); }
   .reset { background: transparent; border: 1px solid var(--line); color: var(--muted); padding: 6px 12px; border-radius: 6px; font-size: 12px; cursor: pointer; margin-left: 8px; }
   .reset:hover { color: var(--ink); }
+  .frames { list-style: none; padding-left: 0; margin-top: 4px; }
+  .frames li { border-left: 4px solid var(--line); background: #fdfaf6; padding: 9px 14px 9px 13px; border-radius: 0 6px 6px 0; margin-bottom: 8px; }
+  .frames li.build { border-left-color: var(--good); background: #f1faf4; }
+  .frames li.buy   { border-left-color: var(--warn); background: #fef8ec; }
+  .frames li.dep   { border-left-color: var(--c1);   background: #fef2ea; }
+  .frames li strong { color: var(--ink); }
+  .frames li.build strong { color: var(--good); }
+  .frames li.buy strong   { color: var(--warn); }
+  .frames li.dep strong   { color: var(--c1d); }
+  .frames li .no { color: var(--bad); font-weight: 600; }
+  .frames-legend { display: flex; gap: 18px; flex-wrap: wrap; font-size: 12px; color: var(--muted); margin: 2px 0 14px; }
+  .frames-legend span { display: inline-flex; align-items: center; gap: 6px; }
+  .frames-legend i { width: 12px; height: 12px; border-radius: 3px; display: inline-block; }
 </style>
 </head>
 <body>
@@ -134,16 +147,21 @@
 
   <div class="card" style="margin-top:24px;">
     <h2>Decision frames (cheat sheet)</h2>
-    <ul style="padding-left:22px; font-size:14px; line-height:1.7;">
-      <li><strong>Regulated workload + need latest models →</strong> Claude direct. Hyperscaler routes lag on model versions.</li>
-      <li><strong>Regulated workload + already deep on AWS / GCP →</strong> Claude via Bedrock or Vertex. Procurement path matters more than version lag.</li>
-      <li><strong>Generic chat / RAG, no proprietary edge →</strong> Packaged SaaS likely cheaper unless volume is high.</li>
-      <li><strong>High-volume, low-margin, latency-tolerant batch →</strong> Run the math both ways. Claude Haiku 4.5 + batch is hard to beat. Open-source self-hosted only when volume + ops capacity are both real.</li>
-      <li><strong>Deep proprietary domain →</strong> Claude direct + Skills + MCP + plugins. The customization stack is what makes "build" win over "buy SaaS."</li>
-      <li><strong>No internal AI/ML expertise →</strong> Packaged SaaS or Claude direct with a small build team. Skip open-source self-hosted entirely.</li>
-      <li><strong>Multiple teams adopting →</strong> Claude direct + plugins distribution. Standardize the platform; let teams build on it.</li>
-      <li><strong>Moat-defining workload (moat ≥ 4) →</strong> Build it. Claude direct + Skills + MCP + plugins (or open-source if sovereignty mandates). Packaged SaaS is wrong by construction — your competitors buy the same product.</li>
-      <li><strong>Pure commodity (moat ≤ 2) →</strong> Buy it. Packaged SaaS or thin Claude-direct integration. Your engineering hours are better spent on the moat-defining workload above.</li>
+    <div class="frames-legend">
+      <span><i style="background:var(--good)"></i> Build — you own it (moat)</span>
+      <span><i style="background:var(--warn)"></i> Buy — packaged SaaS</span>
+      <span><i style="background:var(--c1)"></i> Depends — run the math</span>
+    </div>
+    <ul class="frames" style="font-size:14px; line-height:1.6;">
+      <li class="build"><strong>Regulated workload + need latest models →</strong> Claude direct. Hyperscaler routes lag on model versions.</li>
+      <li class="dep"><strong>Regulated workload + already deep on AWS / GCP →</strong> Claude via Bedrock or Vertex. Procurement path matters more than version lag.</li>
+      <li class="buy"><strong>Generic chat / RAG, no proprietary edge →</strong> Packaged SaaS likely cheaper unless volume is high.</li>
+      <li class="dep"><strong>High-volume, low-margin, latency-tolerant batch →</strong> Run the math both ways. Claude Haiku 4.5 + batch is hard to beat. Open-source self-hosted only when volume + ops capacity are both real.</li>
+      <li class="build"><strong>Deep proprietary domain →</strong> Claude direct + Skills + MCP + plugins. The customization stack is what makes "build" win over "buy SaaS."</li>
+      <li class="buy"><strong>No internal AI/ML expertise →</strong> Packaged SaaS or Claude direct with a small build team. Skip open-source self-hosted entirely.</li>
+      <li class="build"><strong>Multiple teams adopting →</strong> Claude direct + plugins distribution. Standardize the platform; let teams build on it.</li>
+      <li class="build"><strong>Moat-defining workload (moat ≥ 4) →</strong> Build it. Claude direct + Skills + MCP + plugins (or open-source if sovereignty mandates). Packaged SaaS is <span class="no">wrong by construction</span> — your competitors buy the same product.</li>
+      <li class="buy"><strong>Pure commodity (moat ≤ 2) →</strong> Buy it. Packaged SaaS or thin Claude-direct integration. Your engineering hours are better spent on the moat-defining workload above.</li>
     </ul>
   </div>
 </div>

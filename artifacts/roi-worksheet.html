@@ -17,7 +17,7 @@
   @media (max-width: 900px) { .grid { grid-template-columns: 1fr; } }
   .card { background: white; border: 1px solid var(--line); border-radius: 10px; padding: 22px; }
   .card h2 { font-size: 19px; margin-bottom: 14px; color: var(--c1d); border-bottom: 1px solid var(--line); padding-bottom: 8px; }
-  .field { margin-bottom: 15px; }
+  .field { margin-bottom: 15px; border-left: 3px solid #efe3d4; padding-left: 12px; }
   .field label { display: block; font-weight: 600; font-size: 14px; margin-bottom: 3px; }
   .field .desc { font-size: 12px; color: var(--muted); margin-bottom: 6px; }
   .field input[type=text], .field input[type=number] { width: 100%; padding: 9px 11px; border: 1px solid var(--line); border-radius: 6px; font-size: 14px; font-variant-numeric: tabular-nums; }
@@ -57,6 +57,10 @@
   .reset:hover { color: var(--ink); }
   footer { margin-top: 40px; padding-top: 16px; border-top: 1px solid var(--line); text-align: center; font-size: 12px; color: var(--muted); }
   footer a { color: var(--c1d); }
+  .card .frames { list-style: none; padding-left: 0; margin-top: 4px; }
+  .card .frames li { border-left: 4px solid var(--line); background: #fdfaf6; padding: 9px 14px 9px 13px; border-radius: 0 6px 6px 0; margin-bottom: 8px; }
+  .card .frames li.trap { border-left-color: var(--warn); background: #fef8ec; }
+  .card .frames li.trap strong { color: var(--warn); }
 </style>
 </head>
 <body>
@@ -180,12 +184,12 @@
 
   <div class="card full">
     <h2>Five ways this number lies (read before you present it)</h2>
-    <ul>
-      <li><strong>Double-count.</strong> The same hour saved cannot appear in two use cases' ROI. Maintain one value ledger across the portfolio; sum nets there, not in separate worksheets.</li>
-      <li><strong>No baseline.</strong> If you can't measure today's cycle time / cost-per-task, the "before" is a guess and the ROI is fiction. Measure the current state for two weeks first — that's a Week 0 task in <a href="adoption-playbook.html">adoption-playbook.md</a>.</li>
-      <li><strong>Productivity theater.</strong> 30 minutes saved per person per day is not value until it becomes shipped output or an avoided hire. The realized-capture dial is where you discount it — keep it honest.</li>
-      <li><strong>Soft value dominating.</strong> If "other hard value" is carrying the case, the case is weak. A banner fires when it exceeds the time value. Strip it back to what you'd defend in an audit.</li>
-      <li><strong>Pilot-cost optimism.</strong> The pilot month understates steady-state spend (low volume, no maintenance, no second team). Pull the spend figure from cost-calculator's steady-state projection, then add a maintenance line.</li>
+    <ul class="frames">
+      <li class="trap"><strong>Double-count.</strong> The same hour saved cannot appear in two use cases' ROI. Maintain one value ledger across the portfolio; sum nets there, not in separate worksheets.</li>
+      <li class="trap"><strong>No baseline.</strong> If you can't measure today's cycle time / cost-per-task, the "before" is a guess and the ROI is fiction. Measure the current state for two weeks first — that's a Week 0 task in <a href="adoption-playbook.html">adoption-playbook.md</a>.</li>
+      <li class="trap"><strong>Productivity theater.</strong> 30 minutes saved per person per day is not value until it becomes shipped output or an avoided hire. The realized-capture dial is where you discount it — keep it honest.</li>
+      <li class="trap"><strong>Soft value dominating.</strong> If "other hard value" is carrying the case, the case is weak. A banner fires when it exceeds the time value. Strip it back to what you'd defend in an audit.</li>
+      <li class="trap"><strong>Pilot-cost optimism.</strong> The pilot month understates steady-state spend (low volume, no maintenance, no second team). Pull the spend figure from cost-calculator's steady-state projection, then add a maintenance line.</li>
     </ul>
     <p style="font-size:13px; color:var(--muted); margin-top:12px;">What this worksheet deliberately does <em>not</em> count: brand/morale halo, "future optionality," and time saved that you can't tie to output. Leaving them out is the point — an ROI a finance lead can't poke holes in beats a bigger one they can.</p>
   </div>

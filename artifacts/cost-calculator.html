@@ -58,6 +58,12 @@
   .preset-row button { padding: 6px 12px; background: white; border: 1px solid var(--line); border-radius: 6px; font-size: 12px; cursor: pointer; color: var(--ink); }
   .preset-row button:hover { border-color: var(--c1); color: var(--c1d); }
   .preset-row button.active { background: var(--c1); color: white; border-color: var(--c1); }
+  .card .frames { list-style: none; padding-left: 0; margin-top: 4px; }
+  .card .frames li { border-left: 4px solid var(--line); background: #fdfaf6; padding: 9px 14px 9px 13px; border-radius: 0 6px 6px 0; margin-bottom: 8px; }
+  .card .frames li.lever { border-left-color: var(--good); background: #f1faf4; }
+  .card .frames li.lever strong { color: var(--good); }
+  .card .frames li.mistake { border-left-color: var(--warn); background: #fef8ec; }
+  .card .frames li.mistake strong { color: var(--warn); }
 </style>
 </head>
 <body>
@@ -200,22 +206,22 @@
     <details open>
       <summary>What drives spend most</summary>
       <div class="body">
-        <ul>
-          <li><strong>Model mix dominates.</strong> Opus is 15× Haiku on input, 15× on output. Triaging with Haiku and routing only hard cases to Sonnet/Opus is the single highest-leverage decision.</li>
-          <li><strong>Cache hit rate is the second lever.</strong> A 70% hit rate on a 50k-token system prompt is roughly equivalent to running a much smaller model. RAG patterns benefit most.</li>
-          <li><strong>Output tokens cost 5× input.</strong> Agentic loops that generate long chains pay disproportionately. Worth measuring tokens-per-task and capping with explicit instructions.</li>
-          <li><strong>Batch is free money where latency allows.</strong> Overnight enrichment, eval runs, content generation, analytics — half-price by default.</li>
+        <ul class="frames">
+          <li class="lever"><strong>Model mix dominates.</strong> Opus is 15× Haiku on input, 15× on output. Triaging with Haiku and routing only hard cases to Sonnet/Opus is the single highest-leverage decision.</li>
+          <li class="lever"><strong>Cache hit rate is the second lever.</strong> A 70% hit rate on a 50k-token system prompt is roughly equivalent to running a much smaller model. RAG patterns benefit most.</li>
+          <li class="lever"><strong>Output tokens cost 5× input.</strong> Agentic loops that generate long chains pay disproportionately. Worth measuring tokens-per-task and capping with explicit instructions.</li>
+          <li class="lever"><strong>Batch is free money where latency allows.</strong> Overnight enrichment, eval runs, content generation, analytics — half-price by default.</li>
         </ul>
       </div>
     </details>
     <details>
       <summary>Common modeling mistakes</summary>
       <div class="body">
-        <ul>
-          <li>Forgetting agent fan-out — a single user request can become 5–20 model calls with tool use. Use the turns slider above.</li>
-          <li>Treating cache hit rate as a constant — real workloads vary 30–80% depending on conversation reset frequency.</li>
-          <li>Pricing all output at the highest tier — if you're routing 80% of traffic to Haiku, output blends accordingly.</li>
-          <li>Ignoring extended thinking budget — when enabled, thinking tokens count as output. Budget separately.</li>
+        <ul class="frames">
+          <li class="mistake"><strong>Forgetting agent fan-out</strong> — a single user request can become 5–20 model calls with tool use. Use the turns slider above.</li>
+          <li class="mistake"><strong>Treating cache hit rate as a constant</strong> — real workloads vary 30–80% depending on conversation reset frequency.</li>
+          <li class="mistake"><strong>Pricing all output at the highest tier</strong> — if you're routing 80% of traffic to Haiku, output blends accordingly.</li>
+          <li class="mistake"><strong>Ignoring extended thinking budget</strong> — when enabled, thinking tokens count as output. Budget separately.</li>
         </ul>
       </div>
     </details>

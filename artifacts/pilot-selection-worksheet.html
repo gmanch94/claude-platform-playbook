@@ -31,7 +31,7 @@
   .uc-head input { flex: 1; }
   .uc-head .remove { background: white; border: 1px solid var(--line); color: var(--muted); padding: 6px 10px; border-radius: 6px; font-size: 12px; cursor: pointer; }
   .uc-head .remove:hover { color: var(--bad); border-color: var(--bad); }
-  .axis { margin-bottom: 12px; }
+  .axis { margin-bottom: 12px; border-left: 3px solid #efe3d4; padding-left: 12px; }
   .axis label { display: block; font-weight: 600; font-size: 13px; margin-bottom: 2px; }
   .axis .desc { font-size: 11.5px; color: var(--muted); margin-bottom: 6px; line-height: 1.45; }
   .scale { display: flex; gap: 4px; }
@@ -85,6 +85,17 @@
   footer { margin-top: 40px; padding-top: 16px; border-top: 1px solid var(--line); text-align: center; font-size: 12px; color: var(--muted); }
   footer a { color: var(--c1d); }
   .axis-key { font-size: 11px; color: var(--muted); }
+  .card .frames { list-style: none; padding-left: 0; margin-top: 4px; }
+  .card .frames li { border-left: 4px solid var(--line); background: #fdfaf6; padding: 9px 14px 9px 13px; border-radius: 0 6px 6px 0; margin-bottom: 8px; }
+  .card .frames li.go { border-left-color: var(--good); background: #f1faf4; }
+  .card .frames li.go strong { color: var(--good); }
+  .card .frames li.caution { border-left-color: var(--warn); background: #fef8ec; }
+  .card .frames li.caution strong { color: var(--warn); }
+  .card .frames li.stop { border-left-color: var(--bad); background: #fdf1f1; }
+  .card .frames li.stop strong { color: var(--bad); }
+  .frames-legend { display: flex; gap: 18px; flex-wrap: wrap; font-size: 12px; color: var(--muted); margin: 2px 0 14px; }
+  .frames-legend span { display: inline-flex; align-items: center; gap: 6px; }
+  .frames-legend i { width: 12px; height: 12px; border-radius: 3px; display: inline-block; }
 </style>
 </head>
 <body>
@@ -174,13 +185,18 @@
 
       <div class="card">
         <h2>Decision frames (cheat sheet)</h2>
-        <ul style="padding-left:22px; font-size:13.5px; line-height:1.7;">
-          <li><strong>Two Strong-pilot use cases?</strong> Pick the one with faster time-to-signal. Faster signal = more credibility for the rest of the program.</li>
-          <li><strong>Strong on 4 axes, axis-1 blocker on Sponsor?</strong> Don't fix the use case — fix the sponsor. Re-score after.</li>
-          <li><strong>All candidates land in Risky?</strong> The bottleneck is upstream — usually data-readiness or sponsor clarity. Don't pilot yet; spend 2 weeks on those before scoring again.</li>
-          <li><strong>One use case is Strong, but customer-facing?</strong> Treat with extra care — the playbook recommends internal-facing first. Score Risk Profile honestly; consider a smaller internal-facing pilot adjacent to it.</li>
-          <li><strong>Tie?</strong> Faster time-to-signal wins, then lower risk profile, then higher data readiness. Value-at-stake is the tiebreaker only when the others are even.</li>
-          <li><strong>Don't pilot more than two use cases at once.</strong> Two is for learning rate; three+ is for losing focus. Plan the second pilot for Weeks 9–13 (scale phase).</li>
+        <div class="frames-legend">
+          <span><i style="background:var(--good)"></i> Go — pick / proceed</span>
+          <span><i style="background:var(--warn)"></i> Caution — fix or watch first</span>
+          <span><i style="background:var(--bad)"></i> Stop — don't pilot yet</span>
+        </div>
+        <ul class="frames" style="font-size:13.5px; line-height:1.6;">
+          <li class="go"><strong>Two Strong-pilot use cases?</strong> Pick the one with faster time-to-signal. Faster signal = more credibility for the rest of the program.</li>
+          <li class="caution"><strong>Strong on 4 axes, axis-1 blocker on Sponsor?</strong> Don't fix the use case — fix the sponsor. Re-score after.</li>
+          <li class="stop"><strong>All candidates land in Risky?</strong> The bottleneck is upstream — usually data-readiness or sponsor clarity. Don't pilot yet; spend 2 weeks on those before scoring again.</li>
+          <li class="caution"><strong>One use case is Strong, but customer-facing?</strong> Treat with extra care — the playbook recommends internal-facing first. Score Risk Profile honestly; consider a smaller internal-facing pilot adjacent to it.</li>
+          <li class="go"><strong>Tie?</strong> Faster time-to-signal wins, then lower risk profile, then higher data readiness. Value-at-stake is the tiebreaker only when the others are even.</li>
+          <li class="caution"><strong>Don't pilot more than two use cases at once.</strong> Two is for learning rate; three+ is for losing focus. Plan the second pilot for Weeks 9–13 (scale phase).</li>
         </ul>
       </div>
     </div>
