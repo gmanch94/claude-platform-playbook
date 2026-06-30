@@ -118,6 +118,7 @@ Pick a baseline in Phase 0 so Phase 3 has evidence:
 - Platform-wide rollout context in [`adoption-playbook.md`](adoption-playbook.md) (90-day org arc).
 - Compliance depth (no-train, BAA, residency) in [`governance-overlay.md`](governance-overlay.md).
 - Plan-tier headroom + seat decision in [`subscription-selection-guide.md`](subscription-selection-guide.md) (Cowork's usage burn is a plan-tier question); API inference cost in [`cost-calculator.html`](cost-calculator.html).
+- The week-one mindset handout for the people you onboard: [`user-mindset-cheatsheet.md`](user-mindset-cheatsheet.md) — direct-and-check, verify what the model gets wrong, and the data boundary (no PHI in a connected folder).
 - Surface status + source-of-truth: [`../docs/feature-inventory.md`](../docs/feature-inventory.md).
 
 ---

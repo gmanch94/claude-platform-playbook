@@ -66,7 +66,7 @@ Plain, early, written. The comms below deliberately avoid hype and avoid euphemi
 | **Practitioner** | Daily users in changed roles | Review-and-edit discipline, verification, prompt patterns for *their* task, when to override | ~1 day + ongoing |
 | **Builder** | Power users, COE feeders | Skills, MCP, evals, building reusable tooling for the team | Ongoing; feeds the COE in [`adoption-playbook.md`](adoption-playbook.md) |
 
-The non-obvious tier is **practitioner**, and its core skill is *verification* — knowing what the model gets wrong and catching it. A workforce that trusts output blindly is a quality incident waiting to happen; a workforce that can't trust it at all never adopts. Practitioner training is where that judgment is built. Pair with [`claude-misconceptions.md`](claude-misconceptions.md) to kill the stale priors people arrive with.
+The non-obvious tier is **practitioner**, and its core skill is *verification* — knowing what the model gets wrong and catching it. A workforce that trusts output blindly is a quality incident waiting to happen; a workforce that can't trust it at all never adopts. Practitioner training is where that judgment is built. The one-page handout for this tier is [`user-mindset-cheatsheet.md`](user-mindset-cheatsheet.md) — give it to every user in week one. Pair with [`claude-misconceptions.md`](claude-misconceptions.md) to kill the stale priors people arrive with.
 
 ---
 
@@ -118,6 +118,7 @@ Treat this as a hard gate in the Week 0 approval log ([`adoption-playbook.md`](a
 - [`surface-rollout-matrix.md`](surface-rollout-matrix.md) — which surface to give which population first.
 - [`cowork-adoption-guide.md`](cowork-adoption-guide.md) / [`claude-code-adoption-guide.md`](claude-code-adoption-guide.md) — the technical rollout per audience.
 - [`roi-worksheet.html`](roi-worksheet.html) — the value case; realized-capture discount ties to honest, team-level measurement.
+- [`user-mindset-cheatsheet.md`](user-mindset-cheatsheet.md) — the practitioner-tier handout (§3) made deployable: the one-page mindset shift you give every user in week one.
 - [`claude-misconceptions.md`](claude-misconceptions.md) — kills the stale priors people arrive with (awareness-tier reading).
 - Companion repo [`ai-architect-showcase`](https://github.com/gmanch94/ai-architect-showcase) — EEOC / responsible-AI workforce framing, vendor-neutral.
 

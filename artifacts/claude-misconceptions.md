@@ -122,6 +122,7 @@
 - **Companion to [`decision-memes.html`](decision-memes.html).** Same skeptic-disarmer role, text-form for execs and architects who want substance under the joke.
 - **Sourced from [`docs/feature-inventory.md`](../docs/feature-inventory.md).** Every numeric claim trails the inventory. When inventory drifts, this artifact follows in the same change.
 - **Cross-linked from [`executive-briefing.html`](executive-briefing.html) Slide 9 (Risks + mitigations).** The "I heard X about Claude" objection has its own page.
+- **Paired with [`user-mindset-cheatsheet.md`](user-mindset-cheatsheet.md).** Misconceptions kills the stale priors (awareness tier); the cheatsheet rewires daily task habits (practitioner tier). Hand them out together in week one.
 
 ---
 
