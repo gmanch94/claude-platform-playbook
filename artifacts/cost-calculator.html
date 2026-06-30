@@ -207,7 +207,7 @@
       <summary>What drives spend most</summary>
       <div class="body">
         <ul class="frames">
-          <li class="lever"><strong>Model mix dominates.</strong> Opus is 15× Haiku on input, 15× on output. Triaging with Haiku and routing only hard cases to Sonnet/Opus is the single highest-leverage decision.</li>
+          <li class="lever"><strong>Model mix dominates.</strong> Opus is 5× Haiku on input and output. Triaging with Haiku and routing only hard cases to Sonnet/Opus is the single highest-leverage decision.</li>
           <li class="lever"><strong>Cache hit rate is the second lever.</strong> A 70% hit rate on a 50k-token system prompt is roughly equivalent to running a much smaller model. RAG patterns benefit most.</li>
           <li class="lever"><strong>Output tokens cost 5× input.</strong> Agentic loops that generate long chains pay disproportionately. Worth measuring tokens-per-task and capping with explicit instructions.</li>
           <li class="lever"><strong>Batch is free money where latency allows.</strong> Overnight enrichment, eval runs, content generation, analytics — half-price by default.</li>

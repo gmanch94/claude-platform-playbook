@@ -12,6 +12,8 @@ A CLI tool (also runnable in VS Code / JetBrains / desktop / web) that runs an a
 
 ---
 
+> **Clock note.** This guide runs its own Claude-Code phase clock (Phase 0 → Phase 3, ~7+ weeks), independent of the [`adoption-playbook.md`](adoption-playbook.md) 90-day org rollout clock — a team can be in Claude-Code Phase 2 while the org is at playbook Week 3. Don't conflate the two timelines.
+
 ## Phase 0 — Pre-rollout (1 week)
 
 ### Decide before anyone installs

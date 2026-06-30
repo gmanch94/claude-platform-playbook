@@ -183,6 +183,8 @@ Note: this hook *formats* — it doesn't block. Blocking on lint errors creates 
 ```bash
 #!/usr/bin/env bash
 # .claude/hooks/log-cost.sh — append session cost row to team CSV
+# Verify the Stop-hook stdin field names (.session.total_cost_usd / input_tokens / output_tokens / duration_seconds)
+# against current docs.claude.com/en/docs/claude-code/hooks — the JSON contract can drift between releases.
 set -euo pipefail
 INPUT=$(cat)
 COST=$(echo "$INPUT" | jq -r '.session.total_cost_usd // 0')

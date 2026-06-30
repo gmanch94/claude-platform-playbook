@@ -88,7 +88,7 @@
     <ul>
       <li><strong>No-train ≠ no-store.</strong> Commercial default is no-training-on-your-data; it does <em>not</em> mean data isn't stored. Default at-rest retention is 30 days (§11). [§2]</li>
       <li><strong>ZDR is not default, and not on the Enterprise product UI.</strong> Zero Data Retention covers the <em>Messages API + Claude Code</em> only (enterprise agreement, Anthropic approval) — never chat / projects / artifacts. Trust &amp; Safety classifier scores are retained up to 7 years <em>even under ZDR</em>. [§3]</li>
-      <li><strong><code>inference_geo</code> is first-party-API-only</strong> (Opus 4.6 / Sonnet 4.6+). It does not apply to the product UI, to Managed Agents, or to Bedrock/Vertex (those use the hyperscaler region). Workspace geo governs at-rest storage + processing (code exec, image transcoding). [§5]</li>
+      <li><strong><code>inference_geo</code> is first-party-API-only</strong> (Opus 4.6+). It does not apply to the product UI, to Managed Agents, or to Bedrock/Vertex (those use the hyperscaler region). Workspace geo governs at-rest storage + processing (code exec, image transcoding). [§5]</li>
       <li><strong>The BAA is not automatic and is per-surface.</strong> An Enterprise admin must activate HIPAA compliance + sign. Covered features differ between the first-party API and the Enterprise product surface — <em>the same capability (code execution) is covered on one and not the other.</em> The BAA does not extend to your MCP servers. [§4]</li>
     </ul>
   </div>
@@ -278,7 +278,7 @@
 
   <!-- =================================================================== -->
   <div class="sec-h">B · First-party API features</div>
-  <div class="sec-sub">Where <code>inference_geo</code> (Opus 4.6 / Sonnet 4.6+) and ZDR-on-Messages live. BAA coverage is per-feature — some tools are explicitly <strong>not</strong> covered.</div>
+  <div class="sec-sub">Where <code>inference_geo</code> (Opus 4.6+) and ZDR-on-Messages live. BAA coverage is per-feature — some tools are explicitly <strong>not</strong> covered.</div>
 
   <!-- 5. MESSAGES API -->
   <div class="feature">
@@ -491,7 +491,7 @@
       <div class="cell"><h4>Residency</h4><div class="v no">Egress not geo-bound</div></div>
       <div class="cell"><h4>BAA</h4><div class="v yes">Covered (search)</div></div>
     </div>
-    <div class="bites"><b>Where it bites:</b> the model's search query <b>egresses to the third-party web</b> — residency controls don't bound where that goes. Note the distinct <b>web fetch tool is NOT BAA-covered</b>, and web search's <em>dynamic filtering</em> sub-feature is not ZDR/HIPAA-eligible. For PHI workloads, treat web search as a data-exfil surface and gate it.</div>
+    <div class="bites"><b>Where it bites:</b> the model's search query <b>egresses to the third-party web</b> — residency controls don't bound where that goes. Note the distinct <b>web fetch tool is NOT BAA-covered</b>, and web search's <em>dynamic filtering</em> sub-feature is not ZDR/HIPAA-eligible (verify at signing — not enumerated in governance §4/§5). For PHI workloads, treat web search as a data-exfil surface and gate it.</div>
     <div class="companions">Trace: <a href="governance-overlay.html">governance-overlay.md</a> §4 (web search covered, web fetch not), §5 (residency limits).</div>
   </div>
 
@@ -642,7 +642,7 @@
       <tr><td>Batch API</td><td>API</td><td>Batch store</td><td>Per policy — verify</td><td>Per table</td><td>Workspace geo</td><td class="no">Not covered</td></tr>
       <tr><td>Computer use 2.0</td><td>API (beta)</td><td>Anthropic infer</td><td>30-day / ZDR</td><td>Per table</td><td>Workspace geo</td><td class="no">Not covered</td></tr>
       <tr><td>Web fetch tool</td><td>API</td><td class="no">Third-party web</td><td>30-day / ZDR</td><td>Per table</td><td class="no">Egress unbound</td><td class="no">Not covered</td></tr>
-      <tr><td>Advisor tool</td><td>API</td><td>Anthropic infer</td><td>30-day / ZDR</td><td class="yes">Eligible</td><td>Workspace geo</td><td class="no">Not covered</td></tr>
+      <tr><td>Advisor tool</td><td>API</td><td>Anthropic infer</td><td>30-day / ZDR</td><td>Per table</td><td>Workspace geo</td><td class="no">Not covered</td></tr>
     </tbody>
   </table>
 

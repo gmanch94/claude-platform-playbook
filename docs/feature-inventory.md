@@ -20,7 +20,7 @@
 | Opus 4.7 | Top (prev) | GA | 2026-05 | `claude-opus-4-7`. Previous top tier, still available. Same adaptive-thinking + no-sampling-params constraints as 4.8. Min cacheable prompt 4,096 tokens. |
 | Opus 4.6 | Top (prev) | GA | 2026-05 | Older top tier. Still available; adaptive thinking recommended, manual deprecated. |
 | Sonnet 4.6 | Mid | GA | 2026-05 | Workhorse. Default for production copilots + agentic loops. |
-| Haiku 4.5 | Fast | GA | 2026-05 | Triage, batch, high-volume. ~5–15× cheaper than Sonnet. |
+| Haiku 4.5 | Fast | GA | 2026-05 | Triage, batch, high-volume. ~3× cheaper than Sonnet (5× vs Opus). |
 
 **Pricing (per million tokens, USD, as-of 2026-05-29 — verified against anthropic.com/pricing):**
 

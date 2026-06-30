@@ -132,7 +132,7 @@
 
     <div class="premise">
       <div class="myth"><strong>Myth 3:</strong> "Pick the smartest model (Opus) and tune later."</div>
-      <div class="reality"><strong>Reality:</strong> Sonnet 4.6 wins ~80% of production patterns at ~5× lower cost. Opus 4.8 earns its keep on agentic + deep-reasoning paths; Haiku 4.5 wins high-volume classification and routing. Model mix beats model max — and the mix decision happens at architecture-time, not at "we'll downgrade later."</div>
+      <div class="reality"><strong>Reality:</strong> Sonnet 4.6 wins ~80% of production patterns at ~1.7× lower cost than Opus. Opus 4.8 earns its keep on agentic + deep-reasoning paths; Haiku 4.5 wins high-volume classification and routing. Model mix beats model max — and the mix decision happens at architecture-time, not at "we'll downgrade later."</div>
       <div class="see">→ See <a href="feature-decision-matrix.html">feature-decision-matrix.html</a> for pattern-by-pattern model fit.</div>
     </div>
 
@@ -324,7 +324,7 @@
     <div class="who"><strong>Who's asking:</strong> CIO / CTO sizing TCO · procurement · architect defending the choice.</div>
     <div class="frame">Score the use case on 6 axes (regulated data · latency · customization depth · scale · internal expertise · strategic moat). Verdict: Claude direct (fastest model availability) · Claude via Bedrock or Vertex (hyperscaler procurement, model-version lag) · OpenAI · open-source self-hosted · packaged SaaS. The worksheet outputs a ranked list with TCO band — not a single answer. Anchor heuristic: <strong>build where you have a moat, buy where you don't.</strong> If the verdict is buy a first-party plan, <a href="subscription-selection-guide.html">subscription-selection-guide</a> picks the tier — Free / Pro / Max / Team / Enterprise — via a three-gate framework (compliance → size → build), including the seat-vs-API "you need both" case.</div>
     <div class="artifacts">
-      <a href="build-vs-buy-worksheet.html"><strong>build-vs-buy-worksheet.html</strong><br><span class="path">artifacts/build-vs-buy-worksheet.html</span> — 5-axis scorer with ranked verdict + rationale.</a>
+      <a href="build-vs-buy-worksheet.html"><strong>build-vs-buy-worksheet.html</strong><br><span class="path">artifacts/build-vs-buy-worksheet.html</span> — 6-axis scorer with ranked verdict + rationale.</a>
       <a href="subscription-selection-guide.html"><strong>subscription-selection-guide.md</strong><br><span class="path">artifacts/subscription-selection-guide.md</span> — which plan to buy: three-gate framework across Free/Pro/Max/Team/Enterprise, seat-vs-API "need both" pattern.</a>
       <a href="procurement-pack.html"><strong>procurement-pack.md</strong><br><span class="path">artifacts/procurement-pack.md</span> — once you've picked the path: security-questionnaire answers, DPA/BAA pre-signature checklist, SLA terms. Surface-split; cite-per-row.</a>
     </div>

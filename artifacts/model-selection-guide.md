@@ -40,9 +40,9 @@ Answer in order. Stop at the first match.
 | Structured output generation (JSON, tables, reports) | Sonnet 4.6 | Consistent schema adherence across edge inputs | Haiku drifts on complex schemas |
 | Tool use / function calling (multi-step) | Sonnet 4.6 | Reliable tool selection + parameter accuracy | Haiku drops required params on ambiguous tool definitions |
 | Copilot (interactive, medium complexity) | Sonnet 4.6 | Quality floor for user-facing response | Haiku frustrates users on nuanced follow-up |
-| Intent classification, routing, triage | Haiku 4.5 | Bounded task, high volume, latency-sensitive | Sonnet cost 3–15× higher for equivalent accuracy |
+| Intent classification, routing, triage | Haiku 4.5 | Bounded task, high volume, latency-sensitive | Sonnet cost ~3× higher for equivalent accuracy |
 | Short-form generation (push notifications, titles, summaries) | Haiku 4.5 | Fast, cheap, adequate quality | Opus/Sonnet is pure cost overhead |
-| Batch enrichment (tagging, extraction, scoring) | Haiku 4.5 + Batch API | Max cost efficiency; async SLA acceptable | Sonnet/Opus inflates batch budget by 3–15× |
+| Batch enrichment (tagging, extraction, scoring) | Haiku 4.5 + Batch API | Max cost efficiency; async SLA acceptable | Sonnet/Opus inflates batch budget by ~3–5× |
 | Extended thinking tasks (proofs, complex math, strategic analysis) | Opus 4.8 with thinking enabled | Extended thinking only available on Opus 4.x in agentic contexts | Thinking on Sonnet adds cost without depth gain on hardest problems |
 
 ---
@@ -77,11 +77,11 @@ Based on pricing as of 2026-06 (verify at [`cost-calculator.html`](cost-calculat
 
 | Tier swap | Input cost ratio | Output cost ratio | Monthly $ impact at 1M req, 8k in / 600 out |
 |---|---|---|---|
-| Haiku → Sonnet | 3× | 3× | +~$13k/mo |
-| Haiku → Opus | 15× | 15× | +~$65k/mo |
-| Sonnet → Opus | 5× | 5× | +~$52k/mo |
+| Haiku → Sonnet | 3× | 3× | +~$22k/mo |
+| Haiku → Opus | 5× | 5× | +~$44k/mo |
+| Sonnet → Opus | ~1.7× | ~1.7× | +~$22k/mo |
 
-**Over-tiering Opus for work Sonnet handles** is the most common budget error. At 1M requests/month, every percentage point of traffic unnecessarily routed to Opus costs ~$650/mo.
+**Over-tiering Opus for work Sonnet handles** is the most common budget error. At 1M requests/month, every percentage point of traffic unnecessarily routed to Opus instead of Sonnet costs ~$220/mo.
 
 **Under-tiering Haiku for work Sonnet handles** is the most common quality error. Track acceptance rate, task completion rate, and user override rate as signals.
 

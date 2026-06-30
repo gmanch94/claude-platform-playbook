@@ -206,6 +206,8 @@ EU AI Act sorts AI systems into 4 risk classes. Claude (the model) is a general-
 | **Measure** | Eval suite ([`eval-starter-pack.md`](eval-starter-pack.md)), audit trail (§9), cost dashboards (§15) | Pre-deploy eval, ongoing accuracy + cost monitoring, red team |
 | **Manage** | Kill switch, model rollback runbook, incident process | Test the rollback. Run incident drills. |
 
+> **Framework-version note.** This maps to NIST AI RMF 1.0's four functions. Subcategory-level IDs cited elsewhere in this repo (e.g. Govern 1.5, Manage 1.3 in [`anti-use-cases.md`](anti-use-cases.md)) are pinned to RMF 1.0 — verify against the current published framework before binding or legal use.
+
 ---
 
 ## 9. Audit trail — what to log

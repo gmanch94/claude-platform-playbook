@@ -33,7 +33,7 @@
 - **Cite.** [docs.claude.com — slash commands](https://docs.claude.com/en/docs/claude-code/slash-commands); [`claude-code-starter-skills.md`](claude-code-starter-skills.md).
 
 ### "Hooks just run shell scripts."
-- **Reality.** Hooks support shell commands, HTTP endpoints, *and* LLM prompts as actions, plus async hooks and MCP-tool-scoped hooks. Configure in `.claude/settings.json`.
+- **Reality.** Hooks fire on lifecycle events (PreToolUse / PostToolUse / SessionStart / Stop / UserPromptSubmit) and are configured in `.claude/settings.json`. A command hook can call out to an HTTP endpoint or shared service, so central security can own the hook body instead of every repo carrying its own bash. (Verify the current action-type surface — including any async / MCP-scoped variants — at [docs.claude.com — hooks](https://docs.claude.com/en/docs/claude-code/hooks).)
 - **Mis-decide.** Forcing all governance through bash; missing the HTTP-endpoint pattern that lets central security own the hook body without per-repo bash sprawl.
 - **Cite.** [docs.claude.com — hooks](https://docs.claude.com/en/docs/claude-code/hooks); [`hooks-starter-pack.md`](hooks-starter-pack.md).
 
@@ -72,7 +72,7 @@
 - **Cite.** [docs.claude.com — batch processing](https://docs.claude.com/en/docs/build-with-claude/batch-processing); [`eval-starter-pack.md`](eval-starter-pack.md).
 
 ### "Haiku is too weak for production."
-- **Reality.** Haiku 4.5 prices ~5–15× cheaper than Opus and is the right tier for triage, classification, format conversion, and the cheap leg of cascade patterns. Production systems commonly run Haiku-first and escalate to Sonnet or Opus only when triage demands it.
+- **Reality.** Haiku 4.5 prices ~5× cheaper than Opus and is the right tier for triage, classification, format conversion, and the cheap leg of cascade patterns. Production systems commonly run Haiku-first and escalate to Sonnet or Opus only when triage demands it.
 - **Mis-decide.** All-Opus deployment for workloads where Haiku would meet the bar at a fraction of the cost — an Opus tax that compounds at scale.
 - **Cite.** [docs.claude.com — pricing](https://docs.claude.com/en/about-claude/pricing); [`feature-decision-matrix.html`](feature-decision-matrix.html) cascade row.
 

@@ -159,7 +159,7 @@ For Claude Code workloads using the `Task` tool to spawn sub-agents:
 - `max_turns` — hard cap on sub-agent turn depth. Without this, a sub-agent can recurse indefinitely. Set 3–10 depending on task complexity.
 - `tools` — scope to read-only for sub-agents that only need to gather information. Add write tools only to sub-agents whose job is to produce output.
 
-See [`../docs/feature-inventory.md`](../docs/feature-inventory.md) sub-agents row for current GA status and doc anchor.
+See [`../docs/feature-inventory.md`](../docs/feature-inventory.md) sub-agents row for current GA status and doc anchor. The config key names + schema above are illustrative — verify the exact shape against docs.claude.com/en/docs/claude-code/sub-agents before relying on it.
 
 ---
 

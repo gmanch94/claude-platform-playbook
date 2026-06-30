@@ -95,7 +95,7 @@ Pick a baseline in Phase 0 so Phase 3 has evidence:
 - **Cycle time per deliverable** — hours-to-finished for the target task, before vs. with Cowork.
 - **Tasks-now-done** — count of "high-effort, skipped" tasks (data scans, feedback reconciliation) that now complete. This is Cowork's distinctive value; measure it explicitly. [H — [anthropic.com/product/claude-cowork](https://www.anthropic.com/product/claude-cowork)]
 - **Review-rejection rate** — share of planned actions a user rejects on review. Rising rate = scope or trust problem; near-zero with sensitive folders = rubber-stamping risk.
-- **Plan-capacity burn** — Cowork draws down the seat plan's usage allowance faster than chat [H — [support.claude.com](https://support.claude.com/en/articles/13345190-get-started-with-claude-cowork)]; track which users approach their limit so month-two is a planned tier upgrade, not a surprise. This is plan-tier headroom (see [`subscription-selection-guide.md`](subscription-selection-guide.md)), not metered API.
+- **Plan-capacity burn** — Cowork draws down the seat plan's usage allowance faster than chat [H — [support.claude.com](https://support.claude.com/en/articles/13345190-get-started-with-claude-cowork)]; track which users approach their limit so month-two is a planned tier upgrade, not a surprise — measure capacity headroom, not the person (see [`workforce-change-guide.md`](workforce-change-guide.md) §4 on measuring without surveillance). This is plan-tier headroom (see [`subscription-selection-guide.md`](subscription-selection-guide.md)), not metered API.
 
 ---
 
@@ -114,6 +114,7 @@ Pick a baseline in Phase 0 so Phase 3 has evidence:
 ## How this connects to the rest
 
 - Sits beside [`claude-code-adoption-guide.md`](claude-code-adoption-guide.md) — Cowork for non-engineers, Claude Code for engineers; same "agent takes real actions" governance shape, different audience.
+- Role-impact + augmentation-vs-replacement framing for the people you onboard: [`workforce-change-guide.md`](workforce-change-guide.md) (§4 — measure capacity, not the person).
 - Plots against the other surfaces in [`surface-rollout-matrix.md`](surface-rollout-matrix.md).
 - Platform-wide rollout context in [`adoption-playbook.md`](adoption-playbook.md) (90-day org arc).
 - Compliance depth (no-train, BAA, residency) in [`governance-overlay.md`](governance-overlay.md).
