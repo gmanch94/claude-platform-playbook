@@ -621,8 +621,142 @@
   </div>
 
   <!-- =================================================================== -->
+  <div class="sec-h">D · Seat-plan &amp; CLI surfaces</div>
+  <div class="sec-sub">Claude Code is a CLI on top of the Messages API. Cowork and Claude Design are seat-plan product surfaces spanning consumer <em>and</em> commercial tiers — the no-train default is not uniform across that range (§2). Two of the three are BAA-excluded.</div>
+
+  <!-- 13. CLAUDE CODE (CLI) -->
+  <div class="feature">
+    <h2>13. Claude Code (CLI)<span class="surf api">API (CLI)</span></h2>
+    <div class="stack-line">a CLI on top of the Messages API · local files enter the prompt only when Claude reads them</div>
+    <div class="diagram">
+      <svg viewBox="0 0 900 210" xmlns="http://www.w3.org/2000/svg">
+        <defs><marker id="ar13" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0,1 L9,5 L0,9 L2,5 z" fill="#2a2017"/></marker></defs>
+        <rect class="zone" x="8" y="8" width="210" height="194" rx="8" fill="rgba(21,128,61,0.08)"/>
+        <rect class="zone" x="300" y="8" width="300" height="194" rx="8" fill="rgba(124,94,72,0.08)"/>
+        <rect class="zone" x="640" y="8" width="250" height="194" rx="8" fill="rgba(30,64,175,0.07)"/>
+        <text class="ztitle" x="113" y="26" text-anchor="middle">DEVELOPER MACHINE</text>
+        <text class="ztitle" x="450" y="26" text-anchor="middle">api.anthropic.com</text>
+        <text class="ztitle" x="765" y="26" text-anchor="middle">STORAGE (or ZDR=none)</text>
+        <line class="boundary" x1="259" y1="14" x2="259" y2="196"/>
+        <text class="blab" x="259" y="200" text-anchor="middle">prompt = boundary</text>
+        <rect class="box b-user" x="22" y="58" width="178" height="48" rx="9"/>
+        <text class="lbl" x="111" y="77" text-anchor="middle">Local repo / files</text>
+        <text class="sub" x="111" y="94" text-anchor="middle">stays on the machine</text>
+        <rect class="box b-user" x="22" y="130" width="178" height="48" rx="9"/>
+        <text class="lbl" x="111" y="150" text-anchor="middle">Claude Code CLI</text>
+        <text class="sub" x="111" y="167" text-anchor="middle">reads files it's asked about</text>
+        <rect class="box b-claude" x="330" y="92" width="180" height="58" rx="9"/>
+        <text class="lbl" x="420" y="114" text-anchor="middle" font-weight="700">Inference</text>
+        <text class="sub" x="420" y="132" text-anchor="middle">commercial key or Ent.+ZDR</text>
+        <rect class="box b-store" x="670" y="92" width="190" height="58" rx="9"/>
+        <text class="lbl" x="765" y="114" text-anchor="middle">Logs</text>
+        <text class="sub" x="765" y="132" text-anchor="middle">30-day, or none under ZDR</text>
+        <path class="flow" d="M200,120 L326,120" marker-end="url(#ar13)"/>
+        <text class="flab" x="262" y="112" text-anchor="middle">file contents + ask</text>
+        <path class="flow dash" d="M510,134 Q590,165 668,140" marker-end="url(#ar13)"/>
+      </svg>
+    </div>
+    <div class="meta">
+      <div class="cell"><h4>Surface</h4><div class="v">API (CLI)</div></div>
+      <div class="cell"><h4>No-train</h4><div class="v warn">Commercial: yes · consumer acct: verify</div></div>
+      <div class="cell"><h4>Retention</h4><div class="v">30-day, or none under ZDR</div></div>
+      <div class="cell"><h4>ZDR</h4><div class="v yes">Eligible (commercial key / Ent.+ZDR)</div></div>
+      <div class="cell"><h4>Residency</h4><div class="v">inference_geo (API-key auth)</div></div>
+      <div class="cell"><h4>BAA</h4><div class="v warn">Verify at signing</div></div>
+    </div>
+    <div class="bites"><b>Where it bites:</b> Claude Code on a <b>consumer Free/Pro/Max account is a separate no-train policy surface</b> — governance-overlay §2 names Claude Code explicitly as an exception to the commercial default. ZDR eligibility is real (commercial org key, or Enterprise with ZDR enabled) — but Claude Code is <b>not named in the Enterprise BAA covered-features list</b> (Chat/Projects/Artifacts/file-creation/Voice/Web search/Research). Don't assume either direction; verify at signing before routing regulated code through it.</div>
+    <div class="companions">Trace: <a href="governance-overlay.html">governance-overlay.md</a> §2 (consumer-tier carve-out names Claude Code), §3 (ZDR covered surfaces), §4 (BAA covered-features list).</div>
+  </div>
+
+  <!-- 14. COWORK -->
+  <div class="feature">
+    <h2>14. Cowork (desktop agent)<span class="surf prod">Desktop product</span></h2>
+    <div class="stack-line">folder-scoped local actions · <strong>not BAA-covered, not ZDR-eligible</strong></div>
+    <div class="diagram">
+      <svg viewBox="0 0 900 210" xmlns="http://www.w3.org/2000/svg">
+        <defs><marker id="ar14" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0,1 L9,5 L0,9 L2,5 z" fill="#2a2017"/></marker></defs>
+        <rect class="zone" x="8" y="8" width="210" height="194" rx="8" fill="rgba(21,128,61,0.08)"/>
+        <rect class="zone" x="300" y="8" width="300" height="194" rx="8" fill="rgba(124,94,72,0.08)"/>
+        <rect class="zone" x="640" y="8" width="250" height="194" rx="8" fill="rgba(30,64,175,0.07)"/>
+        <text class="ztitle" x="113" y="26" text-anchor="middle">LOCAL MACHINE (scoped)</text>
+        <text class="ztitle" x="450" y="26" text-anchor="middle">ANTHROPIC PROCESSING</text>
+        <text class="ztitle" x="765" y="26" text-anchor="middle">SESSION DATA</text>
+        <line class="boundary" x1="259" y1="14" x2="259" y2="196"/>
+        <text class="blab" x="259" y="200" text-anchor="middle">prompt = boundary</text>
+        <rect class="box b-user" x="22" y="58" width="178" height="48" rx="9"/>
+        <text class="lbl" x="111" y="77" text-anchor="middle">Folder (user-granted)</text>
+        <text class="sub" x="111" y="94" text-anchor="middle">read + write scope</text>
+        <rect class="box b-user" x="22" y="130" width="178" height="48" rx="9"/>
+        <text class="lbl" x="111" y="150" text-anchor="middle">Cowork agent</text>
+        <text class="sub" x="111" y="167" text-anchor="middle">review-before-act gate</text>
+        <rect class="box b-claude" x="330" y="92" width="180" height="58" rx="9"/>
+        <text class="lbl" x="420" y="114" text-anchor="middle" font-weight="700">Inference</text>
+        <text class="sub" x="420" y="132" text-anchor="middle">egress-controlled</text>
+        <rect class="box b-store" x="670" y="92" width="190" height="58" rx="9"/>
+        <text class="lbl" x="765" y="114" text-anchor="middle">Session data</text>
+        <text class="sub" x="765" y="132" text-anchor="middle">retention — verify (no ZDR)</text>
+        <path class="flow" d="M200,120 L326,120" marker-end="url(#ar14)"/>
+        <text class="flab" x="262" y="112" text-anchor="middle">folder contents in prompt</text>
+        <path class="flow dash" d="M510,134 Q590,165 668,140" marker-end="url(#ar14)"/>
+        <text class="flab" x="590" y="167" text-anchor="middle">instructions returned</text>
+        <path class="flow dash" d="M111,106 L111,128" marker-end="url(#ar14)"/>
+      </svg>
+    </div>
+    <div class="meta">
+      <div class="cell"><h4>Surface</h4><div class="v">Desktop product</div></div>
+      <div class="cell"><h4>No-train</h4><div class="v warn">Per plan — consumer ≠ commercial</div></div>
+      <div class="cell"><h4>Retention</h4><div class="v warn">Per policy — verify</div></div>
+      <div class="cell"><h4>ZDR</h4><div class="v no">Not covered</div></div>
+      <div class="cell"><h4>Residency</h4><div class="v warn">Not stated — verify</div></div>
+      <div class="cell"><h4>BAA</h4><div class="v no">Not covered</div></div>
+    </div>
+    <div class="bites"><b>Where it bites:</b> Cowork spans Pro/Max (consumer) through Enterprise on one GA surface — the no-train default is <b>not uniform</b> across that range (§2), same carve-out as Claude Code. Layer that on top of the two settled facts: Cowork is explicitly <b>BAA-excluded</b> and outside the ZDR covered-surfaces list. Folder-scoping, egress control, and review-before-act limit blast radius — they don't change the retention or training answer.</div>
+    <div class="companions">Trace: <a href="governance-overlay.html">governance-overlay.md</a> §2 (consumer-tier carve-out), §4 ("Cowork — a paid-plan product surface, but BAA-excluded").</div>
+  </div>
+
+  <!-- 15. CLAUDE DESIGN -->
+  <div class="feature">
+    <h2>15. Claude Design (beta)<span class="surf prod">Enterprise product (beta)</span></h2>
+    <div class="stack-line">uploaded assets are stored <strong>persistently</strong>, with <strong>no residency control</strong> and no BAA</div>
+    <div class="diagram">
+      <svg viewBox="0 0 900 200" xmlns="http://www.w3.org/2000/svg">
+        <defs><marker id="ar15" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0,1 L9,5 L0,9 L2,5 z" fill="#2a2017"/></marker></defs>
+        <rect class="zone" x="8" y="8" width="210" height="184" rx="8" fill="rgba(21,128,61,0.08)"/>
+        <rect class="zone" x="300" y="8" width="300" height="184" rx="8" fill="rgba(124,94,72,0.08)"/>
+        <rect class="zone" x="640" y="8" width="250" height="184" rx="8" fill="rgba(30,64,175,0.07)"/>
+        <text class="ztitle" x="113" y="26" text-anchor="middle">CUSTOMER TRUST ZONE</text>
+        <text class="ztitle" x="450" y="26" text-anchor="middle">ANTHROPIC PROCESSING</text>
+        <text class="ztitle" x="765" y="26" text-anchor="middle">ASSET STORE (no residency)</text>
+        <line class="boundary" x1="259" y1="14" x2="259" y2="186"/>
+        <text class="blab" x="259" y="190" text-anchor="middle">upload = boundary</text>
+        <rect class="box b-user" x="28" y="78" width="168" height="56" rx="9"/>
+        <text class="lbl" x="112" y="100" text-anchor="middle">Design asset</text>
+        <text class="sub" x="112" y="118" text-anchor="middle">org toggle, role-gated</text>
+        <rect class="box b-claude" x="330" y="78" width="180" height="56" rx="9"/>
+        <text class="lbl" x="420" y="100" text-anchor="middle" font-weight="700">Claude Design</text>
+        <text class="sub" x="420" y="118" text-anchor="middle">Anthropic Labs, beta</text>
+        <rect class="box b-store" x="670" y="78" width="190" height="56" rx="9" stroke-dasharray="5 4"/>
+        <text class="lbl" x="765" y="100" text-anchor="middle">Asset store</text>
+        <text class="sub" x="765" y="118" text-anchor="middle">persists, no region choice</text>
+        <path class="flow" d="M198,100 Q420,60 668,96" marker-end="url(#ar15)"/>
+        <text class="flab" x="430" y="66" text-anchor="middle">copy uploaded, kept</text>
+      </svg>
+    </div>
+    <div class="meta">
+      <div class="cell"><h4>Surface</h4><div class="v">Ent. product (beta)</div></div>
+      <div class="cell"><h4>No-train</h4><div class="v yes">Yes (default)</div></div>
+      <div class="cell"><h4>Retention</h4><div class="v warn">Persistent</div></div>
+      <div class="cell"><h4>ZDR</h4><div class="v no">Not covered</div></div>
+      <div class="cell"><h4>Residency</h4><div class="v no">No residency support</div></div>
+      <div class="cell"><h4>BAA</h4><div class="v no">Not covered (beta)</div></div>
+    </div>
+    <div class="bites"><b>Where it bites:</b> the sharpest gotcha on this page — <b>persistent storage, zero residency control, and no BAA, all at once</b>, on a real Team/Enterprise surface rather than a sandbox. Treat uploaded design assets like Files API uploads (#6): don't put anything there you can't leave indefinitely on Anthropic's infrastructure with no region guarantee.</div>
+    <div class="companions">Trace: <a href="governance-overlay.html">governance-overlay.md</a> §4 (beta features incl. Claude Design excluded from BAA); <a href="../docs/feature-inventory.html">feature-inventory.md</a> (persistence + no-residency facts).</div>
+  </div>
+
+  <!-- =================================================================== -->
   <div class="sec-h">Coverage table — the Enterprise-relevant feature set</div>
-  <div class="sec-sub">The 12 diagrams above cover the distinct boundary stories. This table catches the rest (Bash, Batch, Computer use, Web fetch, Advisor, Claude Code, Cowork, Claude Design) and gives the per-feature verdict at a glance. BAA verdicts assume an activated + signed Enterprise/API BAA — and several API tools and product surfaces are explicitly <strong>not</strong> covered.</div>
+  <div class="sec-sub">The 15 diagrams above cover the distinct boundary stories. This table catches the rest (Bash, Batch, Computer use, Web fetch, Advisor) and gives the per-feature verdict at a glance. BAA verdicts assume an activated + signed Enterprise/API BAA — and several API tools and product surfaces are explicitly <strong>not</strong> covered.</div>
   <table class="cov">
     <thead><tr><th>Feature</th><th>Surface</th><th>Crosses to</th><th>Retention</th><th>ZDR</th><th>Residency</th><th>BAA</th></tr></thead>
     <tbody>
