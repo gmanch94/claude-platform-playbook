@@ -2,9 +2,9 @@
 
 **As of 2026-06.** Pinned to the current Claude surface set. Refresh monthly with [`../docs/feature-inventory.md`](../docs/feature-inventory.md). Product facts cite primary sources — verify at [support.claude.com](https://support.claude.com) and [anthropic.com/pricing](https://www.anthropic.com/pricing) before committing budget or policy.
 
-The [`adoption-playbook.md`](adoption-playbook.md) answers *how* to run a 90-day Claude rollout. This answers the question one level up: **which Claude surface(s) do we roll out, to whom, and in what order — and what governs each.** Most orgs are not adopting "Claude"; they're adopting Claude Code for engineers, Cowork for analysts, Projects for knowledge teams, and Design for product/UX — each a different audience, plan gate, and blast radius.
+The [`adoption-playbook.md`](adoption-playbook.md) answers *how* to run a 90-day Claude rollout. This answers the question one level up: **which Claude surface(s) do we roll out, to whom, and in what order — and what governs each.** Most orgs are not adopting "Claude"; they're adopting Claude Code for engineers, Cowork for analysts, Projects for knowledge teams, Design for product/UX, and now Claude Tag for whole-team Slack workflows — each a different audience, plan gate, and blast radius.
 
-> **The point of this matrix:** the surfaces are *not* interchangeable, and the most useful one is rarely the safest to enable first. Claude Code and Cowork take real actions; Projects and Design persist your data; chat is the floor. Sequence by blast radius, not by enthusiasm. The governance column is the one Anthropic's own product docs won't assemble for you.
+> **The point of this matrix:** the surfaces are *not* interchangeable, and the most useful one is rarely the safest to enable first. Claude Code, Cowork, and Claude Tag take real actions; Projects and Design persist your data; chat is the floor. Sequence by blast radius, not by enthusiasm. The governance column is the one Anthropic's own product docs won't assemble for you.
 
 ---
 
@@ -17,6 +17,7 @@ The [`adoption-playbook.md`](adoption-playbook.md) answers *how* to run a 90-day
 | **Claude Code** | Engineers | Pro+ (seat) or API key | CLI / terminal | Highest agency for devs — hooks, MCP, sub-agents. Full guard stack already authored. | [`claude-code-adoption-guide.md`](claude-code-adoption-guide.md) |
 | **Cowork** | Non-technical knowledge workers (analysts, ops, legal, finance) | **Paid only** (Pro/Max/Team/Ent) | **Desktop app**, local files | **Takes real actions on the user's machine.** Folder-scoped + egress-controlled + review-before-act; isolated VM for code. **Not BAA-covered — no PHI.** [H] | [`cowork-adoption-guide.md`](cowork-adoption-guide.md) |
 | **Claude Design** | Product, UX, design | **Team / Enterprise** (Labs toggle) | Inside chat | **Beta.** Assets stored persistently; **no data residency**; not BAA-covered. Org-wide enable without a design system → generic output. [H] | This matrix |
+| **Claude Tag** | Whole team, via Slack | **Team / Enterprise** | **Slack** (channel tag, DM, assistant panel) | **Beta.** Channel tagging acts under the **org's** Claude identity with admin-scoped tools/data/repos, billed to the org; anyone in the channel can steer it. **BAA/ZDR/residency not stated** — verify before any regulated use. Replaces "Claude in Slack" (cutover 2026-08-03). [H] | This matrix |
 
 Plan-gate detail lives in [`subscription-selection-guide.md`](subscription-selection-guide.md); per-token cost in [`cost-calculator.html`](cost-calculator.html).
 
@@ -36,21 +37,24 @@ Ordered low → high blast radius — a defensible enablement order for most org
 
 5. **Cowork — last and most deliberate.** An agent that reads/writes local files and takes real actions on the user's machine. Govern with folder-scoping, egress settings, review-before-act, and (Team/Enterprise) admin controls for feature access, spend, usage, and a private plugin marketplace. **Not BAA-covered — no PHI in connected folders.** Full treatment in [`cowork-adoption-guide.md`](cowork-adoption-guide.md). → *Failure mode:* broad enablement with no admin owner and a drive-root folder connection. [H]
 
+6. **Claude Tag — newest, sequence with at least Cowork's caution.** Launched 2026-06-23 as a Team/Enterprise beta; blast radius is comparable to or higher than Cowork's — channel tagging grants org-identity access to admin-configured tools, data, **and codebases**, and (unlike Cowork's single-user desktop scope) *anyone in the channel* can steer or redirect the same agent identity. Govern with the three-tier permission model (org-wide → workspace → private channel), org + per-channel spend caps, and role-based Member Access (Enterprise). **BAA/ZDR/`inference_geo` are not stated in Anthropic's announcement or support docs** — treat as unconfirmed, not as excluded-by-omission; verify directly before any regulated use. As beta + days-old, it has the least field track record of any surface in this matrix — pilot in a low-sensitivity channel first. → *Failure mode:* granting org-wide tool/repo access to a channel before confirming who can tag it and what it's billed against. [H — [support.claude.com Claude Tag](https://support.claude.com/en/articles/15594475-what-is-claude-tag)]
+
 ---
 
 ## Picking an order for *your* org
 
-The 1→5 list above is the default. Deviate on these signals:
+The 1→6 list above is the default. Deviate on these signals:
 
 | If your org… | Lead with | Defer |
 |---|---|---|
-| Is engineering-led, adopting Claude to ship software | Claude Code | Cowork / Design until non-eng demand is real |
+| Is engineering-led, adopting Claude to ship software | Claude Code | Cowork / Design / Tag until non-eng demand is real |
 | Is analyst/ops/finance-heavy, little code | Projects, then Cowork | Claude Code |
 | Has product/design as the pilot function | Claude Design (Team/Ent) | Cowork until file-governance is owned |
-| Is regulated (PHI, residency) | Chat/Projects on **Enterprise + signed BAA** | **Cowork and Design entirely** — neither is BAA-covered [H] |
+| Is regulated (PHI, residency) | Chat/Projects on **Enterprise + signed BAA** | **Cowork, Design, and Tag entirely** — none has confirmed BAA coverage [H] |
 | Is a startup of 2–4 (no Team plan) | Chat + individual Pro/Max seats | Anything needing SSO / central admin (starts at Team) |
+| Already runs "Claude in Slack" | Migrate to Claude Tag before **2026-08-03** | — cutover is mandatory, not optional, on that date |
 
-The regulated row is the one that flips the default: compliance decides surface eligibility *before* usefulness. A 50-person hospital can run Projects under an Enterprise BAA (admin must activate HIPAA + sign — not automatic) but **cannot** put PHI through Cowork or Design at all (Cowork is excluded as a non-API product surface; Design as a beta feature — re-verify both at GA). [H — [privacy.claude.com BAA](https://privacy.claude.com/en/articles/8114513-business-associate-agreements-baa-for-commercial-customers); enumerated in [`governance-overlay.md`](governance-overlay.md) §4]
+The regulated row is the one that flips the default: compliance decides surface eligibility *before* usefulness. A 50-person hospital can run Projects under an Enterprise BAA (admin must activate HIPAA + sign — not automatic) but **cannot** put PHI through Cowork or Design at all (Cowork is excluded as a non-API product surface; Design as a beta feature — re-verify both at GA). [H — [privacy.claude.com BAA](https://privacy.claude.com/en/articles/8114513-business-associate-agreements-baa-for-commercial-customers); enumerated in [`governance-overlay.md`](governance-overlay.md) §4]. **Claude Tag isn't enumerated in that BAA list at all yet** (too new) — treat it the same as Cowork/Design until Anthropic states otherwise, not as a silent third BAA-covered surface.
 
 ---
 
