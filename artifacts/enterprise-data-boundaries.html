@@ -622,7 +622,7 @@
 
   <!-- =================================================================== -->
   <div class="sec-h">Coverage table — the Enterprise-relevant feature set</div>
-  <div class="sec-sub">The 12 diagrams above cover the distinct boundary stories. This table catches the rest (Bash, Batch, Computer use, Web fetch, Advisor) and gives the per-feature verdict at a glance. BAA verdicts assume an activated + signed Enterprise/API BAA — and several API tools are explicitly <strong>not</strong> covered.</div>
+  <div class="sec-sub">The 12 diagrams above cover the distinct boundary stories. This table catches the rest (Bash, Batch, Computer use, Web fetch, Advisor, Claude Code, Cowork, Claude Design) and gives the per-feature verdict at a glance. BAA verdicts assume an activated + signed Enterprise/API BAA — and several API tools and product surfaces are explicitly <strong>not</strong> covered.</div>
   <table class="cov">
     <thead><tr><th>Feature</th><th>Surface</th><th>Crosses to</th><th>Retention</th><th>ZDR</th><th>Residency</th><th>BAA</th></tr></thead>
     <tbody>
@@ -643,6 +643,9 @@
       <tr><td>Computer use 2.0</td><td>API (beta)</td><td>Anthropic infer</td><td>30-day / ZDR</td><td>Per table</td><td>Workspace geo</td><td class="no">Not covered</td></tr>
       <tr><td>Web fetch tool</td><td>API</td><td class="no">Third-party web</td><td>30-day / ZDR</td><td>Per table</td><td class="no">Egress unbound</td><td class="no">Not covered</td></tr>
       <tr><td>Advisor tool</td><td>API</td><td>Anthropic infer</td><td>30-day / ZDR</td><td>Per table</td><td>Workspace geo</td><td class="no">Not covered</td></tr>
+      <tr><td>Claude Code (CLI)</td><td>API (CLI)</td><td>Anthropic infer + local fs</td><td>30-day / ZDR</td><td class="yes">Eligible</td><td>inference_geo (API-key auth)</td><td class="warn">Verify at signing</td></tr>
+      <tr><td>Cowork (desktop agent)</td><td>Desktop product</td><td>Anthropic infer + local fs</td><td>Per policy — verify</td><td class="no">Not covered</td><td>Not stated — verify</td><td class="no">Not covered</td></tr>
+      <tr><td>Claude Design (beta)</td><td>Ent. product (beta)</td><td>Anthropic infer + asset store</td><td>Persistent</td><td class="no">Not covered</td><td class="no">No residency</td><td class="no">Not covered</td></tr>
     </tbody>
   </table>
 
