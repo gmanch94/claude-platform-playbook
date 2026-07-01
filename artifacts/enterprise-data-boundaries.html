@@ -622,7 +622,7 @@
 
   <!-- =================================================================== -->
   <div class="sec-h">D · Seat-plan &amp; CLI surfaces</div>
-  <div class="sec-sub">Claude Code is a CLI on top of the Messages API. Cowork and Claude Design are seat-plan product surfaces spanning consumer <em>and</em> commercial tiers — the no-train default is not uniform across that range (§2). Two of the three are BAA-excluded.</div>
+  <div class="sec-sub">Claude Code is a CLI on top of the Messages API. Cowork and Claude Design are seat-plan product surfaces spanning consumer <em>and</em> commercial tiers — the no-train default is not uniform across that range (§2). Claude Tag is Team/Enterprise-only, Slack-native, in beta. None of the four have confirmed BAA coverage today.</div>
 
   <!-- 13. CLAUDE CODE (CLI) -->
   <div class="feature">
@@ -754,9 +754,55 @@
     <div class="companions">Trace: <a href="governance-overlay.html">governance-overlay.md</a> §4 (beta features incl. Claude Design excluded from BAA); <a href="../docs/feature-inventory.html">feature-inventory.md</a> (persistence + no-residency facts).</div>
   </div>
 
+  <!-- 16. CLAUDE TAG -->
+  <div class="feature">
+    <h2>16. Claude Tag (Slack, beta)<span class="surf prod">Slack-native product</span></h2>
+    <div class="stack-line">one org-identity agent, shared by everyone in the channel · replaces "Claude in Slack" (cutover 2026-08-03)</div>
+    <div class="diagram">
+      <svg viewBox="0 0 900 210" xmlns="http://www.w3.org/2000/svg">
+        <defs><marker id="ar16" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0,1 L9,5 L0,9 L2,5 z" fill="#2a2017"/></marker></defs>
+        <rect class="zone" x="8" y="8" width="210" height="194" rx="8" fill="rgba(21,128,61,0.08)"/>
+        <rect class="zone" x="300" y="8" width="300" height="194" rx="8" fill="rgba(124,94,72,0.08)"/>
+        <rect class="zone" x="640" y="8" width="250" height="194" rx="8" fill="rgba(30,64,175,0.07)"/>
+        <text class="ztitle" x="113" y="26" text-anchor="middle">SLACK WORKSPACE (your org)</text>
+        <text class="ztitle" x="450" y="26" text-anchor="middle">ANTHROPIC PROCESSING</text>
+        <text class="ztitle" x="765" y="26" text-anchor="middle">MEMORY + LOGS</text>
+        <line class="boundary" x1="259" y1="14" x2="259" y2="196"/>
+        <text class="blab" x="259" y="200" text-anchor="middle">tag = boundary</text>
+        <rect class="box b-user" x="22" y="58" width="178" height="48" rx="9"/>
+        <text class="lbl" x="111" y="77" text-anchor="middle">Channel member</text>
+        <text class="sub" x="111" y="94" text-anchor="middle">anyone in the channel</text>
+        <rect class="box b-user" x="22" y="130" width="178" height="48" rx="9"/>
+        <text class="lbl" x="111" y="150" text-anchor="middle">Slack channel</text>
+        <text class="sub" x="111" y="167" text-anchor="middle">history stays in Slack (your retention)</text>
+        <rect class="box b-claude" x="330" y="92" width="180" height="58" rx="9"/>
+        <text class="lbl" x="420" y="114" text-anchor="middle" font-weight="700">Claude Tag</text>
+        <text class="sub" x="420" y="132" text-anchor="middle">org identity · admin-scoped tools/repos</text>
+        <rect class="box b-store" x="670" y="92" width="190" height="58" rx="9"/>
+        <text class="lbl" x="765" y="114" text-anchor="middle">Channel memory</text>
+        <text class="sub" x="765" y="132" text-anchor="middle">persists · purges 30d post-disconnect</text>
+        <path class="flow" d="M200,120 L326,120" marker-end="url(#ar16)"/>
+        <text class="flab" x="262" y="112" text-anchor="middle">tags @Claude</text>
+        <path class="flow dash" d="M510,134 Q590,165 668,140" marker-end="url(#ar16)"/>
+        <text class="flab" x="590" y="167" text-anchor="middle">context persists</text>
+        <path class="flow dash" d="M111,106 L111,128" marker-end="url(#ar16)"/>
+      </svg>
+    </div>
+    <div class="meta">
+      <div class="cell"><h4>Surface</h4><div class="v">Slack (beta)</div></div>
+      <div class="cell"><h4>No-train</h4><div class="v yes">Yes (default — Team/Ent only, no consumer tier)</div></div>
+      <div class="cell"><h4>Retention</h4><div class="v warn">Persists while connected; 30-day purge after disconnect (not the usual rolling window)</div></div>
+      <div class="cell"><h4>ZDR</h4><div class="v no">Not covered</div></div>
+      <div class="cell"><h4>Residency</h4><div class="v warn">Not stated — verify</div></div>
+      <div class="cell"><h4>BAA</h4><div class="v no">Not covered (unconfirmed)</div></div>
+    </div>
+    <div class="bites"><b>Where it bites:</b> two identity modes hide under one name. <b>Channel tagging</b> runs under your <b>org's</b> Claude identity with admin-scoped tools/data/repos, billed to the org, and worked by <em>whoever tags it</em> — the confused-deputy risk is sharper here than on Cowork or Claude Code because multiple people share one agent identity (see agentic-threat-model T8). <b>DM and the assistant panel</b> run under the tagger's <b>own</b> account instead, billed individually — don't assume channel-mode's org-wide governance (Member Access, spend caps) applies there too. Retention is <b>not</b> the usual 30-day rolling window: data persists while the integration stays connected and purges within 30 days only <em>after</em> you disconnect it. Slack's own copy of the conversation follows your org's Slack retention policy — a second store Anthropic doesn't control. <b>BAA/ZDR/<code>inference_geo</code> are not stated anywhere</b> in Anthropic's Claude Tag materials — treat as not covered until confirmed, the same posture as Cowork and Claude Design, not a silent third "probably fine."</div>
+    <div class="companions">Trace: <a href="governance-overlay.html">governance-overlay.md</a> §1 (Claude Tag data-flow row), §4 (BAA not enumerated); <a href="surface-rollout-matrix.html">surface-rollout-matrix.md</a> (three-tier permission model, Member Access); <a href="agentic-threat-model.html">agentic-threat-model.md</a> T8/T9 (shared-identity confused-deputy, channel memory poisoning).</div>
+  </div>
+
   <!-- =================================================================== -->
   <div class="sec-h">Coverage table — the Enterprise-relevant feature set</div>
-  <div class="sec-sub">The 15 diagrams above cover the distinct boundary stories. This table catches the rest (Bash, Batch, Computer use, Web fetch, Advisor) and gives the per-feature verdict at a glance. BAA verdicts assume an activated + signed Enterprise/API BAA — and several API tools and product surfaces are explicitly <strong>not</strong> covered.</div>
+  <div class="sec-sub">The 16 diagrams above cover the distinct boundary stories. This table catches the rest (Bash, Batch, Computer use, Web fetch, Advisor) and gives the per-feature verdict at a glance. BAA verdicts assume an activated + signed Enterprise/API BAA — and several API tools and product surfaces are explicitly <strong>not</strong> covered.</div>
   <table class="cov">
     <thead><tr><th>Feature</th><th>Surface</th><th>Crosses to</th><th>Retention</th><th>ZDR</th><th>Residency</th><th>BAA</th></tr></thead>
     <tbody>
@@ -780,6 +826,7 @@
       <tr><td>Claude Code (CLI)</td><td>API (CLI)</td><td>Anthropic infer + local fs</td><td>30-day / ZDR</td><td class="yes">Eligible</td><td>inference_geo (API-key auth)</td><td class="warn">Verify at signing</td></tr>
       <tr><td>Cowork (desktop agent)</td><td>Desktop product</td><td>Anthropic infer + local fs</td><td>Per policy — verify</td><td class="no">Not covered</td><td>Not stated — verify</td><td class="no">Not covered</td></tr>
       <tr><td>Claude Design (beta)</td><td>Ent. product (beta)</td><td>Anthropic infer + asset store</td><td>Persistent</td><td class="no">Not covered</td><td class="no">No residency</td><td class="no">Not covered</td></tr>
+      <tr><td>Claude Tag (Slack, beta)</td><td>Slack product</td><td>Anthropic infer + your tools/repos</td><td>Persists to disconnect +30d</td><td class="no">Not covered</td><td>Not stated — verify</td><td class="no">Not covered (unconfirmed)</td></tr>
     </tbody>
   </table>
 

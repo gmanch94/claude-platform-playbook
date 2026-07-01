@@ -21,6 +21,7 @@ This is a **risk + compliance overlay** — not a generic AI governance framewor
 | Agent SDK / MCP | Tool input + tool output | Tool internals (DB credentials, full record set unless retrieved) | Anthropic API |
 | Files API upload | The uploaded file content | The original file in your storage (only a copy moves) | Anthropic Files store |
 | Memory tool reads/writes | Memory blob content | Other process state | Anthropic memory store |
+| Claude Tag (Slack) | Channel/DM messages + admin-configured tool/repo access + persisted channel memory | Credentials/internals of connected tools (same MCP-style boundary); channel-tagging work is attributed to your **org's** Claude identity, DM/panel work to the **individual's** account | Anthropic API + your connected tools; conversation history also lives in Slack, governed by your org's own Slack retention policy — a second store Anthropic doesn't control |
 
 **Implication for design:** the prompt is the trust boundary. Anything in the prompt is on Anthropic's infra for the duration of the request (and longer if you use Files API or memory tool). Architect tool layers so they retrieve only what the model needs to see.
 
@@ -114,6 +115,7 @@ ZDR is a **separate enterprise agreement** distinct from no-train. Source: [Anth
 - Claude Free, Pro, Max, Team plans
 - **Cowork** — a paid-plan product surface (GA, not beta), but BAA-excluded
 - Beta features such as **Claude in Office** and **Claude Design**
+- **Claude Tag** (Slack surface, beta, launched 2026-06-23) — not yet enumerated in either direction by Anthropic's BAA covered-features list. Treat as **not covered until confirmed**, the same operational posture as Cowork/Design, not a silent fourth "probably fine."
 
 **PHI handling rules carried over from Anthropic's HIPAA configuration:**
 - Patient-specific information must appear **only in message content** (where HIPAA safeguards apply)
