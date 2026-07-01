@@ -1,8 +1,10 @@
 # Claude Model Selection Guide
 
-**As of 2026-06.** Pinned to Opus 4.8 / Sonnet 4.6 / Haiku 4.5. Refresh monthly with [`../docs/feature-inventory.md`](../docs/feature-inventory.md).
+**As of 2026-06.** Pinned to Opus 4.8 / Sonnet 5 / Haiku 4.5. Refresh monthly with [`../docs/feature-inventory.md`](../docs/feature-inventory.md).
 
 > **The decision upstream of everything else.** Before the feature-decision-matrix, before the cost-calculator, there is one question: *which model tier fits this task?* Getting it wrong costs money (over-tiering) or quality (under-tiering). This guide answers it in four questions.
+
+> **Sonnet 5 narrows the Opus gap (2026-06-30 launch).** Sonnet 5's launch benchmarks show performance close to Opus 4.8 at lower price, and it can match Opus 4.8 on some tasks at higher effort — a bigger jump than prior Sonnet releases. **Re-validate the Q1 threshold in eval** before assuming last month's Opus-vs-Sonnet routing decisions still hold; a task that needed Opus 4.8 under Sonnet 4.6 may now clear the bar on Sonnet 5 at higher effort, at ~1.7× lower cost. This guide keeps Opus 4.8 as the default for the hardest reasoning/code-review row below until that re-validation happens — don't flip it without an eval delta.
 
 > **A note on the next-gen line.** Anthropic has announced a tier above the 4.x family — **Claude Fable 5** (most capable widely released) and **Claude Mythos 5** (Project Glasswing). As of this writing neither is deployable: Fable 5 is **unavailable** (gated access) and Mythos 5 is **invite-only**. This guide stays on Opus 4.8 because it's the most capable model you can actually put into production today. Re-tier the hardest tasks to Fable 5 once it reaches GA — at ~2× Opus pricing ($10/$50 per MTok), validate the quality delta against Opus 4.8 in eval before paying for it. Track status in [`../docs/feature-inventory.md`](../docs/feature-inventory.md).
 
@@ -17,7 +19,7 @@ Answer in order. Stop at the first match.
 → No: continue to Q2.
 
 **Q2. Does this task require reliable instruction-following, structured output, tool use, or RAG synthesis across long context?**
-→ Yes: **Sonnet 4.6** is the default. Covers ~70% of production workloads.
+→ Yes: **Sonnet 5** is the default. Covers ~70% of production workloads (pre-Sonnet-5 figure — likely higher now given the narrowed Opus gap; re-measure rather than assume).
 → No: continue to Q3.
 
 **Q3. Is this task high-volume, latency-sensitive, or clearly bounded (classification, routing, short-form generation, triage)?**
@@ -26,7 +28,7 @@ Answer in order. Stop at the first match.
 
 **Q4. Is this task interactive and latency-sensitive, with output quality that isn't critical?**
 → Yes: **Haiku 4.5** for the shell, escalate to Sonnet on confidence threshold.
-→ Uncertain: default to Sonnet 4.6 and measure.
+→ Uncertain: default to Sonnet 5 and measure.
 
 ---
 
@@ -35,11 +37,11 @@ Answer in order. Stop at the first match.
 | Task type | Default tier | Rationale | Failure mode if wrong |
 |---|---|---|---|
 | Complex code reasoning, architecture review | Opus 4.8 | Needs multi-step reasoning + nuanced judgment | Sonnet misses non-obvious bugs; Haiku hallucinates logic |
-| Agentic workflow orchestration (planning step) | Opus 4.8 or Sonnet 4.6 | Planning quality determines downstream execution quality | Under-tiering cascades errors through the whole pipeline |
-| RAG synthesis, document Q&A, long-form drafting | Sonnet 4.6 | Strong instruction-following + 1M context | Haiku degrades on long retrieved context |
-| Structured output generation (JSON, tables, reports) | Sonnet 4.6 | Consistent schema adherence across edge inputs | Haiku drifts on complex schemas |
-| Tool use / function calling (multi-step) | Sonnet 4.6 | Reliable tool selection + parameter accuracy | Haiku drops required params on ambiguous tool definitions |
-| Copilot (interactive, medium complexity) | Sonnet 4.6 | Quality floor for user-facing response | Haiku frustrates users on nuanced follow-up |
+| Agentic workflow orchestration (planning step) | Opus 4.8 or Sonnet 5 | Planning quality determines downstream execution quality | Under-tiering cascades errors through the whole pipeline |
+| RAG synthesis, document Q&A, long-form drafting | Sonnet 5 | Strong instruction-following (context window vs. Sonnet 4.6 not yet confirmed — verify) | Haiku degrades on long retrieved context |
+| Structured output generation (JSON, tables, reports) | Sonnet 5 | Consistent schema adherence across edge inputs | Haiku drifts on complex schemas |
+| Tool use / function calling (multi-step) | Sonnet 5 | Reliable tool selection + parameter accuracy | Haiku drops required params on ambiguous tool definitions |
+| Copilot (interactive, medium complexity) | Sonnet 5 | Quality floor for user-facing response | Haiku frustrates users on nuanced follow-up |
 | Intent classification, routing, triage | Haiku 4.5 | Bounded task, high volume, latency-sensitive | Sonnet cost ~3× higher for equivalent accuracy |
 | Short-form generation (push notifications, titles, summaries) | Haiku 4.5 | Fast, cheap, adequate quality | Opus/Sonnet is pure cost overhead |
 | Batch enrichment (tagging, extraction, scoring) | Haiku 4.5 + Batch API | Max cost efficiency; async SLA acceptable | Sonnet/Opus inflates batch budget by ~3–5× |

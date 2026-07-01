@@ -1,6 +1,6 @@
 # Anti-Use Cases — Where Claude Should *Not* Be Used
 
-**As of 2026-06.** Pin to current model surface (Opus 4.8 / Sonnet 4.6 / Haiku 4.5) — refresh monthly with [`../docs/feature-inventory.md`](../docs/feature-inventory.md).
+**As of 2026-06.** Pin to current model surface (Opus 4.8 / Sonnet 5 / Haiku 4.5) — refresh monthly with [`../docs/feature-inventory.md`](../docs/feature-inventory.md).
 
 > If your candidate use case fits any row below, **stop**. Re-route, narrow scope, or kill. Most of these are not "Claude is bad at this" — they are "no LLM is the right primitive for this decision class, and shipping one anyway destroys trust faster than any cost saving recovers."
 

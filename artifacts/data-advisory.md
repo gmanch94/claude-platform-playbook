@@ -1,6 +1,6 @@
 # Data Advisory — How Much Data, and From Where?
 
-**As of 2026-06.** Pin to current model surface (Opus 4.8 / Sonnet 4.6 / Haiku 4.5) — refresh monthly with [`../docs/feature-inventory.md`](../docs/feature-inventory.md).
+**As of 2026-06.** Pin to current model surface (Opus 4.8 / Sonnet 5 / Haiku 4.5) — refresh monthly with [`../docs/feature-inventory.md`](../docs/feature-inventory.md).
 
 > Two questions surface before most Claude pilots: *do we have enough data to make this work?* and *where does that data come from?* This file answers both — in sizing terms, not architecture tutorials. Read it alongside [`pilot-selection-worksheet.html`](pilot-selection-worksheet.html) (data readiness axis) and before you commit to a RAG build or eval investment.
 
@@ -20,7 +20,7 @@ Rows marked **(rule of thumb)** reflect field practice, not primary Anthropic do
 
 ## 1. Context window: what fits in a single call
 
-The context window depends on the model. **Opus 4.8 defaults to a 1M-token window** on the Claude API; Opus 4.7, Opus 4.6, and Sonnet 4.6 also support 1M (200K standard tier, 1M long-context tier — same per-token rate, no surcharge). Haiku 4.5 and legacy models are 200K. The table below sizes the **200K baseline**; multiply by ~5 for the 1M window.
+The context window depends on the model. **Opus 4.8 defaults to a 1M-token window** on the Claude API; Opus 4.7, Opus 4.6, and Sonnet 4.6 also support 1M (200K standard tier, 1M long-context tier — same per-token rate, no surcharge). Haiku 4.5 and legacy models are 200K. **Sonnet 5 succeeds Sonnet 4.6 as the workhorse tier — its context window isn't stated in Anthropic's launch materials; verify before assuming 1M carries over, and size against the 200K baseline until confirmed.** The table below sizes the **200K baseline**; multiply by ~5 for the 1M window where confirmed.
 
 | Material type | Approximate fit in 200K tokens |
 |---|---|
@@ -29,7 +29,7 @@ The context window depends on the model. **Opus 4.8 defaults to a 1M-token windo
 | JSON records | ~15,000 mid-size records (~300 tokens each) |
 | Conversation turns | ~400–800 turns (length-dependent) |
 
-**Decision trigger.** If your working reference material fits in the model's window (200K baseline, up to 1M on Opus 4.8 / Opus 4.7 / Sonnet 4.6) *and* is stable across calls, a long-context call may be enough — no RAG pipeline needed. RAG adds retrieval latency, chunking complexity, and an additional failure mode (retrieval misses). Don't build RAG to solve a problem the context window already solves.
+**Decision trigger.** If your working reference material fits in the model's window (200K baseline, up to 1M on Opus 4.8 / Opus 4.7 / Sonnet 4.6 — Sonnet 5's ceiling is unconfirmed, verify) *and* is stable across calls, a long-context call may be enough — no RAG pipeline needed. RAG adds retrieval latency, chunking complexity, and an additional failure mode (retrieval misses). Don't build RAG to solve a problem the context window already solves.
 
 **Cite.** [docs.claude.com — models overview](https://docs.claude.com/en/docs/about-claude/models/overview). Token-to-word conversions are rule of thumb (English prose ≈ 0.75 tokens/word).
 
@@ -73,7 +73,7 @@ From [`eval-starter-pack.md`](eval-starter-pack.md):
 | Latency | 30–50 | — | Alert on > 20% regression on p50/p95 |
 | Refusal calibration | 50–100 | — | Advisory |
 
-**Minimum viable eval for a first pilot:** 30-row regression + 50-row format compliance. Full Sonnet 4.6 run via Batch API (50% off) with caching costs under $5. No reason to skip it.
+**Minimum viable eval for a first pilot:** 30-row regression + 50-row format compliance. Full Sonnet 5 run via Batch API (50% off) with caching costs under $5 (same $3/$15 standard pricing as 4.6). No reason to skip it.
 
 **Decision trigger.** Without at least a 30-row regression eval locked before Week 1, you cannot tell if prompt changes improved or regressed quality — the #2 named failure mode in [`adoption-playbook.md`](adoption-playbook.md).
 
@@ -112,7 +112,7 @@ From [`governance-overlay.md §15.1`](governance-overlay.html#15-cost-as-a-gover
 | Requirement | Detail |
 |---|---|
 | Stable prefix | System prompt is consistent across requests — no per-request variation in the cached portion |
-| Minimum length | System prompt exceeds the cache-eligibility minimum. **Model-dependent:** 1,024 tokens on Opus 4.8, Sonnet 4.6, Haiku 4.5; 4,096 tokens on Opus 4.7 / 4.6. Below the floor, the prompt is processed uncached (no error) and caching overhead doesn't pay back |
+| Minimum length | System prompt exceeds the cache-eligibility minimum. **Model-dependent:** 1,024 tokens on Opus 4.8, Sonnet 4.6, Haiku 4.5; 4,096 tokens on Opus 4.7 / 4.6. **Sonnet 5's cache-eligibility floor isn't stated in launch materials — verify rather than assuming the 1,024-token floor carries over**, especially given its tokenizer change (same input now maps to more tokens). Below the floor, the prompt is processed uncached (no error) and caching overhead doesn't pay back |
 | Variable tail only | Only the per-request portion (user message + dynamic context) varies |
 
 **What kills cache hit rate:**

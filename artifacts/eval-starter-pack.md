@@ -1,6 +1,6 @@
 # Claude Eval Starter Pack
 
-**As of 2026-06.** Pin to current model surface (Opus 4.8 / Sonnet 4.6 / Haiku 4.5). Companion to [`adoption-playbook.md`](adoption-playbook.md) (Weeks 5–8 guardrails) and [`claude-code-adoption-guide.md`](claude-code-adoption-guide.md) (Phase 3 governance). See [`../docs/feature-inventory.md`](../docs/feature-inventory.md) for canonical feature surface.
+**As of 2026-06.** Pin to current model surface (Opus 4.8 / Sonnet 5 / Haiku 4.5). Companion to [`adoption-playbook.md`](adoption-playbook.md) (Weeks 5–8 guardrails) and [`claude-code-adoption-guide.md`](claude-code-adoption-guide.md) (Phase 3 governance). See [`../docs/feature-inventory.md`](../docs/feature-inventory.md) for canonical feature surface.
 
 Eight evaluation templates an engineering or COE lead can drop into CI on day one. Each eval is framed by **decision** first (what regression it catches, what it costs, who owns it) — the eval body is last, because eval mechanics are the cheapest part to build and the most expensive part to govern.
 
@@ -16,7 +16,7 @@ If you ship even half of these in CI, you defuse the most common scaling failure
 2. **30–80 examples per eval to start.** Enough to be statistically meaningful for binary pass/fail; small enough to keep CI under 10 minutes. Grow to 200–500 only when the eval is proven valuable.
 3. **One owner per eval.** Without an owner, evalsets rot inside a quarter — same failure mode as Skills. Name in the eval's metadata.
 4. **Block deploys on critical evals; advisory on everything else.** Trying to make every eval blocking creates eval-bypass culture. See "Blocking vs advisory" below.
-5. **Run cheaply.** Use [Batch API](https://docs.claude.com/en/docs/build-with-claude/batch-processing) (50% off) for nightly full runs and [Code execution tool](https://docs.claude.com/en/docs/agents-and-tools/code-execution) to host the runner if you don't want to maintain infrastructure. A full 500-example eval suite on Sonnet 4.6 with caching runs under $5 in batch mode.
+5. **Run cheaply.** Use [Batch API](https://docs.claude.com/en/docs/build-with-claude/batch-processing) (50% off) for nightly full runs and [Code execution tool](https://docs.claude.com/en/docs/agents-and-tools/code-execution) to host the runner if you don't want to maintain infrastructure. A full 500-example eval suite on Sonnet 5 with caching runs under $5 in batch mode (same $3/$15 standard pricing as 4.6).
 
 Each template below follows the same structure:
 

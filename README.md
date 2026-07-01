@@ -12,7 +12,7 @@ Most "use Claude" content is developer tutorials. This repo fills the **executiv
 
 - **Anti-use cases** — explicit list of where Claude should *not* be used (sole-decider on regulated decisions, sub-100ms latency, sub-cent unit-cost workloads, prompt-injection-exposed agents)
 - Build vs buy vs platform — when Claude beats DIY / OpenAI / in-house
-- Cost economics — prompt caching (90% off cached input), batch (50% off), Haiku 4.5 / Sonnet 4.6 / Opus 4.8 mix
+- Cost economics — prompt caching (90% off cached input), batch (50% off), Haiku 4.5 / Sonnet 5 / Opus 4.8 mix
 - Time-to-value — Skills + MCP + Files API + Agent SDK + plugins + memory tool = weeks not quarters
 - Governance fit — no-train, BAA paths, prompt versioning, audit trail, EU AI Act + NIST AI RMF mapping
 - 90-day adoption arc — pilot → guardrails → scale
@@ -132,7 +132,7 @@ Or fork the repo, customize for your org, host wherever you want.
 ## Sourcing discipline
 
 - Pricing claims dated and link to [anthropic.com/pricing](https://www.anthropic.com/pricing)
-- Model versions pinned (Sonnet 4.x, Haiku 4.x, Opus 4.x) — never "latest"
+- Model versions pinned (Sonnet 5, Haiku 4.x, Opus 4.x) — never "latest"
 - All technical claims cite [docs.claude.com](https://docs.claude.com) by URL + as-of date
 - No reproducing Anthropic marketing copy verbatim — paraphrase + cite
 - Footer pattern on every artifact: `© gmanch94 · CC-BY-4.0 · As of 2026-06. Verify at anthropic.com.`

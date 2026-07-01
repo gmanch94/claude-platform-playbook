@@ -1,6 +1,6 @@
 # Claude Code Adoption Guide — engineering team rollout
 
-**As of 2026-06.** Pin to current model surface (Opus 4.8 / Sonnet 4.6 / Haiku 4.5). See [`../docs/feature-inventory.md`](../docs/feature-inventory.md) for canonical Claude Code surface inventory.
+**As of 2026-06.** Pin to current model surface (Opus 4.8 / Sonnet 5 / Haiku 4.5). See [`../docs/feature-inventory.md`](../docs/feature-inventory.md) for canonical Claude Code surface inventory.
 
 For engineering managers and platform leads rolling out **Claude Code** (the CLI/IDE harness) across a team. This is a tactical companion to [`adoption-playbook.md`](adoption-playbook.md) — that doc covers business adoption; this one covers the engineering surface.
 
@@ -8,7 +8,7 @@ For engineering managers and platform leads rolling out **Claude Code** (the CLI
 
 ## What Claude Code is, in one paragraph
 
-A CLI tool (also runnable in VS Code / JetBrains / desktop / web) that runs an agentic loop in a developer's repo. It has built-in tools (file edit, bash, grep, web fetch, git, sub-agents) and extensible surfaces (slash commands, hooks, Skills, MCP servers, plugins). Default model is Sonnet 4.6; escalate to Opus 4.8 for hard problems; Haiku 4.5 for triage. Settings hierarchy is user → project → local (each shadows the previous). Headless mode runs the same loop in CI.
+A CLI tool (also runnable in VS Code / JetBrains / desktop / web) that runs an agentic loop in a developer's repo. It has built-in tools (file edit, bash, grep, web fetch, git, sub-agents) and extensible surfaces (slash commands, hooks, Skills, MCP servers, plugins). Default model is Sonnet 5; escalate to Opus 4.8 for hard problems; Haiku 4.5 for triage. Settings hierarchy is user → project → local (each shadows the previous). Headless mode runs the same loop in CI.
 
 ---
 
@@ -21,7 +21,7 @@ A CLI tool (also runnable in VS Code / JetBrains / desktop / web) that runs an a
 | Decision | Default | When to deviate |
 |---|---|---|
 | **Procurement** | Direct API or per-seat plan via `console.anthropic.com` | Bedrock / Vertex when the org demands it. Note: model lag possible. |
-| **Default model** | Sonnet 4.6 | Use Haiku 4.5 default for cost-sensitive teams; rare. |
+| **Default model** | Sonnet 5 | Use Haiku 4.5 default for cost-sensitive teams; rare. |
 | **Permission posture** | `acceptEdits` mode in safe sandboxes; `default` for production-adjacent repos | Never `bypassPermissions` (--dangerously-skip-permissions) outside a throwaway container. |
 | **Hooks-first or skills-first** | Hooks for safety (block destructive ops); Skills for repeatability | If team has zero shared conventions, start with Skills. |
 | **Plugin distribution** | One team plugin, source-controlled in a dedicated repo | Multiple plugins only after 2–3 teams adopt. |
@@ -74,7 +74,7 @@ In the pilot repo, add `.claude/settings.json`:
       "Bash(rm -rf:*)"
     ]
   },
-  "model": "claude-sonnet-4-6"
+  "model": "claude-sonnet-5"
 }
 ```
 

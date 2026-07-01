@@ -1,6 +1,6 @@
 # Agentic Threat Model — Claude Deployments
 
-**As of 2026-06.** Pin to current surface (Opus 4.8 / Sonnet 4.6 / Haiku 4.5, MCP, Claude Code, Cowork) — refresh monthly.
+**As of 2026-06.** Pin to current surface (Opus 4.8 / Sonnet 5 / Haiku 4.5, MCP, Claude Code, Cowork) — refresh monthly.
 
 [`governance-overlay.md`](governance-overlay.md) and [`enterprise-data-boundaries.html`](enterprise-data-boundaries.html) answer *where does the data go* — the **compliance** surface. [`incident-response-runbook.md`](incident-response-runbook.md) answers *what do we do when it breaks* — the **reactive** layer. Neither answers the question a security architect is asked when defending an agentic deployment to a risk committee: **how does an attacker turn this agent against us, and what stops them?** This is that register — the **preventive** attack surface, framed on the OWASP LLM / agentic risk taxonomy and mapped, threat by threat, to a control that already exists in this repo.
 

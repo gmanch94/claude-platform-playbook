@@ -69,7 +69,7 @@
   <!-- ====================================================================== -->
   <div class="pattern">
     <h2>1. RAG copilot</h2>
-    <div class="stack-line">Sonnet 4.6 · Files API · prompt caching · citations · (optional MCP for live data)</div>
+    <div class="stack-line">Sonnet 5 · Files API · prompt caching · citations · (optional MCP for live data)</div>
 
     <div class="diagram">
       <svg viewBox="0 0 980 380" xmlns="http://www.w3.org/2000/svg">
@@ -121,7 +121,7 @@
         <!-- Claude API -->
         <path class="box claude" d="M460,140 Q460,130 472,128 L640,132 Q652,130 650,142 L649,225 Q652,237 640,235 L472,233 Q458,237 460,223 Z"/>
         <text class="lbl" x="555" y="165" text-anchor="middle" font-weight="700">Claude API</text>
-        <text class="sub" x="555" y="184" text-anchor="middle">Sonnet 4.6</text>
+        <text class="sub" x="555" y="184" text-anchor="middle">Sonnet 5</text>
         <text class="sub" x="555" y="201" text-anchor="middle">+ extended cache</text>
         <text class="sub" x="555" y="218" text-anchor="middle">+ citations on</text>
 
@@ -152,7 +152,7 @@
       <div class="cell"><h4>Time to disruption</h4><div class="v">0–3 mo · ship now.</div></div>
     </div>
 
-    <p>User question hits the app, which retrieves relevant chunks from a search index over content uploaded to Files API. The static system prompt + tool definitions stay cached on Claude's side; only the retrieved context + question are fresh per request. Sonnet 4.6 returns a grounded answer with citation spans pointing back to the source documents.</p>
+    <p>User question hits the app, which retrieves relevant chunks from a search index over content uploaded to Files API. The static system prompt + tool definitions stay cached on Claude's side; only the retrieved context + question are fresh per request. Sonnet 5 returns a grounded answer with citation spans pointing back to the source documents.</p>
 
     <div class="when">
       <div class="yes"><h4>Use when</h4>Domain Q&A over a stable corpus. Compliance requires source attribution. Latency budget allows 1–3s.</div>
@@ -172,7 +172,7 @@
   <!-- ====================================================================== -->
   <div class="pattern">
     <h2>2. Agentic workflow</h2>
-    <div class="stack-line">Sonnet 4.6 (Opus 4.8 escalation) · Agent SDK · MCP · Skills · memory tool · plugins for distribution</div>
+    <div class="stack-line">Sonnet 5 (Opus 4.8 escalation) · Agent SDK · MCP · Skills · memory tool · plugins for distribution</div>
 
     <div class="diagram">
       <svg viewBox="0 0 980 420" xmlns="http://www.w3.org/2000/svg">
@@ -208,7 +208,7 @@
         <!-- Plan -->
         <path class="box claude" d="M260,90 Q260,82 270,80 L390,84 Q402,82 400,93 L400,140 Q402,152 390,150 L270,148 Q258,152 260,138 Z"/>
         <text class="lbl" x="330" y="110" text-anchor="middle">Plan / think</text>
-        <text class="sub" x="330" y="128" text-anchor="middle">Sonnet 4.6 + thinking</text>
+        <text class="sub" x="330" y="128" text-anchor="middle">Sonnet 5 + thinking</text>
 
         <!-- Act -->
         <path class="box claude" d="M428,90 Q428,82 440,80 L548,84 Q560,82 558,93 L558,140 Q560,152 548,150 L440,148 Q426,152 428,138 Z"/>
@@ -273,7 +273,7 @@
       <div class="cell"><h4>Time to disruption</h4><div class="v">3–12 mo · eval discipline first.</div></div>
     </div>
 
-    <p>The Agent SDK runs the plan-act-observe loop. Sonnet 4.6 is the default planner; escalate to Opus 4.8 when the agent flags a hard step. Tools come through MCP servers (one connector per system, reused across agents). Skills hold the domain playbook so the agent has expert procedures, not just primitives. Memory tool persists state across runs for long-running agents. Distribute the whole bundle as a plugin so other teams install one thing.</p>
+    <p>The Agent SDK runs the plan-act-observe loop. Sonnet 5 is the default planner; escalate to Opus 4.8 when the agent flags a hard step. Tools come through MCP servers (one connector per system, reused across agents). Skills hold the domain playbook so the agent has expert procedures, not just primitives. Memory tool persists state across runs for long-running agents. Distribute the whole bundle as a plugin so other teams install one thing.</p>
 
     <div class="when">
       <div class="yes"><h4>Use when</h4>Multi-step task that decomposes naturally into tool calls. Domain has stable procedures worth encoding as Skills. Async-tolerant.</div>
@@ -381,7 +381,7 @@
   <!-- ====================================================================== -->
   <div class="pattern">
     <h2>4. Domain expert assistant</h2>
-    <div class="stack-line">Sonnet 4.6 + thinking · Skills · MCP · Files · citations · plugins for org distribution</div>
+    <div class="stack-line">Sonnet 5 + thinking · Skills · MCP · Files · citations · plugins for org distribution</div>
 
     <div class="diagram">
       <svg viewBox="0 0 980 380" xmlns="http://www.w3.org/2000/svg">
@@ -432,7 +432,7 @@
 
         <!-- Sonnet -->
         <path class="box claude" d="M340,200 Q340,192 352,190 L668,194 Q680,192 678,205 L678,275 Q680,287 668,285 L352,283 Q338,287 340,273 Z"/>
-        <text class="lbl" x="510" y="222" text-anchor="middle" font-weight="700">Sonnet 4.6 + thinking</text>
+        <text class="lbl" x="510" y="222" text-anchor="middle" font-weight="700">Sonnet 5 + thinking</text>
         <text class="sub" x="510" y="244" text-anchor="middle">cached system + skill prefix</text>
         <text class="sub" x="510" y="262" text-anchor="middle">citations on</text>
 
@@ -460,7 +460,7 @@
       <div class="cell"><h4>Time to disruption</h4><div class="v">0–3 mo · ship now.</div></div>
     </div>
 
-    <p>The pattern that earns the highest ROI for regulated verticals (legal, finance, clinical, compliance, claims). Skills carry the domain procedures + style + decision rules. MCP exposes the systems of record. Files holds the policy/regulatory corpus. Sonnet 4.6 with extended thinking returns cited recommendations. Distribute the whole bundle as one plugin so a new region or business unit installs it in minutes.</p>
+    <p>The pattern that earns the highest ROI for regulated verticals (legal, finance, clinical, compliance, claims). Skills carry the domain procedures + style + decision rules. MCP exposes the systems of record. Files holds the policy/regulatory corpus. Sonnet 5 with extended thinking returns cited recommendations. Distribute the whole bundle as one plugin so a new region or business unit installs it in minutes.</p>
 
     <div class="when">
       <div class="yes"><h4>Use when</h4>Vertical with proprietary procedures and high-value decisions. Citation/audit is mandatory. Multiple teams will adopt.</div>
@@ -481,7 +481,7 @@
   <!-- ====================================================================== -->
   <div class="pattern">
     <h2>5. Code automation</h2>
-    <div class="stack-line">Claude Code · Opus 4.8 + Sonnet 4.6 · plugins (commands + skills + hooks + MCP) · sub-agents · computer use 2.0 (optional)</div>
+    <div class="stack-line">Claude Code · Opus 4.8 + Sonnet 5 · plugins (commands + skills + hooks + MCP) · sub-agents · computer use 2.0 (optional)</div>
 
     <div class="diagram">
       <svg viewBox="0 0 980 400" xmlns="http://www.w3.org/2000/svg">
@@ -514,7 +514,7 @@
 
         <!-- Models -->
         <path class="box claude" d="M240,90 Q240,82 252,80 L380,84 Q392,82 390,93 L390,150 Q392,162 380,160 L252,158 Q238,162 240,148 Z"/>
-        <text class="lbl" x="315" y="112" text-anchor="middle">Sonnet 4.6 default</text>
+        <text class="lbl" x="315" y="112" text-anchor="middle">Sonnet 5 default</text>
         <text class="sub" x="315" y="130" text-anchor="middle">+ Opus 4.8 escalate</text>
         <text class="sub" x="315" y="148" text-anchor="middle">extended thinking</text>
 
@@ -574,7 +574,7 @@
       <div class="cell"><h4>Time to disruption</h4><div class="v">0–3 mo · ship now.</div></div>
     </div>
 
-    <p>Engineering teams use Claude Code (CLI + IDE) day-to-day. Sonnet 4.6 is the default; Opus 4.8 handles hard refactors. Sub-agents (Task tool) parallelize investigation work. The team plugin bundles slash commands, Skills (repo conventions, language patterns), hooks (PreToolUse policy enforcement), and MCP servers (issue tracker, internal docs) so a new engineer's setup is a one-line install. Headless mode runs the same loop in CI. Detail in <a href="claude-code-adoption-guide.html">claude-code-adoption-guide.md</a>.</p>
+    <p>Engineering teams use Claude Code (CLI + IDE) day-to-day. Sonnet 5 is the default; Opus 4.8 handles hard refactors. Sub-agents (Task tool) parallelize investigation work. The team plugin bundles slash commands, Skills (repo conventions, language patterns), hooks (PreToolUse policy enforcement), and MCP servers (issue tracker, internal docs) so a new engineer's setup is a one-line install. Headless mode runs the same loop in CI. Detail in <a href="claude-code-adoption-guide.html">claude-code-adoption-guide.md</a>.</p>
 
     <div class="when">
       <div class="yes"><h4>Use when</h4>Engineering teams shipping software. Repo-aware tasks. Refactors, migrations, code review, scheduled maintenance.</div>
@@ -596,7 +596,7 @@
   <!-- ====================================================================== -->
   <div class="pattern">
     <h2>6. Embedded copilot</h2>
-    <div class="stack-line">Sonnet 4.6 (Haiku 4.5 for triage) · cached app context · MCP to host app · memory tool for personalization</div>
+    <div class="stack-line">Sonnet 5 (Haiku 4.5 for triage) · cached app context · MCP to host app · memory tool for personalization</div>
 
     <div class="diagram">
       <svg viewBox="0 0 980 400" xmlns="http://www.w3.org/2000/svg">
@@ -651,7 +651,7 @@
 
         <!-- Sonnet main -->
         <path class="box claude" d="M580,108 Q580,100 592,98 L700,102 Q712,100 710,112 L710,170 Q712,182 700,180 L592,178 Q578,182 580,168 Z"/>
-        <text class="lbl" x="645" y="130" text-anchor="middle">Sonnet 4.6</text>
+        <text class="lbl" x="645" y="130" text-anchor="middle">Sonnet 5</text>
         <text class="sub" x="645" y="148" text-anchor="middle">complex · tool use</text>
         <text class="sub" x="645" y="166" text-anchor="middle">extended thinking</text>
 
@@ -709,7 +709,7 @@
       <div class="cell"><h4>Time to disruption</h4><div class="v">3–12 mo · memory tool beta + app integration cost.</div></div>
     </div>
 
-    <p>The copilot lives <em>inside</em> an existing app — CRM record sidebar, ticketing detail page, IDE panel — not as a standalone chat. Haiku 4.5 triages: simple lookups answer immediately; complex reasoning routes to Sonnet 4.6 with tool use. The system prompt + tool definitions + app schema are cached (90% off cached input on hit). An MCP server scoped to the host app reads the current record, searches related records, and drafts (but does not commit) actions. Memory tool persists per-user preferences across sessions. The response renders inline — never as a popup the user has to context-switch to.</p>
+    <p>The copilot lives <em>inside</em> an existing app — CRM record sidebar, ticketing detail page, IDE panel — not as a standalone chat. Haiku 4.5 triages: simple lookups answer immediately; complex reasoning routes to Sonnet 5 with tool use. The system prompt + tool definitions + app schema are cached (90% off cached input on hit). An MCP server scoped to the host app reads the current record, searches related records, and drafts (but does not commit) actions. Memory tool persists per-user preferences across sessions. The response renders inline — never as a popup the user has to context-switch to.</p>
 
     <div class="when">
       <div class="yes"><h4>Use when</h4>Existing app with workflow context (CRM, ticketing, IDE, internal tools). Users want help inside their flow, not a separate chat tab. Personalization across sessions matters.</div>
