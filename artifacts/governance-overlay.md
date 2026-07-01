@@ -33,7 +33,7 @@ This is a **risk + compliance overlay** — not a generic AI governance framewor
 
 **What to verify before relying on this:**
 1. Sign with the policy version current at signing time. Record the version + URL + date.
-2. Confirm that all entry points your traffic uses inherit the same policy. Bedrock and Vertex inherit through their respective agreements.
+2. Confirm that all entry points your traffic uses inherit the same policy. Bedrock and Vertex inherit through their respective agreements. Azure AI Foundry is presumed to follow the same pattern (Anthropic hasn't named it separately here) — confirm directly with Microsoft rather than assuming. Claude Platform on AWS is a different case: it's Anthropic-hosted, not a hyperscaler redeployment (see §5), so it more likely follows the first-party API's own no-train terms — but that inheritance isn't stated explicitly either; verify.
 3. Re-verify quarterly. Terms can be amended.
 4. **Consumer-tier products (Free, Pro, Max) are a separate policy surface** with different defaults — do not extend commercial no-train assumptions to consumer plans, including when consumer accounts use Claude Code.
 
@@ -122,7 +122,7 @@ ZDR is a **separate enterprise agreement** distinct from no-train. Source: [Anth
 - Patient-specific data must NOT appear in: schema property names, `enum` values, `const` values, or `pattern` regular expressions in structured-output schemas
 
 **Common gaps to confirm before going live with PHI:**
-- Bedrock + Vertex have their own BAA paths through AWS / GCP — do not assume they inherit Anthropic's BAA
+- Bedrock + Vertex have their own BAA paths through AWS / GCP — do not assume they inherit Anthropic's BAA. Azure AI Foundry is presumed to be the same shape (its own BAA path through Microsoft) but isn't separately named here — confirm directly. Claude Platform on AWS is the one path in this group that may NOT need its own separate BAA — it's Anthropic-hosted (§5), so it's more likely to fall under Anthropic's own BAA than a hyperscaler one, but that isn't stated explicitly either — don't assume, verify at signing.
 - Per-feature scope can change as Anthropic adds eligibility for additional features — re-verify at each model or feature surface change
 - Claude Code + Skills + MCP servers + Plugins compose third-party surface area; the BAA does not extend to your MCP servers or to data they fetch
 
