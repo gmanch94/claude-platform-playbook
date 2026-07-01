@@ -27,6 +27,7 @@ A CLI tool (also runnable in VS Code / JetBrains / desktop / web) that runs an a
 | **Plugin distribution** | One team plugin, source-controlled in a dedicated repo | Multiple plugins only after 2–3 teams adopt. |
 | **MCP servers** | One per system worth automating (issue tracker, internal docs, secrets-aware DB read-only) | Wait on MCP until a real reach-out is needed. Don't pre-build. |
 | **Headless / CI usage** | Optional, after Phase 2 | Skip for week 1. |
+| **Remote Control** | Off (default on Team/Enterprise until an Owner enables it) | Enable per-team if steering long sessions from mobile is worth the device-risk tradeoff below. Requires claude.ai OAuth — doesn't work with a bare API key. |
 
 ### Risks to surface in the kickoff
 
@@ -35,6 +36,7 @@ A CLI tool (also runnable in VS Code / JetBrains / desktop / web) that runs an a
 - **License / IP exposure** — agent fetches web content. Decide what's allowed.
 - **Cost surprise** — long agentic sessions w/ Opus can spike. Set per-engineer budget alerts.
 - **Skill / plugin sprawl** — left unchecked, every engineer ships their own duplicate Skill within a month.
+- **Personal device becomes a credential** — if Remote Control is enabled, a phone with an active claude.ai session can drive a live Claude Code session with full local filesystem access. Treat the device like an SSH key: screen lock required, short session timeouts, and an IT admin can revoke it per-device via managed settings if that's not an acceptable risk for the team.
 
 ---
 
