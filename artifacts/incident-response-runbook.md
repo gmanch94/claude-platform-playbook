@@ -1,6 +1,6 @@
 # Claude Incident Response Runbook
 
-**As of 2026-06.** Pinned to Opus 4.8 / Sonnet 4.6 / Haiku 4.5. Companion to [`governance-overlay.md`](governance-overlay.md) (§10 rollback, §15 cost gates) and [`adoption-playbook.md`](adoption-playbook.md) (failure modes). See [`hooks-starter-pack.md`](hooks-starter-pack.md) for the hook bodies that generate the signals this runbook acts on.
+**As of 2026-06.** Pinned to Opus 4.8 / Sonnet 5 / Haiku 4.5. Companion to [`governance-overlay.md`](governance-overlay.md) (§10 rollback, §15 cost gates) and [`adoption-playbook.md`](adoption-playbook.md) (failure modes). See [`hooks-starter-pack.md`](hooks-starter-pack.md) for the hook bodies that generate the signals this runbook acts on.
 
 > **This is the reactive layer.** `governance-overlay.md` tells you how to design controls. `adoption-playbook.md` names the failure modes. This file tells you what to do *right now* when something breaks in production. Five incident classes, each self-contained.
 

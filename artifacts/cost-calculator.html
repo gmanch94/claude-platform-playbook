@@ -117,7 +117,7 @@
         <span class="pct" id="mix-h-val">60%</span>
       </div>
       <div class="mix-row">
-        <span class="name">Sonnet 4.6</span>
+        <span class="name">Sonnet 5</span>
         <input type="range" id="mix-s" min="0" max="100" value="35">
         <span class="pct" id="mix-s-val">35%</span>
       </div>
@@ -187,7 +187,7 @@
             <thead><tr><th>Model</th><th class="num">Input</th><th class="num">Output</th><th class="num">Cache read</th><th class="num">Cache write 5m</th></tr></thead>
             <tbody>
               <tr><td>Haiku 4.5</td><td class="num">$1.00</td><td class="num">$5.00</td><td class="num">$0.10</td><td class="num">$1.25</td></tr>
-              <tr><td>Sonnet 4.6</td><td class="num">$3.00</td><td class="num">$15.00</td><td class="num">$0.30</td><td class="num">$3.75</td></tr>
+              <tr><td>Sonnet 5</td><td class="num">$3.00</td><td class="num">$15.00</td><td class="num">$0.30</td><td class="num">$3.75</td></tr>
               <tr><td>Opus 4.8</td><td class="num">$5.00</td><td class="num">$25.00</td><td class="num">$0.50</td><td class="num">$6.25</td></tr>
             </tbody>
           </table>
@@ -196,7 +196,7 @@
       </details>
 
       <div class="pricing-note">
-        Pricing approximate as of <strong>2026-05</strong>. Verify current rates at <a href="https://www.anthropic.com/pricing" target="_blank">anthropic.com/pricing</a> before final budgeting.
+        Pricing approximate as of <strong>2026-06</strong>. Sonnet 5 launched 2026-06-30 at introductory pricing of $2/$10 per MTok (in/out) through 2026-08-31; the table above shows its standard post-intro rate ($3/$15, identical to Sonnet 4.6's price), which is the safer planning number for steady-state budgets. Sonnet 5 also uses an updated tokenizer — the same input can map to ~1.0–1.35× more tokens than under 4.6, so effective per-task cost may run higher than the sticker price alone implies. Verify current rates at <a href="https://www.anthropic.com/pricing" target="_blank">anthropic.com/pricing</a> before final budgeting.
       </div>
     </div>
   </div>
@@ -412,7 +412,7 @@ function recompute() {
   const tb = $('breakdown-body');
   const rows = [
     ['Haiku 4.5',  h.tokens, h.total],
-    ['Sonnet 4.6', s.tokens, s.total],
+    ['Sonnet 5',   s.tokens, s.total],
     ['Opus 4.8',   o.tokens, o.total],
   ];
   tb.innerHTML = rows.map(r =>
@@ -437,7 +437,7 @@ function recompute() {
         labels,
         datasets: [
           { label: 'Haiku 4.5',  data: haikuData,  backgroundColor: '#f3c5a8' },
-          { label: 'Sonnet 4.6', data: sonnetData, backgroundColor: '#D97757' },
+          { label: 'Sonnet 5',   data: sonnetData, backgroundColor: '#D97757' },
           { label: 'Opus 4.8',   data: opusData,   backgroundColor: '#7C5E48' }
         ]
       },

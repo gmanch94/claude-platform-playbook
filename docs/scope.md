@@ -119,7 +119,7 @@ Each diagram: 1-paragraph description, cost band, governance notes, when-to-use 
 
 - All technical claims cite Anthropic docs (`docs.claude.com` / `docs.anthropic.com`) by URL + as-of date
 - Pricing claims dated and link to pricing page
-- Model versions pinned (Opus 4.8 / Sonnet 4.6 / Haiku 4.5 etc.) — never "latest"
+- Model versions pinned (Opus 4.8 / Sonnet 5 / Haiku 4.5 etc.) — never "latest"
 - No reproducing Anthropic marketing copy verbatim — paraphrase + cite
 - Footer pattern: `© gmanch94 · CC-BY-4.0 · As of YYYY-MM. Verify pricing/models at anthropic.com.`
 - Cross-link to `ai-architect-showcase` (vendor-neutral strategy) and `ai-enablement-ws` (operational reference)
@@ -131,7 +131,7 @@ Each diagram: 1-paragraph description, cost band, governance notes, when-to-use 
 | Risk | Mitigation |
 |------|-----------|
 | Pricing changes | Date-stamp every $; calculator inputs editable |
-| Model deprecation | Pin to model family (Sonnet 4.x), not specific point release |
+| Model deprecation | Pin to current model tier by name (e.g. "current Sonnet tier"), not a version-number family that can be outlived by a major bump |
 | Reads as Anthropic ad | Lead with decision frame, not features. Compare to OpenAI/DIY in calculator + build-vs-buy |
 | Vendor lock-in framing | Governance overlay explicitly addresses concentration risk + multi-model abstraction |
 | Stale within 6 months | Monthly refresh discipline (scheduled remote agent, first Monday); "as-of" badge on every artifact |

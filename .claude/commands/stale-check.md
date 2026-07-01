@@ -33,11 +33,11 @@ Count: X OK, Y stale.
 
 ### 3. Model pin audit
 
-Canonical pins (from CLAUDE.md): **Opus 4.8 / Sonnet 4.6 / Haiku 4.5** — the current deployable (GA) tier.
+Canonical pins (from CLAUDE.md): **Opus 4.8 / Sonnet 5 / Haiku 4.5** — the current deployable (GA) tier.
 
 Grep across all artifacts for any occurrence of:
 - `Opus 4\.\d` — flag if not `4.8`
-- `Sonnet 4\.\d` — flag if not `4.6`
+- `Sonnet 4\.\d` — flag unless it's an explicit "(prev)" / historical reference to Sonnet 4.6; current-state mentions should read `Sonnet 5`
 - `Haiku 4\.\d` — flag if not `4.5`
 - `claude-opus-[0-9]`, `claude-sonnet-[0-9]`, `claude-haiku-[0-9]` — report exact strings found
 
@@ -49,7 +49,7 @@ Report:
 
 ```
 MODEL PINS
-  OK    artifacts/executive-briefing.html    Opus 4.8, Sonnet 4.6, Haiku 4.5
+  OK    artifacts/executive-briefing.html    Opus 4.8, Sonnet 5, Haiku 4.5
   STALE artifacts/feature-decision-matrix.html  found "Opus 4.6" ← wrong pin
   FLOAT artifacts/adoption-playbook.md      found "latest Claude" ← pin to specific version
   ...
@@ -140,7 +140,7 @@ If everything is clean, print: `All checks pass. Repo is fresh as of YYYY-MM.`
 
 - Read-only. No edits, no commits, no bumps.
 - **Product surface audit (step 5) is read-only too** — its fix path is the monthly refresh or a manual `feature-inventory.md` edit, never an auto-bump. The 14-day window is intentional (surfaces drift faster than the API feature set); don't widen it to step 4's 35-day window.
-- Do NOT flag family pins like "Sonnet 4.x" — those are intentional stable references (governance-overlay, adoption-playbook).
+- Do NOT flag version-agnostic family pins like "current Sonnet tier" — those are intentional stable references (governance-overlay, adoption-playbook), used instead of a version-number family string precisely because a major bump (e.g. 4.6 → 5) can outlive it.
 - Do NOT flag occurrences inside `LESSONS_LEARNED.md` or `scratch/` — those are process notes, not audience-facing copy.
 - Do NOT fetch or curl URLs from `scratch/` or `LICENSE`.
 - If curl times out on a URL, mark it as **TIMEOUT** (not broken) and note it separately.

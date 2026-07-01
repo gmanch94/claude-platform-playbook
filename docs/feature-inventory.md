@@ -2,7 +2,7 @@
 
 **Single source of truth.** All artifacts in this repo reference this file. Update this first, propagate second.
 
-**Last verified:** 2026-06-29 against [docs.claude.com](https://docs.claude.com) and [anthropic.com/pricing](https://www.anthropic.com/pricing). **Opus 4.8 is the current top GA / deployable tier. A next-gen line — Claude Fable 5 + Mythos 5 — now exists above the 4.x family but is not GA-deployable (Fable 5 unavailable, Mythos 5 invite-only); operational recs stay on Opus 4.8.** Opus/Sonnet/Haiku pricing + IDs re-verified unchanged this cycle.
+**Last verified:** 2026-06-30 against [docs.claude.com](https://docs.claude.com) and [anthropic.com/pricing](https://www.anthropic.com/pricing). **Claude Sonnet 5 launched 2026-06-30** (`claude-sonnet-5`) — new mid-tier GA model, narrows the gap to Opus 4.8 at lower price; see Models table below. **Opus 4.8 remains the current top GA / deployable tier. A next-gen line — Claude Fable 5 + Mythos 5 — exists above the 4.x/5.x family but is not GA-deployable (Fable 5 unavailable, Mythos 5 invite-only); operational recs stay on Opus 4.8.** Opus/Haiku pricing + IDs re-verified unchanged this cycle; Sonnet 5 pricing verified at launch.
 
 **Refresh cadence:** weekly. Bump status, as-of dates, and pricing rows. Cross-check `Used in` column to find every artifact that needs a touch.
 
@@ -19,10 +19,11 @@
 | Opus 4.8 | Top GA | GA | 2026-06 | `claude-opus-4-8`. Most capable GA / **deployable** model; top Opus-tier. Builds on 4.7: better long-horizon agentic coding, fewer compactions + better compaction recovery, effort-calibrated reasoning. 1M context default. Adaptive thinking only (`budget_tokens` → 400); use `effort` param. Rejects `temperature`/`top_p`/`top_k` (400). Fast mode in research preview. Min cacheable prompt 1,024 tokens. |
 | Opus 4.7 | Top (prev) | GA | 2026-05 | `claude-opus-4-7`. Previous top tier, still available. Same adaptive-thinking + no-sampling-params constraints as 4.8. Min cacheable prompt 4,096 tokens. |
 | Opus 4.6 | Top (prev) | GA | 2026-05 | Older top tier. Still available; adaptive thinking recommended, manual deprecated. |
-| Sonnet 4.6 | Mid | GA | 2026-05 | Workhorse. Default for production copilots + agentic loops. |
+| Sonnet 5 | Mid | GA | 2026-06 | `claude-sonnet-5`. Workhorse successor to Sonnet 4.6 — performance close to Opus 4.8 at lower price, substantial gains in reasoning/tool-use/coding/knowledge work. Default model for Free + Pro plans; available Max/Team/Enterprise, Claude Code, Claude Platform. Default for production copilots + agentic loops. Updated tokenizer (like Opus 4.7's): same input maps to ~1.0–1.35× more tokens. No `inference_geo` support confirmed at launch — launch post is silent; treat as **unconfirmed, verify** (do not assume it carries over from Sonnet 4.6). Source: [anthropic.com/news/claude-sonnet-5](https://www.anthropic.com/news/claude-sonnet-5). |
+| Sonnet 4.6 | Mid (prev) | GA | 2026-05 | Previous mid tier, still available. No deprecation announced. `inference_geo`-eligible (confirmed). |
 | Haiku 4.5 | Fast | GA | 2026-05 | Triage, batch, high-volume. ~3× cheaper than Sonnet (5× vs Opus). |
 
-**Pricing (per million tokens, USD, as-of 2026-05-29 — verified against anthropic.com/pricing):**
+**Pricing (per million tokens, USD, as-of 2026-06-30 — verified against anthropic.com/pricing):**
 
 | Model | Input | Output | Cache read | Cache write 5m | Cache write 1h |
 |---|---|---|---|---|---|
@@ -30,10 +31,14 @@
 | Opus 4.8 | $5.00 | $25.00 | $0.50 | $6.25 | $10.00 |
 | Opus 4.7 | $5.00 | $25.00 | $0.50 | $6.25 | $10.00 |
 | Opus 4.6 | $5.00 | $25.00 | $0.50 | $6.25 | $10.00 |
+| Sonnet 5 (standard, from 2026-09-01) | $3.00 | $15.00 | $0.30 | $3.75 | $6.00 |
+| Sonnet 5 (introductory, through 2026-08-31) | $2.00 | $10.00 | n/a | n/a | n/a |
 | Sonnet 4.6 | $3.00 | $15.00 | $0.30 | $3.75 | $6.00 |
 | Haiku 4.5 | $1.00 | $5.00 | $0.10 | $1.25 | $2.00 |
 
 **Opus 4.8 pricing is identical to 4.7** — the model upgrade does not move cost. Cost-calculator headline Opus tier relabelled 4.7 → 4.8; numbers unchanged. Batch (50%): Opus $2.50/$12.50, Sonnet $1.50/$7.50, Haiku $0.50/$2.50. See [`../artifacts/cost-calculator.html`](../artifacts/cost-calculator.html).
+
+**Sonnet 5's standard sticker price is identical to Sonnet 4.6** — same $3/$15 per MTok from 2026-09-01. Introductory pricing ($2/$10 per MTok) runs through 2026-08-31 and is calibrated to be roughly cost-neutral against the tokenizer change. That tokenizer change means the same input now maps to ~1.0–1.35× more tokens than under 4.6 — budget the effective cost, not just the sticker price, especially right after the introductory window ends.
 
 **Fable 5 is listed for awareness, not modelled.** At ~2× Opus input / output it would change cost sizing materially, but it is currently unavailable — the cost-calculator deliberately omits it until GA so estimates reflect what an enterprise can actually deploy. Re-evaluate adding a Fable 5 preset when status flips to GA.
 
@@ -72,7 +77,7 @@ The seat surface is billed per user, separate from per-token API usage. **A subs
 
 **Token economics** — see [`../artifacts/cost-calculator.html`](../artifacts/cost-calculator.html). Cache read ≈ 10% of input. Cache write 5m ≈ 125% of input. Cache write 1h ≈ 200% of input. Batch ≈ 50% of all rates.
 
-**Minimum cacheable prompt** — Opus 4.8 lowered to **1,024 tokens** (was 4,096 on Opus 4.7 / 4.6). Sonnet 4.6 + Haiku 4.5 are 1,024. Prompts shorter than the floor are processed uncached with no error. Lower floor on 4.8 = more small prompts become cache-eligible. See [`../artifacts/data-advisory.md`](../artifacts/data-advisory.md) cache-eligibility shape.
+**Minimum cacheable prompt** — Opus 4.8 lowered to **1,024 tokens** (was 4,096 on Opus 4.7 / 4.6). Sonnet 4.6 + Haiku 4.5 are 1,024. **Sonnet 5's floor isn't stated in launch materials — verify rather than assuming 1,024 carries over**, especially given its tokenizer change (same input maps to more tokens). Prompts shorter than the floor are processed uncached with no error. Lower floor on 4.8 = more small prompts become cache-eligible. See [`../artifacts/data-advisory.md`](../artifacts/data-advisory.md) cache-eligibility shape.
 
 **Extended thinking note** — Opus 4.7 and 4.8 support **adaptive thinking only**: `thinking: {"type": "adaptive"}` plus the `effort` parameter to control depth. Setting `thinking: {"type": "enabled", "budget_tokens": N}` returns HTTP 400. They also reject non-default `temperature` / `top_p` / `top_k` (400). Opus 4.6 and earlier: manual `budget_tokens` still works but adaptive is recommended.
 
@@ -142,7 +147,7 @@ Seat-plan product surfaces beyond chat. Plan gating + governance flags drive the
 | Zero Data Retention (ZDR) | Available (enterprise, approval required) | 2026-05 | platform.claude.com/docs/en/build-with-claude/api-and-data-retention | Covers Messages + Token Counting APIs, Claude Code (Commercial org key, or Enterprise w/ ZDR). T&S classifier results still retained. Consumer plans + Teams/Enterprise UI not eligible. | governance-overlay, anti-use-cases, build-vs-buy, enterprise-data-boundaries, procurement-pack |
 | HIPAA-ready API access | GA | 2026-05 | platform.claude.com/docs/en/build-with-claude/api-and-data-retention#hipaa-readiness | Separate from BAA. HIPAA-enabled orgs get 400 error on non-eligible features. ZDR no longer prerequisite. | governance-overlay, anti-use-cases, build-vs-buy |
 | BAA (HIPAA workloads) | Available | 2026-06 | privacy.claude.com/en/articles/8114513-business-associate-agreements-baa-for-commercial-customers | Covers first-party API + Enterprise plans. **Enterprise is not automatic — an admin must activate HIPAA compliance (admin settings → Data & Privacy) and sign the BAA.** Covered Enterprise features: Chat, Projects, Artifacts, file creation & code execution (excl. network/external sites), Voice, Web search, Research (eligible list grows — verify at signing; Skills was flagged as possibly added 2026-06-29 but is unconfirmed first-hand — treat as verify-at-signing, not asserted covered). 3rd-party integrations (MCPs/Connectors/Enterprise Search/Claude in Chrome) available but their 3rd-party data flows are not covered. **Excludes: Workbench/Console, Free/Pro/Max/Team, Cowork, and beta features (Claude in Office, Claude Design).** Per-feature eligibility — verify Implementation Guide. Re-verified 2026-06-29 (source updated this week). | governance-overlay, anti-use-cases, build-vs-buy, surface-rollout-matrix, cowork-adoption-guide, enterprise-data-boundaries, procurement-pack, agentic-threat-model |
-| Data residency — `inference_geo` | GA | 2026-06 | platform.claude.com/docs/en/manage-claude/data-residency | Per-request inference geo (`global` default, or `us`). Opus 4.6+ and Sonnet 4.6+ (Haiku 4.5 and earlier-tier models return 400). First-party API + Claude Platform on AWS only — Bedrock/Vertex/Azure AI Foundry use their own region selection. | governance-overlay, anti-use-cases, build-vs-buy, enterprise-data-boundaries |
+| Data residency — `inference_geo` | GA | 2026-06 | platform.claude.com/docs/en/manage-claude/data-residency | Per-request inference geo (`global` default, or `us`). Confirmed on Opus 4.6+ and Sonnet 4.6+ (Haiku 4.5 and earlier-tier models return 400). **Sonnet 5 support not confirmed** — the 2026-06-30 launch post is silent on `inference_geo`; do not assume carryover from Sonnet 4.6 until the residency doc names it. First-party API + Claude Platform on AWS only — Bedrock/Vertex/Azure AI Foundry use their own region selection. | governance-overlay, anti-use-cases, build-vs-buy, enterprise-data-boundaries |
 | Data residency — Workspace geo | GA | 2026-06 | platform.claude.com/docs/en/manage-claude/data-residency | Controls at-rest storage and endpoint processing (image transcoding, code execution). Set in Console at workspace level. | governance-overlay, enterprise-data-boundaries |
 | SOC 2 Type I & Type II | Held | 2026-05 | trust.anthropic.com | Refresh annual. Request current report from Trust Portal. | governance-overlay, procurement-pack |
 | ISO 27001:2022 | Held | 2026-05 | trust.anthropic.com | Information Security Management. | governance-overlay |
