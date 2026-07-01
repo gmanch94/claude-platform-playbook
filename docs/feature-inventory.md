@@ -109,6 +109,7 @@ The seat surface is billed per user, separate from per-token API usage. **A subs
 | Background tasks / scheduled routines | GA | 2026-05 | docs.claude.com/en/docs/claude-code/background-tasks | claude-code-guide, starter-skills |
 | IDE integrations (VS Code, JetBrains) | GA | 2026-05 | docs.claude.com/en/docs/claude-code/ide-integrations | claude-code-guide |
 | Headless mode (CI / non-interactive) | GA | 2026-05 | docs.claude.com/en/docs/claude-code/headless | claude-code-guide, hooks-pack |
+| Remote Control (drive a local session from claude.ai/code or the Claude mobile app) | Research preview | 2026-06 | code.claude.com/docs/en/remote-control | Execution + filesystem stay on the originating machine; the phone/browser is a control surface relayed through claude.ai — not a copy of your files. **claude.ai OAuth only** (no API keys). Team/Enterprise: off by default, an Owner must enable it; the admin toggle greys out if the org's data-retention/compliance config is incompatible (Anthropic's own words, not further specified). Per-device disable available via managed settings. | agentic-threat-model, enterprise-data-boundaries, claude-code-adoption-guide |
 
 ---
 

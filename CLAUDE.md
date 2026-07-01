@@ -55,7 +55,7 @@ claude-platform-playbook/
     ├── surface-rollout-matrix.md        Which surface (chat/Projects/Claude Code/Cowork/Design/Tag) for whom, in what order · governance flag + failure mode per surface · sequenced by blast radius
     ├── pilot-selection-worksheet.html   Week 0 use-case scorer · 5 axes · ranked verdicts + blocker flags
     ├── governance-overlay.md            Data flow · No-train · ZDR · HIPAA/BAA · Residency · Retention · Certs · NIST · EU AI Act
-    ├── enterprise-data-boundaries.html  Per-feature trust-zone diagrams (Enterprise) · 16 features · what crosses the prompt boundary · surface-tagged (product/API/procurement/seat-plan) · per-feature BAA/ZDR/residency/retention cells · coverage table · visual companion to governance-overlay
+    ├── enterprise-data-boundaries.html  Per-feature trust-zone diagrams (Enterprise) · 17 features · what crosses the prompt boundary · surface-tagged (product/API/procurement/seat-plan) · per-feature BAA/ZDR/residency/retention cells · coverage table · visual companion to governance-overlay
     ├── claude-code-adoption-guide.md    Engineering CLI rollout
     ├── cowork-adoption-guide.md         Cowork (desktop agent) rollout for non-engineers · 3 gates · 4-phase arc · folder-scope/egress/review-before-act governance · BAA-excluded (no PHI)
     ├── claude-code-starter-skills.md    8 team-grade Skill templates (when-to-use / failure-mode / owner / prompt body)
