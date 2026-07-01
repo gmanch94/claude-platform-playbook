@@ -491,7 +491,7 @@
       <div class="cell"><h4>Residency</h4><div class="v no">Egress not geo-bound</div></div>
       <div class="cell"><h4>BAA</h4><div class="v yes">Covered (search)</div></div>
     </div>
-    <div class="bites"><b>Where it bites:</b> the model's search query <b>egresses to the third-party web</b> — residency controls don't bound where that goes. Note the distinct <b>web fetch tool is NOT BAA-covered</b>, and web search's <em>dynamic filtering</em> sub-feature is not ZDR/HIPAA-eligible (verify at signing — not enumerated in governance §4/§5). For PHI workloads, treat web search as a data-exfil surface and gate it.</div>
+    <div class="bites"><b>Where it bites:</b> the model's search query <b>egresses to the third-party web</b> — residency controls don't bound where that goes. Note the distinct <b>web fetch tool is NOT BAA-covered</b>, and not every web-search sub-capability has confirmed ZDR/HIPAA eligibility (verify at signing — not fully enumerated in governance §4/§5). For PHI workloads, treat web search as a data-exfil surface and gate it.</div>
     <div class="companions">Trace: <a href="governance-overlay.html">governance-overlay.md</a> §4 (web search covered, web fetch not), §5 (residency limits).</div>
   </div>
 
@@ -837,7 +837,7 @@
     </div>
     <div class="meta">
       <div class="cell"><h4>Surface</h4><div class="v">Claude Code (research preview)</div></div>
-      <div class="cell"><h4>No-train</h4><div class="v warn">Consumer carve-out applies fully (§2) — OAuth-only, no API-key path to a clean commercial default</div></div>
+      <div class="cell"><h4>No-train</h4><div class="v warn">Depends on the OAuth account's plan tier (§2) — no API-key path to bypass that check</div></div>
       <div class="cell"><h4>Retention</h4><div class="v warn">Follows the underlying session's retention (#13) — relay adds no new store, not separately confirmed</div></div>
       <div class="cell"><h4>ZDR</h4><div class="v warn">Enterprise+ZDR path only — the API-key ZDR path doesn't exist here (OAuth-only)</div></div>
       <div class="cell"><h4>Residency</h4><div class="v warn">inference_geo likely doesn't apply (not an API-key path) — not separately confirmed</div></div>

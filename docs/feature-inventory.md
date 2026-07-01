@@ -64,16 +64,16 @@ The seat surface is billed per user, separate from per-token API usage. **A subs
 
 | Feature | Status | As-of | Doc anchor | Used in artifacts |
 |---|---|---|---|---|
-| Prompt caching | GA | 2026-05 | docs.claude.com/en/docs/build-with-claude/prompt-caching | calculator, matrix, briefing, arch, eval-pack, misconceptions, data-advisory, roi-worksheet |
+| Prompt caching | GA | 2026-05 | docs.claude.com/en/docs/build-with-claude/prompt-caching | calculator, matrix, briefing, arch, eval-pack, misconceptions, data-advisory, roi-worksheet, enterprise-data-boundaries |
 | Extended thinking | GA | 2026-05 | docs.claude.com/en/docs/build-with-claude/extended-thinking | matrix, arch |
 | Tool use | GA | 2026-05 | docs.claude.com/en/docs/agents-and-tools/tool-use | matrix, arch, eval-pack, agentic-threat-model |
-| Computer use 2.0 | beta | 2026-05 | docs.claude.com/en/docs/agents-and-tools/computer-use | matrix, arch, misconceptions, agentic-threat-model |
-| Files API | beta | 2026-05 | docs.claude.com/en/docs/build-with-claude/files | matrix, arch, eval-pack |
+| Computer use 2.0 | beta | 2026-05 | docs.claude.com/en/docs/agents-and-tools/computer-use | matrix, arch, misconceptions, agentic-threat-model, enterprise-data-boundaries |
+| Files API | beta | 2026-05 | docs.claude.com/en/docs/build-with-claude/files | matrix, arch, eval-pack, enterprise-data-boundaries |
 | Citations | GA | 2026-05 | docs.claude.com/en/docs/build-with-claude/citations | matrix, arch, eval-pack |
-| Batch API | GA | 2026-05 | docs.claude.com/en/docs/build-with-claude/batch-processing | calculator, matrix, arch, eval-pack, misconceptions, data-advisory, roi-worksheet |
-| Memory tool | beta | 2026-05 | docs.claude.com/en/docs/agents-and-tools/memory | matrix, arch |
-| Web search tool (server-side) | GA | 2026-05 | docs.claude.com/en/docs/agents-and-tools/web-search-tool | arch:rag, claude-code-guide |
-| Code execution tool (server-side) | GA | 2026-05 | docs.claude.com/en/docs/agents-and-tools/code-execution | arch:agent, claude-code-guide, eval-pack |
+| Batch API | GA | 2026-05 | docs.claude.com/en/docs/build-with-claude/batch-processing | calculator, matrix, arch, eval-pack, misconceptions, data-advisory, roi-worksheet, enterprise-data-boundaries |
+| Memory tool | beta | 2026-05 | docs.claude.com/en/docs/agents-and-tools/memory | matrix, arch, enterprise-data-boundaries |
+| Web search tool (server-side) | GA | 2026-05 | docs.claude.com/en/docs/agents-and-tools/web-search-tool | arch:rag, claude-code-guide, enterprise-data-boundaries |
+| Code execution tool (server-side) | GA | 2026-05 | docs.claude.com/en/docs/agents-and-tools/code-execution | arch:agent, claude-code-guide, eval-pack, enterprise-data-boundaries |
 
 **Token economics** — see [`../artifacts/cost-calculator.html`](../artifacts/cost-calculator.html). Cache read ≈ 10% of input. Cache write 5m ≈ 125% of input. Cache write 1h ≈ 200% of input. Batch ≈ 50% of all rates.
 
@@ -90,8 +90,8 @@ The seat surface is billed per user, separate from per-token API usage. **A subs
 | Capability | Status | As-of | Doc anchor | Used in artifacts |
 |---|---|---|---|---|
 | Skills | GA | 2026-05 | docs.claude.com/en/docs/agents-and-tools/skills | matrix, playbook, arch, claude-code-guide, starter-skills, eval-pack, misconceptions, operating-model, maturity-model |
-| MCP (Model Context Protocol) | GA | 2026-05 | modelcontextprotocol.io | matrix, playbook, arch, claude-code-guide, starter-skills, mcp-pack, agentic-threat-model, operating-model |
-| Agent SDK | GA | 2026-05 | docs.claude.com/en/api/agent-sdk | matrix, arch, claude-code-guide, multi-agent-patterns, maturity-model |
+| MCP (Model Context Protocol) | GA | 2026-05 | modelcontextprotocol.io | matrix, playbook, arch, claude-code-guide, starter-skills, mcp-pack, agentic-threat-model, operating-model, enterprise-data-boundaries |
+| Agent SDK | GA | 2026-05 | docs.claude.com/en/api/agent-sdk | matrix, arch, claude-code-guide, multi-agent-patterns, maturity-model, enterprise-data-boundaries |
 | Plugins (bundled commands + skills + hooks + MCP servers) | GA | 2026-05 | docs.claude.com/en/docs/claude-code/plugins | matrix, arch, claude-code-guide, starter-skills, eval-pack |
 | Sub-agents (Task tool / parallel agents in Claude Code) | GA | 2026-05 | docs.claude.com/en/docs/claude-code/sub-agents | claude-code-guide, arch:code, multi-agent-patterns |
 
@@ -121,8 +121,8 @@ Seat-plan product surfaces beyond chat. Plan gating + governance flags drive the
 |---|---|---|---|---|---|---|
 | Cowork (desktop agent) | GA (paid plans) | Pro / Max / Team / Enterprise; desktop app (mac/Win), not web/mobile | 2026-06 | support.claude.com/en/articles/13345190-get-started-with-claude-cowork | Takes real actions on local files; folder-scoped + egress-controlled + review-before-act; isolated VM for code; enterprise admin controls (feature access, spend, usage, private plugin marketplace). **Not BAA-covered.** | cowork-adoption-guide, surface-rollout-matrix, workforce-change, rollout-kickoff-kit, user-mindset-cheatsheet, user-mindset-mindmap, user-mindset-cheatsheet-color, enterprise-data-boundaries |
 | Claude Design | Beta (Anthropic Labs) | Team / Enterprise (org toggle, custom-role gated) | 2026-06 | support.claude.com/en/articles/14604406-claude-design-admin-guide-for-team-and-enterprise-plans | Uploaded assets stored persistently; **no data residency support**; **not BAA-covered (beta)**; Anthropic publishes recommended rollout phases. | surface-rollout-matrix, enterprise-data-boundaries |
-| Projects | GA | All plans (Free capped at 5 projects); RAG + sharing + org instructions on paid / Team+ | 2026-06 | support.claude.com/en/articles/9517075-what-are-projects | RAG auto-scales knowledge ~10× on paid; org-wide sharing is a data-leak vector (use can-use/can-edit perms, disable public projects); **BAA-covered on Enterprise** (w/ admin HIPAA activation). | surface-rollout-matrix, user-mindset-cheatsheet, user-mindset-cheatsheet-color |
-| Claude Tag | Beta | Team / Enterprise; Slack-native (channel tagging, DM, AI assistant panel) | 2026-06 | support.claude.com/en/articles/15594475-what-is-claude-tag | Replaces "Claude in Slack" (cutover 2026-08-03). Channel tagging runs under the **org's Claude identity** (admin-scoped tools/data/repos, billed to org); DM + assistant panel run under the **user's own account** (billed to individual). Permission inheritance: org-wide → workspace → private channel. Memory persists per-channel (admin review/delete). Org + per-channel spend caps. **BAA/ZDR/`inference_geo` not stated** in the announcement or support docs — verify separately, do not assume coverage. | surface-rollout-matrix, governance-overlay, agentic-threat-model, enterprise-data-boundaries |
+| Projects | GA | All plans (Free capped at 5 projects); RAG + sharing + org instructions on paid / Team+ | 2026-06 | support.claude.com/en/articles/9517075-what-are-projects | RAG auto-scales knowledge ~10× on paid; org-wide sharing is a data-leak vector (use can-use/can-edit perms, disable public projects); **BAA-covered on Enterprise** (w/ admin HIPAA activation). | surface-rollout-matrix, user-mindset-cheatsheet, user-mindset-cheatsheet-color, enterprise-data-boundaries |
+| Claude Tag | Beta | Team / Enterprise; Slack-native (channel tagging, DM, AI assistant panel) | 2026-06 | support.claude.com/en/articles/15594475-what-is-claude-tag | Replaces "Claude in Slack" (cutover 2026-08-03). Channel tagging runs under the **org's Claude identity** (admin-scoped tools/data/repos, billed to org); DM + assistant panel run under the **user's own account** (billed to individual). Permission inheritance: org-wide → workspace → private channel. Memory persists per-channel (admin review/delete); the support article separately states conversations **auto-delete from Claude within 30 days of disconnecting the integration or uninstalling the app** (not a rolling window while connected). Slack's own copy of the conversation follows the org's own Slack retention policy, not Anthropic's. Org + per-channel spend caps. **BAA/ZDR/`inference_geo` not stated** in the announcement or support docs — verify separately, do not assume coverage. | surface-rollout-matrix, governance-overlay, agentic-threat-model, enterprise-data-boundaries |
 
 **Surface drift caught 2026-06-29:** **Cowork graduated** from the beta it was previously logged as — now GA on all paid plans, with enterprise admin controls shipped (Apr 2026); still **BAA-excluded**. **Claude Design** is a real Team/Enterprise surface (beta, under Anthropic Labs), also BAA-excluded with no residency. Verified against support.claude.com + privacy.claude.com.
 
