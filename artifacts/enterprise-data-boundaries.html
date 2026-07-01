@@ -580,7 +580,7 @@
 
   <!-- =================================================================== -->
   <div class="sec-h">C · Procurement-routed</div>
-  <div class="sec-sub">When you buy Claude through a hyperscaler, the region and the BAA are <strong>theirs</strong>, not Anthropic's.</div>
+  <div class="sec-sub">When you buy Claude through a hyperscaler, the region and the BAA are usually <strong>theirs</strong>, not Anthropic's — except Claude Platform on AWS, which is a billing wrapper around Anthropic's own infrastructure, not a hyperscaler redeployment. Don't assume all four procurement paths in this section behave the same.</div>
 
   <!-- 12. BEDROCK / VERTEX -->
   <div class="feature">
@@ -620,17 +620,99 @@
     <div class="companions">Trace: <a href="governance-overlay.html">governance-overlay.md</a> §1 (Bedrock/Vertex rows), §4 (own BAA paths), §5 (region, not inference_geo).</div>
   </div>
 
+  <!-- 13. MICROSOFT AZURE AI FOUNDRY -->
+  <div class="feature">
+    <h2>13. Microsoft Azure AI Foundry<span class="surf proc">Procurement path</span></h2>
+    <div class="stack-line">same hyperscaler shape as Bedrock/Vertex — grouped with them for residency, not with the first-party API</div>
+    <div class="diagram">
+      <svg viewBox="0 0 900 200" xmlns="http://www.w3.org/2000/svg">
+        <defs><marker id="ar13" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0,1 L9,5 L0,9 L2,5 z" fill="#2a2017"/></marker></defs>
+        <rect class="zone" x="8" y="8" width="210" height="184" rx="8" fill="rgba(21,128,61,0.08)"/>
+        <rect class="zone" x="300" y="8" width="590" height="184" rx="8" fill="rgba(154,52,18,0.07)"/>
+        <text class="ztitle" x="113" y="26" text-anchor="middle">CUSTOMER TRUST ZONE</text>
+        <text class="ztitle" x="595" y="26" text-anchor="middle">AZURE REGION (Microsoft — their BAA)</text>
+        <line class="boundary" x1="259" y1="14" x2="259" y2="186"/>
+        <text class="blab" x="259" y="190" text-anchor="middle">prompt = boundary</text>
+        <rect class="box b-user" x="28" y="78" width="168" height="56" rx="9"/>
+        <text class="lbl" x="112" y="100" text-anchor="middle">Your app</text>
+        <text class="sub" x="112" y="118" text-anchor="middle">same prompt content</text>
+        <rect class="box b-tool" x="330" y="78" width="200" height="56" rx="9"/>
+        <text class="lbl" x="430" y="100" text-anchor="middle" font-weight="700">Azure AI Foundry</text>
+        <text class="sub" x="430" y="118" text-anchor="middle">region YOU choose (Azure)</text>
+        <rect class="box b-claude" x="610" y="78" width="200" height="56" rx="9"/>
+        <text class="lbl" x="710" y="100" text-anchor="middle">Claude (hosted)</text>
+        <text class="sub" x="710" y="118" text-anchor="middle">via Azure Marketplace listing</text>
+        <path class="flow" d="M198,106 L326,106" marker-end="url(#ar13)"/>
+        <path class="flow" d="M530,106 L606,106" marker-end="url(#ar13)"/>
+      </svg>
+    </div>
+    <div class="meta">
+      <div class="cell"><h4>Surface</h4><div class="v">Azure AI Foundry</div></div>
+      <div class="cell"><h4>No-train</h4><div class="v warn">Presumed via Microsoft's agreement — not separately named in §2 (only Bedrock/Vertex are)</div></div>
+      <div class="cell"><h4>Retention</h4><div class="v">Per Azure / Microsoft policy</div></div>
+      <div class="cell"><h4>ZDR</h4><div class="v warn">Via their terms — not separately confirmed</div></div>
+      <div class="cell"><h4>Residency</h4><div class="v warn">Azure region (not inference_geo) — confirmed</div></div>
+      <div class="cell"><h4>BAA</h4><div class="v warn">Presumed their BAA, not Anthropic's — not separately named</div></div>
+    </div>
+    <div class="bites"><b>Where it bites:</b> governance-overlay.md names <b>Bedrock and Vertex explicitly</b> as hyperscaler-BAA / hyperscaler-no-train paths (§2, §4) — Azure AI Foundry isn't separately named in either section, even though the residency section (§5) <b>does</b> explicitly group it with Bedrock/Vertex for <code>inference_geo</code> purposes ("their own region selection, not this parameter"). Treat it like Bedrock/Vertex for BAA and no-train too until Anthropic states otherwise — same hyperscaler-procurement shape — and verify the Microsoft-side BAA/DPA directly rather than assuming it inherits Anthropic's terms. One detail worth asking a Microsoft rep to unpack: Anthropic's own Sonnet 5 launch materials describe "Claude in Microsoft Foundry" as "hosted on Azure <em>and</em> Anthropic," which doesn't obviously square with "their own region selection."</div>
+    <div class="companions">Trace: <a href="governance-overlay.html">governance-overlay.md</a> §2 (no-train inheritance — Bedrock/Vertex named, Azure not), §4 (BAA — same gap), §5 (residency — Azure explicitly grouped with Bedrock/Vertex).</div>
+  </div>
+
+  <!-- 14. CLAUDE PLATFORM ON AWS -->
+  <div class="feature">
+    <h2>14. Claude Platform on AWS<span class="surf proc">Procurement path</span></h2>
+    <div class="stack-line">sounds like Bedrock's sibling · behaves like the first-party API — inference stays on Anthropic's infrastructure, AWS is the billing wrapper</div>
+    <div class="diagram">
+      <svg viewBox="0 0 900 210" xmlns="http://www.w3.org/2000/svg">
+        <defs><marker id="ar14" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0,1 L9,5 L0,9 L2,5 z" fill="#2a2017"/></marker></defs>
+        <rect class="zone" x="8" y="8" width="210" height="194" rx="8" fill="rgba(21,128,61,0.08)"/>
+        <rect class="zone" x="300" y="8" width="300" height="194" rx="8" fill="rgba(124,94,72,0.08)"/>
+        <rect class="zone" x="640" y="8" width="250" height="194" rx="8" fill="rgba(30,64,175,0.07)"/>
+        <text class="ztitle" x="113" y="26" text-anchor="middle">CUSTOMER TRUST ZONE</text>
+        <text class="ztitle" x="450" y="26" text-anchor="middle">ANTHROPIC PROCESSING</text>
+        <text class="ztitle" x="765" y="26" text-anchor="middle">STORAGE (or ZDR=none)</text>
+        <line class="boundary" x1="259" y1="14" x2="259" y2="196"/>
+        <text class="blab" x="259" y="200" text-anchor="middle">prompt = boundary</text>
+        <rect class="box b-user" x="22" y="58" width="178" height="48" rx="9"/>
+        <text class="lbl" x="111" y="77" text-anchor="middle">Your app / VPC</text>
+        <text class="sub" x="111" y="94" text-anchor="middle">AWS Marketplace billing</text>
+        <rect class="box b-user" x="22" y="130" width="178" height="48" rx="9"/>
+        <text class="lbl" x="111" y="150" text-anchor="middle">Builds prompt</text>
+        <text class="sub" x="111" y="167" text-anchor="middle">same shape as first-party API</text>
+        <rect class="box b-claude" x="330" y="92" width="180" height="58" rx="9"/>
+        <text class="lbl" x="420" y="114" text-anchor="middle" font-weight="700">Inference</text>
+        <text class="sub" x="420" y="132" text-anchor="middle">inference_geo: global / us</text>
+        <rect class="box b-store" x="670" y="92" width="190" height="58" rx="9"/>
+        <text class="lbl" x="765" y="114" text-anchor="middle">Logs</text>
+        <text class="sub" x="765" y="132" text-anchor="middle">30-day, or ZDR — not separately confirmed</text>
+        <path class="flow" d="M200,120 L326,120" marker-end="url(#ar14)"/>
+        <text class="flab" x="262" y="112" text-anchor="middle">prompt + tools + files</text>
+        <path class="flow dash" d="M510,134 Q590,165 668,140" marker-end="url(#ar14)"/>
+      </svg>
+    </div>
+    <div class="meta">
+      <div class="cell"><h4>Surface</h4><div class="v">AWS Marketplace (Anthropic-hosted)</div></div>
+      <div class="cell"><h4>No-train</h4><div class="v warn">Likely yes (Anthropic-hosted) — not separately confirmed</div></div>
+      <div class="cell"><h4>Retention</h4><div class="v warn">30-day / ZDR pattern likely applies — not separately confirmed</div></div>
+      <div class="cell"><h4>ZDR</h4><div class="v warn">Likely eligible (same infra as first-party API) — not separately confirmed</div></div>
+      <div class="cell"><h4>Residency</h4><div class="v yes">inference_geo applies — confirmed, same as first-party API</div></div>
+      <div class="cell"><h4>BAA</h4><div class="v warn">Not separately named — §4 doesn't enumerate this path</div></div>
+    </div>
+    <div class="bites"><b>Where it bites:</b> the name suggests Bedrock's sibling; the residency doc says otherwise. governance-overlay.md §5 groups this path with the <b>first-party API</b> for <code>inference_geo</code> purposes, not with Bedrock/Vertex/Azure: "available on the first-party API and Claude Platform on AWS only." That's a real, sourced signal that inference runs on <b>Anthropic's own infrastructure</b>, with AWS Marketplace as a billing/procurement wrapper — not a redeployment into AWS's infrastructure the way Bedrock works. What is <b>not</b> separately confirmed: whether no-train, ZDR eligibility, and BAA coverage also follow the first-party-API pattern, or whether AWS Marketplace procurement carries its own distinct terms the way Bedrock does. Residency inheriting from the API is sourced; the rest is a reasonable read of that same fact, not a separate citation — verify directly before assuming any of it, especially before signing a BAA against this specific procurement path.</div>
+    <div class="companions">Trace: <a href="governance-overlay.html">governance-overlay.md</a> §5 (residency — explicitly grouped with first-party API, the one sourced fact this diagram leans on); <a href="../docs/feature-inventory.html">feature-inventory.md</a> Procurement paths (native AWS Marketplace listing, separate from Bedrock, direct billing via AWS).</div>
+  </div>
+
   <!-- =================================================================== -->
   <div class="sec-h">D · Seat-plan &amp; CLI surfaces</div>
   <div class="sec-sub">Claude Code is a CLI on top of the Messages API. Cowork and Claude Design are seat-plan product surfaces spanning consumer <em>and</em> commercial tiers — the no-train default is not uniform across that range (§2). Claude Tag is Team/Enterprise-only, Slack-native, in beta. Remote Control is a Claude Code sub-feature that adds a second device to the trust story, OAuth-only, research preview. None of the five have confirmed BAA coverage today.</div>
 
-  <!-- 13. CLAUDE CODE (CLI) -->
+  <!-- 15. CLAUDE CODE (CLI) -->
   <div class="feature">
-    <h2>13. Claude Code (CLI)<span class="surf api">API (CLI)</span></h2>
+    <h2>15. Claude Code (CLI)<span class="surf api">API (CLI)</span></h2>
     <div class="stack-line">a CLI on top of the Messages API · local files enter the prompt only when Claude reads them</div>
     <div class="diagram">
       <svg viewBox="0 0 900 210" xmlns="http://www.w3.org/2000/svg">
-        <defs><marker id="ar13" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0,1 L9,5 L0,9 L2,5 z" fill="#2a2017"/></marker></defs>
+        <defs><marker id="ar15" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0,1 L9,5 L0,9 L2,5 z" fill="#2a2017"/></marker></defs>
         <rect class="zone" x="8" y="8" width="210" height="194" rx="8" fill="rgba(21,128,61,0.08)"/>
         <rect class="zone" x="300" y="8" width="300" height="194" rx="8" fill="rgba(124,94,72,0.08)"/>
         <rect class="zone" x="640" y="8" width="250" height="194" rx="8" fill="rgba(30,64,175,0.07)"/>
@@ -651,9 +733,9 @@
         <rect class="box b-store" x="670" y="92" width="190" height="58" rx="9"/>
         <text class="lbl" x="765" y="114" text-anchor="middle">Logs</text>
         <text class="sub" x="765" y="132" text-anchor="middle">30-day, or none under ZDR</text>
-        <path class="flow" d="M200,120 L326,120" marker-end="url(#ar13)"/>
+        <path class="flow" d="M200,120 L326,120" marker-end="url(#ar15)"/>
         <text class="flab" x="262" y="112" text-anchor="middle">file contents + ask</text>
-        <path class="flow dash" d="M510,134 Q590,165 668,140" marker-end="url(#ar13)"/>
+        <path class="flow dash" d="M510,134 Q590,165 668,140" marker-end="url(#ar15)"/>
       </svg>
     </div>
     <div class="meta">
@@ -668,13 +750,13 @@
     <div class="companions">Trace: <a href="governance-overlay.html">governance-overlay.md</a> §2 (consumer-tier carve-out names Claude Code), §3 (ZDR covered surfaces), §4 (BAA covered-features list).</div>
   </div>
 
-  <!-- 14. COWORK -->
+  <!-- 16. COWORK -->
   <div class="feature">
-    <h2>14. Cowork (desktop agent)<span class="surf prod">Desktop product</span></h2>
+    <h2>16. Cowork (desktop agent)<span class="surf prod">Desktop product</span></h2>
     <div class="stack-line">folder-scoped local actions · <strong>not BAA-covered, not ZDR-eligible</strong></div>
     <div class="diagram">
       <svg viewBox="0 0 900 210" xmlns="http://www.w3.org/2000/svg">
-        <defs><marker id="ar14" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0,1 L9,5 L0,9 L2,5 z" fill="#2a2017"/></marker></defs>
+        <defs><marker id="ar16" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0,1 L9,5 L0,9 L2,5 z" fill="#2a2017"/></marker></defs>
         <rect class="zone" x="8" y="8" width="210" height="194" rx="8" fill="rgba(21,128,61,0.08)"/>
         <rect class="zone" x="300" y="8" width="300" height="194" rx="8" fill="rgba(124,94,72,0.08)"/>
         <rect class="zone" x="640" y="8" width="250" height="194" rx="8" fill="rgba(30,64,175,0.07)"/>
@@ -695,11 +777,11 @@
         <rect class="box b-store" x="670" y="92" width="190" height="58" rx="9"/>
         <text class="lbl" x="765" y="114" text-anchor="middle">Session data</text>
         <text class="sub" x="765" y="132" text-anchor="middle">retention — verify (no ZDR)</text>
-        <path class="flow" d="M200,120 L326,120" marker-end="url(#ar14)"/>
+        <path class="flow" d="M200,120 L326,120" marker-end="url(#ar16)"/>
         <text class="flab" x="262" y="112" text-anchor="middle">folder contents in prompt</text>
-        <path class="flow dash" d="M510,134 Q590,165 668,140" marker-end="url(#ar14)"/>
+        <path class="flow dash" d="M510,134 Q590,165 668,140" marker-end="url(#ar16)"/>
         <text class="flab" x="590" y="167" text-anchor="middle">instructions returned</text>
-        <path class="flow dash" d="M111,106 L111,128" marker-end="url(#ar14)"/>
+        <path class="flow dash" d="M111,106 L111,128" marker-end="url(#ar16)"/>
       </svg>
     </div>
     <div class="meta">
@@ -714,13 +796,13 @@
     <div class="companions">Trace: <a href="governance-overlay.html">governance-overlay.md</a> §2 (consumer-tier carve-out), §4 ("Cowork — a paid-plan product surface, but BAA-excluded").</div>
   </div>
 
-  <!-- 15. CLAUDE DESIGN -->
+  <!-- 17. CLAUDE DESIGN -->
   <div class="feature">
-    <h2>15. Claude Design (beta)<span class="surf prod">Enterprise product (beta)</span></h2>
+    <h2>17. Claude Design (beta)<span class="surf prod">Enterprise product (beta)</span></h2>
     <div class="stack-line">uploaded assets are stored <strong>persistently</strong>, with <strong>no residency control</strong> and no BAA</div>
     <div class="diagram">
       <svg viewBox="0 0 900 200" xmlns="http://www.w3.org/2000/svg">
-        <defs><marker id="ar15" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0,1 L9,5 L0,9 L2,5 z" fill="#2a2017"/></marker></defs>
+        <defs><marker id="ar17" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0,1 L9,5 L0,9 L2,5 z" fill="#2a2017"/></marker></defs>
         <rect class="zone" x="8" y="8" width="210" height="184" rx="8" fill="rgba(21,128,61,0.08)"/>
         <rect class="zone" x="300" y="8" width="300" height="184" rx="8" fill="rgba(124,94,72,0.08)"/>
         <rect class="zone" x="640" y="8" width="250" height="184" rx="8" fill="rgba(30,64,175,0.07)"/>
@@ -738,7 +820,7 @@
         <rect class="box b-store" x="670" y="78" width="190" height="56" rx="9" stroke-dasharray="5 4"/>
         <text class="lbl" x="765" y="100" text-anchor="middle">Asset store</text>
         <text class="sub" x="765" y="118" text-anchor="middle">persists, no region choice</text>
-        <path class="flow" d="M198,100 Q420,60 668,96" marker-end="url(#ar15)"/>
+        <path class="flow" d="M198,100 Q420,60 668,96" marker-end="url(#ar17)"/>
         <text class="flab" x="430" y="66" text-anchor="middle">copy uploaded, kept</text>
       </svg>
     </div>
@@ -754,13 +836,13 @@
     <div class="companions">Trace: <a href="governance-overlay.html">governance-overlay.md</a> §4 (beta features incl. Claude Design excluded from BAA); <a href="../docs/feature-inventory.html">feature-inventory.md</a> (persistence + no-residency facts).</div>
   </div>
 
-  <!-- 16. CLAUDE TAG -->
+  <!-- 18. CLAUDE TAG -->
   <div class="feature">
-    <h2>16. Claude Tag (Slack, beta)<span class="surf prod">Slack-native product</span></h2>
+    <h2>18. Claude Tag (Slack, beta)<span class="surf prod">Slack-native product</span></h2>
     <div class="stack-line">one org-identity agent, shared by everyone in the channel · replaces "Claude in Slack" (cutover 2026-08-03)</div>
     <div class="diagram">
       <svg viewBox="0 0 900 210" xmlns="http://www.w3.org/2000/svg">
-        <defs><marker id="ar16" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0,1 L9,5 L0,9 L2,5 z" fill="#2a2017"/></marker></defs>
+        <defs><marker id="ar18" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0,1 L9,5 L0,9 L2,5 z" fill="#2a2017"/></marker></defs>
         <rect class="zone" x="8" y="8" width="210" height="194" rx="8" fill="rgba(21,128,61,0.08)"/>
         <rect class="zone" x="300" y="8" width="300" height="194" rx="8" fill="rgba(124,94,72,0.08)"/>
         <rect class="zone" x="640" y="8" width="250" height="194" rx="8" fill="rgba(30,64,175,0.07)"/>
@@ -781,11 +863,11 @@
         <rect class="box b-store" x="670" y="92" width="190" height="58" rx="9"/>
         <text class="lbl" x="765" y="114" text-anchor="middle">Channel memory</text>
         <text class="sub" x="765" y="132" text-anchor="middle">persists · purges 30d post-disconnect</text>
-        <path class="flow" d="M200,120 L326,120" marker-end="url(#ar16)"/>
+        <path class="flow" d="M200,120 L326,120" marker-end="url(#ar18)"/>
         <text class="flab" x="262" y="112" text-anchor="middle">tags @Claude</text>
-        <path class="flow dash" d="M510,134 Q590,165 668,140" marker-end="url(#ar16)"/>
+        <path class="flow dash" d="M510,134 Q590,165 668,140" marker-end="url(#ar18)"/>
         <text class="flab" x="590" y="167" text-anchor="middle">context persists</text>
-        <path class="flow dash" d="M111,106 L111,128" marker-end="url(#ar16)"/>
+        <path class="flow dash" d="M111,106 L111,128" marker-end="url(#ar18)"/>
       </svg>
     </div>
     <div class="meta">
@@ -800,13 +882,13 @@
     <div class="companions">Trace: <a href="governance-overlay.html">governance-overlay.md</a> §1 (Claude Tag data-flow row), §4 (BAA not enumerated); <a href="surface-rollout-matrix.html">surface-rollout-matrix.md</a> (three-tier permission model, Member Access); <a href="agentic-threat-model.html">agentic-threat-model.md</a> T8/T9 (shared-identity confused-deputy, channel memory poisoning).</div>
   </div>
 
-  <!-- 17. REMOTE CONTROL -->
+  <!-- 19. REMOTE CONTROL -->
   <div class="feature">
-    <h2>17. Remote Control (Claude Code)<span class="surf api">CLI + mobile (preview)</span></h2>
+    <h2>19. Remote Control (Claude Code)<span class="surf api">CLI + mobile (preview)</span></h2>
     <div class="stack-line">execution stays on your machine · your phone is a control surface, not a copy of your files</div>
     <div class="diagram">
       <svg viewBox="0 0 900 210" xmlns="http://www.w3.org/2000/svg">
-        <defs><marker id="ar17" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0,1 L9,5 L0,9 L2,5 z" fill="#2a2017"/></marker></defs>
+        <defs><marker id="ar19" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0,1 L9,5 L0,9 L2,5 z" fill="#2a2017"/></marker></defs>
         <rect class="zone" x="8" y="8" width="210" height="194" rx="8" fill="rgba(21,128,61,0.08)"/>
         <rect class="zone" x="300" y="8" width="300" height="194" rx="8" fill="rgba(124,94,72,0.08)"/>
         <rect class="zone" x="640" y="8" width="250" height="194" rx="8" fill="rgba(21,128,61,0.08)"/>
@@ -827,29 +909,29 @@
         <rect class="box b-user" x="670" y="92" width="190" height="58" rx="9"/>
         <text class="lbl" x="765" y="114" text-anchor="middle">Phone / browser</text>
         <text class="sub" x="765" y="132" text-anchor="middle">control only — no file copy</text>
-        <path class="flow" d="M200,106 L326,106" marker-end="url(#ar17)"/>
+        <path class="flow" d="M200,106 L326,106" marker-end="url(#ar19)"/>
         <text class="flab" x="262" y="98" text-anchor="middle">session state</text>
-        <path class="flow" d="M510,106 L668,106" marker-end="url(#ar17)"/>
+        <path class="flow" d="M510,106 L668,106" marker-end="url(#ar19)"/>
         <text class="flab" x="589" y="98" text-anchor="middle">mirrored to your device</text>
-        <path class="flow dash" d="M668,124 Q590,155 510,140" marker-end="url(#ar17)"/>
+        <path class="flow dash" d="M668,124 Q590,155 510,140" marker-end="url(#ar19)"/>
         <text class="flab" x="590" y="167" text-anchor="middle">you steer it from here</text>
       </svg>
     </div>
     <div class="meta">
       <div class="cell"><h4>Surface</h4><div class="v">Claude Code (research preview)</div></div>
       <div class="cell"><h4>No-train</h4><div class="v warn">Depends on the OAuth account's plan tier (§2) — no API-key path to bypass that check</div></div>
-      <div class="cell"><h4>Retention</h4><div class="v warn">Follows the underlying session's retention (#13) — relay adds no new store, not separately confirmed</div></div>
+      <div class="cell"><h4>Retention</h4><div class="v warn">Follows the underlying session's retention (#15) — relay adds no new store, not separately confirmed</div></div>
       <div class="cell"><h4>ZDR</h4><div class="v warn">Enterprise+ZDR path only — the API-key ZDR path doesn't exist here (OAuth-only)</div></div>
       <div class="cell"><h4>Residency</h4><div class="v warn">inference_geo likely doesn't apply (not an API-key path) — not separately confirmed</div></div>
       <div class="cell"><h4>BAA</h4><div class="v warn">Verify at signing</div></div>
     </div>
-    <div class="bites"><b>Where it bites:</b> Remote Control requires <b>claude.ai OAuth, not an API key</b> — so of Claude Code's two ZDR paths (#13: commercial org key, or Enterprise with ZDR), only Enterprise+ZDR is even reachable here. Anthropic's own docs acknowledge the admin toggle can **grey out because an org's data-retention or compliance configuration is incompatible** with Remote Control — unspecified which configs trigger it, but that's a real question to raise at signing, not a hypothetical. The sharper new risk is the device itself: your phone becomes a live, full-filesystem control surface into whatever repo the session is running against. A stolen or compromised phone with an active claude.ai session is now functionally a stolen credential to that machine — same shape as agentic-threat-model T6, just with a personal device as the new attack surface.</div>
+    <div class="bites"><b>Where it bites:</b> Remote Control requires <b>claude.ai OAuth, not an API key</b> — so of Claude Code's two ZDR paths (#15: commercial org key, or Enterprise with ZDR), only Enterprise+ZDR is even reachable here. Anthropic's own docs acknowledge the admin toggle can **grey out because an org's data-retention or compliance configuration is incompatible** with Remote Control — unspecified which configs trigger it, but that's a real question to raise at signing, not a hypothetical. The sharper new risk is the device itself: your phone becomes a live, full-filesystem control surface into whatever repo the session is running against. A stolen or compromised phone with an active claude.ai session is now functionally a stolen credential to that machine — same shape as agentic-threat-model T6, just with a personal device as the new attack surface.</div>
     <div class="companions">Trace: <a href="governance-overlay.html">governance-overlay.md</a> §2 (consumer-tier carve-out), §3 (ZDR: API-key vs Enterprise-ZDR paths); <a href="https://code.claude.com/docs/en/remote-control">code.claude.com/docs/en/remote-control</a> (OAuth-only, retention-incompatibility toggle); <a href="agentic-threat-model.html">agentic-threat-model.md</a> T6 (device/token compromise).</div>
   </div>
 
   <!-- =================================================================== -->
   <div class="sec-h">Coverage table — the Enterprise-relevant feature set</div>
-  <div class="sec-sub">The 17 diagrams above cover the distinct boundary stories. This table catches the rest (Bash, Batch, Computer use, Web fetch, Advisor) and gives the per-feature verdict at a glance. BAA verdicts assume an activated + signed Enterprise/API BAA — and several API tools and product surfaces are explicitly <strong>not</strong> covered.</div>
+  <div class="sec-sub">The 19 diagrams above cover the distinct boundary stories. This table catches the rest (Bash, Batch, Computer use, Web fetch, Advisor) and gives the per-feature verdict at a glance. BAA verdicts assume an activated + signed Enterprise/API BAA — and several API tools and product surfaces are explicitly <strong>not</strong> covered.</div>
   <table class="cov">
     <thead><tr><th>Feature</th><th>Surface</th><th>Crosses to</th><th>Retention</th><th>ZDR</th><th>Residency</th><th>BAA</th></tr></thead>
     <tbody>
@@ -866,6 +948,8 @@
       <tr><td>Bash tool</td><td>API</td><td>Isolated VM</td><td>Ephemeral</td><td>Per table</td><td>Workspace geo</td><td class="yes">Covered</td></tr>
       <tr><td>MCP / Agent SDK</td><td>API + yours</td><td class="no">Your external systems</td><td>Yours</td><td>Anthropic side</td><td>Your infra</td><td class="no">Not on your MCP</td></tr>
       <tr><td>Bedrock / Vertex</td><td>Procurement</td><td>Hyperscaler region</td><td>Per hyperscaler</td><td>Their terms</td><td class="warn">Their region</td><td class="warn">Their BAA</td></tr>
+      <tr><td>Azure AI Foundry</td><td>Procurement</td><td>Azure region</td><td>Per Microsoft</td><td class="warn">Presumed, unconfirmed</td><td class="warn">Their region</td><td class="warn">Presumed, unconfirmed</td></tr>
+      <tr><td>Claude Platform on AWS</td><td>Procurement</td><td>Anthropic infer</td><td>Likely 30-day/ZDR — unconfirmed</td><td class="warn">Likely, unconfirmed</td><td class="yes">inference_geo (confirmed)</td><td class="warn">Not enumerated</td></tr>
       <tr><td>Batch API</td><td>API</td><td>Batch store</td><td>Per policy — verify</td><td>Per table</td><td>Workspace geo</td><td class="no">Not covered</td></tr>
       <tr><td>Computer use 2.0</td><td>API (beta)</td><td>Anthropic infer</td><td>30-day / ZDR</td><td>Per table</td><td>Workspace geo</td><td class="no">Not covered</td></tr>
       <tr><td>Web fetch tool</td><td>API</td><td class="no">Third-party web</td><td>30-day / ZDR</td><td>Per table</td><td class="no">Egress unbound</td><td class="no">Not covered</td></tr>
@@ -874,7 +958,7 @@
       <tr><td>Cowork (desktop agent)</td><td>Desktop product</td><td>Anthropic infer + local fs</td><td>Per policy — verify</td><td class="no">Not covered</td><td>Not stated — verify</td><td class="no">Not covered</td></tr>
       <tr><td>Claude Design (beta)</td><td>Ent. product (beta)</td><td>Anthropic infer + asset store</td><td>Persistent</td><td class="no">Not covered</td><td class="no">No residency</td><td class="no">Not covered</td></tr>
       <tr><td>Claude Tag (Slack, beta)</td><td>Slack product</td><td>Anthropic infer + your tools/repos</td><td>Persists to disconnect +30d</td><td class="no">Not covered</td><td>Not stated — verify</td><td class="no">Not covered (unconfirmed)</td></tr>
-      <tr><td>Remote Control</td><td>CLI + mobile (preview)</td><td>Relay only — fs stays local</td><td>Follows session (#13)</td><td class="warn">Ent.+ZDR only</td><td>Likely N/A — not confirmed</td><td class="warn">Verify at signing</td></tr>
+      <tr><td>Remote Control</td><td>CLI + mobile (preview)</td><td>Relay only — fs stays local</td><td>Follows session (#15)</td><td class="warn">Ent.+ZDR only</td><td>Likely N/A — not confirmed</td><td class="warn">Verify at signing</td></tr>
     </tbody>
   </table>
 
