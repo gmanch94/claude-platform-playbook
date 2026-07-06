@@ -2,7 +2,7 @@
 
 Executive-grade decision tools for AI transformation **on the Claude platform**. Built for CIOs, CDOs, CTOs, and CHROs sizing Claude adoption — and architects defending the choice to leadership.
 
-> **As of 2026-06.** Pricing, model versions, and feature surface change. Verify at [anthropic.com](https://www.anthropic.com) and [docs.claude.com](https://docs.claude.com) before final decisions.
+> **As of 2026-07.** Pricing, model versions, and feature surface change. Verify at [anthropic.com](https://www.anthropic.com) and [platform.claude.com](https://platform.claude.com/docs/en) before final decisions.
 
 ---
 
@@ -133,9 +133,9 @@ Or fork the repo, customize for your org, host wherever you want.
 
 - Pricing claims dated and link to [anthropic.com/pricing](https://www.anthropic.com/pricing)
 - Model versions pinned (Sonnet 5, Haiku 4.x, Opus 4.x) — never "latest"
-- All technical claims cite [docs.claude.com](https://docs.claude.com) by URL + as-of date
+- All technical claims cite [platform.claude.com](https://platform.claude.com/docs/en) by URL + as-of date (docs.claude.com redirects to platform.claude.com)
 - No reproducing Anthropic marketing copy verbatim — paraphrase + cite
-- Footer pattern on every artifact: `© gmanch94 · CC-BY-4.0 · As of 2026-06. Verify at anthropic.com.`
+- Footer pattern on every artifact: `© gmanch94 · CC-BY-4.0 · As of 2026-07. Verify at anthropic.com.`
 - Monthly refresh discipline (scheduled remote agent, first Monday) — pricing/model surface drifts fast
 
 ---
@@ -151,4 +151,4 @@ Or fork the repo, customize for your org, host wherever you want.
 
 [CC-BY-4.0](LICENSE) — free to share, adapt, and reuse with attribution.
 
-`© gmanch94 · CC-BY-4.0 · As of 2026-06.`
+`© gmanch94 · CC-BY-4.0 · As of 2026-07.`

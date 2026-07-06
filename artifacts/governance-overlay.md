@@ -1,6 +1,6 @@
 # Claude Governance Overlay
 
-**As of 2026-06.** Pin to current model surface (Opus 4.8 / Sonnet 5 / Haiku 4.5) — refresh monthly. See [`../docs/feature-inventory.md`](../docs/feature-inventory.md) for canonical feature + status list.
+**As of 2026-07.** Pin to current model surface (Opus 4.8 / Sonnet 5 / Haiku 4.5) — refresh monthly. See [`../docs/feature-inventory.md`](../docs/feature-inventory.md) for canonical feature + status list.
 
 This is a **risk + compliance overlay** — not a generic AI governance framework. It tells you what changes when your AI runs on Claude specifically, and where the standard NIST / EU AI Act controls map onto Claude's surface.
 
@@ -138,7 +138,7 @@ Two **independent** controls determine where data is processed and stored. Sourc
 | **Workspace geo** | Workspace-level — controls at-rest storage and endpoint processing (image transcoding, code execution, etc.) | Console workspace setting | Per Anthropic Console workspace configuration |
 
 **Key constraints:**
-- `inference_geo` is supported on **Opus 4.6+ and Sonnet 4.6** (confirmed). Haiku 4.5 and other earlier-tier models return a `400` error if the parameter is set. **Sonnet 5's support is not yet confirmed** — the 2026-06-30 launch announcement is silent on `inference_geo`; verify against the residency doc before assuming it carries over from Sonnet 4.6.
+- `inference_geo` is supported on **Opus 4.6+ and Sonnet 4.6+** (confirmed). Haiku 4.5 and other earlier-tier models return a `400` error if the parameter is set. **Sonnet 5 now confirmed** — platform pricing doc (verified 2026-07-06) explicitly covers "Claude Sonnet 4.6, and later models" for `inference_geo`; 1.1× multiplier applies when `inference_geo: "us"`.
 - `inference_geo` is available on the **first-party API and Claude Platform on AWS only** — on Bedrock, Vertex, and Azure AI Foundry, geographic processing is determined by the hyperscaler region or deployment type you choose, not by this parameter.
 - Claude Managed Agents do **not** support `inference_geo`, but do respect Workspace geo.
 - The API response's `usage.inference_geo` field reports where inference actually ran — log this for residency audit evidence (see §9).
@@ -401,4 +401,4 @@ Workloads without those five elements aren't ungoverned because someone forgot �
 
 ---
 
-`© gmanch94 · CC-BY-4.0 · As of 2026-06. Verify all status claims at anthropic.com + docs.claude.com.`
+`© gmanch94 · CC-BY-4.0 · As of 2026-07. Verify all status claims at anthropic.com + platform.claude.com.`
