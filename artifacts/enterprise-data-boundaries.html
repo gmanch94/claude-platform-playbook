@@ -704,7 +704,7 @@
 
   <!-- =================================================================== -->
   <div class="sec-h">D · Seat-plan &amp; CLI surfaces</div>
-  <div class="sec-sub">Claude Code is a CLI on top of the Messages API. Cowork and Claude Design are seat-plan product surfaces spanning consumer <em>and</em> commercial tiers — the no-train default is not uniform across that range (§2). Claude Tag is Team/Enterprise-only, Slack-native, in beta. Remote Control is a Claude Code sub-feature that adds a second device to the trust story, OAuth-only, research preview. None of the five have confirmed BAA coverage today.</div>
+  <div class="sec-sub">Claude Code is a CLI on top of the Messages API. Cowork and Claude Design are seat-plan product surfaces spanning consumer <em>and</em> commercial tiers — the no-train default is not uniform across that range (§2). Claude Tag is Team/Enterprise-only, Slack-native, in beta. Remote Control is a Claude Code sub-feature that adds a second device to the trust story, OAuth-only, research preview. Claude Science is a beta desktop/HPC research app on Pro/Max/Team/Enterprise — raw data stays local and every folder/host/job is approval-gated, but BAA/ZDR/residency are unpublished. None of the six have confirmed BAA coverage today.</div>
 
   <!-- 15. CLAUDE CODE (CLI) -->
   <div class="feature">
@@ -929,9 +929,56 @@
     <div class="companions">Trace: <a href="governance-overlay.html">governance-overlay.md</a> §2 (consumer-tier carve-out), §3 (ZDR: API-key vs Enterprise-ZDR paths); <a href="https://code.claude.com/docs/en/remote-control">code.claude.com/docs/en/remote-control</a> (OAuth-only, retention-incompatibility toggle); <a href="agentic-threat-model.html">agentic-threat-model.md</a> T6 (device/token compromise).</div>
   </div>
 
+  <!-- 20. CLAUDE SCIENCE -->
+  <div class="feature">
+    <h2>20. Claude Science (beta)<span class="surf prod">Science app (beta)</span></h2>
+    <div class="stack-line">raw data + compute stay local · you approve each folder, host &amp; job · <strong>governance unpublished, aimed at regulated science</strong></div>
+    <div class="diagram">
+      <svg viewBox="0 0 900 210" xmlns="http://www.w3.org/2000/svg">
+        <defs><marker id="ar20" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0,1 L9,5 L0,9 L2,5 z" fill="#2a2017"/></marker></defs>
+        <rect class="zone" x="8" y="8" width="210" height="194" rx="8" fill="rgba(21,128,61,0.08)"/>
+        <rect class="zone" x="300" y="8" width="300" height="194" rx="8" fill="rgba(124,94,72,0.08)"/>
+        <rect class="zone" x="640" y="8" width="250" height="194" rx="8" fill="rgba(30,64,175,0.07)"/>
+        <text class="ztitle" x="113" y="26" text-anchor="middle">YOUR MACHINE / HPC (sandboxed)</text>
+        <text class="ztitle" x="450" y="26" text-anchor="middle">ANTHROPIC PROCESSING (multi-agent)</text>
+        <text class="ztitle" x="765" y="26" text-anchor="middle">PROMPT / RESPONSE DATA</text>
+        <line class="boundary" x1="259" y1="14" x2="259" y2="196"/>
+        <text class="blab" x="259" y="200" text-anchor="middle">prompt = boundary</text>
+        <rect class="box b-user" x="22" y="58" width="178" height="48" rx="9"/>
+        <text class="lbl" x="111" y="77" text-anchor="middle">Local files + sandbox</text>
+        <text class="sub" x="111" y="94" text-anchor="middle">raw data + compute stay local</text>
+        <rect class="box b-user" x="22" y="130" width="178" height="48" rx="9"/>
+        <text class="lbl" x="111" y="150" text-anchor="middle">Connectors → sci DBs</text>
+        <text class="sub" x="111" y="167" text-anchor="middle">each folder/host/job you approve</text>
+        <rect class="box b-claude" x="330" y="92" width="180" height="58" rx="9"/>
+        <text class="lbl" x="420" y="114" text-anchor="middle" font-weight="700">Coordinator + reviewer</text>
+        <text class="sub" x="420" y="132" text-anchor="middle">sub-agents · cite/calc check</text>
+        <rect class="box b-store" x="670" y="92" width="190" height="58" rx="9"/>
+        <text class="lbl" x="765" y="114" text-anchor="middle">Prompt / response</text>
+        <text class="sub" x="765" y="132" text-anchor="middle">standard retention (no ZDR stated)</text>
+        <path class="flow" d="M200,110 L326,116" marker-end="url(#ar20)"/>
+        <text class="flab" x="262" y="104" text-anchor="middle">only prompt content crosses</text>
+        <path class="flow dash" d="M510,134 Q590,165 668,140" marker-end="url(#ar20)"/>
+        <text class="flab" x="590" y="167" text-anchor="middle">artifacts + logs returned</text>
+        <path class="flow dash" d="M111,130 L111,110" marker-end="url(#ar20)"/>
+        <text class="flab" x="152" y="122" text-anchor="middle">DBs → local</text>
+      </svg>
+    </div>
+    <div class="meta">
+      <div class="cell"><h4>Surface</h4><div class="v">Science app (beta)</div></div>
+      <div class="cell"><h4>No-train</h4><div class="v warn">Per plan — consumer ≠ commercial (§2)</div></div>
+      <div class="cell"><h4>Retention</h4><div class="v">Standard (prompt/resp); files stay local</div></div>
+      <div class="cell"><h4>ZDR</h4><div class="v warn">Not stated — verify</div></div>
+      <div class="cell"><h4>Residency</h4><div class="v warn">Files local; prompt/resp not stated</div></div>
+      <div class="cell"><h4>BAA</h4><div class="v warn">Not stated — verify (no BAA on consumer plans)</div></div>
+    </div>
+    <div class="bites"><b>Where it bites:</b> the local-data story is genuinely strong — <b>raw datasets and compute stay on your machine</b>, code runs in a sandbox, and you <b>approve each folder, network host, and remote job</b> before the agent touches it (all sourced). What crosses is the <b>prompt and the model's response</b>, held under standard retention — not a special persistent store like Design (#17) or Files API (#6). The trap is governance, not data locality: Claude Science ships on <b>consumer Pro/Max plans with no BAA</b>, its <b>BAA, ZDR, and <code>inference_geo</code> residency are unpublished</b> ("contact sales for specific needs"), and it's aimed at exactly the genomics / clinical / proteomics data most likely to be regulated. Anthropic's own docs state it is <b>not intended for clinical or diagnostic use.</b> Its 60+ connectors also reach external scientific databases — each host is approval-gated, but that's a second egress path to scope. Treat governance as <b>not stated → not covered until Anthropic confirms it</b>, the same posture as Cowork (#16) / Design (#17) / Tag (#18) — don't read "raw data stays local" as "regulated data is safe here."</div>
+    <div class="companions">Trace: <a href="governance-overlay.html">governance-overlay.md</a> §2 (consumer-tier carve-out — no-train not uniform), §4 (BAA covered-features list — Claude Science not enumerated); <a href="surface-rollout-matrix.html">surface-rollout-matrix.md</a> (life-sciences deviation row); <a href="https://claude.com/docs/claude-science">claude.com/docs/claude-science</a> (local files + per-folder/host/job approval; not for clinical use); <a href="../docs/feature-inventory.html">feature-inventory.md</a> Product surfaces (sources).</div>
+  </div>
+
   <!-- =================================================================== -->
   <div class="sec-h">Coverage table — the Enterprise-relevant feature set</div>
-  <div class="sec-sub">The 19 diagrams above cover the distinct boundary stories. This table catches the rest (Bash, Batch, Computer use, Web fetch, Advisor) and gives the per-feature verdict at a glance. BAA verdicts assume an activated + signed Enterprise/API BAA — and several API tools and product surfaces are explicitly <strong>not</strong> covered.</div>
+  <div class="sec-sub">The 20 diagrams above cover the distinct boundary stories. This table catches the rest (Bash, Batch, Computer use, Web fetch, Advisor) and gives the per-feature verdict at a glance. BAA verdicts assume an activated + signed Enterprise/API BAA — and several API tools and product surfaces are explicitly <strong>not</strong> covered.</div>
   <table class="cov">
     <thead><tr><th>Feature</th><th>Surface</th><th>Crosses to</th><th>Retention</th><th>ZDR</th><th>Residency</th><th>BAA</th></tr></thead>
     <tbody>
@@ -959,6 +1006,7 @@
       <tr><td>Claude Design (beta)</td><td>Ent. product (beta)</td><td>Anthropic infer + asset store</td><td>Persistent</td><td class="no">Not covered</td><td class="no">No residency</td><td class="no">Not covered</td></tr>
       <tr><td>Claude Tag (Slack, beta)</td><td>Slack product</td><td>Anthropic infer + your tools/repos</td><td>Persists to disconnect +30d</td><td class="no">Not covered</td><td>Not stated — verify</td><td class="no">Not covered (unconfirmed)</td></tr>
       <tr><td>Remote Control</td><td>CLI + mobile (preview)</td><td>Relay only — fs stays local</td><td>Follows session (#15)</td><td class="warn">Ent.+ZDR only</td><td>Likely N/A — not confirmed</td><td class="warn">Verify at signing</td></tr>
+      <tr><td>Claude Science (beta)</td><td>Science app</td><td>Anthropic infer (prompt/resp) — raw data stays local</td><td>Standard (prompt/resp)</td><td class="warn">Not stated — verify</td><td class="warn">Files local; rest not stated</td><td class="warn">Not stated — verify</td></tr>
     </tbody>
   </table>
 
