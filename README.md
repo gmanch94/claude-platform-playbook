@@ -18,7 +18,7 @@ Most "use Claude" content is developer tutorials. This repo fills the **executiv
 - 90-day adoption arc — pilot → guardrails → scale
 - Rollout orchestration — who acts, in what order, across roles, in the first 30 days (the cross-functional kickoff, not just the phase plan)
 - Engineering rollout — Claude Code with hooks, settings, MCP, plugins
-- Surface rollout — which Claude surface (chat, Projects, Claude Code, Cowork, Design, Tag) for whom, in what order, sequenced by blast radius
+- Surface rollout — which Claude surface (chat, Projects, Claude Code, Cowork, Design, Tag, Science) for whom, in what order, sequenced by blast radius
 - Value case — net ROI against spend (conservative, CFO-defensible) + procurement security-questionnaire answers with a source on every line
 - Workforce change — role impact, honest comms, tiered reskilling, measuring productivity without surveilling people
 - Run-state operations — measure realized value at month 6 (renew / expand / kill), govern the token budget, instrument production, migrate off retiring models, and know what exit would cost
@@ -92,7 +92,7 @@ Different roles enter at different layers. CIOs/CTOs read Strategy first. Archit
 |---|---|---|
 | [`decision-spine.html`](artifacts/decision-spine.html) | Reference (entry-point flow) | Single front-door flowchart routing to the right artifact for the question at hand. 7 branches (anti-use → pattern → build-vs-buy → cost → ship safely → CLI rollout → measurement). Hand-drawn SVG; print-friendly; no JS deps. |
 | [`decision-memes.html`](artifacts/decision-memes.html) | Ice-breaker (8 memes) | Eight CSS-drawn memes, each pointing at a real decision artifact. Slide-1 opener, skeptic disarmer, onboarding ice-breaker, workshop facilitation prompt. The artifacts the memes point to are not jokes. |
-| [`claude-misconceptions.md`](artifacts/claude-misconceptions.md) | Reference (skeptic disarmer) | ~15 myths about Claude that drive *measurable* mis-budget / mis-architect / mis-staff calls — context window, hooks, sandbox, caching, batch, refusal, rate limits, Computer Use. Format: myth → reality → what you'd mis-decide → cite. All cites primary (`docs.claude.com` / `anthropic.com`). Text-form companion to `decision-memes.html`. |
+| [`claude-misconceptions.md`](artifacts/claude-misconceptions.md) | Reference (skeptic disarmer) | 18 myths about Claude that drive *measurable* mis-budget / mis-architect / mis-staff calls — context window, hooks, sandbox, caching, batch, refusal, rate limits, Computer Use. Format: myth → reality → what you'd mis-decide → cite. All cites primary (`docs.claude.com` / `anthropic.com`). Text-form companion to `decision-memes.html`. |
 | [`anti-use-cases.md`](artifacts/anti-use-cases.md) | Reference (reject filter) | Explicit list of where Claude should *not* be used — 5 categories (Hard nos, Wrong tool, Wrong economics, Governance no-go, Premature). Each entry: pattern → why not → do this instead → cite. Runs *before* pilot-selection-worksheet. |
 | [`data-advisory.md`](artifacts/data-advisory.md) | Reference (pre-pilot sizing) | How much data, and from where. Context window vs. RAG threshold, eval corpus minimums, distillation trigger volume, cache eligibility shape, and a source-of-data taxonomy with governance flags per source. Pre-pilot checklist. |
 | [`executive-briefing.html`](artifacts/executive-briefing.html) | 10-slide deck | Full-screen leadership deck: platform shift, Claude in 60s, when Claude wins, cost economics, time-to-value, governance, 90-day plan, risks. Arrow-key nav, print-to-PDF. |
@@ -147,7 +147,7 @@ Or fork the repo, customize for your org, host wherever you want.
 - Model versions pinned (Sonnet 5, Haiku 4.x, Opus 4.x) — never "latest"
 - All technical claims cite [platform.claude.com](https://platform.claude.com/docs/en) by URL + as-of date (docs.claude.com redirects to platform.claude.com)
 - No reproducing Anthropic marketing copy verbatim — paraphrase + cite
-- Footer pattern on every artifact: `© gmanch94 · CC-BY-4.0 · As of 2026-07. Verify at anthropic.com.`
+- Footer pattern on every artifact: `© gmanch94 · CC-BY-4.0 · As of 2026-07. Verify pricing/models at anthropic.com.`
 - Monthly refresh discipline (scheduled remote agent, first Monday) — pricing/model surface drifts fast
 
 ---
