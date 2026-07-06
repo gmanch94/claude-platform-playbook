@@ -49,7 +49,7 @@ Same weeks the [`adoption-playbook.md`](adoption-playbook.md) covers by *workstr
 | **Procurement** | **start** the BAA/DPA + questionnaire (critical-path) | close terms before any regulated data |
 | **COE / Governance** | fill the RACI · set eval policy · make the surface-enablement call | hold the blocking gates · prep the scale pattern |
 | **HR / People** | draft the comms · check the works-council trigger | send augment-not-replace comms *with* the pilot |
-| **Enablement lead** | pick the surface by blast radius · clear the 3 gates | onboard the first non-eng cohort (parallel track, not the pilot team) · review-before-act on |
+| **Enablement lead** | pick the surface by blast radius · clear the 3 gates | onboard the first non-eng cohort (parallel track, not the pilot team) · review-before-act on · hand the cheatsheet per-person (§5) |
 
 **→ Week 5:** the [`adoption-playbook.md`](adoption-playbook.md) *Guardrails* phase (Weeks 5–8) takes over. This kit stops here on purpose.
 
@@ -64,6 +64,21 @@ Single-lane failure modes live in the [playbook's 8](adoption-playbook.md) and t
 - 🛑 **The BAA lands on the critical path.** Procurement starts the BAA/DPA after the pattern is chosen → the contract, not the build, gates go-live. **Fix:** Procurement's lane starts Week 0, parallel to everything. (Timing only — coverage and eligibility are per [`governance-overlay.md`](governance-overlay.md) §4; verify at signing.) → [`procurement-pack.md`](procurement-pack.md)
 - 🛑 **The eval baseline is skipped at ignition.** The pilot ships without a blocking regression baseline → weeks later you can't separate model drift from prompt drift from data drift. **Fix:** the baseline is a Platform Week-0 deliverable and a hard gate before go-live. → [`eval-starter-pack.md`](eval-starter-pack.md)
 - ⚠ **No single accountable owner.** The commonest stall, and a single-lane one — so it's not re-explained here: the sponsor funds but names a committee, decisions queue past ~7 days. → [`operating-model-guide.md`](operating-model-guide.md) (RACI: *exactly one A per row*)
+
+---
+
+## 5. Handing the mindset cheatsheet to a mixed cohort — *enablement lead*
+
+Your cohort is not uniform: different starting mindsets, different maturity, different reactions to the change. The instinct is to make a version per group. Don't — [`user-mindset-cheatsheet.md`](user-mindset-cheatsheet.md) is **one sheet on purpose** (aptitude-tiered variants imply a "simpler-people edition" and multiply the monthly refresh ×N). The sheet is already engineered for the range; your Week-1 craft is the **hand-off**, not a different sheet:
+
+| The person in front of you | Hand it over like this | Anchor on the sheet |
+|---|---|---|
+| **Concrete / literal** ("just tell me what to do") | Don't email it and hope. Do the Week-1 one-task exercise *with* them once, live. | The **"Start here"** box is your script. |
+| **Anxious / change-threatened** | Say the reassurance line *out loud before* you send it — don't let them meet it cold on a page. | "Changes *what* you do, not *whether* you're needed" — the [`workforce-change-guide.md`](workforce-change-guide.md) narrative, per-person. |
+| **Over-truster** (will rubber-stamp) | Put accountability + the verify list front of mind; this is the reader those lines were written for. | Shift 1's trap · **Always verify these** · the boundary. |
+| **Fluent skeptic** (may find it 101) | Point them straight past onboarding, or they telegraph "fluff" to the juniors who need it. | "Skim to the **data boundary** and the **verify list**." |
+
+One artifact, four hand-offs. When someone stalls, locate them on the sheet's own **"Where you are on the curve"** and work their *one* next shift — not all seven. *(This is the deliverable behind the Enablement-lead row (§2); deploy it across your Week-0 → Week-4 lane.)*
 
 ---
 
