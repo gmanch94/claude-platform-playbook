@@ -1,6 +1,6 @@
 # Claude Adoption Maturity Model
 
-**As of 2026-06.** Pin to current surface — refresh monthly.
+**As of 2026-07.** Pin to current surface — refresh monthly.
 
 [`adoption-playbook.md`](adoption-playbook.md) is a *linear* 90-day arc — it assumes you're starting at zero. Most orgs aren't: some have shadow usage and no governance, some have one governed pilot, some run a platform. A linear plan tells the second group to redo Week 0 and tells the third nothing. This model fixes that — it lets you **locate yourself by the capability you've actually built**, then names the *single* next move that matters.
 
@@ -82,4 +82,4 @@ The fix is the weakest-link rule: **build to your floor before you reach for you
 
 ---
 
-`© gmanch94 · CC-BY-4.0 · As of 2026-06. Maturity is the floor you've built, not the ceiling you've demoed. Verify model surface at anthropic.com.`
+`© gmanch94 · CC-BY-4.0 · As of 2026-07. Maturity is the floor you've built, not the ceiling you've demoed. Verify model surface at anthropic.com.`

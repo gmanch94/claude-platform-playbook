@@ -1,6 +1,6 @@
 # Data Advisory — How Much Data, and From Where?
 
-**As of 2026-06.** Pin to current model surface (Opus 4.8 / Sonnet 5 / Haiku 4.5) — refresh monthly with [`../docs/feature-inventory.md`](../docs/feature-inventory.md).
+**As of 2026-07.** Pin to current model surface (Opus 4.8 / Sonnet 5 / Haiku 4.5) — refresh monthly with [`../docs/feature-inventory.md`](../docs/feature-inventory.md).
 
 > Two questions surface before most Claude pilots: *do we have enough data to make this work?* and *where does that data come from?* This file answers both — in sizing terms, not architecture tutorials. Read it alongside [`pilot-selection-worksheet.html`](pilot-selection-worksheet.html) (data readiness axis) and before you commit to a RAG build or eval investment.
 
@@ -173,4 +173,4 @@ Before Week 1:
 
 ---
 
-`© gmanch94 · CC-BY-4.0 · As of 2026-06. Verify pricing/models at anthropic.com.`
+`© gmanch94 · CC-BY-4.0 · As of 2026-07. Verify pricing/models at anthropic.com.`

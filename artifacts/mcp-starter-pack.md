@@ -1,6 +1,6 @@
 # Claude MCP Starter Pack
 
-> 7 read-only MCP server patterns for Claude Code + Agent SDK rollouts. Each framed by **when-to-use / failure-mode / owner / config body** before the config itself. Pinned to current Claude surface (Opus 4.8 / Sonnet 5 / Haiku 4.5, MCP GA as of 2026-06).
+> 7 read-only MCP server patterns for Claude Code + Agent SDK rollouts. Each framed by **when-to-use / failure-mode / owner / config body** before the config itself. Pinned to current Claude surface (Opus 4.8 / Sonnet 5 / Haiku 4.5, MCP GA as of 2026-07).
 
 ---
 
@@ -399,4 +399,4 @@ Don't ship 7 MCP servers on day 1. Mirror the [`claude-code-adoption-guide.md`](
 
 ---
 
-`© gmanch94 · CC-BY-4.0 · As of 2026-06. Verify MCP protocol shape at modelcontextprotocol.io and docs.claude.com/en/docs/claude-code/plugins.`
+`© gmanch94 · CC-BY-4.0 · As of 2026-07. Verify MCP protocol shape at modelcontextprotocol.io and docs.claude.com/en/docs/claude-code/plugins.`

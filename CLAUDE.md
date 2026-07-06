@@ -6,7 +6,7 @@ Guidance for Claude Code (and any other AI agent) working in this repo.
 
 **`claude-platform-playbook`** — executive-grade decision tools for AI transformation **on the Claude platform**. Audience: CIOs, CDOs, CTOs, CHROs sizing Claude adoption + architects defending the choice to leadership.
 
-Public, CC-BY-4.0, vendor-explicit, decision-oriented. **Not** Anthropic marketing recap. Pin to current Claude model surface (Opus 4.8 / Sonnet 5 / Haiku 4.5 as of 2026-06) — refresh monthly.
+Public, CC-BY-4.0, vendor-explicit, decision-oriented. **Not** Anthropic marketing recap. Pin to current Claude model surface (Opus 4.8 / Sonnet 5 / Haiku 4.5 as of 2026-07) — refresh monthly.
 
 There is no build system or test suite. This is a content repo of static HTML + Markdown.
 
@@ -26,7 +26,7 @@ This protocol is repeated in `LESSONS_LEARNED.md` as the canonical reference.
 
 **`docs/feature-inventory.md`** is the canonical list of every Claude platform feature, model, status, pricing, and doc URL. The `Used in artifacts` column maps each row to the downstream artifacts that cite it.
 
-**Refresh ritual:** edit `feature-inventory.md` first. Then grep `Used in artifacts` to find every file that needs to follow. Then bump as-of stamps. The monthly refresh routine (next run May 4, 2026) automates this — see `https://claude.ai/code/routines/trig_019PnZmQxwkS5r9iLU9aWthe`.
+**Refresh ritual:** edit `feature-inventory.md` first. Then grep `Used in artifacts` to find every file that needs to follow. Then bump as-of stamps. The monthly refresh routine (first Monday of each month) automates this — see `https://claude.ai/code/routines/trig_019PnZmQxwkS5r9iLU9aWthe`.
 
 **Never** edit an artifact's feature claim without updating `feature-inventory.md` in the same change.
 
@@ -40,7 +40,7 @@ claude-platform-playbook/
 ├── .claude/commands/                    Slash commands (bump-as-of, etc.)
 ├── docs/
 │   ├── scope.md                         Original scope doc — do not delete
-│   ├── feature-inventory.md             Single source of truth (edit weekly)
+│   ├── feature-inventory.md             Single source of truth (edit first; refresh monthly)
 │   └── backlog.md                       Deferred enhancements with trigger-to-revisit conditions
 └── artifacts/
     ├── decision-spine.html              Front-door flowchart · 7 branches · routes reader to right artifact at each decision

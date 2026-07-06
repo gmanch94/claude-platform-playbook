@@ -1,6 +1,6 @@
 # Claude Subscription Selection Guide
 
-**As of 2026-06.** Pinned to the current Claude.ai plan + API surface. Refresh monthly with [`../docs/feature-inventory.md`](../docs/feature-inventory.md). Prices are list, USD, exclude tax, and are "subject to change at Anthropic's discretion" — verify at [anthropic.com/pricing](https://www.anthropic.com/pricing) before committing budget.
+**As of 2026-07.** Pinned to the current Claude.ai plan + API surface. Refresh monthly with [`../docs/feature-inventory.md`](../docs/feature-inventory.md). Prices are list, USD, exclude tax, and are "subject to change at Anthropic's discretion" — verify at [anthropic.com/pricing](https://www.anthropic.com/pricing) before committing budget.
 
 > **The decision before you provision anyone.** "Which Claude subscription do we buy?" hides two surfaces — *which seat plan* (Free / Pro / Max / Team / Enterprise) and *do we also need API credits* — and three independent axes inside them: **compliance, team size, and build-vs-use**. Run them as one "pick a tier" list and you mis-route: a regulated 50-person org lands on Team and discovers at audit it carries no BAA. This guide runs the decision as three gates that stack, so the compliance answer is never overridden by headcount.
 
@@ -106,4 +106,4 @@ Consumer plans (**Free / Pro / Max**) are a **separate policy surface** from the
 
 ---
 
-`© gmanch94 · CC-BY-4.0 · As of 2026-06. Verify plan pricing at anthropic.com/pricing.`
+`© gmanch94 · CC-BY-4.0 · As of 2026-07. Verify plan pricing at anthropic.com/pricing.`

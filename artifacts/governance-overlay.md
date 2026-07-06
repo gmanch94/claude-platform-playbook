@@ -164,7 +164,7 @@ Two **independent** controls determine where data is processed and stored. Sourc
 
 ## 6. Compliance certifications
 
-Anthropic's current certification posture (as of 2026-06; verify at [Trust Portal](https://trust.anthropic.com/)):
+Anthropic's current certification posture (as of 2026-07; verify at [Trust Portal](https://trust.anthropic.com/)):
 
 | Certification | Status | Notes |
 |---|---|---|

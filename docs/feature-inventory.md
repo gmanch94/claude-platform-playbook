@@ -4,7 +4,7 @@
 
 **Last verified:** 2026-07-06 against [platform.claude.com](https://platform.claude.com/docs/en) and [anthropic.com/pricing](https://www.anthropic.com/pricing). **Fable 5 access restored 2026-07-01** — status flipped from Unavailable to GA (launched June 9; temporarily suspended; restored July 1 per [anthropic.com/news/redeploying-fable-5-mythos-5](https://www.anthropic.com/news/redeploying-fable-5-mythos-5)); see Models table. **Sonnet 5 `inference_geo` confirmed** — platform pricing doc explicitly covers "Sonnet 4.6 and later models," which includes Sonnet 5. **Sonnet 5 introductory cache rates corrected** — pricing page lists 5m write $2.50, 1h write $4.00, cache read $0.20 per MTok (previously marked n/a in this file). **docs.claude.com redirects to platform.claude.com** — existing doc anchors still resolve via redirect; source URL updated in this header. Opus/Haiku pricing unchanged.
 
-**Refresh cadence:** weekly. Bump status, as-of dates, and pricing rows. Cross-check `Used in` column to find every artifact that needs a touch.
+**Refresh cadence:** monthly (first Monday — scheduled routine). Bump status, as-of dates, and pricing rows. Cross-check `Used in` column to find every artifact that needs a touch.
 
 > ⚠ **Verification posture.** Status (GA / beta / preview) and surface details drift. Anything below older than 14 days from "Last verified" should be re-checked before publishing changes downstream.
 
@@ -159,7 +159,7 @@ Seat-plan product surfaces beyond chat. Plan gating + governance flags drive the
 
 ---
 
-## Weekly refresh checklist
+## Monthly refresh checklist
 
 1. Open [docs.claude.com](https://docs.claude.com) — check changelog / what's new
 2. Open [anthropic.com/pricing](https://www.anthropic.com/pricing) — diff against calculator pricing table

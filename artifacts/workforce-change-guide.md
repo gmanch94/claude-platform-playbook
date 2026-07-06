@@ -1,6 +1,6 @@
 # Workforce Change Guide — Rolling Claude Out to People
 
-**As of 2026-06.** Pin to current surface — refresh monthly.
+**As of 2026-07.** Pin to current surface — refresh monthly.
 
 Every other execution artifact in this repo rolls Claude out to *systems*: [`claude-code-adoption-guide.md`](claude-code-adoption-guide.md) to engineers, [`cowork-adoption-guide.md`](cowork-adoption-guide.md) to non-engineers, [`surface-rollout-matrix.md`](surface-rollout-matrix.md) across surfaces. None of them roll it out to *people* — the role impact, the narrative, the reskilling, and the line between measuring productivity and surveilling staff. The CHRO is a named audience for this repo and has been the least-served one. This is the people-side guide: decision-framed, honest, and built to keep adoption from dying on contact with the workforce.
 
@@ -124,4 +124,4 @@ Treat this as a hard gate in the Week 0 approval log ([`adoption-playbook.md`](a
 
 ---
 
-`© gmanch94 · CC-BY-4.0 · As of 2026-06. Labor-consultation obligations are jurisdiction-specific — verify with employment counsel. Verify model surface at anthropic.com.`
+`© gmanch94 · CC-BY-4.0 · As of 2026-07. Labor-consultation obligations are jurisdiction-specific — verify with employment counsel. Verify model surface at anthropic.com.`

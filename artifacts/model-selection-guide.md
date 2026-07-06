@@ -75,7 +75,7 @@ Request → Haiku triage
 
 ## Cost impact of getting it wrong
 
-Based on pricing as of 2026-06 (verify at [`cost-calculator.html`](cost-calculator.html)):
+Based on pricing as of 2026-07 (verify at [`cost-calculator.html`](cost-calculator.html)):
 
 | Tier swap | Input cost ratio | Output cost ratio | Monthly $ impact at 1M req, 8k in / 600 out |
 |---|---|---|---|

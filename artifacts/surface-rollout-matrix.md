@@ -1,6 +1,6 @@
 # Claude Surface Rollout Matrix — which surface, for whom, in what order
 
-**As of 2026-06.** Pinned to the current Claude surface set. Refresh monthly with [`../docs/feature-inventory.md`](../docs/feature-inventory.md). Product facts cite primary sources — verify at [support.claude.com](https://support.claude.com) and [anthropic.com/pricing](https://www.anthropic.com/pricing) before committing budget or policy.
+**As of 2026-07.** Pinned to the current Claude surface set. Refresh monthly with [`../docs/feature-inventory.md`](../docs/feature-inventory.md). Product facts cite primary sources — verify at [support.claude.com](https://support.claude.com) and [anthropic.com/pricing](https://www.anthropic.com/pricing) before committing budget or policy.
 
 The [`adoption-playbook.md`](adoption-playbook.md) answers *how* to run a 90-day Claude rollout. This answers the question one level up: **which Claude surface(s) do we roll out, to whom, and in what order — and what governs each.** Most orgs are not adopting "Claude"; they're adopting Claude Code for engineers, Cowork for analysts, Projects for knowledge teams, Design for product/UX, and now Claude Tag for whole-team Slack workflows — each a different audience, plan gate, and blast radius.
 
@@ -68,4 +68,4 @@ The regulated row is the one that flips the default: compliance decides surface 
 
 ---
 
-`© gmanch94 · CC-BY-4.0 · As of 2026-06. Verify surface availability + governance at support.claude.com and anthropic.com/pricing.`
+`© gmanch94 · CC-BY-4.0 · As of 2026-07. Verify surface availability + governance at support.claude.com and anthropic.com/pricing.`

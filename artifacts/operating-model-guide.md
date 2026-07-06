@@ -1,6 +1,6 @@
 # Operating Model Guide — Who Owns Claude
 
-**As of 2026-06.** Pin to current surface — refresh monthly.
+**As of 2026-07.** Pin to current surface — refresh monthly.
 
 [`adoption-playbook.md`](adoption-playbook.md) already defines the **three functions** every Claude org needs — Build, Platform, Governance+COE — with their owns / skills / reports-to (see its *Reference team structure* section). What it doesn't answer is the question upstream of those functions: **which organizational *shape* arranges them, and how do decisions actually move?** A 200-person scale-up and a 50,000-person regulated enterprise both need the three functions, but they should not be organized the same way. This guide is that choice — the shape, and the RACI that keeps it from thrashing.
 
@@ -100,4 +100,4 @@ The test: if every team has to *ask* the platform team to ship, the road is too 
 
 ---
 
-`© gmanch94 · CC-BY-4.0 · As of 2026-06. RACI is a template — adapt to your titles. Verify model surface at anthropic.com.`
+`© gmanch94 · CC-BY-4.0 · As of 2026-07. RACI is a template — adapt to your titles. Verify model surface at anthropic.com.`

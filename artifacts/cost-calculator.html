@@ -70,7 +70,7 @@
 <div class="wrap">
   <a href="../" style="display:inline-block;font-weight:700;font-size:12px;text-transform:uppercase;letter-spacing:.8px;color:#c2622d;text-decoration:none;margin:0 0 12px;opacity:.85">Claude Platform Playbook</a>
   <header>
-    <h1>Claude Cost Calculator <span class="asof">As of 2026-06</span></h1>
+    <h1>Claude Cost Calculator <span class="asof">As of 2026-07</span></h1>
     <div class="sub">Model your monthly Claude API spend. Sliders are interactive — outputs update live. Treat the result as a <strong>governance constraint</strong>, not a curiosity: define $/task ceiling, $/day cap, cache hit-rate floor, batch eligibility floor before pilot launch (see <a href="governance-overlay.html#15-cost-as-a-governance-constraint" style="color:var(--c1d);">governance-overlay §15</a>).</div>
   </header>
 
@@ -196,7 +196,7 @@
       </details>
 
       <div class="pricing-note">
-        Pricing approximate as of <strong>2026-06</strong>. Sonnet 5 launched 2026-06-30 at introductory pricing of $2/$10 per MTok (in/out) through 2026-08-31; the table above shows its standard post-intro rate ($3/$15, identical to Sonnet 4.6's price), which is the safer planning number for steady-state budgets. Sonnet 5 also uses an updated tokenizer — the same input can map to ~1.0–1.35× more tokens than under 4.6, so effective per-task cost may run higher than the sticker price alone implies. Verify current rates at <a href="https://www.anthropic.com/pricing" target="_blank">anthropic.com/pricing</a> before final budgeting.
+        Pricing approximate as of <strong>2026-07</strong>. Sonnet 5 launched 2026-06-30 at introductory pricing of $2/$10 per MTok (in/out) through 2026-08-31; the table above shows its standard post-intro rate ($3/$15, identical to Sonnet 4.6's price), which is the safer planning number for steady-state budgets. Sonnet 5 also uses an updated tokenizer — the same input can map to ~1.0–1.35× more tokens than under 4.6, so effective per-task cost may run higher than the sticker price alone implies. Verify current rates at <a href="https://www.anthropic.com/pricing" target="_blank">anthropic.com/pricing</a> before final budgeting.
       </div>
     </div>
   </div>
@@ -245,12 +245,12 @@
 </div>
 
 <footer>
-  © gmanch94 · CC-BY-4.0 · As of 2026-06. Verify pricing/models at <a href="https://www.anthropic.com/pricing">anthropic.com/pricing</a>. Calculator gives an order-of-magnitude estimate — production patterns vary.
+  © gmanch94 · CC-BY-4.0 · As of 2026-07. Verify pricing/models at <a href="https://www.anthropic.com/pricing">anthropic.com/pricing</a>. Calculator gives an order-of-magnitude estimate — production patterns vary.
 </footer>
 
 <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
 <script>
-// Pricing per million tokens (USD), as of 2026-06
+// Pricing per million tokens (USD), as of 2026-07
 const PRICING = {
   haiku:  { in: 1.00,  out: 5.00,  cacheRead: 0.10,  cacheWrite: 1.25 },
   sonnet: { in: 3.00,  out: 15.00, cacheRead: 0.30,  cacheWrite: 3.75 },

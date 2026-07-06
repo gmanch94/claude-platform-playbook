@@ -74,4 +74,4 @@ Anthropic surface drifts fast (model releases, pricing changes, feature GA). Rep
 
 ---
 
-`© gmanch94 · CC-BY-4.0 · As of 2026-05.`
+`© gmanch94 · CC-BY-4.0 · As of 2026-07.`
