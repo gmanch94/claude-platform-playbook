@@ -64,6 +64,8 @@ Prevention: (eval gate added / prompt review process updated / model pin added)
 
 ## Class 2 — Model deprecation
 
+> **This class is preventable.** The planned migration path — watch triggers, pin audit, regression certification, staged cutover — is [`model-deprecation-runbook.md`](model-deprecation-runbook.md). If you're here reactively, run the steps below, then adopt that runbook in the post-mortem.
+
 **Symptoms:**
 - API returns `model_not_found` or `deprecated_model` error
 - Anthropic email/dashboard deprecation notice

@@ -146,6 +146,8 @@ Goal: prove the pattern repeats, and stand up the structure so the 3rd–10th us
 - Re-pricing decision made: continue direct API / Bedrock / Vertex / mixed
 - Public commitment: which 3 use cases are next, with named owners
 
+**What receives this handoff:** from Day 90 on, measurement moves to [`value-realization-guide.md`](value-realization-guide.md) — actuals vs the ROI projection, and the quarterly renew / expand / kill review.
+
 ---
 
 ## Common failure modes (8 patterns)

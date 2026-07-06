@@ -77,7 +77,12 @@ claude-platform-playbook/
     ├── rollout-kickoff-kit.md           Who acts, in what order, first 30 days · persona × time swimlane (Week 0→4) + role quick-start (first artifact·deliverable·gate·failure mode) + between-lane handoff seams · persona-lensed first 30d of playbook (hands off Week 5)
     ├── user-mindset-cheatsheet.md       End-user week-1 handout · 7 before→after mindset shifts (direct-and-check · verify what it gets wrong · reach-first) each w/ its over-correction · daily task patterns by surface · always-verify list · data boundary · the practitioner-tier handout workforce-change names
     ├── user-mindset-cheatsheet-color.html  Colour-coded / print form of the cheatsheet (green=shift · amber=trap · red=boundary) · same content, HTML so it can carry colour (markdown can't on GitHub) · named -color to avoid Jekyll .md→.html collision
-    └── user-mindset-mindmap.html        Visual companion to the cheatsheet · 7 shifts as a one-glance radial mindmap (center: you direct & check, you own what ships) · reassurance banner + data-boundary strip · inline SVG, no JS, prints clean
+    ├── user-mindset-mindmap.html        Visual companion to the cheatsheet · 7 shifts as a one-glance radial mindmap (center: you direct & check, you own what ships) · reassurance banner + data-boundary strip · inline SVG, no JS, prints clean
+    ├── value-realization-guide.md       Receives the playbook Day-90 handoff · actuals vs ROI projection · 5 metric families each w/ Goodhart counter-metric · per-surface leading indicators · quarterly renew/expand/kill table · team-level only (surveillance boundary held)
+    ├── token-budget-governance.md       FinOps layer between cost-calculator estimate and maturity L2 gate · 4-level budget ladder mapped to platform controls (workspaces/spend caps) · caps-on-experiments alerts-on-prod · showback→chargeback graduation · monthly variance triage
+    ├── agent-observability-guide.md     Day-2 telemetry between eval-pack (pre-ship) and incident-runbook (post-burn) · minimum telemetry schema · 6 golden signals · alert table routed to incident classes · PII-in-logs = top failure mode · judge sampling costed
+    ├── model-deprecation-runbook.md     Planned migration path for incident class #2 · standing prep (pins, manifest, evals, cost baseline) · 6-step protocol (pin audit → parity → eval cert → cost re-forecast → staged cutover → decommission) · hyperscaler-lag caveat
+    └── exit-portability-memo.md         What leaving Claude costs, component by component · portability ledger · hedges graded honestly (Bedrock≠model diversification, gateway=feature tax) · 5 week-1 actions · exit-theater named as its own failure mode
 ```
 
 ## Working in this repo
@@ -92,7 +97,7 @@ claude-platform-playbook/
 
 ### When adding a new artifact
 
-Don't, without updating `docs/scope.md` first. The original scope agreed 8 artifacts; the repo currently ships 35 (all post-v1 additions are justified in `scope.md`). New artifacts need a written justification block in `scope.md` and a row in `feature-inventory.md`'s `Used in artifacts` column.
+Don't, without updating `docs/scope.md` first. The original scope agreed 8 artifacts; the repo currently ships 40 (all post-v1 additions are justified in `scope.md`). New artifacts need a written justification block in `scope.md` and a row in `feature-inventory.md`'s `Used in artifacts` column.
 
 ### When the model surface changes
 
