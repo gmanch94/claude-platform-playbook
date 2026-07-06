@@ -47,7 +47,7 @@ claude-platform-playbook/
     ├── decision-memes.html              8 ice-breaker memes · CSS-drawn · each points at a real decision artifact (slide-1 opener, skeptic disarmer)
     ├── anti-use-cases.md                Where NOT to use Claude · 5 categories · explicit reject filter (runs before pilot-selection)
     ├── executive-briefing.html          10-slide deck (arrow-key nav, print-PDF)
-    ├── cost-calculator.html             Live $/mo · Chart.js · 4 presets
+    ├── cost-calculator.html             Live $/mo · Chart.js · 5 presets
     ├── feature-decision-matrix.html     8 patterns × 12 features · hover tooltips
     ├── build-vs-buy-worksheet.html      5-axis score → ranked 6-option rec
     ├── reference-architectures.html     6 hand-drawn SVG patterns (Caveat font)

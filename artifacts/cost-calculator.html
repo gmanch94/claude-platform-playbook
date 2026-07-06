@@ -84,6 +84,7 @@
         <button data-preset="rag">RAG support bot</button>
         <button data-preset="agent">Agentic workflow</button>
         <button data-preset="batch">Batch enrichment</button>
+        <button data-preset="frontier">Frontier reasoning</button>
       </div>
 
       <div class="field">
@@ -126,7 +127,13 @@
         <input type="range" id="mix-o" min="0" max="100" value="5">
         <span class="pct" id="mix-o-val">5%</span>
       </div>
+      <div class="mix-row">
+        <span class="name">Fable 5</span>
+        <input type="range" id="mix-f" min="0" max="100" value="0">
+        <span class="pct" id="mix-f-val">0%</span>
+      </div>
       <div class="mix-warn" id="mix-warn"></div>
+      <div class="hint" style="margin-top:-2px;">Fable 5 (GA, restored 2026-07-01) is the frontier tier at ~2× Opus — route only the hardest-task subset here, and validate the quality delta vs Opus 4.8 in eval before you do. Defaults to 0%.</div>
 
       <h2 style="margin-top:18px;">Optimization levers</h2>
       <div class="field">
@@ -189,6 +196,7 @@
               <tr><td>Haiku 4.5</td><td class="num">$1.00</td><td class="num">$5.00</td><td class="num">$0.10</td><td class="num">$1.25</td></tr>
               <tr><td>Sonnet 5</td><td class="num">$3.00</td><td class="num">$15.00</td><td class="num">$0.30</td><td class="num">$3.75</td></tr>
               <tr><td>Opus 4.8</td><td class="num">$5.00</td><td class="num">$25.00</td><td class="num">$0.50</td><td class="num">$6.25</td></tr>
+              <tr><td>Fable 5</td><td class="num">$10.00</td><td class="num">$50.00</td><td class="num">$1.00</td><td class="num">$12.50</td></tr>
             </tbody>
           </table>
           <p style="margin-top:10px;">Batch API: 50% off all rates. Cache read = 10% of input price. Cache write 5m = 125% of input price (one-time per cached prefix).</p>
@@ -196,7 +204,7 @@
       </details>
 
       <div class="pricing-note">
-        Pricing approximate as of <strong>2026-07</strong>. Sonnet 5 launched 2026-06-30 at introductory pricing of $2/$10 per MTok (in/out) through 2026-08-31; the table above shows its standard post-intro rate ($3/$15, identical to Sonnet 4.6's price), which is the safer planning number for steady-state budgets. Sonnet 5 also uses an updated tokenizer — the same input can map to ~1.0–1.35× more tokens than under 4.6, so effective per-task cost may run higher than the sticker price alone implies. Verify current rates at <a href="https://www.anthropic.com/pricing" target="_blank">anthropic.com/pricing</a> before final budgeting.
+        Pricing approximate as of <strong>2026-07</strong>. Sonnet 5 launched 2026-06-30 at introductory pricing of $2/$10 per MTok (in/out) through 2026-08-31; the table above shows its standard post-intro rate ($3/$15, identical to Sonnet 4.6's price), which is the safer planning number for steady-state budgets. Sonnet 5 also uses an updated tokenizer — the same input can map to ~1.0–1.35× more tokens than under 4.6, so effective per-task cost may run higher than the sticker price alone implies. <strong>Fable 5</strong> (GA, access restored 2026-07-01) at $10/$50 per MTok is ~2× Opus 4.8 — it defaults to 0% of the mix; route only the hardest-task subset to it and validate the quality delta in eval first. It requires 30-day retention and is <em>not</em> ZDR-eligible. Verify current rates at <a href="https://www.anthropic.com/pricing" target="_blank">anthropic.com/pricing</a> before final budgeting.
       </div>
     </div>
   </div>
@@ -207,7 +215,7 @@
       <summary>What drives spend most</summary>
       <div class="body">
         <ul class="frames">
-          <li class="lever"><strong>Model mix dominates.</strong> Opus is 5× Haiku on input and output. Triaging with Haiku and routing only hard cases to Sonnet/Opus is the single highest-leverage decision.</li>
+          <li class="lever"><strong>Model mix dominates.</strong> Opus is 5× Haiku on input and output, and Fable 5 is 2× Opus again (10× Haiku). Triaging with Haiku and routing only hard cases up to Sonnet/Opus — and the very hardest to Fable 5 — is the single highest-leverage decision.</li>
           <li class="lever"><strong>Cache hit rate is the second lever.</strong> A 70% hit rate on a 50k-token system prompt is roughly equivalent to running a much smaller model. RAG patterns benefit most.</li>
           <li class="lever"><strong>Output tokens cost 5× input.</strong> Agentic loops that generate long chains pay disproportionately. Worth measuring tokens-per-task and capping with explicit instructions.</li>
           <li class="lever"><strong>Batch is free money where latency allows.</strong> Overnight enrichment, eval runs, content generation, analytics — half-price by default.</li>
@@ -254,14 +262,16 @@
 const PRICING = {
   haiku:  { in: 1.00,  out: 5.00,  cacheRead: 0.10,  cacheWrite: 1.25 },
   sonnet: { in: 3.00,  out: 15.00, cacheRead: 0.30,  cacheWrite: 3.75 },
-  opus:   { in: 5.00,  out: 25.00, cacheRead: 0.50,  cacheWrite: 6.25 }
+  opus:   { in: 5.00,  out: 25.00, cacheRead: 0.50,  cacheWrite: 6.25 },
+  fable:  { in: 10.00, out: 50.00, cacheRead: 1.00,  cacheWrite: 12.50 }
 };
 
 const PRESETS = {
-  copilot: { vol: 1_000_000, turns: 1,  in: 8000,  out: 600,  mixH: 60, mixS: 35, mixO: 5,  cache: 70, batch: 0 },
-  rag:     { vol: 500_000,   turns: 1,  in: 25000, out: 800,  mixH: 30, mixS: 65, mixO: 5,  cache: 80, batch: 0 },
-  agent:   { vol: 200_000,   turns: 7,  in: 4000,  out: 3000, mixH: 20, mixS: 60, mixO: 20, cache: 60, batch: 0 },
-  batch:   { vol: 5_000_000, turns: 1,  in: 3000,  out: 400,  mixH: 90, mixS: 10, mixO: 0,  cache: 40, batch: 100 }
+  copilot:  { vol: 1_000_000, turns: 1,  in: 8000,  out: 600,  mixH: 60, mixS: 35, mixO: 5,  mixF: 0,  cache: 70, batch: 0 },
+  rag:      { vol: 500_000,   turns: 1,  in: 25000, out: 800,  mixH: 30, mixS: 65, mixO: 5,  mixF: 0,  cache: 80, batch: 0 },
+  agent:    { vol: 200_000,   turns: 7,  in: 4000,  out: 3000, mixH: 20, mixS: 60, mixO: 20, mixF: 0,  cache: 60, batch: 0 },
+  batch:    { vol: 5_000_000, turns: 1,  in: 3000,  out: 400,  mixH: 90, mixS: 10, mixO: 0,  mixF: 0,  cache: 40, batch: 100 },
+  frontier: { vol: 100_000,   turns: 3,  in: 12000, out: 4000, mixH: 0,  mixS: 20, mixO: 50, mixF: 30, cache: 60, batch: 0 }
 };
 
 const $ = id => document.getElementById(id);
@@ -281,6 +291,7 @@ function applyPreset(name) {
   $('mix-h').value = p.mixH;
   $('mix-s').value = p.mixS;
   $('mix-o').value = p.mixO;
+  $('mix-f').value = p.mixF ?? 0;
   $('cache').value = p.cache;
   $('batch').value = p.batch;
   document.querySelectorAll('.preset-row button').forEach(b => b.classList.toggle('active', b.dataset.preset === name));
@@ -328,6 +339,7 @@ function recompute() {
   let mixH = +$('mix-h').value;
   let mixS = +$('mix-s').value;
   let mixO = +$('mix-o').value;
+  let mixF = +$('mix-f').value;
   const cacheRate = +$('cache').value / 100;
   const batchPct = +$('batch').value / 100;
 
@@ -340,10 +352,11 @@ function recompute() {
   $('mix-h-val').textContent = mixH + '%';
   $('mix-s-val').textContent = mixS + '%';
   $('mix-o-val').textContent = mixO + '%';
+  $('mix-f-val').textContent = mixF + '%';
   $('cache-val').textContent = Math.round(cacheRate*100) + '%';
   $('batch-val').textContent = Math.round(batchPct*100) + '%';
 
-  const sum = mixH + mixS + mixO;
+  const sum = mixH + mixS + mixO + mixF;
   const warn = $('mix-warn');
   if (sum === 0) {
     warn.textContent = '⚠ Mix sums to 0% — set at least one model > 0.';
@@ -357,13 +370,14 @@ function recompute() {
 
   // Normalize
   const total = sum || 1;
-  const sH = mixH / total, sS = mixS / total, sO = mixO / total;
+  const sH = mixH / total, sS = mixS / total, sO = mixO / total, sF = mixF / total;
 
   const h = computeForModel('haiku',  sH, effVol, inTok, outTok, cacheRate, batchPct);
   const s = computeForModel('sonnet', sS, effVol, inTok, outTok, cacheRate, batchPct);
   const o = computeForModel('opus',   sO, effVol, inTok, outTok, cacheRate, batchPct);
+  const f = computeForModel('fable',  sF, effVol, inTok, outTok, cacheRate, batchPct);
 
-  const totalCost = h.total + s.total + o.total;
+  const totalCost = h.total + s.total + o.total + f.total;
   $('total-num').textContent = totalCost >= 1e6 ? (totalCost/1e6).toFixed(2) + 'M' : totalCost >= 1e3 ? (totalCost/1e3).toFixed(1) + 'k' : Math.round(totalCost).toLocaleString();
   $('perreq').textContent = vol > 0 ? fmtUSD(totalCost / vol) + ' per task' + (turns > 1 ? ` (${turns} API calls/task)` : '') : '— per task';
 
@@ -414,21 +428,24 @@ function recompute() {
     ['Haiku 4.5',  h.tokens, h.total],
     ['Sonnet 5',   s.tokens, s.total],
     ['Opus 4.8',   o.tokens, o.total],
+    ['Fable 5',    f.tokens, f.total],
   ];
   tb.innerHTML = rows.map(r =>
     `<tr><td>${r[0]}</td><td class="num">${fmt(r[1])}</td><td class="num">${fmtUSDk(r[2])}</td></tr>`
-  ).join('') + `<tr style="font-weight:700;background:#fef9ee;"><td>Total</td><td class="num">${fmt(h.tokens+s.tokens+o.tokens)}</td><td class="num">${fmtUSDk(totalCost)}</td></tr>`;
+  ).join('') + `<tr style="font-weight:700;background:#fef9ee;"><td>Total</td><td class="num">${fmt(h.tokens+s.tokens+o.tokens+f.tokens)}</td><td class="num">${fmtUSDk(totalCost)}</td></tr>`;
 
   // Chart
   const labels = ['Input (fresh)', 'Cache read', 'Cache write', 'Output'];
   const haikuData  = [h.input, h.cacheRead, h.cacheWrite, h.output];
   const sonnetData = [s.input, s.cacheRead, s.cacheWrite, s.output];
   const opusData   = [o.input, o.cacheRead, o.cacheWrite, o.output];
+  const fableData  = [f.input, f.cacheRead, f.cacheWrite, f.output];
 
   if (chart) {
     chart.data.datasets[0].data = haikuData;
     chart.data.datasets[1].data = sonnetData;
     chart.data.datasets[2].data = opusData;
+    chart.data.datasets[3].data = fableData;
     chart.update();
   } else {
     chart = new Chart($('chart').getContext('2d'), {
@@ -438,7 +455,8 @@ function recompute() {
         datasets: [
           { label: 'Haiku 4.5',  data: haikuData,  backgroundColor: '#f3c5a8' },
           { label: 'Sonnet 5',   data: sonnetData, backgroundColor: '#D97757' },
-          { label: 'Opus 4.8',   data: opusData,   backgroundColor: '#7C5E48' }
+          { label: 'Opus 4.8',   data: opusData,   backgroundColor: '#7C5E48' },
+          { label: 'Fable 5',    data: fableData,  backgroundColor: '#5e3a52' }
         ]
       },
       options: {
