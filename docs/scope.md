@@ -19,12 +19,13 @@ claude-platform-playbook/
     ├── cost-calculator.html         (interactive $/month estimator)
     ├── feature-decision-matrix.html (when to use which Claude feature)
     ├── adoption-playbook.md         (90-day rollout plan)
+    ├── claude-code-adoption-guide.md (engineering-team Claude Code rollout)
     ├── governance-overlay.md        (BAA, data residency, no-train, audit, retention)
     ├── build-vs-buy-worksheet.html  (use case → Claude vs DIY vs other vendor)
     └── reference-architectures.html (6 canonical patterns w/ diagrams)
 ```
 
-7 artifacts. ~2 sessions to ship cleanly. (The repo now ships 35 — see the post-v1 justification blocks below.)
+8 artifacts. ~2 sessions to ship cleanly. (The repo now ships 35 — see the post-v1 justification blocks below.)
 
 ---
 
@@ -113,6 +114,10 @@ Each w/ hand-drawn SVG block diagram:
 
 Each diagram: 1-paragraph description, cost band, governance notes, when-to-use / when-not.
 
+### 8. `claude-code-adoption-guide.md` — engineering-team Claude Code rollout
+
+Tactical companion to `adoption-playbook.md` for the engineering surface: pilot selection, hooks, Skills, settings, MCP, security model, and measurement for rolling Claude Code (the CLI/IDE harness) across a team. (Shipped in the initial commit as the 8th of the original 8; its spec block was missing from this section, so the tree and count above read "7" — added here so they agree with the "original 8" references throughout this doc and in `CLAUDE.md`.)
+
 ---
 
 ## Sourcing rules
@@ -159,7 +164,7 @@ Session 1: items 1-4 (skeleton + 3 anchors). Session 2: items 5-9 (depth + ship)
 1. Repo public from day 1, or private until v0.9?
 2. Include OpenAI/Gemini comparisons in cost-calculator (more useful) or Claude-only (less risky positioning)?
 3. Reference architectures — SVG hand-drawn or Mermaid generated?
-4. Worth adding a `claude-code-adoption-guide.md` for engineering-team-specific rollout (separate from exec adoption playbook)?
+4. Worth adding a `claude-code-adoption-guide.md` for engineering-team-specific rollout (separate from exec adoption playbook)? **→ Yes — answered at build; shipped in the initial commit as the 8th artifact (spec §8 above).**
 
 ---
 
