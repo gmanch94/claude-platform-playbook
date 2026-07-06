@@ -1,12 +1,12 @@
 # Claude Model Selection Guide
 
-**As of 2026-06.** Pinned to Opus 4.8 / Sonnet 5 / Haiku 4.5. Refresh monthly with [`../docs/feature-inventory.md`](../docs/feature-inventory.md).
+**As of 2026-07.** Pinned to Opus 4.8 / Sonnet 5 / Haiku 4.5. Refresh monthly with [`../docs/feature-inventory.md`](../docs/feature-inventory.md).
 
 > **The decision upstream of everything else.** Before the feature-decision-matrix, before the cost-calculator, there is one question: *which model tier fits this task?* Getting it wrong costs money (over-tiering) or quality (under-tiering). This guide answers it in four questions.
 
 > **Sonnet 5 narrows the Opus gap (2026-06-30 launch).** Sonnet 5's launch benchmarks show performance close to Opus 4.8 at lower price, and it can match Opus 4.8 on some tasks at higher effort — a bigger jump than prior Sonnet releases. **Re-validate the Q1 threshold in eval** before assuming last month's Opus-vs-Sonnet routing decisions still hold; a task that needed Opus 4.8 under Sonnet 4.6 may now clear the bar on Sonnet 5 at higher effort, at ~1.7× lower cost. This guide keeps Opus 4.8 as the default for the hardest reasoning/code-review row below until that re-validation happens — don't flip it without an eval delta.
 
-> **A note on the next-gen line.** Anthropic has announced a tier above the 4.x family — **Claude Fable 5** (most capable widely released) and **Claude Mythos 5** (Project Glasswing). As of this writing neither is deployable: Fable 5 is **unavailable** (gated access) and Mythos 5 is **invite-only**. This guide stays on Opus 4.8 because it's the most capable model you can actually put into production today. Re-tier the hardest tasks to Fable 5 once it reaches GA — at ~2× Opus pricing ($10/$50 per MTok), validate the quality delta against Opus 4.8 in eval before paying for it. Track status in [`../docs/feature-inventory.md`](../docs/feature-inventory.md).
+> **A note on the next-gen line.** Anthropic has a tier above the 4.x/5.x family — **Claude Fable 5** (most capable widely released) and **Claude Mythos 5** (Project Glasswing). **Fable 5 is now GA** (access restored 2026-07-01). Mythos 5 remains **invite-only**. At ~2× Opus pricing ($10/$50 per MTok), validate the quality delta against Opus 4.8 in eval before re-tiering your hardest tasks — the guide's decision framework still applies; use Fable 5 only where that delta justifies the cost premium. Track status in [`../docs/feature-inventory.md`](../docs/feature-inventory.md).
 
 ---
 
@@ -135,4 +135,4 @@ Extended thinking is not a model tier — it's a feature available on Opus 4.x (
 
 ---
 
-`© gmanch94 · CC-BY-4.0 · As of 2026-06. Verify pricing/models at anthropic.com.`
+`© gmanch94 · CC-BY-4.0 · As of 2026-07. Verify pricing/models at anthropic.com.`

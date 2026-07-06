@@ -75,7 +75,7 @@
 <div class="wrap">
   <a href="../" style="display:inline-block;font-weight:700;font-size:12px;text-transform:uppercase;letter-spacing:.8px;color:#c2622d;text-decoration:none;margin:0 0 12px;opacity:.85">Claude Platform Playbook</a>
   <header>
-    <h1>Enterprise Data Boundaries <span class="asof">As of 2026-06</span></h1>
+    <h1>Enterprise Data Boundaries <span class="asof">As of 2026-07</span></h1>
     <div class="sub">Per-feature trust-zone diagrams for a Claude <strong>Enterprise</strong> deployment — where data crosses, where it's processed, where it's stored, and what the BAA covers. For CISOs, security architects, and compliance leads. Every boundary claim traces to <a href="governance-overlay.html">governance-overlay.md</a> (the source of truth); verify at <a href="https://privacy.claude.com">privacy.claude.com</a>.</div>
   </header>
 
@@ -88,7 +88,7 @@
     <ul>
       <li><strong>No-train ≠ no-store.</strong> Commercial default is no-training-on-your-data; it does <em>not</em> mean data isn't stored. Default at-rest retention is 30 days (§11). [§2]</li>
       <li><strong>ZDR is not default, and not on the Enterprise product UI.</strong> Zero Data Retention covers the <em>Messages API + Claude Code</em> only (enterprise agreement, Anthropic approval) — never chat / projects / artifacts. Trust &amp; Safety classifier scores are retained up to 7 years <em>even under ZDR</em>. [§3]</li>
-      <li><strong><code>inference_geo</code> is first-party-API + Claude Platform on AWS only</strong> (Opus 4.6+ and Sonnet 4.6, confirmed — <strong>Sonnet 5 unconfirmed</strong>, its 2026-06-30 launch post is silent on residency, don't assume carryover). It does not apply to the product UI, to Managed Agents, or to Bedrock/Vertex/Azure AI Foundry (those use the hyperscaler region or deployment type). Workspace geo governs at-rest storage + processing (code exec, image transcoding). [§5]</li>
+      <li><strong><code>inference_geo</code> is first-party-API + Claude Platform on AWS only</strong> (Opus 4.6+ and Sonnet 4.6+, confirmed — <strong>Sonnet 5 confirmed 2026-07-06</strong>: platform pricing doc explicitly covers "Sonnet 4.6 and later models"; 1.1× multiplier when <code>inference_geo: "us"</code>). It does not apply to the product UI, to Managed Agents, or to Bedrock/Vertex/Azure AI Foundry (those use the hyperscaler region or deployment type). Workspace geo governs at-rest storage + processing (code exec, image transcoding). [§5]</li>
       <li><strong>The BAA is not automatic and is per-surface.</strong> An Enterprise admin must activate HIPAA compliance + sign. Covered features differ between the first-party API and the Enterprise product surface — <em>the same capability (code execution) is covered on one and not the other.</em> The BAA does not extend to your MCP servers. [§4]</li>
     </ul>
   </div>
@@ -278,7 +278,7 @@
 
   <!-- =================================================================== -->
   <div class="sec-h">B · First-party API features</div>
-  <div class="sec-sub">Where <code>inference_geo</code> (Opus 4.6+, Sonnet 4.6 confirmed — Sonnet 5 unconfirmed) and ZDR-on-Messages live. BAA coverage is per-feature — some tools are explicitly <strong>not</strong> covered.</div>
+  <div class="sec-sub">Where <code>inference_geo</code> (Opus 4.6+, Sonnet 4.6+ confirmed — <strong>Sonnet 5 confirmed 2026-07-06</strong>) and ZDR-on-Messages live. BAA coverage is per-feature — some tools are explicitly <strong>not</strong> covered.</div>
 
   <!-- 5. MESSAGES API -->
   <div class="feature">
@@ -968,7 +968,7 @@
   </div>
 
   <footer>
-    © gmanch94 · CC-BY-4.0 · As of 2026-06. Verify pricing/models at <a href="https://www.anthropic.com">anthropic.com</a>.<br>
+    © gmanch94 · CC-BY-4.0 · As of 2026-07. Verify pricing/models at <a href="https://www.anthropic.com">anthropic.com</a>.<br>
     Diagrams are boundary sketches, not a contract. The BAA's covered-feature tables and your signed agreement govern — verify at <a href="https://privacy.claude.com">privacy.claude.com</a> and <a href="https://trust.anthropic.com">trust.anthropic.com</a>.
   </footer>
 </div>
