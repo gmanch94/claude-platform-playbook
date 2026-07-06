@@ -25,7 +25,7 @@ claude-platform-playbook/
     └── reference-architectures.html (6 canonical patterns w/ diagrams)
 ```
 
-8 artifacts. ~2 sessions to ship cleanly. (The repo now ships 35 — see the post-v1 justification blocks below.)
+8 artifacts. ~2 sessions to ship cleanly. (The repo now ships 40 — see the post-v1 justification blocks below.)
 
 ---
 
@@ -388,5 +388,45 @@ The starter-skills + eval-pack + hooks-pack + mcp-pack + pilot-worksheet quintup
 **Why it's not in the original 8.** Same as the cheatsheet + mindmap — end-user enablement was out of band; this rides in on an explicit user request for colour. **Not new content** — an exact re-rendering of the reviewed `.md` with colour and print CSS; no new factual claims.
 
 **Posture.** Standalone HTML + inline CSS (no JS; `print-color-adjust:exact` so colour survives printing; responsive card-stacking under 720px). **Named `-color` deliberately to avoid a Jekyll collision** — GitHub Pages auto-renders `user-mindset-cheatsheet.md` to `user-mindset-cheatsheet.html`, so a literal file at that path would conflict non-deterministically; the distinct name keeps both the plain auto-render and the colour version served deterministically. The `.md` stays the canonical plaintext/paste source; the colour HTML and the mindmap are the visual forms. Content parity with the `.md` held exactly; the data-boundary block carries the no-PHI-in-Cowork line without asserting coverage. Bidirectionally linked with the `.md` and the mindmap; the prominent `.html`-context links (spine card, mindmap companion) point here.
+
+### `value-realization-guide.md` (added 2026-07)
+
+**Why it earns its place.** [`adoption-playbook.md`](../artifacts/adoption-playbook.md) hands off at Day 90 with nothing receiving the handoff; [`roi-worksheet.html`](../artifacts/roi-worksheet.html) *projects* value (with a realized-capture discount it names but can't measure); [`workforce-change-guide.md`](../artifacts/workforce-change-guide.md) pre-names the measure-without-surveillance failure mode. No artifact answers the month-6 sponsor question — "is this working, and do we renew, expand, or kill?" This guide is the measurement layer those three leave empty: leading/lagging indicators per surface, counter-metrics per metric, and a numeric renew/expand/kill decision table.
+
+**Why it's not in the original 8.** Original scope ended at rollout (the 90-day arc). Measurement-after-rollout was implicitly "the ROI worksheet" — but a projection tool can't audit itself. The realization loop (measure actuals → compare to the projection → decide) is a distinct decision an executive actually schedules, and the repo routed to nothing when they did.
+
+**Posture.** Decision-first: the artifact is organized around the quarterly renew/expand/kill review, not around a metrics catalog. Every metric row carries its Goodhart failure mode (the way teams game it), per the repo's always-name-the-failure-mode tone. Hard boundary against surveillance metrics, cross-referenced to workforce-change rather than re-derived. Actuals feed back into the roi-worksheet inputs (realized-capture measured, not assumed). Numbers in thresholds are explicitly illustrative bands, not benchmarks.
+
+### `exit-portability-memo.md` (added 2026-07)
+
+**Why it earns its place.** [`procurement-pack.md`](../artifacts/procurement-pack.md) answers vendor-risk questionnaires and names vendor-concentration risk (via [`governance-overlay.md`](../artifacts/governance-overlay.md)) — but neither answers the question procurement always asks next: "what does leaving cost?" This memo is the component-by-component portability ledger (what ports as-is / with rework / not at all) plus the honest hedge assessment (Bedrock/Vertex/Foundry procurement paths are *procurement* diversification, not *model* diversification — still Anthropic models) and the cheap now-actions that keep exit viable without blocking adoption.
+
+**Why it's not in the original 8.** Original scope treated procurement as a sign-side question (what to verify at signing). Exit is the term-side question, and it shapes architecture decisions made in week 1 (gateway or not, how evals are built, where prompts live). Empirically it surfaces in every enterprise vendor review; the repo had no row for it.
+
+**Posture.** Anti-theater by design: the memo's own named failure mode is exit-planning that blocks adoption (lowest-common-denominator abstraction that forfeits the caching/batch economics the cost-calculator counts on). Evals named as the primary exit asset (portable regression harness = re-baselining any successor vendor in days, not quarters). MCP's open-standard status stated with a verify-current-adoption caveat; skills/prompts graded portable-with-rework, never "free." Cross-linked to procurement-pack (pre-signature asks), build-vs-buy (the decision this hedges), reference-architectures (gateway pattern trade-off).
+
+### `model-deprecation-runbook.md` (added 2026-07)
+
+**Why it earns its place.** [`incident-response-runbook.md`](../artifacts/incident-response-runbook.md) already names "model deprecation" as incident class #2 — the *reactive* path when a retirement catches you unprepared. This runbook is the *planned* path that keeps class #2 from ever firing: watch triggers, a pin-audit inventory step, regression-eval certification of the successor ([`eval-starter-pack.md`](../artifacts/eval-starter-pack.md)'s regression template is the gate), staged cutover with a rollback pin, and the cost re-forecast step (tokenizer drift — Sonnet 5's updated tokenizer maps the same input to ~1.0–1.35× more tokens — is a real budget delta, per `feature-inventory.md`).
+
+**Why it's not in the original 8.** Original scope pinned model versions as a *sourcing rule* (never "latest") but never wrote down what to do when a pinned version retires. The repo itself runs a monthly refresh ritual for exactly this reason; enterprises pinning models in production face the same drift with money attached, and had no artifact.
+
+**Posture.** Ops-runbook shape: trigger table → 6-step protocol with owner column (operational owner labels, with an explicit in-artifact mapping to the operating-model RACI cast) → failure modes (thin eval suite can't certify a successor; param non-parity — e.g. Opus 4.8 rejecting `temperature` — breaks lift-and-shift assumptions; hyperscaler version lag per the inventory's Bedrock/Vertex rows). Anthropic's deprecation lifecycle (active → deprecated → retired) cited to the platform docs page with historical notice windows marked verify-per-model, never asserted as contractual.
+
+### `token-budget-governance.md` (added 2026-07)
+
+**Why it earns its place.** [`cost-calculator.html`](../artifacts/cost-calculator.html) *sizes* spend; [`maturity-model.md`](../artifacts/maturity-model.md)'s L2 gate pre-names the failure mode this artifact addresses — "cost gates wired ($/task, $/day) — not invoice-discovered." Nothing in the repo says who owns the budget, where caps live (org → Console workspace → workload → seat surface), when alerts fire, or how showback graduates to chargeback. This is the FinOps layer between the calculator's estimate and the maturity model's gate.
+
+**Why it's not in the original 8.** Original scope covered cost *economics* (caching, batch, tier mix) — the unit-price levers. Budget *governance* (allocation, attribution, caps, review cadence) is an org discipline, not a price lever, and only becomes a felt need after the first surprise invoice — which is exactly why it was invisible at scoping time and recurring by month 3.
+
+**Posture.** Budget-unit ladder mapped to real platform controls (workspace spend limits, per-workspace API keys, per-surface seat/spend caps per the inventory's Cowork/Tag rows), each with a verify-in-Console caveat. Named anti-patterns each with the failure they cause: premature chargeback (kills experimentation at L1→L2), blanket org cap (prod brownout — cap experiments, alert prod), optimizing $/token instead of $/task. Variance triage table separates volume vs mix vs tokenizer vs price-change causes. Cross-linked to cost-calculator (sizing), model-selection (mix policy), subscription-selection (seat-vs-API split), value-realization (the same numbers feed the renew decision).
+
+### `agent-observability-guide.md` (added 2026-07)
+
+**Why it earns its place.** [`eval-starter-pack.md`](../artifacts/eval-starter-pack.md) gates *pre-ship*; [`incident-response-runbook.md`](../artifacts/incident-response-runbook.md) fires *after* something burns — and its five classes each name "symptoms" that nothing in the repo actually watches for. [`maturity-model.md`](../artifacts/maturity-model.md)'s L2 gate pre-names the audit-log requirement. This guide is the day-2 instrumentation between them: the minimum telemetry schema, golden signals for LLM workloads (cost/task drift, tool-error rate, refusal rate, loop depth), and an alert table whose route column points at the incident runbook's class numbers — turning its symptom lists into detection rules.
+
+**Why it's not in the original 8.** Original scope's measurement story was eval-shaped (quality at ship time). Run-state observability is a different discipline (drift, spend, loops, tool failures in production) and only exists as a need once something is actually in production — post-v1 by definition.
+
+**Posture.** Schema-first (the L2 audit-log gate expanded into named fields), then signals, then alerts routed to incident classes. Sourcing discipline on platform capabilities: API `usage` fields and the Usage & Cost Admin API cited with verify caveats; Claude Code OTel export cited to its docs page. PII-in-logs named as the guide's own top failure mode (retention/data-boundary conflict — routes to governance-overlay and the hooks-pack PII-scrub template rather than re-deriving). Judge-based sampling costed honestly (Haiku-tier judge, 1–5% sample) so observability spend stays a named number, not a surprise.
 
 Bar for inclusion: existing artifact must already name the failure mode the pack would address; the structure must be portable across teams while the content remains team-specific. **Exception (workforce-change):** a *named-but-under-served audience* with a genuinely new domain also clears the bar, even when no existing artifact pre-names the failure mode — the test is decision-shaping novelty, not only scaffolding. **Exception (user-mindset-cheatsheet):** *scope-completion* clears the bar — an artifact the repo already explicitly promised (a named tier/lane/deliverable with nothing behind it) earns its place by supplying the missing piece, even when it serves a new audience *type* (the end user), because the deliverable — not the audience — is what was already in scope.

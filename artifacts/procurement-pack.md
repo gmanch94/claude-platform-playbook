@@ -62,7 +62,7 @@ The questions most vendor-risk questionnaires ask, with Claude-grounded answers.
 | Are model outputs accurate / guaranteed? | No accuracy warranty — foundation-model outputs can be wrong. Mitigations are the deployer's: evals, grounding/citations, human-in-the-loop for high-stakes. Some workloads should not use Claude at all. | `[gov §14]` · [`anti-use-cases.md`](anti-use-cases.md) · [`eval-starter-pack.md`](eval-starter-pack.md) |
 | Who owns the outputs? | Customer ownership of outputs is addressed in the commercial terms; training-data provenance and any IP indemnity → **verify in commercial terms at signing.** | `[gov §13]` · verify: commercial terms |
 | How is prompt injection handled? | Shared responsibility — content-safety + injection mitigations are a deployer control (input/output validation, least-privilege tools, allow-listed MCP). Not a vendor-only guarantee. | `[gov §14]` · [`hooks-starter-pack.md`](hooks-starter-pack.md) |
-| What's the exit / lock-in story? | Multi-model abstraction at the right layer keeps switching cost bounded; data export + deletion on termination via DPA. Don't pre-build a 3-model fallback you'll never use. | `[gov §12]` `[gov §11]` |
+| What's the exit / lock-in story? | Multi-model abstraction at the right layer keeps switching cost bounded; data export + deletion on termination via DPA. Don't pre-build a 3-model fallback you'll never use. Component-by-component exit costing: [`exit-portability-memo.md`](exit-portability-memo.md). | `[gov §12]` `[gov §11]` |
 
 ---
 
