@@ -1,6 +1,6 @@
 # Rollout Kickoff Kit — Who Acts, In What Order, The First 30 Days
 
-**As of 2026-06.** Pin to current surface — refresh monthly.
+**As of 2026-07.** Pin to current surface — refresh monthly.
 
 The repo already routes four ways: by **persona** ([README audience map](../README.md#audience)), by **question** ([`decision-spine.html`](decision-spine.html)), by **capability** ([`maturity-model.md`](maturity-model.md)), and by **surface** ([`surface-rollout-matrix.md`](surface-rollout-matrix.md)). What none of them draw is the one thing a cross-functional kickoff actually needs: **who acts, in what order, across roles, in the first weeks** — the orchestration *between* the lanes. This kit is that view. It is the persona-lensed first 30 days of the [`adoption-playbook.md`](adoption-playbook.md), nothing more.
 
@@ -80,4 +80,4 @@ Single-lane failure modes live in the [playbook's 8](adoption-playbook.md) and t
 
 ---
 
-`© gmanch94 · CC-BY-4.0 · As of 2026-06. Swimlane and RACI are templates — adapt to your titles. Verify model surface at anthropic.com.`
+`© gmanch94 · CC-BY-4.0 · As of 2026-07. Swimlane and RACI are templates — adapt to your titles. Verify model surface at anthropic.com.`

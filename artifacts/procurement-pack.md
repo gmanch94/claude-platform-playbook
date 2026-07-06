@@ -1,6 +1,6 @@
 # Claude Procurement & Vendor-Risk Pack
 
-**As of 2026-06.** Pin to current model + plan surface — refresh monthly. Facts here are current as of this stamp; **re-verify at signing**.
+**As of 2026-07.** Pin to current model + plan surface — refresh monthly. Facts here are current as of this stamp; **re-verify at signing**.
 
 The decision to use Claude is made elsewhere ([`build-vs-buy-worksheet.html`](build-vs-buy-worksheet.html)). The compliance posture is stated in reference prose ([`governance-overlay.md`](governance-overlay.md)). This pack is the **procurement-execution layer** between them: the answers a CISO, procurement lead, or vendor-risk reviewer actually needs to fill a security questionnaire, paper a DPA/BAA, and negotiate the contract. It reformats the governance facts as question-and-answer, surface-split, with a source on every line.
 
@@ -121,4 +121,4 @@ If a questionnaire forces a yes/no on one of these and you can't pull the source
 
 ---
 
-`© gmanch94 · CC-BY-4.0 · As of 2026-06. Not legal advice — verify every answer against the live source for your plan and surface before it enters a binding document. Verify pricing/models at anthropic.com.`
+`© gmanch94 · CC-BY-4.0 · As of 2026-07. Not legal advice — verify every answer against the live source for your plan and surface before it enters a binding document. Verify pricing/models at anthropic.com.`

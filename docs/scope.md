@@ -4,7 +4,7 @@
 **Tagline:** Executive-grade decision tools for AI transformation on the Claude platform.
 **Audience:** CIOs/CDOs/CTOs/CHROs sizing Claude adoption + architects defending the choice to leadership.
 **License:** CC-BY-4.0
-**Posture:** Vendor-explicit, but decision-oriented (not Anthropic marketing recap). Pin to Claude 4.6/4.7 era; date-stamp everything.
+**Posture:** Vendor-explicit, but decision-oriented (not Anthropic marketing recap). Pin to the current Claude model surface (Opus 4.8 / Sonnet 5 / Haiku 4.5); date-stamp everything.
 
 ---
 
@@ -24,7 +24,7 @@ claude-platform-playbook/
     └── reference-architectures.html (6 canonical patterns w/ diagrams)
 ```
 
-7 artifacts. ~2 sessions to ship cleanly.
+7 artifacts. ~2 sessions to ship cleanly. (The repo now ships 35 — see the post-v1 justification blocks below.)
 
 ---
 

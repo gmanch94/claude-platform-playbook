@@ -1,6 +1,6 @@
 # Claude Platform — Common Misconceptions
 
-**As of 2026-06.** A skeptic-disarmer companion to [`decision-memes.html`](decision-memes.html). Every entry below is a misread that drives a *measurable* mis-budget, mis-architecture, or mis-staffing call. If a myth doesn't change a decision, it's not in this list.
+**As of 2026-07.** A skeptic-disarmer companion to [`decision-memes.html`](decision-memes.html). Every entry below is a misread that drives a *measurable* mis-budget, mis-architecture, or mis-staffing call. If a myth doesn't change a decision, it's not in this list.
 
 > **How to read this.** Format: **Myth** → **Reality** → **What you'd mis-decide** → **Cite**. Pinned to the current model surface (Opus 4.8 / Sonnet 5 / Haiku 4.5). Refreshed monthly against [`docs/feature-inventory.md`](../docs/feature-inventory.md) — the single source of truth.
 
@@ -126,4 +126,4 @@
 
 ---
 
-`© gmanch94 · CC-BY-4.0 · As of 2026-06. Verify pricing/models at anthropic.com.`
+`© gmanch94 · CC-BY-4.0 · As of 2026-07. Verify pricing/models at anthropic.com.`

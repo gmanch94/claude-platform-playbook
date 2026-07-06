@@ -1,6 +1,6 @@
 # Claude Cowork Adoption Guide — rolling out agentic knowledge work
 
-**As of 2026-06.** Pinned to the current Cowork surface. Refresh monthly with [`../docs/feature-inventory.md`](../docs/feature-inventory.md). All product facts cite primary sources — verify at [support.claude.com](https://support.claude.com/en/articles/13345190-get-started-with-claude-cowork) before committing budget or policy.
+**As of 2026-07.** Pinned to the current Cowork surface. Refresh monthly with [`../docs/feature-inventory.md`](../docs/feature-inventory.md). All product facts cite primary sources — verify at [support.claude.com](https://support.claude.com/en/articles/13345190-get-started-with-claude-cowork) before committing budget or policy.
 
 A per-surface rollout guide for **Claude Cowork** — the desktop agent that takes a goal and returns a finished deliverable by working across your local files and apps. This is to non-engineers what [`claude-code-adoption-guide.md`](claude-code-adoption-guide.md) is to engineers. For the platform-wide 90-day arc, see [`adoption-playbook.md`](adoption-playbook.md); for where Cowork sits against the other surfaces, see [`surface-rollout-matrix.md`](surface-rollout-matrix.md).
 
@@ -65,7 +65,7 @@ Anthropic publishes a product get-started flow; this guide adds the executive/go
 
 ### Phase 3 — Enterprise governance (make it durable)
 - Use enterprise admin controls to **manage feature access, control spend, and track usage** across the org. [H — [claude.com/blog/cowork-for-enterprise](https://claude.com/blog/cowork-for-enterprise)]
-- Size Cowork as **plan-capacity burn, not metered API.** Anthropic states Cowork *"consumes more usage than standard chat"* [H — [support.claude.com](https://support.claude.com/en/articles/13345190-get-started-with-claude-cowork)] — it draws down the seat plan's usage allowance, so it's a **plan-tier** sizing question (Pro vs Max 5×/20× vs Team), handled in [`subscription-selection-guide.md`](subscription-selection-guide.md). It is *not* an output of [`cost-calculator.html`](cost-calculator.html), which models API tokens + flat seat license — neither captures Cowork's in-plan burn.
+- Size Cowork as **plan-capacity burn, not metered API.** Anthropic states Cowork *draws down more usage than standard chat* [H — [support.claude.com](https://support.claude.com/en/articles/13345190-get-started-with-claude-cowork)] — it draws down the seat plan's usage allowance, so it's a **plan-tier** sizing question (Pro vs Max 5×/20× vs Team), handled in [`subscription-selection-guide.md`](subscription-selection-guide.md). It is *not* an output of [`cost-calculator.html`](cost-calculator.html), which models API tokens + flat seat license — neither captures Cowork's in-plan burn.
 - Review the folder-boundary policy quarterly; connected-folder scope drifts as people get comfortable.
 
 ---
@@ -124,4 +124,4 @@ Pick a baseline in Phase 0 so Phase 3 has evidence:
 
 ---
 
-`© gmanch94 · CC-BY-4.0 · As of 2026-06. Verify Cowork availability + governance at support.claude.com.`
+`© gmanch94 · CC-BY-4.0 · As of 2026-07. Verify Cowork availability + governance at support.claude.com.`

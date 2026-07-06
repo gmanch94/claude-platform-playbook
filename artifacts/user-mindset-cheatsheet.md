@@ -1,6 +1,6 @@
 # User Mindset Cheatsheet — How Your Work Changes with Claude
 
-**As of 2026-06.** Pin to current surface — refresh monthly.
+**As of 2026-07.** Pin to current surface — refresh monthly.
 
 The one-page handout for the person actually using Claude. It's about *mindset*, not prompt mechanics: the few reflexes that have to change before the tool starts paying off for you. Read it once, then keep it where you'll see it. Print it, pin it, paste it in the team channel.
 
@@ -87,4 +87,4 @@ The goal of week one isn't to use Claude for everything. It's to move *one* task
 
 ---
 
-`© gmanch94 · CC-BY-4.0 · As of 2026-06. Verify pricing/models at anthropic.com.`
+`© gmanch94 · CC-BY-4.0 · As of 2026-07. Verify pricing/models at anthropic.com.`

@@ -10,4 +10,4 @@ Ideas surfaced during work but explicitly deferred. Each entry: what · why defe
 
 ---
 
-`© gmanch94 · CC-BY-4.0 · As of 2026-05.`
+`© gmanch94 · CC-BY-4.0 · As of 2026-07.`

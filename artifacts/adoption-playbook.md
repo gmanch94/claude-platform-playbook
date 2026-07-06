@@ -1,6 +1,6 @@
 # Claude Adoption Playbook — 90-day rollout
 
-**As of 2026-06.** Pin to current model surface (Opus 4.8 / Sonnet 5 / Haiku 4.5) — refresh monthly.
+**As of 2026-07.** Pin to current model surface (Opus 4.8 / Sonnet 5 / Haiku 4.5) — refresh monthly.
 
 A 90-day arc from "we want to use Claude" to "Claude is in production with guardrails and a Center of Excellence pattern." Built for transformation leads, not for engineers — engineers should pair this with [`claude-code-adoption-guide.md`](claude-code-adoption-guide.md). This playbook is **surface-agnostic** (the *how* of a rollout); for *which* surface to enable first — chat, Projects, Cowork, Claude Design, or Claude Code — and in what order, pair it with [`surface-rollout-matrix.md`](surface-rollout-matrix.md).
 
@@ -162,7 +162,7 @@ Each failure mode scored on **probability** (Low / Med / High) and **cost-if-hit
 | 4 | **Prompt sprawl** | High | ★★ | Two teams shipping similar Skills independently; no shared registry | Weeks | Canonical Skills library by Week 10 — Platform owns the registry, COE curates the canonical content — see [`claude-code-starter-skills.md`](claude-code-starter-skills.md). |
 | 5 | **Governance afterthought** | High | ★★★★ | Risk function not on Week 1 stand-up; no DPA/BAA log | Months | Embed risk reviewer in Week 1 (advisory not blocking) — see [`governance-overlay.md`](governance-overlay.md). Issues surface early, cheaply. |
 | 6 | **Vendor concentration panic** | Med | ★★ | CFO/board ask "what if Anthropic disappears?" in QBR | Weeks | [`governance-overlay.md`](governance-overlay.md) §12 multi-model abstraction at the right layer. Don't pre-build a 3-model fallback you'll never use. |
-| 7 | **Model deprecation thrash** | Med | ★★★ | Anthropic announces deprecation date for a pinned model | Hours | COE owns model-bump runbook; pin family not point release; gate on regression eval pass — see [`eval-starter-pack.md`](eval-starter-pack.md). |
+| 7 | **Model deprecation thrash** | Med | ★★★ | Anthropic announces deprecation date for a pinned model | Hours | Platform runs the model-bump runbook, COE owns the regression-eval gate it must pass; pin family not point release — see [`eval-starter-pack.md`](eval-starter-pack.md). |
 | 8 | **The "AI committee" tax** | High | ★★★ | Decision queue >7 days; no single sponsor name on use case | Weeks | Single named sponsor with veto — see [`pilot-selection-worksheet.html`](pilot-selection-worksheet.html) sponsor-clarity axis. Committee informs, doesn't decide. |
 
 **Scoring posture.** Probability and cost are calibrated against post-mortems from public AI rollout failures + the pattern frequencies named in this playbook's own readers. Re-calibrate quarterly; if your org sees a different distribution, override the scores in your fork. The shape (early signal → detection latency → mitigation) is portable; the specific scores are not.
@@ -179,7 +179,7 @@ Below: each mode in prose, with the original symptom + fix framing. Use the heat
 | 4 | **Prompt sprawl** | Every team writes its own copy of the same instruction set. | Skills + plugins library by Week 10. Platform owns the registry; COE curates the canonical versions. |
 | 5 | **Governance afterthought** | Risk function shows up in Month 5 with blocking issues. | Embed risk reviewer in Week 1 (advisory, not blocking). Issues surface early, cheaply. |
 | 6 | **Vendor concentration panic** | CFO/board asks "what if Anthropic disappears?" | Address in [`governance-overlay.md`](governance-overlay.md) §12. Multi-model abstraction at the right layer. Don't pre-build a 3-model fallback you'll never use. |
-| 7 | **Model deprecation thrash** | Anthropic rev-bumps; quality moves; nobody owns re-eval. | COE owns the model bump runbook. Pin model family, not point release. |
+| 7 | **Model deprecation thrash** | Anthropic rev-bumps; quality moves; nobody owns re-eval. | Platform runs the model-bump runbook; COE owns the regression-eval gate it must pass. Pin model family, not point release. |
 | 8 | **The "AI committee" tax** | Decisions take weeks. Nothing ships. | Single named sponsor with veto. Committee informs, doesn't decide. |
 
 ---
@@ -224,4 +224,4 @@ You can run a small adoption with 4–6 people. Larger orgs will scale each func
 
 ---
 
-`© gmanch94 · CC-BY-4.0 · As of 2026-06. Verify model surface + pricing at anthropic.com.`
+`© gmanch94 · CC-BY-4.0 · As of 2026-07. Verify model surface + pricing at anthropic.com.`
