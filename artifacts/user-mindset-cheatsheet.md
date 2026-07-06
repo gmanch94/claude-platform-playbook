@@ -26,6 +26,21 @@ The pattern down the whole column: **the task shrinks, the judgment grows.** Wha
 
 ---
 
+## Where you are on the curve — and your next move
+
+You don't adopt all seven shifts at once. They land in order, as you're ready — so locate yourself and work the *next* shift, not all of them:
+
+- **Trying it** — you've moved one task off your plate (shift 1). *Next:* stop tossing near-misses; steer the draft across turns (**shift 3**).
+- **Directing it** — you delegate drafts and check them (shifts 1–3). *Next:* stop re-pasting context every time; keep it in a **Project** and reuse the prompt that worked (**shift 4**).
+- **Fluent** — you bring context and break work into steps (shifts 4–5). *Next:* match the surface to the task and verify the model's *failure surface*, not everything (**shift 6**).
+- **Multiplier** — you reach calibrated-first and know where *not* to (shifts 6–7). *Next:* package what works as a shared **Project** or **Skill** so your team inherits it, and codify the team's verify list.
+
+**What mature use looks like:** not "Claude does more of my job" — a smaller task and bigger judgment on *every* item. You direct a portfolio of drafts and own each call that ships. That's the whole column above, made routine.
+
+This is a locator, not a ladder to climb fast: most people live at *Directing it* and that's a real win. The point is knowing your *one* next move, not racing to Multiplier.
+
+---
+
 ## Daily task patterns — what to hand over, what to keep
 
 | Task | Claude-first move | Keep it yours | Best surface |
