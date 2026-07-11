@@ -357,12 +357,18 @@ Distinct from the **sandbox** egress in §2 (which scopes a single sandboxed com
 
 The signals, alerts, and log schema are [`agent-observability-guide.md`](agent-observability-guide.md)'s job. What belongs *here* is the managed **config** and the **privacy** switches — they decide what employee data leaves the laptop:
 
-- **Turn it on, fleet-wide.** `CLAUDE_CODE_ENABLE_TELEMETRY: "1"` plus an exporter (`OTEL_METRICS_EXPORTER` / `OTEL_LOGS_EXPORTER` — `otlp` | `prometheus` | `console` | `none`) and an OTLP endpoint, set in the managed `env` so every session reports. `[H — monitoring]`
+- **Turn it on, fleet-wide.** `CLAUDE_CODE_ENABLE_TELEMETRY: "1"` plus an exporter (`OTEL_METRICS_EXPORTER` / `OTEL_LOGS_EXPORTER` — `otlp`, `prometheus`, `console`, or `none`) and an OTLP endpoint, set in the managed `env` so every session reports. `[H — monitoring]`
 - **Dynamic collector auth** — `otelHeadersHelper` runs a script that emits JSON auth headers (OTLP `http/protobuf` and `http/json` only; `grpc` uses the static `OTEL_EXPORTER_OTLP_HEADERS`). Same trust caveat as any helper script. `[H — monitoring]`
 - **The privacy dial — set these two on purpose:**
   - `OTEL_METRICS_INCLUDE_ACCOUNT_UUID` defaults **true**, attaching `user.account_uuid` / `account_id` to every metric. Set it **`false`** to keep telemetry team-level and hold the *measure-capacity-not-the-person* line ([`workforce-change-guide.md`](workforce-change-guide.md) §4). `[H — monitoring]`
   - `OTEL_LOG_USER_PROMPTS` is **off by default and should stay off** — set it to `1` and the **text of user prompts** (source snippets, pasted secrets) ships to your logs backend. Enable only with explicit privacy/security sign-off. `[H — monitoring]`
 - Cost metrics are **approximations** — take official billing from your provider (Console / Bedrock / Vertex), not from OTel. `[H — monitoring]`
+
+| Skip this | Failure mode |
+|---|---|
+| Enabling telemetry + an exporter | no fleet visibility — adoption, error rates, and cost trends are invisible during rollout, the phase you most need to watch |
+| Setting `OTEL_METRICS_INCLUDE_ACCOUNT_UUID=false` | per-person metrics ship by default — breaks the *measure-capacity-not-the-person* line; a works-council / privacy exposure |
+| Confirming `OTEL_LOG_USER_PROMPTS` stays off | prompt text (source snippets, pasted secrets) flows to your logs backend — a new exfiltration + retention surface, usually unnoticed |
 
 ### 5.5 Spend containment — the Claude-Code-specific gotcha
 
