@@ -27,6 +27,66 @@ Drop this posture into your own `CLAUDE.md` so every session runs it; the org-wi
 
 ---
 
+## The architecture behind the loop — where your prompt actually goes
+
+§0 is the mental model; this is its physical counterpart — the same edit → verify loop drawn as the systems it runs on. The one line that governs everything else: **only what you send across the prompt boundary leaves your machine.**
+
+```
+  CLIENT SURFACE — you drive one of these
+  ├─ CLI (terminal)
+  ├─ Desktop app (Mac / Windows)
+  ├─ IDE extension (VS Code / JetBrains)
+  └─ Web — claude.ai/code (runs in Anthropic's cloud, not on your machine)
+        │
+        ▼
+═══ YOUR MACHINE · customer trust zone — stays local ══════════════════════
+  The agent loop (edit → verify) runs here, under your gate:
+  ├─ Permission gate + sandbox    — deny beats allow; enforced locally
+  ├─ Context: CLAUDE.md · auto-memory · .claude/ config
+  ├─ Hooks — your scripts on lifecycle events; PreToolUse can block a call
+  ├─ Local tools: file read/write · shell · git
+  └─ MCP client ──▶ local (stdio) servers          — inside the boundary
+        │
+        │   request = prompt + tool results + @file context you chose to send
+        ▼
+━━━ prompt trust boundary · TLS — only what you send crosses ━━━━━━━━━━━━━━━
+        │
+        ▼
+═══ ANTHROPIC · what your prompt reaches ══════════════════════════════════
+  no-train by default (≠ no-store) — retention / BAA / ZDR: see governance
+  ├─ Auth + routing fork — which credential answers, and who is billed:
+  │  ├─ subscription login (OAuth) ──────▶ plan message limits
+  │  ├─ Console API key ─────────────────▶ per-token API spend
+  │  │     └ a stray ANTHROPIC_API_KEY overrides your subscription silently
+  │  └─ hyperscaler env vars ────────────▶ parallel path (below)
+  ├─ Messages / inference API
+  │     └─▶ models: Opus 4.8 · Sonnet 5 · Haiku 4.5 · Fable 5
+  ├─ Server-side prompt cache — steady-state cost drops on a stable context
+  └─ Console + auth: usage · billing · workspaces + spend caps [E]
+                     · managed-settings delivery [E]       [E] = Enterprise
+
+═══ PARALLEL MODEL HOSTING · hyperscaler ══════════════════════════════════
+  Bypasses api.anthropic.com AND Anthropic Console billing entirely:
+  └─ Bedrock (AWS) · Vertex (GCP) · Foundry (Azure)
+        inference runs in the provider's region · the provider bills you
+
+═══ OTHER SYSTEMS THE CLIENT TOUCHES · non-Anthropic ══════════════════════
+  Which side executes each is not asserted here:
+  ├─ remote MCP servers   (stdio MCP = local/inside · remote MCP = crosses)
+  ├─ GitHub   (/review, gh)
+  └─ web search / fetch
+```
+
+**How to read it:** top to bottom is one request. Everything above the heavy `prompt trust boundary` rule runs on your machine (the *customer trust zone*); everything below is reached over TLS. `[E]` marks Enterprise-only nodes.
+
+- **The boundary is the governance hook.** What crosses is the prompt, tool results, and any `@file` context you chose to send — nothing else. Where that data then lives (no-train-by-default, retention window, BAA/ZDR eligibility) is **not** restated here — see [`governance-overlay.md`](governance-overlay.md) and the per-feature trust-zone diagrams in [`enterprise-data-boundaries.html`](enterprise-data-boundaries.html).
+- **Three credentials, three bills.** The auth fork mirrors §1: subscription (plan limits), Console key (per-token), or a hyperscaler. A stray `ANTHROPIC_API_KEY` silently wins — the §1 gotcha, drawn.
+- **The hyperscaler path is genuinely parallel.** Bedrock / Vertex / Foundry host the model in *their* region and bill through *their* account — `api.anthropic.com` and Anthropic Console billing are bypassed. Residency and eligibility differ on that path; [`governance-overlay.md`](governance-overlay.md) carries the specifics.
+- **MCP straddles the line.** A local (stdio) server runs inside your trust zone; a remote MCP server is another network hop outside it — same tool call, different data boundary. Audit both (§12).
+- Model tiers and pricing aren't restated — [`../docs/feature-inventory.md`](../docs/feature-inventory.md) is the single source of truth.
+
+---
+
 ## 1. Auth — know which credential is actually paying
 
 Three ways in, and they bill differently:
