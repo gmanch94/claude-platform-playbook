@@ -75,6 +75,7 @@ claude-platform-playbook/
     ├── maturity-model.md                L0→L4 self-locator · weakest-link self-assessment · one next-move per rung · routes by capability (spine routes by question)
     ├── operating-model-guide.md         Who owns Claude · shape choice (centralized/federated/hub-spoke CoE/CoP) + decision×role RACI + paved-road boundary · cross-refs playbook 3-function (not re-derived)
     ├── enterprise-deployment-guide.md   How to lay Claude out · tenancy reality (multi-tenant SaaS + logical-isolation levers; single-tenant=verify-with-Anthropic) · prod/non-prod via Console workspaces + per-env config matrix · eval-gated promotion flow · non-prod≠real-regulated-data landmine · workspaces/orgs/hyperscaler structural options · router into token-budget/eval-pack/deprecation/governance
+    ├── claude-enterprise-architecture.html  Full Enterprise feature surface in one layered view · access→human/dev surfaces→capabilities→models→deployment paths + cross-cutting governance spine · every box status-tagged (GA/beta/preview) + grounded in feature-inventory · structured layered style (deviates from hand-drawn by design) · each box routes to its decision artifact · full-surface status map (refresh checklist item #7 keeps tags honest)
     ├── rollout-kickoff-kit.md           Who acts, in what order, first 30 days · persona × time swimlane (Week 0→4) + role quick-start (first artifact·deliverable·gate·failure mode) + between-lane handoff seams · persona-lensed first 30d of playbook (hands off Week 5)
     ├── user-mindset-cheatsheet.md       End-user week-1 handout · 7 before→after mindset shifts (direct-and-check · verify what it gets wrong · reach-first) each w/ its over-correction · daily task patterns by surface · always-verify list · data boundary · the practitioner-tier handout workforce-change names
     ├── user-mindset-cheatsheet-color.html  Colour-coded / print form of the cheatsheet (green=shift · amber=trap · red=boundary) · same content, HTML so it can carry colour (markdown can't on GitHub) · named -color to avoid Jekyll .md→.html collision
@@ -98,7 +99,7 @@ claude-platform-playbook/
 
 ### When adding a new artifact
 
-Don't, without updating `docs/scope.md` first. The original scope agreed 8 artifacts; the repo currently ships 41 (all post-v1 additions are justified in `scope.md`). New artifacts need a written justification block in `scope.md` and a row in `feature-inventory.md`'s `Used in artifacts` column.
+Don't, without updating `docs/scope.md` first. The original scope agreed 8 artifacts; the repo currently ships 42 (all post-v1 additions are justified in `scope.md`). New artifacts need a written justification block in `scope.md` and a row in `feature-inventory.md`'s `Used in artifacts` column.
 
 ### When the model surface changes
 
