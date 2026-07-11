@@ -75,7 +75,7 @@ The seat surface is billed per user, separate from per-token API usage. **A subs
 | Web search tool (server-side) | GA | 2026-05 | docs.claude.com/en/docs/agents-and-tools/web-search-tool | arch:rag, claude-code-guide, enterprise-data-boundaries |
 | Code execution tool (server-side) | GA | 2026-05 | docs.claude.com/en/docs/agents-and-tools/code-execution | arch:agent, claude-code-guide, eval-pack, enterprise-data-boundaries |
 | Admin API — Usage & Cost reports | GA | 2026-07 | platform.claude.com/docs/en/api/usage-cost-api | token-budget, observability, value-realization |
-| Console workspaces + spend limits | GA | 2026-07 | platform.claude.com/docs/en/api/administration-api | token-budget, observability |
+| Console workspaces + spend limits | GA | 2026-07 | platform.claude.com/docs/en/api/administration-api | token-budget, observability, enterprise-deployment-guide |
 | Service tiers (priority / standard / batch) | GA | 2026-07 | platform.claude.com/docs/en/api/service-tiers | token-budget |
 
 **Ops rows (added 2026-07-06)** — Usage & Cost Admin API returns org-level token/cost rollups by workspace, API key, and model; it requires an **Admin API key** (org role), not a workspace key. Workspaces are the natural budget boundary (per-workspace keys, rate limits, spend caps — verify cap granularity in Console). Priority tier = committed-capacity purchase for latency-sensitive prod; verify current terms before citing in a budget. All three doc anchors sourced from platform docs knowledge, **not yet re-verified live — check at next monthly refresh.**
