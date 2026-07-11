@@ -57,6 +57,8 @@ claude-platform-playbook/
     ├── governance-overlay.md            Data flow · No-train · ZDR · HIPAA/BAA · Residency · Retention · Certs · NIST · EU AI Act
     ├── enterprise-data-boundaries.html  Per-feature trust-zone diagrams (Enterprise) · 20 features · what crosses the prompt boundary · surface-tagged (product/API/procurement/seat-plan) · per-feature BAA/ZDR/residency/retention cells · coverage table · visual companion to governance-overlay
     ├── claude-code-adoption-guide.md    Engineering CLI rollout
+    ├── claude-code-101.md               Practitioner field guide · newcomer→power-user · the daily loop, 6 permission modes, model aliases (opusplan default nobody uses), CLAUDE.md craft (imports don't save context; guides≠enforces), context mgmt, subagents, headless, worktrees, a trick list + a "what not to do" · curated judgment OVER the docs (not a reference mirror; volatile version-specifics linked to docs.claude.com) · models referenced to feature-inventory, not restated · engineer analog of user-mindset-cheatsheet · verified [H] against docs.claude.com 2026-07-11
+    ├── claude-code-enterprise-config.md Admin config layer · three reference templates (org instructions + managed-settings.json + enterprise CLAUDE.md) on the enforce-vs-guide spine (managed settings enforce client-side; managed CLAUDE.md only guides) · verbatim managed-settings paths per OS (legacy ProgramData removed v2.1.75) + 5-source delivery precedence (only one source wins) + deny-beats-allow + forceLoginOrgUUID org lock · every managed-settings field carries failure-mode-if-omitted · delivery framed as a choice (not "drop the file here") · does NOT assert BAA/ZDR/residency (routes to governance-overlay)
     ├── cowork-adoption-guide.md         Cowork (desktop agent) rollout for non-engineers · 3 gates · 4-phase arc · folder-scope/egress/review-before-act governance · BAA-excluded (no PHI)
     ├── claude-code-starter-skills.md    8 team-grade Skill templates (when-to-use / failure-mode / owner / prompt body)
     ├── hooks-starter-pack.md            10 hook templates (block-secrets, PII scrub, branch guard, license, audit log, etc.) — phased 1→4 rollout
@@ -99,7 +101,7 @@ claude-platform-playbook/
 
 ### When adding a new artifact
 
-Don't, without updating `docs/scope.md` first. The original scope agreed 8 artifacts; the repo currently ships 42 (all post-v1 additions are justified in `scope.md`). New artifacts need a written justification block in `scope.md` and a row in `feature-inventory.md`'s `Used in artifacts` column.
+Don't, without updating `docs/scope.md` first. The original scope agreed 8 artifacts; the repo currently ships 44 (all post-v1 additions are justified in `scope.md`). New artifacts need a written justification block in `scope.md` and a row in `feature-inventory.md`'s `Used in artifacts` column.
 
 ### When the model surface changes
 

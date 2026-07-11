@@ -94,11 +94,11 @@ The seat surface is billed per user, separate from per-token API usage. **A subs
 
 | Capability | Status | As-of | Doc anchor | Used in artifacts |
 |---|---|---|---|---|
-| Skills | GA | 2026-05 | docs.claude.com/en/docs/agents-and-tools/skills | matrix, playbook, arch, claude-code-guide, starter-skills, eval-pack, misconceptions, operating-model, maturity-model, exit-portability |
-| MCP (Model Context Protocol) | GA | 2026-05 | modelcontextprotocol.io | matrix, playbook, arch, claude-code-guide, starter-skills, mcp-pack, agentic-threat-model, operating-model, enterprise-data-boundaries, exit-portability |
+| Skills | GA | 2026-05 | docs.claude.com/en/docs/agents-and-tools/skills | matrix, playbook, arch, claude-code-guide, starter-skills, eval-pack, misconceptions, operating-model, maturity-model, exit-portability, claude-code-101 |
+| MCP (Model Context Protocol) | GA | 2026-05 | modelcontextprotocol.io | matrix, playbook, arch, claude-code-guide, starter-skills, mcp-pack, agentic-threat-model, operating-model, enterprise-data-boundaries, exit-portability, claude-code-101, claude-code-enterprise-config |
 | Agent SDK | GA | 2026-05 | docs.claude.com/en/api/agent-sdk | matrix, arch, claude-code-guide, multi-agent-patterns, maturity-model, enterprise-data-boundaries |
 | Plugins (bundled commands + skills + hooks + MCP servers) | GA | 2026-05 | docs.claude.com/en/docs/claude-code/plugins | matrix, arch, claude-code-guide, starter-skills, eval-pack |
-| Sub-agents (Task tool / parallel agents in Claude Code) | GA | 2026-05 | docs.claude.com/en/docs/claude-code/sub-agents | claude-code-guide, arch:code, multi-agent-patterns |
+| Sub-agents (Task tool / parallel agents in Claude Code) | GA | 2026-05 | docs.claude.com/en/docs/claude-code/sub-agents | claude-code-guide, arch:code, multi-agent-patterns, claude-code-101 |
 
 ---
 
@@ -106,15 +106,15 @@ The seat surface is billed per user, separate from per-token API usage. **A subs
 
 | Surface | Status | As-of | Doc anchor | Used in artifacts |
 |---|---|---|---|---|
-| Claude Code CLI | GA | 2026-05 | docs.claude.com/en/docs/claude-code | claude-code-guide, misconceptions, workforce-change, rollout-kickoff-kit, enterprise-data-boundaries |
-| Slash commands | GA | 2026-05 | docs.claude.com/en/docs/claude-code/slash-commands | claude-code-guide, misconceptions |
-| Hooks (PreToolUse / PostToolUse / SessionStart / Stop / UserPromptSubmit) | GA | 2026-05 | docs.claude.com/en/docs/claude-code/hooks | claude-code-guide, starter-skills, hooks-pack, misconceptions, agentic-threat-model |
-| Settings hierarchy (user / project / local) | GA | 2026-05 | docs.claude.com/en/docs/claude-code/settings | claude-code-guide, hooks-pack |
+| Claude Code CLI | GA | 2026-05 | docs.claude.com/en/docs/claude-code | claude-code-guide, misconceptions, workforce-change, rollout-kickoff-kit, enterprise-data-boundaries, claude-code-101, claude-code-enterprise-config |
+| Slash commands | GA | 2026-05 | docs.claude.com/en/docs/claude-code/slash-commands | claude-code-guide, misconceptions, claude-code-101 |
+| Hooks (PreToolUse / PostToolUse / SessionStart / Stop / UserPromptSubmit) | GA | 2026-05 | docs.claude.com/en/docs/claude-code/hooks | claude-code-guide, starter-skills, hooks-pack, misconceptions, agentic-threat-model, claude-code-101, claude-code-enterprise-config |
+| Settings hierarchy (user / project / local) | GA | 2026-05 | docs.claude.com/en/docs/claude-code/settings | claude-code-guide, hooks-pack, claude-code-101, claude-code-enterprise-config |
 | Output styles | GA | 2026-05 | docs.claude.com/en/docs/claude-code/output-styles | claude-code-guide |
-| Background tasks / scheduled routines | GA | 2026-05 | docs.claude.com/en/docs/claude-code/background-tasks | claude-code-guide, starter-skills |
+| Background tasks / scheduled routines | GA | 2026-05 | docs.claude.com/en/docs/claude-code/background-tasks | claude-code-guide, starter-skills, claude-code-101 |
 | IDE integrations (VS Code, JetBrains) | GA | 2026-05 | docs.claude.com/en/docs/claude-code/ide-integrations | claude-code-guide |
-| Headless mode (CI / non-interactive) | GA | 2026-05 | docs.claude.com/en/docs/claude-code/headless | claude-code-guide, hooks-pack |
-| Monitoring / OpenTelemetry export (`CLAUDE_CODE_ENABLE_TELEMETRY`; OTLP metrics + events) | GA | 2026-07 | platform.claude.com/docs/en/claude-code/monitoring-usage | observability, token-budget, claude-code-guide |
+| Headless mode (CI / non-interactive) | GA | 2026-05 | docs.claude.com/en/docs/claude-code/headless | claude-code-guide, hooks-pack, claude-code-101 |
+| Monitoring / OpenTelemetry export (`CLAUDE_CODE_ENABLE_TELEMETRY`; OTLP metrics + events) | GA | 2026-07 | platform.claude.com/docs/en/claude-code/monitoring-usage | observability, token-budget, claude-code-guide, claude-code-enterprise-config |
 | Remote Control (drive a local session from claude.ai/code or the Claude mobile app) | Research preview | 2026-06 | code.claude.com/docs/en/remote-control | Execution + filesystem stay on the originating machine; the phone/browser is a control surface relayed through claude.ai — not a copy of your files. **claude.ai OAuth only** (no API keys). Team/Enterprise: off by default, an Owner must enable it; the admin toggle greys out if the org's data-retention/compliance config is incompatible (Anthropic's own words, not further specified). Per-device disable available via managed settings. | agentic-threat-model, enterprise-data-boundaries, claude-code-adoption-guide |
 
 ---
