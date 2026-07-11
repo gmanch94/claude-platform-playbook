@@ -18,6 +18,21 @@ The rollout difference from chat in one line: **chat answers; Cowork acts.** In 
 
 ---
 
+## The operating posture to instill
+
+Cowork hands non-engineers the same high-agency agent engineers get — so the same working style matters, minus the jargon. Bake it into onboarding and the week-1 handout so everyone drives Cowork like **a careful expert who owns the outcome** — optimistic the agent can do the work, rigorous about proving it did. It's the non-engineer form of the posture the [`claude-code-101.md`](claude-code-101.md) and [`claude-code-adoption-guide.md`](claude-code-adoption-guide.md) guides instill in engineers.
+
+- **Plan → act → verify.** Have Cowork lay out what it intends to do before it touches your files — review-before-act is this habit built into the product — let it work, then check the deliverable against the source. No "done" until you've opened the output and confirmed it.
+- **Respond, don't react.** Give it the goal and the context up front — which folder, the format you want, the constraints — instead of firing a vague one-liner and re-steering mid-run. A sharp brief beats three correction rounds.
+- **Mandate an adversarial check.** A finished-*looking* deliverable is a draft until verified. Spot-check the numbers, open the formula, reconcile against the source; have a second pass — you, a colleague, or Cowork critiquing its own output — before it leaves the building. This is the non-engineer equivalent of the engineer's code review.
+- **Ground it; don't let it guess.** The agent invents less when it works from the real thing. Connect the actual source folder, point it at the real file, ask it to cite where a figure came from, and let its sub-agents do the wide reads so the result comes back distilled and grounded. When it can't verify something, it should say so — not fill the gap with a confident number.
+- **Mind the plan burn.** Cowork draws down your plan's usage faster than chat — this is the non-engineer form of "stay token-frugal." Scope each task to the folder it needs, keep unrelated work in separate sessions, and turn on scheduled tasks deliberately, not everywhere. Sizing is a plan-tier question — see [`subscription-selection-guide.md`](subscription-selection-guide.md).
+- **Calibrate confidence.** Separate what the agent verified from what it assumed; treat a first pass as a draft, not a finished artifact; know the failure mode of the task (a wrong cell in a formula, a stale source file) and check exactly there.
+
+Give the people you onboard [`user-mindset-cheatsheet.md`](user-mindset-cheatsheet.md) as the week-1 handout — it carries the same direct-and-check, verify-what-it-gets-wrong habits in end-user language.
+
+---
+
 ## The decision: three gates before you provision anyone
 
 **Gate 0 — Compliance (ask first).**
