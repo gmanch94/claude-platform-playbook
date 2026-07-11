@@ -28,7 +28,7 @@ The questions most vendor-risk questionnaires ask, with Claude-grounded answers.
 | How long is our data retained? | Backend deletion default **30 days**. Carve-outs: inputs/outputs up to **2 years** where AUP-flagged; Trust & Safety classifier scores up to **7 years** (persist even under ZDR); feedback you submit **5 years**. | `[gov §11]` `[inv]` |
 | Do you offer Zero Data Retention? | Yes — enterprise, **approval required**. Covers Messages + Token Counting APIs and Claude Code. **Not** the Team/Enterprise product UI; **not** consumer plans. T&S classifier scores are still retained. | `[gov §3]` `[inv: ZDR]` |
 | Can we delete our data on request? | Deletion mechanisms exist per the retention policy; export + deletion on contract termination → **verify at signing (DPA)**. | `[gov §11]` · verify: DPA |
-| Where is our data processed / stored? | First-party API + Claude Platform on AWS: per-request inference geo via `inference_geo` (`global` default or `us`; Opus 4.6+ and Sonnet 4.6 confirmed — **Sonnet 5 unconfirmed, verify**); at-rest + endpoint processing controlled by **Workspace geo**. Bedrock/Vertex/Azure AI Foundry use the hyperscaler's own region selection, not `inference_geo`. | `[gov §5]` `[inv]` |
+| Where is our data processed / stored? | First-party API + Claude Platform on AWS: per-request inference geo via `inference_geo` (`global` default or `us`; Opus 4.6+ and Sonnet 4.6+ and later confirmed — Sonnet 5 confirmed per the platform pricing doc, verified 2026-07-06; `us` applies a 1.1× multiplier); at-rest + endpoint processing controlled by **Workspace geo**. Bedrock/Vertex/Azure AI Foundry use the hyperscaler's own region selection, not `inference_geo`. | `[gov §5]` `[inv]` |
 | Who are your sub-processors? | Published list → **verify: trust.anthropic.com** and the DPA sub-processor schedule. | verify: trust.anthropic.com |
 | Is data encrypted in transit and at rest? | **verify: trust.anthropic.com** (Trust Portal / SOC 2 report). Not separately asserted in this repo — do not state specifics you haven't pulled from the report. | verify: trust.anthropic.com |
 
@@ -97,7 +97,47 @@ Which terms are published vs negotiated. Don't assume a published default is the
 
 ---
 
-## 4. What this pack can't answer (the verify-at-signing list)
+## 4. Procurement path — direct vs hyperscaler
+
+Buying Claude through a hyperscaler (Bedrock / Vertex / Azure Foundry) is a **billing-and-governance decision, not a model decision.** The model weights are identical on every path, and Anthropic operates the inference behind all of them — Azure's own GA post states *"Anthropic operates the inference and is the data processor and SLA provider."* So a hyperscaler path **does not diversify your model dependency**; it changes who invoices you and whose IAM/audit plane the calls run through. What you trade for that integration is **feature freshness** — new models and Anthropic-native features land on the first-party API first.
+
+### The five paths
+
+| Path | Billing | Governance inheritance | Feature freshness | Note |
+|---|---|---|---|---|
+| **Direct API** | Anthropic invoice / Console | You build auth, logging, isolation | **Newest — day-one models + all features** | The reference surface. `[inv]` |
+| **Claude Platform on AWS** | AWS marketplace / drawdown | AWS billing plumbing | **Full — direct-API feature set** | Cloud bill *without* the lag. `[inv]` |
+| **Amazon Bedrock** | AWS invoice + EDP drawdown | IAM, VPC/PrivateLink, CloudTrail, KMS | Lags (weeks–months) | AWS-native platform layer (below). `[inv]` |
+| **Google Vertex AI** | GCP invoice + CUD drawdown | GCP IAM, VPC-SC | Lags | Regional endpoint ≈ **+10%** over global; multi-region GA 2026-05-15. `[inv]` |
+| **Microsoft Azure Foundry** | Azure invoice (CCU line) + MACC | Entra ID, Azure RBAC, Control Plane | Lags (hosted-on-Azure) | GA 2026-06-29; Global/US data zone; ZDR available. `[inv]` |
+
+**The nuance a two-column "cloud vs direct" framing hides:** freshness and cloud-native billing are *partly decoupled*. **Claude Platform on AWS** and **Azure's hosted-on-Anthropic mode** give you a cloud/marketplace invoice **without** forfeiting day-one features — only Bedrock/Vertex/Azure-hosted make you choose. `[inv]` · verify: catalog
+
+### What the hyperscaler platform layer adds (Bedrock as the example)
+
+The reason to accept the lag is the managed platform wrapped around the model. On Bedrock you gain, over the bare direct API:
+
+- **Managed AI services:** Guardrails (content/PII/prompt-attack/grounding filters), Knowledge Bases (managed RAG), **AgentCore** (production agent runtime — memory, gateway, identity, code-interpreter; no direct-API equivalent), Flows, Data Automation, Evaluations, Distillation.
+- **AWS infra & ops:** IAM auth, VPC/PrivateLink (no public egress), CloudTrail audit, KMS customer-managed keys, cross-region inference, Provisioned Throughput, batch (~50% off).
+- **Claude-specific:** fine-tuning **Claude 3 Haiku** is available on Bedrock **but not on the first-party API** (us-west-2; must serve on Provisioned Throughput).
+
+Caveat for vendor-risk: **buckets one and two are AWS features, not Claude features** — they carry AWS lock-in and do not port if you leave AWS. Vertex (Agent Builder / RAG Engine) and Azure (Foundry Agent Service / Control Plane) have their own equivalents. Verify the exact feature/model set **per catalog** at decision time — it drifts. `[inv]` · verify: AWS / GCP / Azure catalog
+
+### Procurement implications
+
+| Question | Answer (draft) | Source |
+|---|---|---|
+| Does a hyperscaler path reduce vendor-concentration risk? | **No.** Same model, Anthropic-operated inference on every path. It diversifies the *commercial* relationship (billing, contracting), not the *model* dependency. Hedge model risk with portable evals + a swap-ready abstraction on simple workloads, not a second cloud bill. | `[inv]` · [`exit-portability-memo.md`](exit-portability-memo.md) |
+| Who is the SLA / data-processor party? | **Differs by path — confirm per contract.** On Azure hosted-on-Azure, Anthropic is the data processor & SLA provider even though Azure carries billing/identity. On Bedrock/Vertex, the hyperscaler's model-service SLA applies. Direct = Anthropic's API SLA. | `[inv]` · verify: contract |
+| Where is data processed on a hyperscaler path? | The hyperscaler's own region selection — **not** `inference_geo`/Workspace geo (those are first-party API + Claude Platform on AWS only). Vertex offers global vs multi-region; Azure offers Global vs US data zone. | `[gov §5]` `[inv]` |
+| Is compliance (HIPAA/FedRAMP/ISO) inherited from the cloud? | **Do not inherit — verify per surface.** Hyperscaler compliance is governed by *its* program (AWS Artifact / GCP / Azure trust portals), which is a different attestation from Anthropic's first-party certs. Confirm the covering party and scope for your workload before it enters a questionnaire. | verify: hyperscaler trust portal + trust.anthropic.com |
+| Which path for cost commitment? | If you have an under-burning **AWS EDP / GCP CUD / Azure MACC** commitment, hyperscaler spend draws it down — often outweighing small per-token deltas. On-demand per-token price is at parity with direct in standard regions; Vertex regional adds ~10%. | `[inv]` · verify: contract |
+
+**Decision shorthand:** need day-one models + full feature set → **Direct** or **Claude Platform on AWS**. Need cloud billing without the lag → **Claude Platform on AWS** / **Azure hosted-on-Anthropic**. AWS/GCP/Microsoft shop wanting native IAM + commit drawdown + managed agent/RAG platform → the matching **Bedrock / Vertex / Foundry** path, accepting the freshness lag. Think a hyperscaler hedges "what if Anthropic goes away" → it doesn't.
+
+---
+
+## 5. What this pack can't answer (the verify-at-signing list)
 
 Be explicit with your reviewers about what is **not** assertable from public material and must be confirmed directly. Listing these is a credibility signal, not a gap:
 
