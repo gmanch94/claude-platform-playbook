@@ -144,10 +144,10 @@ Seat-plan product surfaces beyond chat. Plan gating + governance flags drive the
 | Path | Status | As-of | Notes |
 |---|---|---|---|
 | Direct API (`console.anthropic.com`) | GA | 2026-05 | Fastest model availability. Default. |
-| Amazon Bedrock | GA | 2026-05 | Hyperscaler procurement. Model version + lifecycle lag possible — availability and retirement dates can differ from first-party; verify per catalog. |
-| Google Vertex AI | GA | 2026-05 | Hyperscaler procurement. Model version + lifecycle lag possible — availability and retirement dates can differ from first-party; verify per catalog. |
-| Microsoft Azure AI Foundry | GA | 2026-05 | Claude models via Azure marketplace. Enterprise procurement path for Microsoft shops. |
-| Claude Platform on AWS | GA | 2026-05 | Native AWS marketplace listing. Separate from Bedrock; direct billing via AWS. |
+| Amazon Bedrock | GA | 2026-07 | Hyperscaler procurement. AWS-native platform layer around Claude: Guardrails, Knowledge Bases (managed RAG), AgentCore (agent runtime, GA 2026-06), Flows, cross-region inference, batch (~50% off). **Fine-tuning Claude (Claude 3 Haiku SFT, us-west-2) is Bedrock-only — not on the first-party API — and requires Provisioned Throughput to serve.** Those are AWS features (AWS lock-in), not Claude features. Model version + lifecycle lag vs first-party — availability and retirement dates can differ; verify per catalog. |
+| Google Vertex AI | GA | 2026-07 | Hyperscaler procurement. Global vs regional endpoints — regional carries ~+10% over global; multi-region GA 2026-05-15. GCP IAM / VPC-SC. Model version + lifecycle lag vs first-party — availability and retirement dates can differ; verify per catalog. |
+| Microsoft Azure AI Foundry | GA | 2026-07 | **GA 2026-06-29, hosted on Azure.** Claude via Messages API (prompt caching, extended thinking, tool streaming); Opus 4.8 + Haiku 4.5 at GA. Global or **US data zone**; **ZDR** available. Billed in Claude Consumption Units (CCU) on the Azure invoice with **MACC drawdown**; Entra ID + Azure RBAC. **Anthropic operates inference and is the data processor & SLA provider.** A hosted-on-Anthropic mode also exists for the full feature set / not-yet-on-Azure models (per MS Learn deploy doc — verify). Feature/version lag vs first-party; verify per catalog. |
+| Claude Platform on AWS | GA | 2026-07 | Native AWS marketplace listing (GA ~2026-05-11). Separate from Bedrock; **direct-API feature set (no hyperscaler feature lag) with AWS billing / marketplace drawdown**. |
 
 ---
 
