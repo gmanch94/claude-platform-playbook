@@ -58,6 +58,15 @@ The as-of stamp is **load-bearing** on `cost-calculator.html` — readers commit
 
 ## Repo-specific lessons
 
+### 2026-07-11 — the source is not the artifact (kramdown phantom-table render bug)
+
+**A raw ` | ` in prose or a list item renders as a table on GitHub Pages — invisible in the source and the editor, only visible on the published HTML.** `claude-code-enterprise-config.md` §5.4 wrote an exporter list `` `otlp` | `prometheus` | `console` | `none` `` inside a bullet; kramdown parsed the text-level pipes as table cells and chopped the sentence into a phantom table on the live `.html`. The `.md` looked perfect. Caught only by fetching the **live rendered page** and seeing tab-separated cells where the pipes were.
+
+- **Fix:** body-text separators use commas / ` / ` / ` or ` / ` · `, never raw ` | `. A literal pipe in prose escapes as `\|`.
+- **Not every pipe is a bug:** a single pipe wholly inside **one** inline-code span (`` `cat x | y` ``) or **any** pipe inside a ` ``` ` fence is safe. The trigger is ` | ` acting as a delimiter *between* cells (including between separate `` `code` `` spans). Be fence-aware before editing — most pipe hits in this repo (hooks-starter-pack, eval-starter-pack) are inside `bash`/`json`/`yaml` fences and must not be touched.
+- **Encoded as `/render-fix`** (`.claude/commands/render-fix.md`) — scans all published `.md`, fixes the danger pattern, render-verifies on the live page. Global rule: `~/.claude/rules/markdown-render-gotchas.md`; also in project memory `github-pages-html-artifact-gotchas.md`.
+- **Meta:** render-verify on the deployed target, not the editor. Belongs to the same family as the `.md`→`.html` Jekyll collision and markdown-can't-carry-colour — the published page is the artifact.
+
 ### 2026-05-04 — claude-misconceptions.md ship
 
 **Decision-relevance filter is the bouncer.** Started from 25 raw research entries. After applying primary-source + decision-frame filter, only 15 survived. The cuts (vs-GPT/Gemini comparisons, Opus 4.7 jump as informational fact, "Claude is lazy" trope, hallucination index) all *felt* like Claude misconceptions but failed the test "ends in a measurable mis-budget / mis-architect / mis-staff call." A misconception that doesn't change a decision is not in this repo's scope.

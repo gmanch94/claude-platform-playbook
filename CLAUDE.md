@@ -139,6 +139,8 @@ These exist; don't duplicate their content here. This repo's job is **Claude-spe
 
 - **Monthly refresh routine** (`trig_019PnZmQxwkS5r9iLU9aWthe`): first Monday of each month, audits `feature-inventory.md` against `docs.claude.com` + `anthropic.com/pricing`, opens a PR if drift detected. Manage at https://claude.ai/code/routines.
 - **`/bump-as-of` slash command:** sweeps `As of YYYY-MM` stamps across all artifacts. Use for the monthly refresh sweep.
+- **`/stale-check` slash command:** read-only audit of as-of stamps, model pins, product-surface status, URL health, and feature-inventory cross-refs.
+- **`/render-fix` slash command:** finds + fixes kramdown/GitHub-Pages render gotchas in published `.md` — stray-pipe phantom tables (` | ` between cells mis-parses as a table; invisible in source, only shows on the live HTML), plus table-spacing / 4-space-indent traps — then render-verifies on the live page. Run before/after shipping any `.md` with inline pipes. Full rule: `~/.claude/rules/markdown-render-gotchas.md`.
 
 ## Things to avoid
 
