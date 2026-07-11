@@ -43,6 +43,7 @@
   .chip.dot { border-style:dotted; }
   .chip .cn { font-weight:600; display:flex; align-items:center; gap:6px; flex-wrap:wrap; }
   .chip .cd { font-size:11.5px; color:var(--muted); margin-top:2px; }
+  .chip[title], .subchip[title] { cursor:help; }
   .grp { border:1px dashed var(--line); border-radius:8px; padding:9px 11px 11px; margin-top:2px; }
   .grp > .gl { font-size:11px; font-weight:700; text-transform:uppercase; letter-spacing:.05em; color:var(--muted); margin-bottom:8px; }
   .subchips { display:flex; flex-wrap:wrap; gap:6px; }
@@ -104,11 +105,11 @@
     <div class="tier" style="--tc:var(--t-access)">
       <div class="th"><span class="tn">1 · Access &amp; Identity</span><span class="td">how an Enterprise org gets in and who can do what</span></div>
       <div class="chips">
-        <div class="chip"><div class="cn">SSO <span class="tag ent">ENT</span></div><div class="cd">Team + Enterprise</div></div>
-        <div class="chip"><div class="cn">SCIM provisioning <span class="tag ent">ENT</span></div><div class="cd">Enterprise (verify per contract)</div></div>
-        <div class="chip"><div class="cn">RBAC / custom roles <span class="tag ent">ENT</span></div><div class="cd">Enterprise</div></div>
-        <div class="chip"><div class="cn">Org-wide seats <span class="tag ent">ENT</span></div><div class="cd">Enterprise plan</div></div>
-        <div class="chip"><div class="cn">Admin console + Console workspaces <span class="tag ga">GA</span></div><div class="cd">per-workspace keys · rate limits · spend caps</div></div>
+        <div class="chip" title="Single sign-on through your identity provider. Team and Enterprise plans."><div class="cn">SSO <span class="tag ent">ENT</span></div><div class="cd">Team + Enterprise</div></div>
+        <div class="chip" title="Automated user provisioning and deprovisioning from your directory. Enterprise; verify exact tier support per contract."><div class="cn">SCIM provisioning <span class="tag ent">ENT</span></div><div class="cd">Enterprise (verify per contract)</div></div>
+        <div class="chip" title="Role-based access control with custom roles. Enterprise-tier."><div class="cn">RBAC / custom roles <span class="tag ent">ENT</span></div><div class="cd">Enterprise</div></div>
+        <div class="chip" title="Enterprise seats provisioned and managed centrally across the whole org."><div class="cn">Org-wide seats <span class="tag ent">ENT</span></div><div class="cd">Enterprise plan</div></div>
+        <div class="chip" title="Central admin plane. Workspaces isolate teams or environments, each with its own API keys, rate limits, and spend caps."><div class="cn">Admin console + Console workspaces <span class="tag ga">GA</span></div><div class="cd">per-workspace keys · rate limits · spend caps</div></div>
       </div>
     </div>
     <div class="flow">▼</div>
@@ -117,13 +118,13 @@
     <div class="tier" style="--tc:var(--t-human)">
       <div class="th"><span class="tn">2 · Human surfaces</span><span class="td">the seat product — what people use directly</span></div>
       <div class="chips">
-        <div class="chip"><div class="cn">Chat <span class="tag ga">GA</span></div><div class="cd">the floor surface</div></div>
-        <div class="chip"><div class="cn">Projects <span class="tag ga">GA</span></div><div class="cd">RAG · org instructions · sharing perms · BAA-covered on Enterprise</div></div>
-        <div class="chip"><div class="cn">Artifacts <span class="tag ga">GA</span></div><div class="cd">sandboxed preview</div></div>
-        <div class="chip"><div class="cn">Cowork <span class="tag ga">GA</span></div><div class="cd">desktop agent (paid plans) · takes real file actions · <strong>BAA-excluded</strong></div></div>
-        <div class="chip dash"><div class="cn">Claude Design <span class="tag beta">beta</span></div><div class="cd">Team/Enterprise · assets stored · no residency · BAA-excluded</div></div>
-        <div class="chip dash"><div class="cn">Claude Tag <span class="tag beta">beta</span></div><div class="cd">Slack-native · org vs user identity · BAA/ZDR unstated — verify</div></div>
-        <div class="chip dash"><div class="cn">Claude Science <span class="tag beta">beta</span></div><div class="cd">life-sci workbench · data stays local · not for clinical use · BAA unstated</div></div>
+        <div class="chip" title="The baseline conversational surface — where most users start."><div class="cn">Chat <span class="tag ga">GA</span></div><div class="cd">the floor surface</div></div>
+        <div class="chip" title="Persistent workspaces with attached org knowledge (RAG), custom instructions, and sharing permissions. BAA-covered on Enterprise with admin HIPAA activation."><div class="cn">Projects <span class="tag ga">GA</span></div><div class="cd">RAG · org instructions · sharing perms · BAA-covered on Enterprise</div></div>
+        <div class="chip" title="Generated content rendered in a sandboxed preview, isolated from your account and session."><div class="cn">Artifacts <span class="tag ga">GA</span></div><div class="cd">sandboxed preview</div></div>
+        <div class="chip" title="Desktop agent that takes real actions on local files — folder-scoped, review-before-act, isolated VM for code. Paid plans. Not BAA-covered: no PHI."><div class="cn">Cowork <span class="tag ga">GA</span></div><div class="cd">desktop agent (paid plans) · takes real file actions · <strong>BAA-excluded</strong></div></div>
+        <div class="chip dash" title="Beta design surface (Team/Enterprise). Uploaded assets are stored persistently; no data residency; not BAA-covered."><div class="cn">Claude Design <span class="tag beta">beta</span></div><div class="cd">Team/Enterprise · assets stored · no residency · BAA-excluded</div></div>
+        <div class="chip dash" title="Slack-native agentic surface (beta). Channel tagging runs under the org identity; DMs under the user's own account. BAA/ZDR/residency unstated — verify."><div class="cn">Claude Tag <span class="tag beta">beta</span></div><div class="cd">Slack-native · org vs user identity · BAA/ZDR unstated — verify</div></div>
+        <div class="chip dash" title="Life-sciences research workbench (beta). Raw data and compute stay local with per-folder, per-host, per-job approval. Not for clinical use; BAA unstated."><div class="cn">Claude Science <span class="tag beta">beta</span></div><div class="cd">life-sci workbench · data stays local · not for clinical use · BAA unstated</div></div>
       </div>
     </div>
     <div class="flow">▼</div>
@@ -132,22 +133,22 @@
     <div class="tier" style="--tc:var(--t-dev)">
       <div class="th"><span class="tn">3 · Developer surfaces</span><span class="td">how engineering builds on Claude</span></div>
       <div class="chips" style="margin-bottom:8px">
-        <div class="chip"><div class="cn">Anthropic API + Console <span class="tag ga">GA</span></div><div class="cd">Messages API · the reference surface</div></div>
-        <div class="chip"><div class="cn">Agent SDK <span class="tag ga">GA</span></div><div class="cd">build custom agents</div></div>
+        <div class="chip" title="The Messages API — the reference build surface, first to receive new models and features."><div class="cn">Anthropic API + Console <span class="tag ga">GA</span></div><div class="cd">Messages API · the reference surface</div></div>
+        <div class="chip" title="Framework for building custom agents on Claude."><div class="cn">Agent SDK <span class="tag ga">GA</span></div><div class="cd">build custom agents</div></div>
       </div>
       <div class="grp">
         <div class="gl">Claude Code (CLI · IDE · CI)</div>
         <div class="subchips">
-          <div class="subchip">CLI <span class="tag ga">GA</span></div>
-          <div class="subchip">IDE integrations (VS Code · JetBrains) <span class="tag ga">GA</span></div>
-          <div class="subchip">Headless / CI mode <span class="tag ga">GA</span></div>
-          <div class="subchip">Hooks <span class="tag ga">GA</span></div>
-          <div class="subchip">Slash commands <span class="tag ga">GA</span></div>
-          <div class="subchip">Settings hierarchy <span class="tag ga">GA</span></div>
-          <div class="subchip">Output styles <span class="tag ga">GA</span></div>
-          <div class="subchip">Background tasks / routines <span class="tag ga">GA</span></div>
-          <div class="subchip">OpenTelemetry monitoring <span class="tag ga">GA</span></div>
-          <div class="subchip">Remote Control <span class="tag prev">preview</span></div>
+          <div class="subchip" title="Agentic coding harness in the terminal.">CLI <span class="tag ga">GA</span></div>
+          <div class="subchip" title="Claude Code inside VS Code and JetBrains.">IDE integrations (VS Code · JetBrains) <span class="tag ga">GA</span></div>
+          <div class="subchip" title="Non-interactive Claude Code for CI pipelines and automation.">Headless / CI mode <span class="tag ga">GA</span></div>
+          <div class="subchip" title="Deterministic shell callbacks on tool and session events (PreToolUse, PostToolUse, and more) — enforce guardrails.">Hooks <span class="tag ga">GA</span></div>
+          <div class="subchip" title="Reusable prompt shortcuts in Claude Code.">Slash commands <span class="tag ga">GA</span></div>
+          <div class="subchip" title="Layered configuration: user, then project, then local.">Settings hierarchy <span class="tag ga">GA</span></div>
+          <div class="subchip" title="Customize Claude Code's response format and persona.">Output styles <span class="tag ga">GA</span></div>
+          <div class="subchip" title="Long-running and scheduled Claude Code tasks.">Background tasks / routines <span class="tag ga">GA</span></div>
+          <div class="subchip" title="Export Claude Code metrics and events via OTLP into your observability backend.">OpenTelemetry monitoring <span class="tag ga">GA</span></div>
+          <div class="subchip" title="Drive a local Claude Code session from claude.ai/code or mobile (research preview). Execution and files stay on the origin machine; off by default on Team/Enterprise.">Remote Control <span class="tag prev">preview</span></div>
         </div>
       </div>
     </div>
@@ -159,31 +160,31 @@
       <div class="grp" style="margin-bottom:8px">
         <div class="gl">Higher-level abstractions</div>
         <div class="subchips">
-          <div class="subchip">Skills <span class="tag ga">GA</span></div>
-          <div class="subchip">MCP (Model Context Protocol) <span class="tag ga">GA</span></div>
-          <div class="subchip">Plugins <span class="tag ga">GA</span></div>
-          <div class="subchip">Sub-agents / parallel agents <span class="tag ga">GA</span></div>
+          <div class="subchip" title="Portable markdown-plus-script procedures Claude invokes on demand. Team-grade reuse.">Skills <span class="tag ga">GA</span></div>
+          <div class="subchip" title="Model Context Protocol — an open standard to connect Claude to tools and data sources.">MCP (Model Context Protocol) <span class="tag ga">GA</span></div>
+          <div class="subchip" title="Bundled commands, skills, hooks, and MCP servers distributed as one unit.">Plugins <span class="tag ga">GA</span></div>
+          <div class="subchip" title="Parallel or child agents (the Task tool) for decomposed work — mind error-compounding across hops.">Sub-agents / parallel agents <span class="tag ga">GA</span></div>
         </div>
       </div>
       <div class="grp" style="margin-bottom:8px">
         <div class="gl">Tools</div>
         <div class="subchips">
-          <div class="subchip">Tool use <span class="tag ga">GA</span></div>
-          <div class="subchip">Web search (server-side) <span class="tag ga">GA</span></div>
-          <div class="subchip">Code execution (server-side) <span class="tag ga">GA</span></div>
-          <div class="subchip">Citations <span class="tag ga">GA</span></div>
-          <div class="subchip">Computer use 2.0 <span class="tag beta">beta</span></div>
-          <div class="subchip">Files API <span class="tag beta">beta</span></div>
-          <div class="subchip">Memory tool <span class="tag beta">beta</span></div>
+          <div class="subchip" title="Function calling — Claude invokes the tools you define.">Tool use <span class="tag ga">GA</span></div>
+          <div class="subchip" title="Server-side live web search tool.">Web search (server-side) <span class="tag ga">GA</span></div>
+          <div class="subchip" title="Server-side sandboxed code execution.">Code execution (server-side) <span class="tag ga">GA</span></div>
+          <div class="subchip" title="Grounded citations tying output back to source spans.">Citations <span class="tag ga">GA</span></div>
+          <div class="subchip" title="Beta — Claude operates a computer (screen, mouse, keyboard). Sandboxing and governance are the customer's responsibility.">Computer use 2.0 <span class="tag beta">beta</span></div>
+          <div class="subchip" title="Beta — upload files and reference them across requests.">Files API <span class="tag beta">beta</span></div>
+          <div class="subchip" title="Beta — persistent memory across turns and sessions.">Memory tool <span class="tag beta">beta</span></div>
         </div>
       </div>
       <div class="grp">
         <div class="gl">Inference features</div>
         <div class="subchips">
-          <div class="subchip">Prompt caching <span class="tag ga">GA</span></div>
-          <div class="subchip">Extended / adaptive thinking <span class="tag ga">GA</span></div>
-          <div class="subchip">Batch API (~50% off) <span class="tag ga">GA</span></div>
-          <div class="subchip">Service tiers (priority / standard / batch) <span class="tag ga">GA</span></div>
+          <div class="subchip" title="Cache stable prompt prefixes; cache reads cost about 10% of input price — the dominant steady-state cost lever.">Prompt caching <span class="tag ga">GA</span></div>
+          <div class="subchip" title="Model reasons before answering. Opus 4.7/4.8 are adaptive-only — control depth with the effort parameter.">Extended / adaptive thinking <span class="tag ga">GA</span></div>
+          <div class="subchip" title="Asynchronous processing at about 50% off. For anything that tolerates delayed turnaround.">Batch API (~50% off) <span class="tag ga">GA</span></div>
+          <div class="subchip" title="Priority (committed capacity), standard, or batch — trade latency against cost.">Service tiers (priority / standard / batch) <span class="tag ga">GA</span></div>
         </div>
       </div>
     </div>
@@ -193,11 +194,11 @@
     <div class="tier" style="--tc:var(--t-model)">
       <div class="th"><span class="tn">5 · Models</span><span class="td">up to 1M context (Fable 5 / Opus 4.8) · adaptive thinking · route by task difficulty</span></div>
       <div class="chips">
-        <div class="chip"><div class="cn">Fable 5 <span class="tag ga">GA</span></div><div class="cd">frontier reasoning · $10/$50 · <strong>not ZDR-eligible</strong> (30-day retention)</div></div>
-        <div class="chip"><div class="cn">Opus 4.8 <span class="tag ga">GA</span></div><div class="cd">top deployable · $5/$25 · rejects temperature/top_p/top_k</div></div>
-        <div class="chip"><div class="cn">Sonnet 5 <span class="tag ga">GA</span></div><div class="cd">workhorse · $2/$10 intro → $3/$15 · updated tokenizer</div></div>
-        <div class="chip"><div class="cn">Haiku 4.5 <span class="tag ga">GA</span></div><div class="cd">fast · $1/$5 · triage + batch</div></div>
-        <div class="chip dot"><div class="cn">Mythos 5 <span class="tag prev">invite-only</span></div><div class="cd">Project Glasswing — not generally usable</div></div>
+        <div class="chip" title="Frontier reasoning and long-horizon agentic work. $10 in / $50 out per MTok (about 2x Opus) — validate the quality delta in eval first. Not ZDR-eligible (30-day retention)."><div class="cn">Fable 5 <span class="tag ga">GA</span></div><div class="cd">frontier reasoning · $10/$50 · <strong>not ZDR-eligible</strong> (30-day retention)</div></div>
+        <div class="chip" title="Top deployable model. $5 in / $25 out. Adaptive thinking only; rejects non-default temperature, top_p, top_k (HTTP 400)."><div class="cn">Opus 4.8 <span class="tag ga">GA</span></div><div class="cd">top deployable · $5/$25 · rejects temperature/top_p/top_k</div></div>
+        <div class="chip" title="Workhorse — near-Opus quality at lower price. $2/$10 intro through 2026-08-31, then $3/$15. Updated tokenizer maps the same input to about 1.0 to 1.35x more tokens."><div class="cn">Sonnet 5 <span class="tag ga">GA</span></div><div class="cd">workhorse · $2/$10 intro → $3/$15 · updated tokenizer</div></div>
+        <div class="chip" title="Fast and cheap ($1 in / $5 out). Triage, batch, high-volume. About 3x cheaper than Sonnet."><div class="cn">Haiku 4.5 <span class="tag ga">GA</span></div><div class="cd">fast · $1/$5 · triage + batch</div></div>
+        <div class="chip dot" title="Invite-only (Project Glasswing). Not generally usable — informational."><div class="cn">Mythos 5 <span class="tag prev">invite-only</span></div><div class="cd">Project Glasswing — not generally usable</div></div>
       </div>
     </div>
     <div class="flow">▼</div>
@@ -206,11 +207,11 @@
     <div class="tier" style="--tc:var(--t-deploy)">
       <div class="th"><span class="tn">6 · Deployment &amp; procurement paths</span><span class="td">how you consume the same models — bill + governance wrapper, not model choice</span></div>
       <div class="chips">
-        <div class="chip"><div class="cn">Direct API <span class="tag ga">GA</span></div><div class="cd">fastest model availability · default</div></div>
-        <div class="chip"><div class="cn">Claude Platform on AWS <span class="tag ga">GA</span></div><div class="cd">direct feature set · AWS billing (no lag)</div></div>
-        <div class="chip"><div class="cn">Amazon Bedrock <span class="tag ga">GA</span></div><div class="cd">IAM/VPC · Guardrails/KB/AgentCore · version lag</div></div>
-        <div class="chip"><div class="cn">Google Vertex AI <span class="tag ga">GA</span></div><div class="cd">GCP IAM/VPC-SC · regional +10% · version lag</div></div>
-        <div class="chip"><div class="cn">Microsoft Azure Foundry <span class="tag ga">GA</span></div><div class="cd">Entra/RBAC · US data zone · CCU + MACC · Anthropic operates inference</div></div>
+        <div class="chip" title="console.anthropic.com. Fastest model availability; the default path."><div class="cn">Direct API <span class="tag ga">GA</span></div><div class="cd">fastest model availability · default</div></div>
+        <div class="chip" title="Direct-API feature set with AWS marketplace billing — a cloud bill without the hyperscaler feature lag."><div class="cn">Claude Platform on AWS <span class="tag ga">GA</span></div><div class="cd">direct feature set · AWS billing (no lag)</div></div>
+        <div class="chip" title="AWS-native (IAM, VPC, Guardrails, Knowledge Bases, AgentCore). Model version and feature lag versus first-party."><div class="cn">Amazon Bedrock <span class="tag ga">GA</span></div><div class="cd">IAM/VPC · Guardrails/KB/AgentCore · version lag</div></div>
+        <div class="chip" title="GCP-native (IAM, VPC-SC). Regional endpoints about 10% over global. Version lag."><div class="cn">Google Vertex AI <span class="tag ga">GA</span></div><div class="cd">GCP IAM/VPC-SC · regional +10% · version lag</div></div>
+        <div class="chip" title="Azure-native (Entra, RBAC), US data zone, CCU billing with MACC drawdown. Anthropic operates inference and is the data processor and SLA provider."><div class="cn">Microsoft Azure Foundry <span class="tag ga">GA</span></div><div class="cd">Entra/RBAC · US data zone · CCU + MACC · Anthropic operates inference</div></div>
       </div>
     </div>
 
@@ -218,15 +219,15 @@
     <div class="gov">
       <div class="th"><span class="tn" style="font-size:16px;font-weight:700">⛨ Governance &amp; Compliance spine</span><span class="td">cross-cutting across every layer above — the Enterprise differentiator</span></div>
       <div class="chips">
-        <div class="chip"><div class="cn">No-train (default)</div><div class="cd">commercial API + Console</div></div>
-        <div class="chip"><div class="cn">Retention controls</div><div class="cd">30-day backend default</div></div>
-        <div class="chip"><div class="cn">Zero Data Retention (ZDR)</div><div class="cd">approval-gated · API + Claude Code only</div></div>
-        <div class="chip"><div class="cn">HIPAA-ready + BAA <span class="tag ent">ENT</span></div><div class="cd">admin-activated · per-feature list — verify</div></div>
-        <div class="chip"><div class="cn">Data residency</div><div class="cd">inference_geo (US) + Workspace geo</div></div>
-        <div class="chip"><div class="cn">Audit logging + Usage/Cost Admin API</div><div class="cd">org rollups by workspace/key/model</div></div>
-        <div class="chip"><div class="cn">Spend caps / budgets</div><div class="cd">org · workspace · per-surface</div></div>
-        <div class="chip"><div class="cn">Certifications</div><div class="cd">SOC 2 I/II · ISO 27001 · ISO 42001</div></div>
-        <div class="chip"><div class="cn">Model deprecation lifecycle</div><div class="cd">active → deprecated → retired · admin notice</div></div>
+        <div class="chip" title="Commercial API and Console default: your data is not used to train models."><div class="cn">No-train (default)</div><div class="cd">commercial API + Console</div></div>
+        <div class="chip" title="30-day backend deletion default; longer only for AUP-flagged inputs/outputs, T&amp;S classifier scores, or feedback."><div class="cn">Retention controls</div><div class="cd">30-day backend default</div></div>
+        <div class="chip" title="Zero Data Retention — approval-gated; covers the Messages API and Claude Code only, never the product UI. T&amp;S classifier scores are still retained."><div class="cn">Zero Data Retention (ZDR)</div><div class="cd">approval-gated · API + Claude Code only</div></div>
+        <div class="chip" title="BAA available on Enterprise and first-party API. An admin must activate HIPAA and sign; the covered-feature list is per-surface — verify at signing."><div class="cn">HIPAA-ready + BAA <span class="tag ent">ENT</span></div><div class="cd">admin-activated · per-feature list — verify</div></div>
+        <div class="chip" title="inference_geo (US) controls where the model runs; Workspace geo controls at-rest storage. First-party API and Claude Platform on AWS only."><div class="cn">Data residency</div><div class="cd">inference_geo (US) + Workspace geo</div></div>
+        <div class="chip" title="Org-level usage and cost rollups by workspace, key, and model (requires an Admin API key)."><div class="cn">Audit logging + Usage/Cost Admin API</div><div class="cd">org rollups by workspace/key/model</div></div>
+        <div class="chip" title="Caps at org, workspace, and per-surface levels. Cap experiments hard; alert on prod instead of a hard cliff."><div class="cn">Spend caps / budgets</div><div class="cd">org · workspace · per-surface</div></div>
+        <div class="chip" title="SOC 2 Type I and II, ISO 27001, ISO 42001 (AI management). Request current reports from the Trust Portal."><div class="cn">Certifications</div><div class="cd">SOC 2 I/II · ISO 27001 · ISO 42001</div></div>
+        <div class="chip" title="active then deprecated then retired; retired model IDs return errors. Notice goes to org admins. Pin models and keep an eval-certified successor path."><div class="cn">Model deprecation lifecycle</div><div class="cd">active → deprecated → retired · admin notice</div></div>
       </div>
       <div class="caveat">
         <strong>Governance is per-surface — do not inherit coverage.</strong> The BAA is <em>not</em> automatic: an Enterprise admin must activate HIPAA and sign, and the covered-feature list differs between the first-party API and the product surface — verify it at signing. <strong>Cowork and Claude Design are BAA-excluded</strong>; <strong>Claude Tag and Claude Science have BAA/ZDR/residency unstated</strong> — treat as not-covered until confirmed. ZDR does not cover the Enterprise product UI. Fable 5 is not ZDR-eligible. Bedrock/Vertex/Azure use the hyperscaler's own residency, not <code>inference_geo</code>. Full per-feature detail: <a href="enterprise-data-boundaries.html">enterprise-data-boundaries.html</a> · <a href="governance-overlay.html">governance-overlay.html</a> · <a href="procurement-pack.html">procurement-pack.html</a>. <em>Not legal advice.</em>
