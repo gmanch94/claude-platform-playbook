@@ -1,0 +1,244 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Claude Enterprise Architecture — full platform feature surface</title>
+<style>
+  :root {
+    --brand:#D97757; --brandd:#B45309; --ink:#241c14; --bg:#faf7f3; --card:#fffefb;
+    --line:#e8e0d3; --muted:#8a7e6e;
+    --ga:#15803d; --beta:#b45309; --prev:#6b7280; --ent:#7c3aed;
+    --t-access:#4f46e5; --t-human:#0d9488; --t-dev:#1d4ed8;
+    --t-cap:#7c3aed; --t-model:#9a3412; --t-deploy:#475569; --t-gov:#b91c1c;
+  }
+  * { box-sizing:border-box; margin:0; padding:0; }
+  body { font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif; background:var(--bg); color:var(--ink); padding:30px 22px 80px; line-height:1.5; -webkit-print-color-adjust:exact; print-color-adjust:exact; }
+  .wrap { max-width:1200px; margin:0 auto; }
+  .home { display:inline-block; font-weight:700; font-size:12px; text-transform:uppercase; letter-spacing:.8px; color:#c2622d; text-decoration:none; margin:0 0 12px; opacity:.85; }
+  header { border-bottom:2px solid var(--brand); padding-bottom:15px; margin-bottom:18px; }
+  header h1 { font-size:30px; font-weight:700; letter-spacing:-.2px; }
+  .asof { display:inline-block; background:var(--brand); color:#fff; padding:3px 10px; border-radius:12px; font-size:12px; font-weight:600; margin-left:8px; vertical-align:middle; }
+  header .sub { color:var(--muted); font-size:14.5px; margin-top:7px; max-width:960px; }
+  header .sub a { color:var(--brandd); }
+  .thesis { background:var(--card); border:1px solid var(--line); border-left:4px solid var(--brand); border-radius:8px; padding:13px 17px; margin-bottom:16px; font-size:14px; }
+  .thesis strong { color:var(--brandd); }
+  .legend { display:flex; gap:14px 20px; flex-wrap:wrap; align-items:center; background:var(--card); border:1px solid var(--line); border-radius:8px; padding:11px 15px; margin-bottom:22px; font-size:12.5px; }
+  .legend .li { display:flex; align-items:center; gap:6px; }
+  .tag { display:inline-block; font-size:10px; font-weight:700; text-transform:uppercase; letter-spacing:.04em; padding:2px 7px; border-radius:9px; line-height:1.4; }
+  .tag.ga { background:rgba(21,128,61,.12); color:var(--ga); }
+  .tag.beta { background:rgba(180,83,9,.13); color:var(--beta); }
+  .tag.prev { background:rgba(107,114,128,.15); color:var(--prev); }
+  .tag.ent { background:rgba(124,58,237,.12); color:var(--ent); }
+
+  /* stack of tiers */
+  .stack { display:flex; flex-direction:column; gap:6px; }
+  .tier { background:var(--card); border:1px solid var(--line); border-left:5px solid var(--tc,#999); border-radius:10px; padding:13px 16px; }
+  .tier .th { display:flex; align-items:baseline; gap:10px; flex-wrap:wrap; margin-bottom:11px; }
+  .tier .tn { font-size:16px; font-weight:700; color:var(--tc,#333); }
+  .tier .td { font-size:12.5px; color:var(--muted); }
+  .chips { display:flex; flex-wrap:wrap; gap:8px; }
+  .chip { background:#fff; border:1.5px solid var(--cc,var(--line)); border-radius:8px; padding:8px 11px; font-size:13px; min-width:0; box-shadow:1px 1px 0 rgba(0,0,0,.02); }
+  .chip.dash { border-style:dashed; }
+  .chip.dot { border-style:dotted; }
+  .chip .cn { font-weight:600; display:flex; align-items:center; gap:6px; flex-wrap:wrap; }
+  .chip .cd { font-size:11.5px; color:var(--muted); margin-top:2px; }
+  .grp { border:1px dashed var(--line); border-radius:8px; padding:9px 11px 11px; margin-top:2px; }
+  .grp > .gl { font-size:11px; font-weight:700; text-transform:uppercase; letter-spacing:.05em; color:var(--muted); margin-bottom:8px; }
+  .subchips { display:flex; flex-wrap:wrap; gap:6px; }
+  .subchip { background:#fbfaf7; border:1px solid var(--line); border-radius:7px; padding:5px 9px; font-size:12px; }
+  .subchip .tag { margin-left:5px; transform:scale(.9); }
+  .flow { text-align:center; color:#cbb89e; font-size:15px; line-height:.9; margin:2px 0; user-select:none; }
+
+  /* governance foundation */
+  .gov { background:linear-gradient(180deg,#fff 0%, #fdf3f2 100%); border:1px solid #f0cfcb; border-top:4px solid var(--t-gov); border-radius:10px; padding:14px 16px; margin-top:8px; }
+  .gov .th .tn { color:var(--t-gov); }
+  .gov .chip { border-color:#ecccc8; }
+  .gov .caveat { margin-top:12px; font-size:12px; color:#7a3a35; background:rgba(185,28,28,.05); border-left:3px solid var(--t-gov); border-radius:5px; padding:9px 12px; }
+  .gov .caveat strong { color:var(--t-gov); }
+  .gov .caveat a { color:var(--brandd); }
+
+  footer { margin-top:34px; padding-top:15px; border-top:1px solid var(--line); font-size:12px; color:var(--muted); }
+  footer a { color:var(--brandd); }
+  footer .src { margin-bottom:8px; }
+
+  @media (max-width:640px){
+    header h1 { font-size:24px; }
+    .tier .th { margin-bottom:9px; }
+    .chip { flex:1 1 100%; }
+  }
+  @media (prefers-color-scheme: dark){
+    :root { --bg:#17130f; --card:#201a15; --ink:#ece5db; --line:#3a3228; --muted:#a89a86; }
+    .chip { background:#241d17; }
+    .subchip { background:#221b15; }
+    .grp { border-color:#3a3228; }
+    .gov { background:linear-gradient(180deg,#201a15 0%, #2a1a19 100%); border-color:#4a3330; }
+    .gov .chip { border-color:#5a3b38; }
+    .gov .caveat { color:#e8b5b0; }
+  }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <a class="home" href="../">Claude Platform Playbook</a>
+  <header>
+    <h1>Claude Enterprise Architecture <span class="asof">As of 2026-07</span></h1>
+    <div class="sub">The full Claude platform feature surface an <strong>Enterprise</strong> organization can deploy — access &amp; identity, human + developer surfaces, capabilities, models, deployment paths, and the governance spine that runs through all of them. A <em>feature-surface map</em>, not a data-flow diagram. Every box is grounded in <a href="../docs/feature-inventory.html">feature-inventory.md</a> (the source of truth); status tags (GA / beta / preview) are current as of the stamp. Verify surface + governance at <a href="https://platform.claude.com/docs/en">platform.claude.com</a> before committing.</div>
+  </header>
+
+  <div class="thesis">
+    <strong>Read it top-down.</strong> Users and agents enter through <em>Access &amp; Identity</em>; they act through <em>surfaces</em>; surfaces are powered by <em>capabilities</em>; capabilities run on <em>models</em>; models are consumed through a <em>deployment path</em>. The <strong style="color:var(--t-gov)">Governance &amp; Compliance spine</strong> at the base is not a layer you pass through once — it is cross-cutting, and on Enterprise it is the differentiator. Beta / preview surfaces carry weaker governance guarantees (see the caveat at the bottom).
+  </div>
+
+  <div class="legend">
+    <span class="li"><span class="tag ga">GA</span> generally available</span>
+    <span class="li"><span class="tag beta">beta</span> dashed border</span>
+    <span class="li"><span class="tag prev">preview</span> dotted border</span>
+    <span class="li"><span class="tag ent">ENT</span> Enterprise-gated / admin-controlled</span>
+    <span class="li" style="color:var(--muted)">Grounded in <a href="../docs/feature-inventory.html" style="color:var(--brandd)">feature-inventory.md</a></span>
+  </div>
+
+  <div class="stack">
+
+    <!-- Access & Identity -->
+    <div class="tier" style="--tc:var(--t-access)">
+      <div class="th"><span class="tn">1 · Access &amp; Identity</span><span class="td">how an Enterprise org gets in and who can do what</span></div>
+      <div class="chips">
+        <div class="chip"><div class="cn">SSO <span class="tag ent">ENT</span></div><div class="cd">Team + Enterprise</div></div>
+        <div class="chip"><div class="cn">SCIM provisioning <span class="tag ent">ENT</span></div><div class="cd">Enterprise (verify per contract)</div></div>
+        <div class="chip"><div class="cn">RBAC / custom roles <span class="tag ent">ENT</span></div><div class="cd">Enterprise</div></div>
+        <div class="chip"><div class="cn">Org-wide seats <span class="tag ent">ENT</span></div><div class="cd">Enterprise plan</div></div>
+        <div class="chip"><div class="cn">Admin console + Console workspaces <span class="tag ga">GA</span></div><div class="cd">per-workspace keys · rate limits · spend caps</div></div>
+      </div>
+    </div>
+    <div class="flow">▼</div>
+
+    <!-- Human surfaces -->
+    <div class="tier" style="--tc:var(--t-human)">
+      <div class="th"><span class="tn">2 · Human surfaces</span><span class="td">the seat product — what people use directly</span></div>
+      <div class="chips">
+        <div class="chip"><div class="cn">Chat <span class="tag ga">GA</span></div><div class="cd">the floor surface</div></div>
+        <div class="chip"><div class="cn">Projects <span class="tag ga">GA</span></div><div class="cd">RAG · org instructions · sharing perms · BAA-covered on Enterprise</div></div>
+        <div class="chip"><div class="cn">Artifacts <span class="tag ga">GA</span></div><div class="cd">sandboxed preview</div></div>
+        <div class="chip"><div class="cn">Cowork <span class="tag ga">GA</span></div><div class="cd">desktop agent (paid plans) · takes real file actions · <strong>BAA-excluded</strong></div></div>
+        <div class="chip dash"><div class="cn">Claude Design <span class="tag beta">beta</span></div><div class="cd">Team/Enterprise · assets stored · no residency · BAA-excluded</div></div>
+        <div class="chip dash"><div class="cn">Claude Tag <span class="tag beta">beta</span></div><div class="cd">Slack-native · org vs user identity · BAA/ZDR unstated — verify</div></div>
+        <div class="chip dash"><div class="cn">Claude Science <span class="tag beta">beta</span></div><div class="cd">life-sci workbench · data stays local · not for clinical use · BAA unstated</div></div>
+      </div>
+    </div>
+    <div class="flow">▼</div>
+
+    <!-- Developer surfaces -->
+    <div class="tier" style="--tc:var(--t-dev)">
+      <div class="th"><span class="tn">3 · Developer surfaces</span><span class="td">how engineering builds on Claude</span></div>
+      <div class="chips" style="margin-bottom:8px">
+        <div class="chip"><div class="cn">Anthropic API + Console <span class="tag ga">GA</span></div><div class="cd">Messages API · the reference surface</div></div>
+        <div class="chip"><div class="cn">Agent SDK <span class="tag ga">GA</span></div><div class="cd">build custom agents</div></div>
+      </div>
+      <div class="grp">
+        <div class="gl">Claude Code (CLI · IDE · CI)</div>
+        <div class="subchips">
+          <div class="subchip">CLI <span class="tag ga">GA</span></div>
+          <div class="subchip">IDE integrations (VS Code · JetBrains) <span class="tag ga">GA</span></div>
+          <div class="subchip">Headless / CI mode <span class="tag ga">GA</span></div>
+          <div class="subchip">Hooks <span class="tag ga">GA</span></div>
+          <div class="subchip">Slash commands <span class="tag ga">GA</span></div>
+          <div class="subchip">Settings hierarchy <span class="tag ga">GA</span></div>
+          <div class="subchip">Output styles <span class="tag ga">GA</span></div>
+          <div class="subchip">Background tasks / routines <span class="tag ga">GA</span></div>
+          <div class="subchip">OpenTelemetry monitoring <span class="tag ga">GA</span></div>
+          <div class="subchip">Remote Control <span class="tag prev">preview</span></div>
+        </div>
+      </div>
+    </div>
+    <div class="flow">▼</div>
+
+    <!-- Capabilities -->
+    <div class="tier" style="--tc:var(--t-cap)">
+      <div class="th"><span class="tn">4 · Capabilities</span><span class="td">the building blocks surfaces are assembled from</span></div>
+      <div class="grp" style="margin-bottom:8px">
+        <div class="gl">Higher-level abstractions</div>
+        <div class="subchips">
+          <div class="subchip">Skills <span class="tag ga">GA</span></div>
+          <div class="subchip">MCP (Model Context Protocol) <span class="tag ga">GA</span></div>
+          <div class="subchip">Plugins <span class="tag ga">GA</span></div>
+          <div class="subchip">Sub-agents / parallel agents <span class="tag ga">GA</span></div>
+        </div>
+      </div>
+      <div class="grp" style="margin-bottom:8px">
+        <div class="gl">Tools</div>
+        <div class="subchips">
+          <div class="subchip">Tool use <span class="tag ga">GA</span></div>
+          <div class="subchip">Web search (server-side) <span class="tag ga">GA</span></div>
+          <div class="subchip">Code execution (server-side) <span class="tag ga">GA</span></div>
+          <div class="subchip">Citations <span class="tag ga">GA</span></div>
+          <div class="subchip">Computer use 2.0 <span class="tag beta">beta</span></div>
+          <div class="subchip">Files API <span class="tag beta">beta</span></div>
+          <div class="subchip">Memory tool <span class="tag beta">beta</span></div>
+        </div>
+      </div>
+      <div class="grp">
+        <div class="gl">Inference features</div>
+        <div class="subchips">
+          <div class="subchip">Prompt caching <span class="tag ga">GA</span></div>
+          <div class="subchip">Extended / adaptive thinking <span class="tag ga">GA</span></div>
+          <div class="subchip">Batch API (~50% off) <span class="tag ga">GA</span></div>
+          <div class="subchip">Service tiers (priority / standard / batch) <span class="tag ga">GA</span></div>
+        </div>
+      </div>
+    </div>
+    <div class="flow">▼</div>
+
+    <!-- Models -->
+    <div class="tier" style="--tc:var(--t-model)">
+      <div class="th"><span class="tn">5 · Models</span><span class="td">up to 1M context (Fable 5 / Opus 4.8) · adaptive thinking · route by task difficulty</span></div>
+      <div class="chips">
+        <div class="chip"><div class="cn">Fable 5 <span class="tag ga">GA</span></div><div class="cd">frontier reasoning · $10/$50 · <strong>not ZDR-eligible</strong> (30-day retention)</div></div>
+        <div class="chip"><div class="cn">Opus 4.8 <span class="tag ga">GA</span></div><div class="cd">top deployable · $5/$25 · rejects temperature/top_p/top_k</div></div>
+        <div class="chip"><div class="cn">Sonnet 5 <span class="tag ga">GA</span></div><div class="cd">workhorse · $2/$10 intro → $3/$15 · updated tokenizer</div></div>
+        <div class="chip"><div class="cn">Haiku 4.5 <span class="tag ga">GA</span></div><div class="cd">fast · $1/$5 · triage + batch</div></div>
+        <div class="chip dot"><div class="cn">Mythos 5 <span class="tag prev">invite-only</span></div><div class="cd">Project Glasswing — not generally usable</div></div>
+      </div>
+    </div>
+    <div class="flow">▼</div>
+
+    <!-- Deployment paths -->
+    <div class="tier" style="--tc:var(--t-deploy)">
+      <div class="th"><span class="tn">6 · Deployment &amp; procurement paths</span><span class="td">how you consume the same models — bill + governance wrapper, not model choice</span></div>
+      <div class="chips">
+        <div class="chip"><div class="cn">Direct API <span class="tag ga">GA</span></div><div class="cd">fastest model availability · default</div></div>
+        <div class="chip"><div class="cn">Claude Platform on AWS <span class="tag ga">GA</span></div><div class="cd">direct feature set · AWS billing (no lag)</div></div>
+        <div class="chip"><div class="cn">Amazon Bedrock <span class="tag ga">GA</span></div><div class="cd">IAM/VPC · Guardrails/KB/AgentCore · version lag</div></div>
+        <div class="chip"><div class="cn">Google Vertex AI <span class="tag ga">GA</span></div><div class="cd">GCP IAM/VPC-SC · regional +10% · version lag</div></div>
+        <div class="chip"><div class="cn">Microsoft Azure Foundry <span class="tag ga">GA</span></div><div class="cd">Entra/RBAC · US data zone · CCU + MACC · Anthropic operates inference</div></div>
+      </div>
+    </div>
+
+    <!-- Governance spine -->
+    <div class="gov">
+      <div class="th"><span class="tn" style="font-size:16px;font-weight:700">⛨ Governance &amp; Compliance spine</span><span class="td">cross-cutting across every layer above — the Enterprise differentiator</span></div>
+      <div class="chips">
+        <div class="chip"><div class="cn">No-train (default)</div><div class="cd">commercial API + Console</div></div>
+        <div class="chip"><div class="cn">Retention controls</div><div class="cd">30-day backend default</div></div>
+        <div class="chip"><div class="cn">Zero Data Retention (ZDR)</div><div class="cd">approval-gated · API + Claude Code only</div></div>
+        <div class="chip"><div class="cn">HIPAA-ready + BAA <span class="tag ent">ENT</span></div><div class="cd">admin-activated · per-feature list — verify</div></div>
+        <div class="chip"><div class="cn">Data residency</div><div class="cd">inference_geo (US) + Workspace geo</div></div>
+        <div class="chip"><div class="cn">Audit logging + Usage/Cost Admin API</div><div class="cd">org rollups by workspace/key/model</div></div>
+        <div class="chip"><div class="cn">Spend caps / budgets</div><div class="cd">org · workspace · per-surface</div></div>
+        <div class="chip"><div class="cn">Certifications</div><div class="cd">SOC 2 I/II · ISO 27001 · ISO 42001</div></div>
+        <div class="chip"><div class="cn">Model deprecation lifecycle</div><div class="cd">active → deprecated → retired · admin notice</div></div>
+      </div>
+      <div class="caveat">
+        <strong>Governance is per-surface — do not inherit coverage.</strong> The BAA is <em>not</em> automatic: an Enterprise admin must activate HIPAA and sign, and the covered-feature list differs between the first-party API and the product surface — verify it at signing. <strong>Cowork and Claude Design are BAA-excluded</strong>; <strong>Claude Tag and Claude Science have BAA/ZDR/residency unstated</strong> — treat as not-covered until confirmed. ZDR does not cover the Enterprise product UI. Fable 5 is not ZDR-eligible. Bedrock/Vertex/Azure use the hyperscaler's own residency, not <code>inference_geo</code>. Full per-feature detail: <a href="enterprise-data-boundaries.html">enterprise-data-boundaries.html</a> · <a href="governance-overlay.html">governance-overlay.html</a> · <a href="procurement-pack.html">procurement-pack.html</a>. <em>Not legal advice.</em>
+      </div>
+    </div>
+
+  </div>
+
+  <footer>
+    <div class="src"><strong>How to use this map:</strong> pick a surface, trace down to the capabilities and model it needs, choose a deployment path, then confirm every governance cell for that surface before real data flows. Companion decisions: <a href="enterprise-deployment-guide.html">enterprise-deployment-guide.html</a> (tenancy + prod/non-prod topology) · <a href="model-selection-guide.html">model-selection-guide.html</a> (which model tier) · <a href="feature-decision-matrix.html">feature-decision-matrix.html</a> (which feature for which pattern) · <a href="subscription-selection-guide.html">subscription-selection-guide.html</a> (which plan) · <a href="reference-architectures.html">reference-architectures.html</a> (how the pieces wire into patterns).</div>
+    <div>© gmanch94 · CC-BY-4.0 · As of 2026-07. Feature status is a snapshot — verify at <a href="https://platform.claude.com/docs/en">platform.claude.com</a> and source-of-truth <a href="../docs/feature-inventory.html">feature-inventory.md</a>. Verify pricing/models at anthropic.com.</div>
+  </footer>
+</div>
+</body>
+</html>

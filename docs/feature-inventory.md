@@ -67,11 +67,11 @@ The seat surface is billed per user, separate from per-token API usage. **A subs
 | Prompt caching | GA | 2026-05 | docs.claude.com/en/docs/build-with-claude/prompt-caching | calculator, matrix, briefing, arch, eval-pack, misconceptions, data-advisory, roi-worksheet, enterprise-data-boundaries, token-budget, exit-portability |
 | Extended thinking | GA | 2026-05 | docs.claude.com/en/docs/build-with-claude/extended-thinking | matrix, arch |
 | Tool use | GA | 2026-05 | docs.claude.com/en/docs/agents-and-tools/tool-use | matrix, arch, eval-pack, agentic-threat-model |
-| Computer use 2.0 | beta | 2026-05 | docs.claude.com/en/docs/agents-and-tools/computer-use | matrix, arch, misconceptions, agentic-threat-model, enterprise-data-boundaries |
-| Files API | beta | 2026-05 | docs.claude.com/en/docs/build-with-claude/files | matrix, arch, eval-pack, enterprise-data-boundaries |
+| Computer use 2.0 | beta | 2026-05 | docs.claude.com/en/docs/agents-and-tools/computer-use | matrix, arch, misconceptions, agentic-threat-model, enterprise-data-boundaries, enterprise-architecture |
+| Files API | beta | 2026-05 | docs.claude.com/en/docs/build-with-claude/files | matrix, arch, eval-pack, enterprise-data-boundaries, enterprise-architecture |
 | Citations | GA | 2026-05 | docs.claude.com/en/docs/build-with-claude/citations | matrix, arch, eval-pack |
 | Batch API | GA | 2026-05 | docs.claude.com/en/docs/build-with-claude/batch-processing | calculator, matrix, arch, eval-pack, misconceptions, data-advisory, roi-worksheet, enterprise-data-boundaries, token-budget |
-| Memory tool | beta | 2026-05 | docs.claude.com/en/docs/agents-and-tools/memory | matrix, arch, enterprise-data-boundaries |
+| Memory tool | beta | 2026-05 | docs.claude.com/en/docs/agents-and-tools/memory | matrix, arch, enterprise-data-boundaries, enterprise-architecture |
 | Web search tool (server-side) | GA | 2026-05 | docs.claude.com/en/docs/agents-and-tools/web-search-tool | arch:rag, claude-code-guide, enterprise-data-boundaries |
 | Code execution tool (server-side) | GA | 2026-05 | docs.claude.com/en/docs/agents-and-tools/code-execution | arch:agent, claude-code-guide, eval-pack, enterprise-data-boundaries |
 | Admin API — Usage & Cost reports | GA | 2026-07 | platform.claude.com/docs/en/api/usage-cost-api | token-budget, observability, value-realization |
@@ -177,6 +177,7 @@ Seat-plan product surfaces beyond chat. Plan gating + governance flags drive the
 4. For each *changed* row, grep `Used in artifacts` column → patch those files only
 5. Update **Last verified** date at top of this file
 6. Update README + artifact footers' as-of stamp if any model / pricing changed
+7. **Any feature status flip (beta→GA, GA→deprecated) or surface added/removed → also update [`../artifacts/claude-enterprise-architecture.html`](../artifacts/claude-enterprise-architecture.html)** — it's a full-surface status map, so a stale GA/beta/preview tag there is a factual error, not just drift
 
 ---
 
