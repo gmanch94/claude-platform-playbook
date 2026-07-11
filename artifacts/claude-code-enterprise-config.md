@@ -4,7 +4,7 @@
 
 Audience: the platform/security/DevOps owner rolling Claude Code out to many engineers. Companion to the practitioner guide ([`claude-code-101.md`](claude-code-101.md)) and the rollout plan ([`claude-code-adoption-guide.md`](claude-code-adoption-guide.md)). For *who owns this* and compliance posture, see [`operating-model-guide.md`](operating-model-guide.md) and [`governance-overlay.md`](governance-overlay.md).
 
-**Sourcing:** all mechanics verified against [docs.claude.com/en/docs/claude-code/settings](https://docs.claude.com/en/docs/claude-code/settings), [`/permissions`](https://docs.claude.com/en/docs/claude-code/permissions), and [`/memory`](https://docs.claude.com/en/docs/claude-code/memory) as of 2026-07-11 `[H]`. Field-level specifics and version gates change fast — the linked docs are canonical. This guide is org-neutral reference; swap the `acme` placeholders for your values. It does **not** assert BAA/ZDR/residency coverage — verify those per contract via [`governance-overlay.md`](governance-overlay.md).
+**Sourcing:** all mechanics verified against [docs.claude.com/en/docs/claude-code/settings](https://docs.claude.com/en/docs/claude-code/settings), [`/permissions`](https://docs.claude.com/en/docs/claude-code/permissions), and [`/memory`](https://docs.claude.com/en/docs/claude-code/memory) as of 2026-07-11 `[H]`. Field-level specifics and version gates change fast — the linked docs are canonical. This guide is org-neutral reference; swap the `karekal` placeholders for your values. It does **not** assert BAA/ZDR/residency coverage — verify those per contract via [`governance-overlay.md`](governance-overlay.md).
 
 ---
 
@@ -109,12 +109,12 @@ This is the wall. Deploy it at the path matching your delivery mechanism (§1). 
   },
 
   "strictKnownMarketplaces": [
-    { "source": "github", "repo": "acme-corp/claude-plugins" }
+    { "source": "github", "repo": "karekal-corp/claude-plugins" }
   ],
   "blockedMarketplaces": [],
 
   "companyAnnouncements": [
-    "Acme Claude Code policy: no customer PII in prompts. See go/claude-policy.",
+    "Karekal Claude Code policy: no customer PII in prompts. See go/claude-policy.",
     "Blocked tools and paths are enforced centrally — file a ticket to request an exception."
   ],
 
@@ -201,7 +201,7 @@ The coaching layer. Deploy at the **managed policy** path (mirrors the file-base
 Reference content (org-neutral — adapt, don't ship verbatim):
 
 ```markdown
-# Acme — organization Claude Code guidance
+# Karekal — organization Claude Code guidance
 
 ## Data boundaries
 - Never paste customer PII, secrets, or credentials into a prompt. If a file
@@ -236,11 +236,11 @@ Reference content (org-neutral — adapt, don't ship verbatim):
 The doc your engineers read — distinct from the machine-loaded `CLAUDE.md`. Templates A and B are *derived* from this; publish it in your internal handbook and link it from `companyAnnouncements`. It answers the questions the machine files can't:
 
 ```markdown
-# Using Claude Code at Acme — engineering policy
+# Using Claude Code at Karekal — engineering policy
 
 ## 1. Approved surfaces & access
 - Claude Code is approved for: <repos / teams / environments>.
-- Auth: sign in with your Acme claude.ai account only (enforced). API-key and
+- Auth: sign in with your Karekal claude.ai account only (enforced). API-key and
   personal-account use is blocked.
 - Not approved for: <regulated workloads / PHI repos / …> — see go/claude-scope
   and anti-use-cases.
