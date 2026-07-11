@@ -64,6 +64,10 @@ Managed settings can arrive from five sources. **Within the managed tier they ar
 
 **Gotcha 3 — org lock only bites if delivered.** `forceLoginOrgUUID` prevents a user signing into a personal account and exfiltrating to it — but only if it actually reaches the machine via one of the five sources above.
 
+### Which source to prefer
+
+For a real fleet, **server-managed settings via the claude.ai admin console** is usually the lowest-friction path on Team/Enterprise: central, no per-machine deployment, and it supports a **fail-closed startup mode** (a machine that can't fetch policy refuses to run unmanaged rather than falling back to no policy). Reach for **MDM plist/registry** when you already run Jamf / Kandji / Intune and want policy to ride your existing device management. Keep **file-based** for a pilot, a CI image, or an air-gapped estate. Whichever you pick, it's *one* source — don't layer them expecting a merge (Gotcha 1).
+
 ---
 
 ## 2. Template A — `managed-settings.json` (the enforced floor)
@@ -140,6 +144,47 @@ Managed-only lockdown knobs to reach for when you need a hard perimeter (each ha
 - `disableRemoteControl` — per-device kill for driving a session from a phone/browser (org-wide toggle also lives at `claude.ai/admin-settings/claude-code` on Team/Enterprise).
 
 **Console roles matter too:** when inviting via the Claude Console, the **Claude Code** role lets a user create only Claude Code API keys; **Developer** lets them create any key. Grant the narrower role by default.
+
+### The sandbox — OS-level enforcement `permissions.deny` can't give you
+
+`permissions.deny` is a *decision-layer* gate: it stops **Claude** from choosing to run a blocked tool. It does not stop a subprocess Claude already launched — an `npm install` post-install script, a Python file handle, a shell one-liner opening a socket. That gap is the sandbox's job. Permissions and sandboxing are **complementary**: permissions apply to every tool (Bash, Read, Edit, WebFetch, MCP); the sandbox is **OS-level enforcement on the Bash tool and its child processes**, and it holds *even if a prompt injection bypasses Claude's judgment*.
+
+`sandbox.enabled` covers **macOS, Linux, and WSL2 only** (not native Windows). A hardened managed sandbox:
+
+```json
+{
+  "sandbox": {
+    "enabled": true,
+    "failIfUnavailable": true,
+    "allowUnsandboxedCommands": false,
+    "excludedCommands": ["docker *"],
+    "filesystem": { "denyRead": ["~/.aws/credentials", "~/.ssh"] },
+    "network": {
+      "allowedDomains": ["github.com", "*.npmjs.org", "registry.yarnpkg.com"],
+      "deniedDomains": ["uploads.github.com"]
+    }
+  }
+}
+```
+
+- `failIfUnavailable: true` — the machine **exits at startup** if the sandbox can't start, instead of silently running unsandboxed. This is what makes the sandbox a *hard gate* on a managed fleet (default is warn-and-continue).
+- `allowUnsandboxedCommands: false` — closes the `dangerouslyDisableSandbox` escape hatch entirely; every command runs sandboxed or must be in `excludedCommands`.
+- `network.allowedDomains` / `deniedDomains` — the real **egress control**. A sandboxed command can reach only the domains you allow — this is where you stop a compromised dependency phoning home, which a `deny` on `curl`/`WebFetch` alone can't. Network rules **combine** with your `WebFetch(domain:…)` permission rules; sandbox filesystem paths **merge** with your `Read`/`Edit` deny rules. The sandbox is the floor under the whole permission set, not a separate silo.
+
+Caveat: sandboxing has real friction — some tools need an `excludedCommands` entry or an extra `allowedDomains`. Roll it out behind a canary and budget a tuning pass; an over-tight `allowedDomains` blocks legitimate package installs.
+
+### Govern what connects — MCP servers, hooks, and plugins (the supply chain)
+
+Managed settings also decide *what code and tools* a session may pull in — the surface attackers reach for once the file/network perimeter holds:
+
+- **MCP.** Deploy a `managed-mcp.json` (same managed dirs) and set `allowManagedMcpServersOnly: true` — only your `allowedMcpServers` load; `deniedMcpServers` still merges from every scope (a deny nobody can talk you out of). `managed-mcp.json` takes exclusive control by default; set `allowAllClaudeAiMcps: true` only if you also want claude.ai connectors alongside it.
+- **Hooks.** `allowManagedHooksOnly: true` — only managed hooks, SDK hooks, and force-enabled-plugin hooks run; user and project hooks are ignored. Stops a malicious repo shipping a `PreToolUse` hook that runs on clone.
+- **Marketplaces / plugins.** `strictKnownMarketplaces` (managed-only) allowlists which marketplaces users may install from; `blockedMarketplaces` blocklists sources (checked *before* download, so they never touch disk); `extraKnownMarketplaces` is the *convenience* cousin (any scope, auto-installs, overridable) — don't confuse the two. `strictPluginOnlyCustomization` goes furthest: it locks the skills / agents / hooks / MCP surfaces so they load **only** from plugins and managed policy, never from a user or project `.claude/` dir.
+- **Models.** `availableModels` + `enforceAvailableModels: true` restrict which models a session may select — pair with `modelOverrides` when you route through Bedrock / Vertex / Foundry.
+
+### These fail *closed*, not open
+
+Worth knowing before you deploy: in recent versions an invalid managed **security** field fails closed rather than being silently dropped. A typo in `allowedMcpServers` is enforced as an **empty allowlist** (zero servers admitted, not "all"); a malformed `forceLoginOrgUUID` blocks **every** login; a bad `allowManagedMcpServersOnly` is treated as `true`. With `sandbox.failIfUnavailable`, the failure direction is *over-restriction* — the safe one for a policy file. The flip side is a real operational hazard: **a broken managed file can lock a whole fleet out.** Validate against the [`$schema`](https://json.schemastore.org/claude-code-settings.json), stage on a canary, and keep `/status` handy to confirm what actually loaded.
 
 ---
 
@@ -257,6 +302,8 @@ Sequenced against the broader surface plan in [`surface-rollout-matrix.md`](surf
 - **`deny` gaps.** Read/Edit deny rules cover Claude's file tools and recognized shell file commands — not arbitrary subprocess I/O (a Python script opening a file). For process-wide enforcement, use `sandbox.enabled`.
 - **Bloated managed CLAUDE.md.** Over ~200 lines and adherence falls; the org rules you cared about get skimmed.
 - **Org lock assumed, not delivered.** `forceLoginOrgUUID` in a file that never reached the machine enforces nothing. Verify on-device.
+- **Fail-closed lockout.** A malformed managed security field over-restricts by design — a typo in `allowedMcpServers` admits zero servers, a bad `forceLoginOrgUUID` blocks every login, `sandbox.failIfUnavailable` refuses to start. The safe direction, but it can wedge a whole fleet. Validate against the `$schema` and stage on a canary before a broad push.
+- **Sandbox is Bash-only, and macOS/Linux/WSL2 only.** It doesn't cover native Windows or non-Bash tools. Don't treat `sandbox.enabled` as a whole-machine jail — pair it with `permissions.deny` and the connect-governance knobs.
 
 ---
 
