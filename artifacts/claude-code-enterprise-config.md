@@ -1,10 +1,10 @@
 # Claude Code enterprise config — reference org instructions, managed settings, and enterprise CLAUDE.md
 
-**You're standardizing Claude Code across an organization. These are three deployable reference templates and the one distinction that governs all of them.**
+**You're standardizing Claude Code across an organization. These are three deployable reference templates, the one distinction that governs all of them, and (§5) how to wire the client into your identity, proxy, telemetry, cloud, and billing fabric.**
 
 Audience: the platform/security/DevOps owner rolling Claude Code out to many engineers. Companion to the practitioner guide ([`claude-code-101.md`](claude-code-101.md)) and the rollout plan ([`claude-code-adoption-guide.md`](claude-code-adoption-guide.md)). For *who owns this* and compliance posture, see [`operating-model-guide.md`](operating-model-guide.md) and [`governance-overlay.md`](governance-overlay.md).
 
-**Sourcing:** all mechanics verified against [docs.claude.com/en/docs/claude-code/settings](https://docs.claude.com/en/docs/claude-code/settings), [`/permissions`](https://docs.claude.com/en/docs/claude-code/permissions), and [`/memory`](https://docs.claude.com/en/docs/claude-code/memory) as of 2026-07-11 `[H]`. Field-level specifics and version gates change fast — the linked docs are canonical. This guide is org-neutral reference; swap the `karekal` placeholders for your values. It does **not** assert BAA/ZDR/residency coverage — verify those per contract via [`governance-overlay.md`](governance-overlay.md).
+**Sourcing:** all mechanics verified against the Claude Code docs — [settings](https://docs.claude.com/en/docs/claude-code/settings), [permissions](https://docs.claude.com/en/docs/claude-code/permissions), [memory](https://docs.claude.com/en/docs/claude-code/memory), [security](https://docs.claude.com/en/docs/claude-code/security), [iam](https://docs.claude.com/en/docs/claude-code/iam), [monitoring](https://docs.claude.com/en/docs/claude-code/monitoring-usage), [corporate-proxy](https://docs.claude.com/en/docs/claude-code/corporate-proxy), [amazon-bedrock](https://docs.claude.com/en/docs/claude-code/amazon-bedrock), [costs](https://docs.claude.com/en/docs/claude-code/costs), and [analytics](https://docs.claude.com/en/docs/claude-code/analytics) — as of 2026-07-11 `[H]`. The `[M]`-graded items — §2's Okta connector-provisioning pointer and §5.1's Enterprise identity/compliance layers — are secondary-sourced (blog / product pages), not the CC docs; verify current scope, and treat their compliance coverage per [`governance-overlay.md`](governance-overlay.md). Field-level specifics and version gates change fast — the linked docs are canonical. This guide is org-neutral reference; swap the `karekal` placeholders for your values. It does **not** assert BAA/ZDR/residency coverage — verify those per contract via [`governance-overlay.md`](governance-overlay.md).
 
 ---
 
@@ -131,7 +131,7 @@ What each block buys you, and the failure mode if you omit it:
 | `forceLoginMethod` + `forceLoginOrgUUID` | users can only sign into the corporate org (fill in your org UUID and the exact `forceLoginMethod` token — verify accepted values in the settings docs before deploying) | engineer signs into a personal account; work + data leave your tenant |
 | `disableBypassPermissionsMode` | nobody can flip to "skip all prompts" | one `--dangerously-skip-permissions` alias removes every guardrail |
 | `sandbox.enabled` | OS-level isolation of Claude-run commands | a shell command touches paths your `deny` rules (which only cover Claude's own file tools) don't reach |
-| `env` (OTel) | telemetry flows to your observability stack | no visibility; see [`agent-observability-guide.md`](agent-observability-guide.md) |
+| `env` (OTel) | telemetry flows to your observability stack (privacy dials in §5.4) | no visibility; see [`agent-observability-guide.md`](agent-observability-guide.md) |
 | `strictKnownMarketplaces` | plugins installable only from your allowlisted source | supply-chain: engineers add arbitrary third-party plugin marketplaces |
 | `companyAnnouncements` | your policy shown in every session | the policy lives in a wiki nobody opens |
 
@@ -177,7 +177,7 @@ Caveat: sandboxing has real friction — some tools need an `excludedCommands` e
 
 Managed settings also decide *what code and tools* a session may pull in — the surface attackers reach for once the file/network perimeter holds:
 
-- **MCP.** Deploy a `managed-mcp.json` (same managed dirs) and set `allowManagedMcpServersOnly: true` — only your `allowedMcpServers` load; `deniedMcpServers` still merges from every scope (a deny nobody can talk you out of). `managed-mcp.json` takes exclusive control by default; set `allowAllClaudeAiMcps: true` only if you also want claude.ai connectors alongside it.
+- **MCP.** Deploy a `managed-mcp.json` (same managed dirs) and set `allowManagedMcpServersOnly: true` — only your `allowedMcpServers` load; `deniedMcpServers` still merges from every scope (a deny nobody can talk you out of). `managed-mcp.json` takes exclusive control by default; set `allowAllClaudeAiMcps: true` only if you also want claude.ai connectors alongside it. On Enterprise you can also **provision MCP connectors org-wide through your IdP** (Okta first), so users get connector access on first login with authorization set centrally rather than per-machine — the newest option here; verify current scope. `[M — claude.com/blog/enterprise-managed-auth, 2026-07]`
 - **Hooks.** `allowManagedHooksOnly: true` — only managed hooks, SDK hooks, and force-enabled-plugin hooks run; user and project hooks are ignored. Stops a malicious repo shipping a `PreToolUse` hook that runs on clone.
 - **Marketplaces / plugins.** `strictKnownMarketplaces` (managed-only) allowlists which marketplaces users may install from; `blockedMarketplaces` blocklists sources (checked *before* download, so they never touch disk); `extraKnownMarketplaces` is the *convenience* cousin (any scope, auto-installs, overridable) — don't confuse the two. `strictPluginOnlyCustomization` goes furthest: it locks the skills / agents / hooks / MCP surfaces so they load **only** from plugins and managed policy, never from a user or project `.claude/` dir.
 - **Models.** `availableModels` + `enforceAvailableModels: true` restrict which models a session may select — pair with `modelOverrides` when you route through Bedrock / Vertex / Foundry.
@@ -306,13 +306,73 @@ The doc your engineers read — distinct from the machine-loaded `CLAUDE.md`. Te
 - Who owns the platform, where to report a problem, how incidents are handled.
 ```
 
-Cross-reference the repo artifacts that already do the heavy lifting for each section: [`anti-use-cases.md`](anti-use-cases.md) (§1), [`enterprise-data-boundaries.html`](enterprise-data-boundaries.html) and [`governance-overlay.md`](governance-overlay.md) (§2), [`model-selection-guide.md`](model-selection-guide.md) and [`token-budget-governance.md`](token-budget-governance.md) (§3), [`operating-model-guide.md`](operating-model-guide.md) (§4/§6), [`incident-response-runbook.md`](incident-response-runbook.md) (§6).
+Cross-reference the repo artifacts that already do the heavy lifting for each section of Template C above (its §1–§6): [`anti-use-cases.md`](anti-use-cases.md) (§1), [`enterprise-data-boundaries.html`](enterprise-data-boundaries.html) and [`governance-overlay.md`](governance-overlay.md) (§2), [`model-selection-guide.md`](model-selection-guide.md) and [`token-budget-governance.md`](token-budget-governance.md) (§3), [`operating-model-guide.md`](operating-model-guide.md) (§4/§6), [`incident-response-runbook.md`](incident-response-runbook.md) (§6).
 
 ---
 
-## 5. Rollout order — sequence by blast radius
+## 5. Wiring Claude Code into your enterprise fabric
 
-1. **Pilot (file-based, few machines).** Deploy Template A with a conservative `deny` list + `forceLoginOrgUUID` to a small group. Confirm precedence with `/status` on a target machine — its Setting-sources view names the active managed source, and managed values should win and be un-editable.
+The three templates configure the **client**. This section connects that client to the systems it doesn't own — your identity provider, proxy/firewall, OpenTelemetry collector, cloud model provider, and Console billing. Most are a `managed-settings.json` or `env` surface; each has a failure mode if you skip it.
+
+Grounding: Claude Code ships a floor you build on — **read-only permissions by default**, a **working-directory write boundary** (it writes only inside the folder it started in and its subfolders), and the **sandboxed Bash tool** (§2). SOC 2 Type II / ISO 27001 evidence is at the [Anthropic Trust Center](https://trust.anthropic.com) (compliance posture lives in [`governance-overlay.md`](governance-overlay.md), not here). For the threat model these controls answer, see [`agentic-threat-model.md`](agentic-threat-model.md). Everything below is what you add on top. `[H — docs.claude.com/en/docs/claude-code/security]`
+
+### 5.1 Identity & credentials
+
+`forceLoginMethod` / `forceLoginOrgUUID` (org lock) and the Console **Claude Code vs Developer** role are in §2. Two more facts the security review will ask for:
+
+- **Where the login token sits on disk** — set your endpoint policy accordingly: macOS = encrypted Keychain; Linux = `~/.claude/.credentials.json` (mode `0600`); Windows = `%USERPROFILE%\.claude\.credentials.json` (inherits the profile's ACLs). **Failure mode:** if endpoint policy lets that file go group- or world-readable, a stolen token is full session + tenant access. `[H — iam]`
+- **Who can see usage** — the analytics dashboards are role-gated: `claude.ai/analytics/claude-code` (Team/Enterprise; Admins + Owners) and `platform.claude.com/claude-code` (Console; the `UsageView` permission — Developer / Billing / Admin / Owner / Primary Owner). Route managers there rather than standing up a parallel report. `[H — analytics]`
+
+The deeper identity/compliance layers — **SSO, SCIM provisioning, custom admin roles, IP allowlisting, audit logs, a Compliance API, and customer-managed encryption keys** — are Enterprise-plan features that sit above the client config — verify their existence and scope at the Trust Center and your Enterprise admin console (not in this guide). [`governance-overlay.md`](governance-overlay.md) owns only how their data flows map to compliance (BAA / ZDR / residency), not the features themselves. `[M — claude.com / anthropic.com product + news pages, 2026-07]`
+
+### 5.2 Cloud model routing — Bedrock / Vertex / Azure AI Foundry
+
+If you procure through a hyperscaler (see [`../docs/feature-inventory.md`](../docs/feature-inventory.md) *Procurement paths*), three settings decide whether the fleet stays consistent:
+
+- **Refresh credentials without breaking sessions.** Two settings keys, different triggers: `awsAuthRefresh` runs **only when credentials are detected expired** (then retries with fresh creds); `awsCredentialExport` runs **at session start and on each reload** (use it when the account needs cross-account creds the default provider chain won't resolve). Both execute a command — treat that command as part of your trusted managed image. `[H — bedrock]`
+- **Pin model versions.** On a cloud provider the `sonnet` / `opus` aliases resolve to Claude Code's **built-in default for that provider**, which lags first-party and may not be enabled in your account (it silently falls back to the prior version at startup). Pin with the `ANTHROPIC_DEFAULT_*_MODEL` env vars, or map several versions of a family to distinct **application-inference-profile ARNs** via `modelOverrides` so users switch in `/model` without escaping your profiles. Don't hardcode version IDs in the template — reference the current surface in [`../docs/feature-inventory.md`](../docs/feature-inventory.md). `[H — bedrock]`
+- **The cloud sends no usage metrics.** On Bedrock / Vertex / Azure AI Foundry, Claude Code emits **no** telemetry from your cloud — per-user attribution and **per-user spend limits** come from a self-hosted **Claude apps gateway**, or you track spend at whatever LLM gateway already sees every request. Budget that gateway *before* rollout if you need per-user cost control there. `[H — costs]`
+
+| Skip this | Failure mode |
+|---|---|
+| Credential-refresh helper | SSO creds expire mid-session; unattended / CI runs stall until a human re-auths |
+| Model-version pinning | the fleet drifts model-to-model; a silent startup fallback shifts behavior + cost under you |
+| Gateway (cloud spend) | no per-user attribution or cap on a hyperscaler — a runaway loop is invisible until the invoice |
+
+### 5.3 Network perimeter — proxy, CA, and the egress allowlist
+
+Distinct from the **sandbox** egress in §2 (which scopes a single sandboxed command): this is the **whole client's** network path. These are all `settings.json` keys too, so they deploy at the managed tier.
+
+- **Egress allowlist** (firewall / proxy) — allow at minimum `api.anthropic.com` (API), `claude.ai` + `platform.claude.com` (auth), and **`downloads.claude.ai`** (plugin executables + the native installer/auto-updater). On Bedrock / Vertex / Foundry or a signed-in gateway, model + auth traffic goes to *your* provider instead. `[H — corporate-proxy]`
+- **Proxy** — standard `HTTPS_PROXY` / `HTTP_PROXY` / `NO_PROXY`; **SOCKS is not supported**; basic-auth creds go in the proxy URL (don't hardcode them in scripts). For **NTLM / Kerberos**, front Claude Code with an LLM gateway that speaks your auth. `[H — corporate-proxy]`
+- **TLS interception & custom CAs** — Claude Code trusts its bundled Mozilla roots **plus your OS certificate store** (npm installs need Node ≥ 22.15 to read the OS store; the native installer always can). TLS-inspection proxies like **Zscaler** and **CrowdStrike Falcon** work with no extra config; add private roots via `NODE_EXTRA_CA_CERTS`, and mutual-TLS client certs are supported. `[H — corporate-proxy]`
+- **`skipWebFetchPreflight`** — `WebFetch` normally calls `api.anthropic.com` for a domain-safety check first; setting this skips that preflight (sometimes required on locked-down networks) but drops the check — decide deliberately. `[H — corporate-proxy]`
+
+| Skip this | Failure mode |
+|---|---|
+| `downloads.claude.ai` in the allowlist | plugins won't install and the auto-updater silently stops — the fleet drifts to a stale, unpatched client |
+| A deliberate egress list | too-open is the exfil path a `deny` on `curl` / `WebFetch` can't close by itself |
+
+### 5.4 Telemetry — the observability **and privacy** dial
+
+The signals, alerts, and log schema are [`agent-observability-guide.md`](agent-observability-guide.md)'s job. What belongs *here* is the managed **config** and the **privacy** switches — they decide what employee data leaves the laptop:
+
+- **Turn it on, fleet-wide.** `CLAUDE_CODE_ENABLE_TELEMETRY: "1"` plus an exporter (`OTEL_METRICS_EXPORTER` / `OTEL_LOGS_EXPORTER` — `otlp` | `prometheus` | `console` | `none`) and an OTLP endpoint, set in the managed `env` so every session reports. `[H — monitoring]`
+- **Dynamic collector auth** — `otelHeadersHelper` runs a script that emits JSON auth headers (OTLP `http/protobuf` and `http/json` only; `grpc` uses the static `OTEL_EXPORTER_OTLP_HEADERS`). Same trust caveat as any helper script. `[H — monitoring]`
+- **The privacy dial — set these two on purpose:**
+  - `OTEL_METRICS_INCLUDE_ACCOUNT_UUID` defaults **true**, attaching `user.account_uuid` / `account_id` to every metric. Set it **`false`** to keep telemetry team-level and hold the *measure-capacity-not-the-person* line ([`workforce-change-guide.md`](workforce-change-guide.md) §4). `[H — monitoring]`
+  - `OTEL_LOG_USER_PROMPTS` is **off by default and should stay off** — set it to `1` and the **text of user prompts** (source snippets, pasted secrets) ships to your logs backend. Enable only with explicit privacy/security sign-off. `[H — monitoring]`
+- Cost metrics are **approximations** — take official billing from your provider (Console / Bedrock / Vertex), not from OTel. `[H — monitoring]`
+
+### 5.5 Spend containment — the Claude-Code-specific gotcha
+
+The budget ladder, showback/chargeback, and the Usage & Cost Admin API live in [`token-budget-governance.md`](token-budget-governance.md). The one lever unique to Claude Code: authenticating **auto-creates a Console workspace named "Claude Code"** (you can't mint API keys in it, and its traffic counts against your org's overall API rate limits). Set a **workspace rate limit** on its Limits page to cap Claude Code's share — otherwise a burst of agentic sessions can eat the org's TPM/RPM and brown out production workloads. `[H — costs]`
+
+---
+
+## 6. Rollout order — sequence by blast radius
+
+1. **Pilot (file-based, few machines).** Deploy Template A with a conservative `deny` list + `forceLoginOrgUUID` to a small group. Confirm precedence with `/status` on a target machine — its Setting-sources view names the active managed source (e.g. `Enterprise managed settings (remote)` / `(plist)` / `(HKLM)` / `(file)`), and managed values should win and be un-editable.
 2. **Add the guidance.** Ship Template B (managed `CLAUDE.md`) and publish Template C. Watch for over-restrictive `deny` rules that block legitimate work — tune before widening.
 3. **Widen via your fleet tool.** Move from file-based to **MDM or server-managed** for the full org (one mechanism — §1 Gotcha 1). Server-managed via the claude.ai admin console is the lowest-friction path on Team/Enterprise.
 4. **Tighten deliberately.** Layer in `allowManaged*Only` / marketplace allowlists / sandbox once the baseline is stable. Each tightening trades usability for control — do it with a signal, not preemptively.
@@ -321,7 +381,7 @@ Sequenced against the broader surface plan in [`surface-rollout-matrix.md`](surf
 
 ---
 
-## 6. Operator checklist (do these; they don't live in the diff)
+## 7. Operator checklist (do these; they don't live in the diff)
 
 - [ ] Obtain your **org UUID** (from your Claude Console / Enterprise admin settings) and set `forceLoginOrgUUID` (+ `forceLoginMethod`).
 - [ ] Choose **one** delivery mechanism; deploy to the correct per-OS path.
@@ -332,10 +392,14 @@ Sequenced against the broader surface plan in [`surface-rollout-matrix.md`](surf
 - [ ] Point `env` OTel at your collector; confirm telemetry lands ([`agent-observability-guide.md`](agent-observability-guide.md)).
 - [ ] Publish Template C and link it from `companyAnnouncements`.
 - [ ] Decide the Remote Control / web-sessions org posture at `claude.ai/admin-settings/claude-code`.
+- [ ] **Egress:** allowlist `api.anthropic.com`, `claude.ai`, `platform.claude.com`, and `downloads.claude.ai`; set proxy / `NODE_EXTRA_CA_CERTS` / mTLS if your network requires them (§5.3).
+- [ ] **Cloud (Bedrock/Vertex/Foundry):** pin model versions, set `awsAuthRefresh` / `awsCredentialExport`, and decide the gateway for per-user spend + metrics (§5.2).
+- [ ] **Telemetry privacy:** set `OTEL_METRICS_INCLUDE_ACCOUNT_UUID` and `OTEL_LOG_USER_PROMPTS` deliberately; wire `otelHeadersHelper` if your collector needs auth (§5.4).
+- [ ] **Spend:** set a **workspace rate limit** on the auto-created "Claude Code" Console workspace (§5.5).
 
 ---
 
-## 7. Failure modes
+## 8. Failure modes
 
 - **CLAUDE.md-as-enforcement.** The recurring one. Anything that must hold goes in managed settings; CLAUDE.md only guides.
 - **Mixed delivery expecting a merge.** Within the managed tier one source wins — a stray file is ignored on an MDM/server-managed fleet.
@@ -345,6 +409,10 @@ Sequenced against the broader surface plan in [`surface-rollout-matrix.md`](surf
 - **Org lock assumed, not delivered.** `forceLoginOrgUUID` in a file that never reached the machine enforces nothing. Verify on-device.
 - **Fail-closed lockout.** A malformed managed security field over-restricts by design — a typo in `allowedMcpServers` admits zero servers, a bad `forceLoginOrgUUID` blocks every login, `sandbox.failIfUnavailable` refuses to start. The safe direction, but it can wedge a whole fleet. Validate against the `$schema` and stage on a canary before a broad push.
 - **Sandbox is Bash-only, and macOS/Linux/WSL2 only.** It doesn't cover native Windows or non-Bash tools. Don't treat `sandbox.enabled` as a whole-machine jail — pair it with `permissions.deny` and the connect-governance knobs.
+- **Prompt text in your logs.** `OTEL_LOG_USER_PROMPTS=1` exports the *content* of user prompts — source, pasted secrets — to your logs backend. Off by default; keep it off without privacy sign-off (§5.4).
+- **Stale-client drift.** Miss `downloads.claude.ai` in the egress allowlist and plugins plus the auto-updater silently stop — the fleet quietly falls behind on patches (§5.3).
+- **Unpinned model aliases.** On a cloud provider, `sonnet` / `opus` follow Claude Code's built-in default and fall back silently at startup — pin versions so the fleet doesn't drift model-to-model (§5.2).
+- **Uncapped Claude Code workspace.** The auto-created Console workspace counts against the org's API rate limits; without a workspace rate limit, an agent burst can starve production (§5.5).
 
 ---
 
