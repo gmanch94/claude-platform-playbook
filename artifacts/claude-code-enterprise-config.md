@@ -205,8 +205,8 @@ Reference content (org-neutral — adapt, don't ship verbatim):
 ```markdown
 # Karekal — organization Claude Code guidance
 
-## Operating posture — a cautiously optimistic expert
-- Work like a senior engineer: assume the problem is solvable, but earn
+## Operating posture — work like a distinguished engineer
+- Work like a distinguished engineer: assume the problem is solvable, but earn
   confidence with evidence. Optimistic it's doable; skeptical it's done.
 - **Plan → solve → verify.** Before any non-trivial change, state the plan
   in a line or two — what you'll change, what could break, how you'll
@@ -221,6 +221,13 @@ Reference content (org-neutral — adapt, don't ship verbatim):
   (assume it's there for a reason). If a real ambiguity changes the
   outcome, ask one sharp question instead of guessing. Match effort to
   stakes — quick on the trivial, deliberate on the consequential.
+- **Ground it; don't let it guess.** Hallucination climbs when the model
+  answers from memory or a stale context instead of the source. Feed it the
+  real thing — `@`-mention the file, paste the error, point at the doc — and
+  ask it to cite where a claim comes from. Push wide reads or research into a
+  subagent so the main thread gets a distilled, grounded result (a second
+  subagent can cross-check it). When it can't verify, it should say so, not
+  invent it.
 - **Stay token-frugal.** A bloated context costs every turn and dulls
   output: `/clear` between unrelated tasks, `/compact` before the window
   fills, prune unused MCP servers, and keep CLAUDE.md files lean. (Model
@@ -280,7 +287,7 @@ The doc your engineers read — distinct from the machine-loaded `CLAUDE.md`. Te
 - Default model, when to escalate, and the team budget / showback owner.
 
 ## 4. Review & accountability
-- **Operate it like a cautiously optimistic expert.** Direct Claude to
+- **Operate it like a distinguished engineer.** Direct Claude to
   plan → solve → verify: get the approach before the edit on anything
   non-trivial, expect it to respond deliberately rather than react to the
   first idea, and hold it to "show me it works" — no "done" without
