@@ -14,11 +14,12 @@ Claude Code runs an **edit → verify loop** against your real files and shell. 
 
 The single most common newcomer failure: treating it like a chatbot ("do the thing") instead of a junior engineer you brief, gate, and verify. The controls exist so you can loosen or tighten that gate per task.
 
-**Run it like a cautiously optimistic expert** — optimistic the task is doable, skeptical that it's done. Five habits; the rest of this guide is the tooling that makes them cheap:
+**Work like a distinguished engineer** — optimistic the task is doable, skeptical that it's done. Six habits; the rest of this guide is the tooling that makes them cheap:
 
 - **Plan → solve → verify.** For anything non-trivial, get the plan first (plan mode), make the smallest change, then *verify by running it* — never accept "done", "fixed", or "passing" without exercising the path. A failure you can see beats a green claim you can't.
 - **Respond, don't react.** Read the whole request; let Claude understand the existing code before it edits (assume it's there for a reason); when a real ambiguity changes the outcome, ask one sharp question instead of guessing. Match effort to stakes with `/effort`.
 - **Mandate an adversarial review.** Before you ship non-trivial work, get a second set of eyes that's *trying to break it* — `/code-review`, `/security-review`, or a subagent told to **refute** the change (not bless it). Never merge on your own confidence alone.
+- **Ground it; don't let it guess.** Hallucination climbs when the model answers from memory or a stale context instead of the source. Feed it the real thing — `@`-mention the file, paste the error, point it at the doc — and ask it to cite where a claim comes from. Push wide reads or research into a subagent so the main thread gets a distilled, grounded result (a second subagent can cross-check it). When it can't verify something, it should say so, not invent it.
 - **Stay token-frugal.** A bloated context costs on every turn and dulls the output. The habits that move the bill live under *Cost discipline* below — run them.
 - **Calibrate confidence.** Separate what you verified from what you assumed, and say which. Treat a fix as a hypothesis until proven — "still broken" can mean the fix was a no-op, not that the cause moved. Name the failure mode of any non-trivial move.
 

@@ -12,6 +12,21 @@ A CLI tool (also runnable in VS Code / JetBrains / desktop / web) that runs an a
 
 ---
 
+## The operating posture to instill
+
+Rollout is a working style, not just tooling. Bake this into the team plugin's `CLAUDE.md` and your PR norms so every engineer drives Claude like a **distinguished engineer** — optimistic the task is doable, rigorous about proving it's done:
+
+- **Plan → solve → verify.** Plan before touching (plan mode), make the smallest change, then verify by running it — no "done" without evidence.
+- **Respond, don't react.** Understand the request and the existing code before editing; one sharp question beats a confident wrong guess.
+- **Mandate an adversarial review.** Non-trivial changes get a review that tries to *break* them — `/code-review`, `/security-review`, or a sub-agent told to refute the change — before merge. Make it a Phase 3 governance gate, not a nicety.
+- **Ground it; don't let it guess.** Hallucination climbs when the model answers from memory or a bloated context instead of the source. Feed it the real thing (`@`-mention the file, paste the error, point at the doc), ask it to cite where a claim comes from, and push wide reads or research into a sub-agent so the main thread gets a distilled, grounded result. When it can't verify, it should say so.
+- **Stay token-frugal.** `/clear` between unrelated tasks, `/compact` before the window fills, prune unused MCP servers, keep `CLAUDE.md` lean, right-size the model — see Cost controls (Phase 3).
+- **Calibrate confidence.** Separate verified from assumed; treat a fix as a hypothesis until proven; name the failure mode of any non-trivial change.
+
+Hand engineers [`claude-code-101.md`](claude-code-101.md) (the individual-practitioner version) and encode the posture in the team plugin's `CLAUDE.md`; the org-wide managed form is in [`claude-code-enterprise-config.md`](claude-code-enterprise-config.md).
+
+---
+
 > **Clock note.** This guide runs its own Claude-Code phase clock (Phase 0 → Phase 3, ~7+ weeks), independent of the [`adoption-playbook.md`](adoption-playbook.md) 90-day org rollout clock — a team can be in Claude-Code Phase 2 while the org is at playbook Week 3. Don't conflate the two timelines.
 
 ## Phase 0 — Pre-rollout (1 week)
