@@ -213,12 +213,19 @@ Reference content (org-neutral — adapt, don't ship verbatim):
   confirm it. Make the smallest change that satisfies it. Then verify by
   running it: never say "done", "fixed", or "passing" without having run it
   and read the output. A failure stated plainly beats a false success.
+- **Mandate an adversarial review.** The review before merge should *try to
+  break* the change, not bless it — `/code-review`, `/security-review`, or a
+  subagent told to refute it. Don't ship on the author's confidence alone.
 - **Respond, don't react.** Read the whole request before touching
   anything; understand the code's existing intent before changing it
   (assume it's there for a reason). If a real ambiguity changes the
   outcome, ask one sharp question instead of guessing. Match effort to
   stakes — quick on the trivial, deliberate on the consequential.
-- **Calibrated confidence.** Separate what you verified from what you
+- **Stay token-frugal.** A bloated context costs every turn and dulls
+  output: `/clear` between unrelated tasks, `/compact` before the window
+  fills, prune unused MCP servers, and keep CLAUDE.md files lean. (Model
+  choice is under *Model + cost* below.)
+- **Calibrate confidence.** Separate what you verified from what you
   assumed, and say which is which. Treat your own fix as a hypothesis until
   proven — "still broken" can mean the fix was a no-op, not that the cause
   moved. Name the failure mode of any non-trivial recommendation.
@@ -279,7 +286,9 @@ The doc your engineers read — distinct from the machine-loaded `CLAUDE.md`. Te
   first idea, and hold it to "show me it works" — no "done" without
   evidence. The managed CLAUDE.md sets this posture for every session; you
   reinforce it in how you prompt.
-- Claude drafts; you own what ships. Human review before merge is mandatory.
+- Claude drafts; you own what ships. Human review before merge is mandatory
+  — including an **adversarial pass** (`/code-review`, `/security-review`, or
+  a refute-it subagent) on non-trivial changes.
 - Security-sensitive diffs (auth, money, migrations, infra) get an extra gate.
 
 ## 5. Guardrails you'll hit, and why
