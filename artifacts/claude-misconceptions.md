@@ -20,7 +20,7 @@
 
 ---
 
-## 2. Claude Code (CLI) surface
+## 2. Claude Code surface
 
 ### "Claude Code is just a chat wrapper for the terminal."
 - **Reality.** It exposes hooks (PreToolUse / PostToolUse / SessionStart / Stop / UserPromptSubmit), a settings hierarchy (user/project/local), Skills, subagents, plugins, MCP, headless / CI mode, and scheduled background tasks.

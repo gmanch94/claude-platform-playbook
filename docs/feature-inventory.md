@@ -72,7 +72,7 @@ The seat surface is billed per user, separate from per-token API usage. **A subs
 | Citations | GA | 2026-05 | docs.claude.com/en/docs/build-with-claude/citations | matrix, arch, eval-pack |
 | Batch API | GA | 2026-05 | docs.claude.com/en/docs/build-with-claude/batch-processing | calculator, matrix, arch, eval-pack, misconceptions, data-advisory, roi-worksheet, enterprise-data-boundaries, token-budget |
 | Memory tool | beta | 2026-05 | docs.claude.com/en/docs/agents-and-tools/memory | matrix, arch, enterprise-data-boundaries, enterprise-architecture |
-| Web search tool (server-side) | GA | 2026-05 | docs.claude.com/en/docs/agents-and-tools/web-search-tool | arch:rag, claude-code-guide, enterprise-data-boundaries, claude-product-101 |
+| Web search tool (server-side) | GA | 2026-07 | docs.claude.com/en/docs/build-with-claude/tool-use/web-search-tool | arch:rag, claude-code-guide, enterprise-data-boundaries, claude-product-101 |
 | Code execution tool (server-side) | GA | 2026-05 | docs.claude.com/en/docs/agents-and-tools/code-execution | arch:agent, claude-code-guide, eval-pack, enterprise-data-boundaries |
 | Admin API — Usage & Cost reports | GA | 2026-07 | platform.claude.com/docs/en/api/usage-cost-api | token-budget, observability, value-realization |
 | Console workspaces + spend limits | GA | 2026-07 | platform.claude.com/docs/en/api/administration-api | token-budget, observability, enterprise-deployment-guide |
@@ -102,11 +102,13 @@ The seat surface is billed per user, separate from per-token API usage. **A subs
 
 ---
 
-## Claude Code (CLI) surface
+## Claude Code surface
 
 | Surface | Status | As-of | Doc anchor | Used in artifacts |
 |---|---|---|---|---|
-| Claude Code CLI | GA | 2026-05 | docs.claude.com/en/docs/claude-code | claude-code-guide, misconceptions, workforce-change, rollout-kickoff-kit, enterprise-data-boundaries, claude-code-101, claude-code-enterprise-config |
+| Claude Code (CLI / terminal) | GA | 2026-05 | docs.claude.com/en/docs/claude-code | claude-code-guide, misconceptions, workforce-change, rollout-kickoff-kit, enterprise-data-boundaries, claude-code-101, claude-code-enterprise-config |
+| Desktop app (Mac / Windows) | GA | 2026-07 | docs.claude.com/en/docs/claude-code | claude-code-101, claude-product-101, claude-enterprise-architecture, surface-rollout-matrix |
+| Web (claude.ai/code, runs in Anthropic cloud) | GA | 2026-07 | docs.claude.com/en/docs/claude-code | claude-code-101, claude-product-101, surface-rollout-matrix |
 | Slash commands | GA | 2026-05 | docs.claude.com/en/docs/claude-code/slash-commands | claude-code-guide, misconceptions, claude-code-101 |
 | Hooks (PreToolUse / PostToolUse / SessionStart / Stop / UserPromptSubmit) | GA | 2026-05 | docs.claude.com/en/docs/claude-code/hooks | claude-code-guide, starter-skills, hooks-pack, misconceptions, agentic-threat-model, claude-code-101, claude-code-enterprise-config |
 | Settings hierarchy (user / project / local) | GA | 2026-05 | docs.claude.com/en/docs/claude-code/settings | claude-code-guide, hooks-pack, claude-code-101, claude-code-enterprise-config |

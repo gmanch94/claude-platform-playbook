@@ -2,7 +2,7 @@
 
 **As of 2026-07.** Pinned to the current Cowork surface. Refresh monthly with [`../docs/feature-inventory.md`](../docs/feature-inventory.md). All product facts cite primary sources — verify at [support.claude.com](https://support.claude.com/en/articles/13345190-get-started-with-claude-cowork) before committing budget or policy.
 
-A per-surface rollout guide for **Claude Cowork** — the desktop agent that takes a goal and returns a finished deliverable by working across your local files and apps. This is to non-engineers what [`claude-code-adoption-guide.md`](claude-code-adoption-guide.md) is to engineers. For the platform-wide 90-day arc, see [`adoption-playbook.md`](adoption-playbook.md); for where Cowork sits against the other surfaces, see [`surface-rollout-matrix.md`](surface-rollout-matrix.md).
+A per-surface rollout guide for **Claude Cowork** — the desktop agent that takes a goal and returns a finished deliverable by working across your local files and apps. This is the everyday knowledge-work rollout guide; [`claude-code-adoption-guide.md`](claude-code-adoption-guide.md) is its software-development counterpart. For the platform-wide 90-day arc, see [`adoption-playbook.md`](adoption-playbook.md); for where Cowork sits against the other surfaces, see [`surface-rollout-matrix.md`](surface-rollout-matrix.md).
 
 > **The decision this guide serves:** *Do we put an agent that takes real actions on our people's machines — and if so, for whom, on which files, with what guardrails?* Cowork is the highest-agency, highest-blast-radius product surface Anthropic ships to non-developers. The rollout question is not "is it useful" (it is); it's "what can it touch, and who governs that." [H — [anthropic.com/product/claude-cowork](https://www.anthropic.com/product/claude-cowork)]
 
@@ -128,7 +128,7 @@ Pick a baseline in Phase 0 so Phase 3 has evidence:
 
 ## How this connects to the rest
 
-- Sits beside [`claude-code-adoption-guide.md`](claude-code-adoption-guide.md) — Cowork for non-engineers, Claude Code for engineers; same "agent takes real actions" governance shape, different audience.
+- Sits beside [`claude-code-adoption-guide.md`](claude-code-adoption-guide.md) — Cowork for everyday deliverables, Claude Code for software and coding work; same "agent takes real actions" governance shape, different kind of work.
 - Role-impact + augmentation-vs-replacement framing for the people you onboard: [`workforce-change-guide.md`](workforce-change-guide.md) (§4 — measure capacity, not the person).
 - Plots against the other surfaces in [`surface-rollout-matrix.md`](surface-rollout-matrix.md).
 - Platform-wide rollout context in [`adoption-playbook.md`](adoption-playbook.md) (90-day org arc).

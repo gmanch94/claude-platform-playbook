@@ -2,7 +2,7 @@
 
 **You have Claude seats. This is how the product actually behaves — Projects, thinking, attachments, web search, Artifacts, Tag, connectors — and the gotcha on each.**
 
-Audience: a knowledge worker with a Claude seat (Team / Enterprise / Max), working in the product — chat, Projects, Cowork, Claude in Slack. Not the engineer's CLI guide (that's [`claude-code-101.md`](claude-code-101.md)), not a rollout plan (that's [`surface-rollout-matrix.md`](surface-rollout-matrix.md)), not the buy decision (that's [`subscription-selection-guide.md`](subscription-selection-guide.md)). This is the individual-fluency layer for the product surface — the mechanics that separate casual use from fluent use.
+Audience: a knowledge worker with a Claude seat (Team / Enterprise / Max), working in the product — chat, Projects, Cowork, Claude in Slack. Not the Claude Code guide (that's [`claude-code-101.md`](claude-code-101.md)), not a rollout plan (that's [`surface-rollout-matrix.md`](surface-rollout-matrix.md)), not the buy decision (that's [`subscription-selection-guide.md`](subscription-selection-guide.md)). This is the individual-fluency layer for the product surface — the mechanics that separate casual use from fluent use.
 
 **Read the mindset primer first:** [`user-mindset-cheatsheet.md`](user-mindset-cheatsheet.md) carries the seven mindset shifts, the which-surface-for-which-task table, and the always-verify list. This guide is the layer under it — not *how your work changes* but *how each surface behaves so you drive it well*. It does not repeat the cheatsheet's surface table or reflexes; it points at them.
 
@@ -24,7 +24,7 @@ The cheatsheet's table says which surface for which task. Here's the distinction
 - **Projects** — *persistent + shareable.* Knowledge and instructions carry across chats and, if shared, across people. Persistence is the feature and the risk.
 - **Cowork** — *acts on your files.* A desktop agent that reads and writes real files and runs commands. Highest privilege, highest blast radius.
 - **Claude in Slack (Tag)** — *team-visible.* Runs where your colleagues can see it, sometimes under the org's identity, not yours.
-- **Claude Code** — engineers only; see [`claude-code-101.md`](claude-code-101.md). Out of scope here.
+- **Claude Code** — *the coding surface.* Same drive-and-verify work, aimed at code, repos, and your shell — and it runs wherever you want it: a terminal, the desktop app, your IDE, or the web, not just a command line. If that's your work, it's [`claude-code-101.md`](claude-code-101.md); covered there, not here.
 - **Claude Design / Claude Science** — specialized surfaces; see [`surface-rollout-matrix.md`](surface-rollout-matrix.md).
 
 **The gotcha:** people pick a surface by task ("I need to summarize this") and miss the axis that matters — *persistence, visibility, privilege*. Summarizing a confidential doc in a shared Project, or tagging Claude on a sensitive thread in a public channel, is a data-exposure decision disguised as a convenience choice. Which surface is *cleared for your data* is a separate question — [`surface-rollout-matrix.md`](surface-rollout-matrix.md), and §8 below.
@@ -137,7 +137,7 @@ The test for which tier: ***can this be undone quietly if it's wrong?*** Yes →
 
 ---
 
-*See also: [`user-mindset-cheatsheet.md`](user-mindset-cheatsheet.md) (the mindset primer + surface table) · [`cowork-adoption-guide.md`](cowork-adoption-guide.md) (Cowork depth) · [`claude-code-101.md`](claude-code-101.md) (the engineer's version) · [`surface-rollout-matrix.md`](surface-rollout-matrix.md) (what's cleared for you) · [`subscription-selection-guide.md`](subscription-selection-guide.md) (choosing a plan) · [`model-selection-guide.md`](model-selection-guide.md) · [`governance-overlay.md`](governance-overlay.md) + [`enterprise-data-boundaries.html`](enterprise-data-boundaries.html) (the boundary).*
+*See also: [`user-mindset-cheatsheet.md`](user-mindset-cheatsheet.md) (the mindset primer + surface table) · [`cowork-adoption-guide.md`](cowork-adoption-guide.md) (Cowork depth) · [`claude-code-101.md`](claude-code-101.md) (the Claude Code version) · [`surface-rollout-matrix.md`](surface-rollout-matrix.md) (what's cleared for you) · [`subscription-selection-guide.md`](subscription-selection-guide.md) (choosing a plan) · [`model-selection-guide.md`](model-selection-guide.md) · [`governance-overlay.md`](governance-overlay.md) + [`enterprise-data-boundaries.html`](enterprise-data-boundaries.html) (the boundary).*
 
 ---
 

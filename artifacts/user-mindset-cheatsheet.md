@@ -97,7 +97,7 @@ The goal of week one isn't to use Claude for everything. It's to move *one* task
 - [`claude-misconceptions.md`](claude-misconceptions.md) — the stale priors people arrive with ("it refuses everything," "it needs fine-tuning"); kill them alongside this.
 - [`anti-use-cases.md`](anti-use-cases.md) — where *not* to reach for Claude; the right-hand edge of shift seven.
 - [`surface-rollout-matrix.md`](surface-rollout-matrix.md) — which surface you're cleared for, and in what order.
-- [`cowork-adoption-guide.md`](cowork-adoption-guide.md) / [`claude-code-adoption-guide.md`](claude-code-adoption-guide.md) — the deep guide for your surface (non-engineer / engineer).
+- [`cowork-adoption-guide.md`](cowork-adoption-guide.md) / [`claude-code-adoption-guide.md`](claude-code-adoption-guide.md) — the deep guide for your surface (everyday work / code work).
 - [`rollout-kickoff-kit.md`](rollout-kickoff-kit.md) — the enablement lead deploys this cheatsheet in their Week-0 → Week-4 lane.
 
 ---
