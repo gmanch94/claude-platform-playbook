@@ -99,7 +99,7 @@ This is the wall. Deploy it at the path matching your delivery mechanism (§1). 
   "forceLoginMethod": "<required-login-method>",
   "forceLoginOrgUUID": "<your-org-uuid>",
 
-  "disableBypassPermissionsMode": true,
+  "disableBypassPermissionsMode": "disable",
 
   "sandbox": { "enabled": true },
 
