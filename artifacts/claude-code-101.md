@@ -224,7 +224,17 @@ The repo ships eight team-grade skill templates: [`claude-code-starter-skills.md
 
 Spin up a specialized agent when a side task would bloat your main window (a security review, a broad search, an independent second opinion). Define one in `.claude/agents/<name>.md`, or inline via `--agents '{...}'`, or just ask Claude to create one. `/agents` lists them; `/tasks` shows running ones.
 
-The built-in **Explore** and **Plan** agents deliberately *skip* `CLAUDE.md` and git status to stay lean. Set `CLAUDE_CODE_SUBAGENT_MODEL` to run all subagents on a cheaper tier (e.g. Haiku for parallel search). For patterns and the error-compounding math, see [`multi-agent-patterns.md`](multi-agent-patterns.md).
+**Built-in subagents** (registered by default in interactive sessions — [full reference](https://docs.claude.com/en/docs/claude-code/sub-agents)):
+
+| Agent | Model | Tools | Claude reaches for it when |
+|---|---|---|---|
+| **Explore** | inherits, capped at Opus on the Claude API | read-only, Write/Edit denied | it searches or maps a codebase without changing it — *skips `CLAUDE.md` + git status to stay lean* |
+| **Plan** | inherits | read-only, Write/Edit denied | it gathers context during plan mode — *also skips `CLAUDE.md` + git status* |
+| **General-purpose** | inherits | all tools | a task needs both exploration and edits, or several dependent steps |
+| **statusline-setup** | Sonnet | narrow | auto — you run `/statusline` |
+| **claude-code-guide** | Haiku | narrow | auto — you ask a question about Claude Code itself |
+
+Anything *else* in an agent list is a **custom** subagent someone defined (`.claude/agents/` for the project, `~/.claude/agents/` for you) — the name carries no authority, and a custom agent named `Explore` overrides the built-in. Set `CLAUDE_CODE_SUBAGENT_MODEL` to run all subagents on a cheaper tier (e.g. Haiku for parallel search). For patterns and the error-compounding math, see [`multi-agent-patterns.md`](multi-agent-patterns.md).
 
 ---
 
@@ -295,7 +305,7 @@ For org-level budgets and alerts, [`token-budget-governance.md`](token-budget-go
 
 ---
 
-## 17. What not to do — the house failure modes
+## 17. Approach with extreme caution — the house failure modes
 
 - **`bypassPermissions` on a real machine.** Containers/VMs only. It's the fastest way to let a model error touch something it shouldn't.
 - **Treating `CLAUDE.md` as enforcement.** It's guidance. Anything that must be blocked goes in `permissions.deny` or a `PreToolUse` hook. (This is the #1 confusion the [enterprise config guide](claude-code-enterprise-config.md) exists to fix.)
