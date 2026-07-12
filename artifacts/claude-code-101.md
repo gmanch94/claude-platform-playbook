@@ -2,7 +2,7 @@
 
 **You installed Claude Code. This is how to drive it well — and the nuances that separate casual use from fluent use.**
 
-Audience: an engineer with the CLI already installed. Not a rollout plan (that's [`claude-code-adoption-guide.md`](claude-code-adoption-guide.md)) and not an admin config (that's [`claude-code-enterprise-config.md`](claude-code-enterprise-config.md)). This is the individual-effectiveness layer: the daily loop, the controls worth knowing, and the tricks that aren't obvious on day one.
+Audience: anyone driving Claude Code hands-on, with it already set up — you can run it in a terminal, the desktop app, your IDE, or on the web, so it needn't feel like a command line at all. You don't have to be a software engineer: analysts, data and ops people, and technical PMs drive it well too. The habits the rest of this guide teaches — brief it, gate it, verify it — matter more than any job title. Not a rollout plan (that's [`claude-code-adoption-guide.md`](claude-code-adoption-guide.md)) and not an admin config (that's [`claude-code-enterprise-config.md`](claude-code-enterprise-config.md)). This is the individual-effectiveness layer: the daily loop, the controls worth knowing, and the tricks that aren't obvious on day one.
 
 **Sourcing:** every behavior below is verified against [docs.claude.com/en/docs/claude-code](https://docs.claude.com/en/docs/claude-code) as of 2026-07-11 `[H]`. Version-pinned specifics (feature X "requires v2.1.N") change fast — the linked docs are canonical; treat this guide as the *judgment layer* over them. Model pricing/tiers are **not** restated here — see [`../docs/feature-inventory.md`](../docs/feature-inventory.md), the repo's single source of truth.
 
@@ -315,7 +315,7 @@ For org-level budgets and alerts, [`token-budget-governance.md`](token-budget-go
 
 ---
 
-*See also: [`claude-code-adoption-guide.md`](claude-code-adoption-guide.md) (team rollout) · [`claude-code-enterprise-config.md`](claude-code-enterprise-config.md) (admin templates) · [`model-selection-guide.md`](model-selection-guide.md) · [`user-mindset-cheatsheet.md`](user-mindset-cheatsheet.md) (the non-engineer version of "direct and verify").*
+*See also: [`claude-code-adoption-guide.md`](claude-code-adoption-guide.md) (team rollout) · [`claude-code-enterprise-config.md`](claude-code-enterprise-config.md) (admin templates) · [`model-selection-guide.md`](model-selection-guide.md) · [`user-mindset-cheatsheet.md`](user-mindset-cheatsheet.md) (the product-surface version of "direct and verify").*
 
 ---
 
