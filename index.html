@@ -120,8 +120,9 @@
   .card:hover{transform:translateY(-1px); box-shadow:2px 3px 0 rgba(0,0,0,.05);}
   .card .ct{font-size:14px; font-weight:700; padding-right:44px;}
   .card .cg{font-size:12px; color:var(--muted);}
-  .card .vars{font-size:11px; margin-top:2px;}
+  .card .vars{font-size:11px; margin-top:2px; position:relative; z-index:1;}
   .card .vars a{color:var(--brandd); text-decoration:underline;}
+  .card .stretch{position:absolute; inset:0; z-index:0; border-radius:9px;}
   .pill{
     position:absolute; top:10px; right:11px;
     font-size:9.5px; font-weight:700; text-transform:uppercase; letter-spacing:.04em;
@@ -295,7 +296,7 @@
     <div class="grid">
       <a class="card" href="artifacts/cowork-adoption-guide.html" data-persona="chro enduser" data-type="read"><span class="pill read">Read</span><span class="ct">Cowork adoption</span><span class="cg">Desktop agent rollout for non-engineers</span></a>
       <a class="card" href="artifacts/claude-product-101.html" data-persona="enduser" data-type="read"><span class="pill read">Read</span><span class="ct">Claude Product 101</span><span class="cg">Product-surface practitioner fluency</span></a>
-      <a class="card" href="artifacts/user-mindset-cheatsheet.html" data-persona="enduser chro" data-type="read"><span class="pill read">Read</span><span class="ct">User mindset cheatsheet</span><span class="cg">Week-1 handout · direct &amp; check</span><span class="vars">also: <a href="artifacts/user-mindset-cheatsheet-color.html">colour</a> · <a href="artifacts/user-mindset-mindmap.html">mindmap</a></span></a>
+      <div class="card" data-persona="enduser chro" data-type="read"><span class="pill read">Read</span><span class="ct">User mindset cheatsheet</span><span class="cg">Week-1 handout · direct &amp; check</span><span class="vars">also: <a href="artifacts/user-mindset-cheatsheet-color.html">colour</a> · <a href="artifacts/user-mindset-mindmap.html">mindmap</a></span><a class="stretch" href="artifacts/user-mindset-cheatsheet.html" aria-label="User mindset cheatsheet"></a></div>
       <a class="card" href="artifacts/workforce-change-guide.html" data-persona="chro" data-type="read"><span class="pill read">Read</span><span class="ct">Workforce change</span><span class="cg">Role impact · reskilling · no surveillance</span></a>
     </div>
   </div>
