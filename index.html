@@ -1,0 +1,386 @@
+<!-- Root landing page for GitHub Pages. No YAML front matter → Jekyll serves verbatim (no theme layout). Takes precedence over README.md at the Pages root; README stays the repo front page. -->
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Claude Platform Playbook — decision tools for adopting Claude</title>
+<meta name="description" content="Executive decision tools for adopting the Claude platform, laid out as a journey: evaluate, decide, pilot, scale, operate.">
+<style>
+  :root{
+    --brand:#D97757; --brandd:#B45309; --ink:#241c14; --bg:#faf7f3; --card:#fffefb;
+    --line:#e8e0d3; --muted:#8a7e6e;
+    --tool:#1d4ed8; --read:#6b7280;
+    /* stage accents, drawn from the house --t-* family */
+    --s-eval:#b45309; --s-decide:#1d4ed8; --s-pilot:#0d9488; --s-scale:#7c3aed; --s-operate:#475569;
+  }
+  *{box-sizing:border-box; margin:0; padding:0;}
+  body{
+    font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;
+    background:var(--bg); color:var(--ink); line-height:1.5;
+    padding:30px 22px 80px; max-width:1180px; margin:0 auto;
+    -webkit-print-color-adjust:exact; print-color-adjust:exact;
+  }
+  a{color:inherit; text-decoration:none;}
+
+  /* header */
+  header{border-bottom:2px solid var(--brand); padding-bottom:16px; margin-bottom:20px;}
+  h1{font-size:26px; letter-spacing:-.01em; display:inline; vertical-align:middle;}
+  .asof{display:inline-block; background:var(--brand); color:#fff; padding:3px 10px; border-radius:12px; font-size:12px; font-weight:600; margin-left:10px; vertical-align:middle;}
+  header .sub{color:var(--muted); font-size:15px; margin-top:9px; max-width:820px;}
+  header .sub a{color:var(--brandd); text-decoration:underline;}
+
+  /* primary CTA */
+  .cta{
+    display:flex; align-items:center; gap:16px; flex-wrap:wrap;
+    background:linear-gradient(180deg,#fff 0%,#fdf0ea 100%);
+    border:1px solid #f0d3c6; border-left:5px solid var(--brand);
+    border-radius:12px; padding:16px 20px; margin-bottom:22px;
+  }
+  .cta .lead{flex:1 1 340px; min-width:0;}
+  .cta .lead .k{font-size:12px; font-weight:700; text-transform:uppercase; letter-spacing:.09em; color:var(--brandd);}
+  .cta .lead .t{font-size:18px; font-weight:700; margin-top:2px;}
+  .cta .lead .d{font-size:13.5px; color:var(--muted); margin-top:3px;}
+  .cta .go{
+    background:var(--brand); color:#fff; font-weight:700; font-size:15px;
+    padding:11px 20px; border-radius:9px; white-space:nowrap;
+    box-shadow:1px 1px 0 rgba(0,0,0,.06);
+  }
+  .cta .go:hover{background:#c2622d;}
+
+  /* section captions */
+  .cap{font-size:11px; font-weight:700; text-transform:uppercase; letter-spacing:.08em; color:var(--muted); margin:0 0 9px 2px;}
+
+  /* featured shelf */
+  .featured{display:grid; grid-template-columns:repeat(auto-fit,minmax(210px,1fr)); gap:12px; margin-bottom:20px;}
+  .fcard{
+    background:var(--card); border:1px solid var(--line); border-top:3px solid var(--brand);
+    border-radius:10px; padding:13px 15px; display:flex; flex-direction:column; gap:3px;
+    box-shadow:1px 1px 0 rgba(0,0,0,.02); transition:transform .08s, box-shadow .08s;
+  }
+  .fcard:hover{transform:translateY(-1px); box-shadow:2px 3px 0 rgba(0,0,0,.05);}
+  .fcard .ct{font-size:15.5px; font-weight:700;}
+  .fcard .cg{font-size:12.5px; color:var(--muted);}
+
+  /* orient strip */
+  .orient{display:flex; gap:10px; flex-wrap:wrap; margin-bottom:24px;}
+  .ocard{
+    background:#fbf6f0; border:1px dashed var(--line); border-radius:9px;
+    padding:9px 13px; flex:1 1 200px; min-width:0;
+  }
+  .ocard:hover{border-color:var(--brand);}
+  .ocard .ot{font-size:13.5px; font-weight:700;}
+  .ocard .og{font-size:12px; color:var(--muted); display:block; margin-top:1px;}
+
+  /* filter bar */
+  .filters{
+    position:sticky; top:0; z-index:5; background:var(--bg);
+    display:flex; gap:14px 22px; flex-wrap:wrap; align-items:center;
+    padding:12px 4px; border-top:1px solid var(--line); border-bottom:1px solid var(--line); margin-bottom:6px;
+  }
+  .fgroup{display:flex; gap:6px; flex-wrap:wrap; align-items:center;}
+  .flabel{font-size:11px; font-weight:700; text-transform:uppercase; letter-spacing:.06em; color:var(--muted); margin-right:2px;}
+  .chip{
+    font-family:inherit; font-size:12.5px; cursor:pointer;
+    background:#fff; color:var(--ink); border:1.5px solid var(--line);
+    border-radius:20px; padding:5px 12px; line-height:1.3;
+  }
+  .chip:hover{border-color:var(--brand);}
+  .chip[aria-pressed="true"]{background:var(--brand); border-color:var(--brand); color:#fff;}
+  .chip.clear{border-style:dashed; color:var(--muted);}
+  #q{
+    font-family:inherit; font-size:13px; padding:6px 12px; min-width:180px;
+    border:1.5px solid var(--line); border-radius:20px; background:#fff; color:var(--ink);
+  }
+  #q:focus{outline:2px solid var(--brand); outline-offset:1px;}
+
+  /* stage rail (anchor nav) */
+  .rail{display:flex; gap:8px; flex-wrap:wrap; margin:14px 0 26px;}
+  .rail a{
+    font-size:12.5px; font-weight:600; padding:5px 13px; border-radius:20px;
+    border:1.5px solid var(--rc,var(--line)); color:var(--rc,var(--ink)); background:#fff;
+  }
+  .rail a:hover{background:var(--rc,var(--brand)); color:#fff;}
+
+  /* stages */
+  .stage{margin-bottom:30px; scroll-margin-top:64px;}
+  .shead{display:flex; align-items:baseline; gap:11px; flex-wrap:wrap; border-bottom:2px solid var(--sc); padding-bottom:7px; margin-bottom:6px;}
+  .snum{
+    display:inline-flex; align-items:center; justify-content:center;
+    width:24px; height:24px; border-radius:50%; background:var(--sc); color:#fff;
+    font-size:13px; font-weight:700; flex:none; align-self:center;
+  }
+  .shead h2{font-size:19px; color:var(--sc);}
+  .shead .q{font-size:14px; color:var(--muted); font-style:italic;}
+  .sgl{font-size:11px; font-weight:700; text-transform:uppercase; letter-spacing:.06em; color:var(--muted); margin:14px 0 8px 2px;}
+  .grid{display:grid; grid-template-columns:repeat(auto-fill,minmax(230px,1fr)); gap:11px;}
+
+  .card{
+    background:var(--card); border:1px solid var(--line); border-left:3px solid var(--sc);
+    border-radius:9px; padding:11px 13px; display:flex; flex-direction:column; gap:3px;
+    position:relative; box-shadow:1px 1px 0 rgba(0,0,0,.02); transition:transform .08s, box-shadow .08s;
+  }
+  .card:hover{transform:translateY(-1px); box-shadow:2px 3px 0 rgba(0,0,0,.05);}
+  .card .ct{font-size:14px; font-weight:700; padding-right:44px;}
+  .card .cg{font-size:12px; color:var(--muted);}
+  .card .vars{font-size:11px; margin-top:2px;}
+  .card .vars a{color:var(--brandd); text-decoration:underline;}
+  .pill{
+    position:absolute; top:10px; right:11px;
+    font-size:9.5px; font-weight:700; text-transform:uppercase; letter-spacing:.04em;
+    padding:2px 7px; border-radius:9px; line-height:1.4;
+  }
+  .pill.tool{background:rgba(29,78,216,.11); color:var(--tool);}
+  .pill.read{background:rgba(107,114,128,.14); color:var(--read);}
+
+  #noresults{font-size:14px; color:var(--muted); padding:18px 4px;}
+  .linkbtn{font-family:inherit; font-size:14px; color:var(--brandd); background:none; border:none; text-decoration:underline; cursor:pointer; padding:0;}
+  .hidden{display:none !important;}
+
+  footer{margin-top:40px; padding-top:16px; border-top:1px solid var(--line); font-size:12.5px; color:var(--muted);}
+  footer a{color:var(--brandd);}
+  footer p{margin-top:6px;}
+
+  @media (max-width:600px){
+    body{padding:22px 14px 60px;}
+    h1{font-size:22px;}
+    .filters{position:static;}
+  }
+  @media (prefers-color-scheme:dark){
+    :root{--bg:#17130f; --card:#201a15; --ink:#ece5db; --line:#3a3228; --muted:#a89a86;}
+    .cta{background:linear-gradient(180deg,#201a15 0%,#2a1a15 100%); border-color:#4a332a;}
+    .ocard{background:#221b15;}
+    .chip,#q{background:#241d17;}
+    .rail a{background:#241d17;}
+    .featured .fcard,.card{background:#201a15;}
+  }
+  :root[data-theme="dark"]{--bg:#17130f; --card:#201a15; --ink:#ece5db; --line:#3a3228; --muted:#a89a86;}
+</style>
+
+<header>
+  <h1>Claude Platform Playbook</h1><span class="asof">As of 2026-07</span>
+  <p class="sub">Executive decision tools for adopting Claude — laid out as the journey an organization actually walks. Decision-frame first, not feature marketing. Every claim traces to the <a href="docs/feature-inventory.html">feature inventory</a> (single source of truth). <a href="README.md">Full catalog &amp; role map →</a></p>
+</header>
+
+<!-- PRIMARY CTA -->
+<a class="cta" href="artifacts/decision-spine.html">
+  <span class="lead">
+    <span class="k">New here? Start with the guided route</span>
+    <span class="t">The Decision Spine</span>
+    <span class="d">Walks the seven decisions in order and routes you to the right tool at each branch — for when you don't yet know which of these you need.</span>
+  </span>
+  <span class="go">Walk the spine →</span>
+</a>
+
+<!-- FEATURED -->
+<p class="cap">If you only open a few</p>
+<div class="featured">
+  <a class="fcard" href="artifacts/executive-briefing.html"><span class="pill tool">Tool</span><span class="ct">Executive briefing</span><span class="cg">10-slide leadership deck to forward upward</span></a>
+  <a class="fcard" href="artifacts/cost-calculator.html"><span class="pill tool">Tool</span><span class="ct">Cost calculator</span><span class="cg">Live $/month, savings vs naive baseline</span></a>
+  <a class="fcard" href="artifacts/roi-worksheet.html"><span class="pill tool">Tool</span><span class="ct">ROI worksheet</span><span class="cg">Net value vs spend · payback · CFO-defensible</span></a>
+  <a class="fcard" href="artifacts/anti-use-cases.html"><span class="pill read">Read</span><span class="ct">Anti-use cases</span><span class="cg">Where <em>not</em> to use Claude — the reject filter</span></a>
+</div>
+
+<!-- ORIENT -->
+<p class="cap">Orient any time</p>
+<div class="orient">
+  <a class="ocard" href="artifacts/maturity-model.html"><span class="ot">Maturity model</span><span class="og">Locate your rung, L0→L4, and the next move</span></a>
+  <a class="ocard" href="artifacts/claude-misconceptions.html"><span class="ot">Misconceptions</span><span class="og">18 myths that quietly mis-budget decisions</span></a>
+  <a class="ocard" href="artifacts/decision-memes.html"><span class="ot">Decision memes</span><span class="og">8 ice-breakers · skeptic disarmer</span></a>
+  <a class="ocard" href="docs/feature-inventory.html"><span class="ot">Feature inventory</span><span class="og">Single source of truth · every artifact cites it</span></a>
+</div>
+
+<!-- FILTERS -->
+<div class="filters" role="region" aria-label="Filter artifacts">
+  <div class="fgroup">
+    <span class="flabel">Who you are</span>
+    <button class="chip" data-facet="persona" data-val="cio" aria-pressed="false">CIO / CTO</button>
+    <button class="chip" data-facet="persona" data-val="cfo" aria-pressed="false">CFO / FinOps</button>
+    <button class="chip" data-facet="persona" data-val="ciso" aria-pressed="false">CISO / Security</button>
+    <button class="chip" data-facet="persona" data-val="chro" aria-pressed="false">CHRO / People</button>
+    <button class="chip" data-facet="persona" data-val="architect" aria-pressed="false">Architect</button>
+    <button class="chip" data-facet="persona" data-val="englead" aria-pressed="false">Eng lead</button>
+    <button class="chip" data-facet="persona" data-val="procurement" aria-pressed="false">Procurement</button>
+    <button class="chip" data-facet="persona" data-val="enduser" aria-pressed="false">End user</button>
+  </div>
+  <div class="fgroup">
+    <span class="flabel">Type</span>
+    <button class="chip" data-facet="type" data-val="tool" aria-pressed="false">Interactive tool</button>
+    <button class="chip" data-facet="type" data-val="read" aria-pressed="false">Read / reference</button>
+  </div>
+  <div class="fgroup">
+    <input id="q" type="search" placeholder="Search the playbook…" aria-label="Search artifacts">
+    <button id="clear" class="chip clear" hidden>Clear filters</button>
+  </div>
+</div>
+
+<!-- STAGE RAIL -->
+<nav class="rail" aria-label="Jump to stage">
+  <a href="#evaluate" style="--rc:var(--s-eval)">1 · Evaluate</a>
+  <a href="#decide" style="--rc:var(--s-decide)">2 · Decide</a>
+  <a href="#pilot" style="--rc:var(--s-pilot)">3 · Pilot</a>
+  <a href="#scale" style="--rc:var(--s-scale)">4 · Scale</a>
+  <a href="#operate" style="--rc:var(--s-operate)">5 · Operate</a>
+</nav>
+
+<p id="noresults" hidden>No artifacts match that filter. <button class="linkbtn" data-clear>Clear filters</button></p>
+
+<!-- 1. EVALUATE -->
+<section class="stage" id="evaluate" style="--sc:var(--s-eval)">
+  <div class="shead"><span class="snum">1</span><h2>Evaluate</h2><span class="q">Should we — and where should we not?</span></div>
+  <div class="subgroup"><div class="grid">
+    <a class="card" href="artifacts/anti-use-cases.html" data-persona="cio ciso architect" data-type="read"><span class="pill read">Read</span><span class="ct">Anti-use cases</span><span class="cg">Where not to use Claude — 5 categories</span></a>
+    <a class="card" href="artifacts/claude-misconceptions.html" data-persona="cio enduser architect" data-type="read"><span class="pill read">Read</span><span class="ct">Misconceptions</span><span class="cg">18 decision-distorting myths</span></a>
+    <a class="card" href="artifacts/executive-briefing.html" data-persona="cio cfo" data-type="tool"><span class="pill tool">Tool</span><span class="ct">Executive briefing</span><span class="cg">10-slide leadership deck</span></a>
+    <a class="card" href="artifacts/cost-calculator.html" data-persona="cio cfo procurement" data-type="tool"><span class="pill tool">Tool</span><span class="ct">Cost calculator</span><span class="cg">Live $/month estimator</span></a>
+    <a class="card" href="artifacts/roi-worksheet.html" data-persona="cfo cio" data-type="tool"><span class="pill tool">Tool</span><span class="ct">ROI worksheet</span><span class="cg">Net value vs spend, payback</span></a>
+    <a class="card" href="artifacts/maturity-model.html" data-persona="cio architect" data-type="read"><span class="pill read">Read</span><span class="ct">Maturity model</span><span class="cg">Locate your rung, L0→L4</span></a>
+  </div></div>
+</section>
+
+<!-- 2. DECIDE -->
+<section class="stage" id="decide" style="--sc:var(--s-decide)">
+  <div class="shead"><span class="snum">2</span><h2>Decide</h2><span class="q">Which pattern, model, and plan — what governance, what we sign?</span></div>
+  <div class="subgroup">
+    <p class="sgl">Pattern &amp; model</p>
+    <div class="grid">
+      <a class="card" href="artifacts/build-vs-buy-worksheet.html" data-persona="cio architect" data-type="tool"><span class="pill tool">Tool</span><span class="ct">Build vs buy</span><span class="cg">Claude / Bedrock / OpenAI / OSS / SaaS</span></a>
+      <a class="card" href="artifacts/feature-decision-matrix.html" data-persona="architect englead" data-type="tool"><span class="pill tool">Tool</span><span class="ct">Feature decision matrix</span><span class="cg">Which feature per use-case pattern</span></a>
+      <a class="card" href="artifacts/model-selection-guide.html" data-persona="architect englead cfo" data-type="read"><span class="pill read">Read</span><span class="ct">Model selection</span><span class="cg">Opus / Sonnet / Haiku · 4-question framework</span></a>
+      <a class="card" href="artifacts/reference-architectures.html" data-persona="architect englead" data-type="read"><span class="pill read">Read</span><span class="ct">Reference architectures</span><span class="cg">6 canonical patterns · diagrams</span></a>
+      <a class="card" href="artifacts/multi-agent-patterns.html" data-persona="architect englead" data-type="read"><span class="pill read">Read</span><span class="ct">Multi-agent patterns</span><span class="cg">5 patterns · error-compounding math</span></a>
+      <a class="card" href="artifacts/claude-enterprise-architecture.html" data-persona="architect" data-type="read"><span class="pill read">Read</span><span class="ct">Enterprise architecture</span><span class="cg">Full feature surface in one view</span></a>
+      <a class="card" href="artifacts/enterprise-deployment-guide.html" data-persona="architect" data-type="read"><span class="pill read">Read</span><span class="ct">Deployment guide</span><span class="cg">Tenancy · prod / non-prod layout</span></a>
+    </div>
+  </div>
+  <div class="subgroup">
+    <p class="sgl">Govern, secure &amp; procure</p>
+    <div class="grid">
+      <a class="card" href="artifacts/governance-overlay.html" data-persona="ciso procurement architect" data-type="read"><span class="pill read">Read</span><span class="ct">Governance overlay</span><span class="cg">No-train · BAA · residency · retention</span></a>
+      <a class="card" href="artifacts/enterprise-data-boundaries.html" data-persona="ciso architect" data-type="read"><span class="pill read">Read</span><span class="ct">Data boundaries</span><span class="cg">Per-feature trust-zone diagrams</span></a>
+      <a class="card" href="artifacts/agentic-threat-model.html" data-persona="ciso architect" data-type="read"><span class="pill read">Read</span><span class="ct">Agentic threat model</span><span class="cg">10 threats mapped to controls</span></a>
+      <a class="card" href="artifacts/subscription-selection-guide.html" data-persona="procurement cio" data-type="read"><span class="pill read">Read</span><span class="ct">Subscription selection</span><span class="cg">Which plan to buy · Free→Enterprise</span></a>
+      <a class="card" href="artifacts/procurement-pack.html" data-persona="procurement ciso" data-type="read"><span class="pill read">Read</span><span class="ct">Procurement pack</span><span class="cg">Security-questionnaire answers · DPA/BAA</span></a>
+      <a class="card" href="artifacts/exit-portability-memo.html" data-persona="procurement architect cio" data-type="read"><span class="pill read">Read</span><span class="ct">Exit portability</span><span class="cg">What leaving Claude would cost</span></a>
+    </div>
+  </div>
+</section>
+
+<!-- 3. PILOT -->
+<section class="stage" id="pilot" style="--sc:var(--s-pilot)">
+  <div class="shead"><span class="snum">3</span><h2>Pilot</h2><span class="q">Pick the first use case and run it safely.</span></div>
+  <div class="subgroup"><div class="grid">
+    <a class="card" href="artifacts/pilot-selection-worksheet.html" data-persona="cio architect" data-type="tool"><span class="pill tool">Tool</span><span class="ct">Pilot selection</span><span class="cg">Score candidate use cases · 5 axes</span></a>
+    <a class="card" href="artifacts/data-advisory.html" data-persona="architect englead" data-type="read"><span class="pill read">Read</span><span class="ct">Data advisory</span><span class="cg">Pre-pilot data sizing</span></a>
+    <a class="card" href="artifacts/adoption-playbook.html" data-persona="cio chro" data-type="read"><span class="pill read">Read</span><span class="ct">Adoption playbook</span><span class="cg">90-day rollout · 8 failure modes</span></a>
+    <a class="card" href="artifacts/rollout-kickoff-kit.html" data-persona="cio chro" data-type="read"><span class="pill read">Read</span><span class="ct">Rollout kickoff kit</span><span class="cg">First 30 days · who acts, in what order</span></a>
+    <a class="card" href="artifacts/surface-rollout-matrix.html" data-persona="cio chro architect" data-type="read"><span class="pill read">Read</span><span class="ct">Surface rollout matrix</span><span class="cg">Which surface first, for whom</span></a>
+    <a class="card" href="artifacts/eval-starter-pack.html" data-persona="englead architect" data-type="read"><span class="pill read">Read</span><span class="ct">Eval starter pack</span><span class="cg">8 evaluation templates</span></a>
+  </div></div>
+</section>
+
+<!-- 4. SCALE -->
+<section class="stage" id="scale" style="--sc:var(--s-scale)">
+  <div class="shead"><span class="snum">4</span><h2>Scale</h2><span class="q">Roll out across surfaces, teams, and people.</span></div>
+  <div class="subgroup">
+    <p class="sgl">Engineering surface</p>
+    <div class="grid">
+      <a class="card" href="artifacts/claude-code-adoption-guide.html" data-persona="englead" data-type="read"><span class="pill read">Read</span><span class="ct">Claude Code adoption</span><span class="cg">Engineering-team CLI rollout</span></a>
+      <a class="card" href="artifacts/claude-code-101.html" data-persona="englead enduser" data-type="read"><span class="pill read">Read</span><span class="ct">Claude Code 101</span><span class="cg">Practitioner field guide</span></a>
+      <a class="card" href="artifacts/claude-code-enterprise-config.html" data-persona="englead ciso" data-type="read"><span class="pill read">Read</span><span class="ct">Claude Code config</span><span class="cg">Admin templates · managed settings</span></a>
+      <a class="card" href="artifacts/claude-code-starter-skills.html" data-persona="englead" data-type="read"><span class="pill read">Read</span><span class="ct">Starter skills</span><span class="cg">8 team-grade Skill templates</span></a>
+      <a class="card" href="artifacts/hooks-starter-pack.html" data-persona="englead ciso" data-type="read"><span class="pill read">Read</span><span class="ct">Hooks starter pack</span><span class="cg">10 hook templates · phased rollout</span></a>
+      <a class="card" href="artifacts/mcp-starter-pack.html" data-persona="englead architect" data-type="read"><span class="pill read">Read</span><span class="ct">MCP starter pack</span><span class="cg">7 read-only MCP servers</span></a>
+    </div>
+  </div>
+  <div class="subgroup">
+    <p class="sgl">People &amp; non-engineering surfaces</p>
+    <div class="grid">
+      <a class="card" href="artifacts/cowork-adoption-guide.html" data-persona="chro enduser" data-type="read"><span class="pill read">Read</span><span class="ct">Cowork adoption</span><span class="cg">Desktop agent rollout for non-engineers</span></a>
+      <a class="card" href="artifacts/claude-product-101.html" data-persona="enduser" data-type="read"><span class="pill read">Read</span><span class="ct">Claude Product 101</span><span class="cg">Product-surface practitioner fluency</span></a>
+      <a class="card" href="artifacts/user-mindset-cheatsheet.html" data-persona="enduser chro" data-type="read"><span class="pill read">Read</span><span class="ct">User mindset cheatsheet</span><span class="cg">Week-1 handout · direct &amp; check</span><span class="vars">also: <a href="artifacts/user-mindset-cheatsheet-color.html">colour</a> · <a href="artifacts/user-mindset-mindmap.html">mindmap</a></span></a>
+      <a class="card" href="artifacts/workforce-change-guide.html" data-persona="chro" data-type="read"><span class="pill read">Read</span><span class="ct">Workforce change</span><span class="cg">Role impact · reskilling · no surveillance</span></a>
+    </div>
+  </div>
+  <div class="subgroup">
+    <p class="sgl">Who owns it</p>
+    <div class="grid">
+      <a class="card" href="artifacts/operating-model-guide.html" data-persona="cio architect" data-type="read"><span class="pill read">Read</span><span class="ct">Operating model</span><span class="cg">Who owns Claude · CoE / RACI</span></a>
+    </div>
+  </div>
+</section>
+
+<!-- 5. OPERATE -->
+<section class="stage" id="operate" style="--sc:var(--s-operate)">
+  <div class="shead"><span class="snum">5</span><h2>Operate</h2><span class="q">Still working, on budget, and observable at month 6?</span></div>
+  <div class="subgroup"><div class="grid">
+    <a class="card" href="artifacts/value-realization-guide.html" data-persona="cio cfo" data-type="read"><span class="pill read">Read</span><span class="ct">Value realization</span><span class="cg">Month-6 renew / expand / kill</span></a>
+    <a class="card" href="artifacts/token-budget-governance.html" data-persona="cfo cio" data-type="read"><span class="pill read">Read</span><span class="ct">Token budget governance</span><span class="cg">Keep the bill inside forecast</span></a>
+    <a class="card" href="artifacts/agent-observability-guide.html" data-persona="englead architect" data-type="read"><span class="pill read">Read</span><span class="ct">Agent observability</span><span class="cg">Day-2 telemetry · 6 golden signals</span></a>
+    <a class="card" href="artifacts/usage-compliance-monitoring.html" data-persona="ciso architect cio" data-type="read"><span class="pill read">Read</span><span class="ct">Usage &amp; compliance monitoring</span><span class="cg">Admin/audit/Compliance-API · SOC · eDiscovery</span></a>
+    <a class="card" href="artifacts/incident-response-runbook.html" data-persona="englead architect" data-type="read"><span class="pill read">Read</span><span class="ct">Incident response</span><span class="cg">5 incident classes · what to do now</span></a>
+    <a class="card" href="artifacts/model-deprecation-runbook.html" data-persona="englead architect" data-type="read"><span class="pill read">Read</span><span class="ct">Model deprecation</span><span class="cg">Planned migration off retiring models</span></a>
+  </div></div>
+</section>
+
+<footer>
+  <p>The <a href="README.md">README</a> carries the full role-by-role map (30+ situations) and the complete artifact catalog — this page is the visual router; the README is the reference index.</p>
+  <p>© gmanch94 · CC-BY-4.0 · As of 2026-07. Verify pricing/models at <a href="https://www.anthropic.com/pricing">anthropic.com</a>.</p>
+</footer>
+
+<script>
+(function(){
+  var chips = Array.prototype.slice.call(document.querySelectorAll('.chip[data-facet]'));
+  var cards = Array.prototype.slice.call(document.querySelectorAll('.card'));
+  var q = document.getElementById('q');
+  var clearBtn = document.getElementById('clear');
+  var noResults = document.getElementById('noresults');
+  var state = { persona:{}, type:{}, q:'' };
+
+  function anyKeys(o){ for(var k in o){ if(o[k]) return true; } return false; }
+
+  function apply(){
+    var qq = state.q.trim().toLowerCase();
+    var personaKeys = Object.keys(state.persona).filter(function(k){return state.persona[k];});
+    var typeKeys = Object.keys(state.type).filter(function(k){return state.type[k];});
+    cards.forEach(function(c){
+      var p = (c.getAttribute('data-persona')||'').split(' ');
+      var t = c.getAttribute('data-type')||'';
+      var okP = personaKeys.length===0 || personaKeys.some(function(x){return p.indexOf(x)>-1;});
+      var okT = typeKeys.length===0 || typeKeys.indexOf(t)>-1;
+      var okQ = qq==='' || c.textContent.toLowerCase().indexOf(qq)>-1;
+      c.classList.toggle('hidden', !(okP && okT && okQ));
+    });
+    // collapse empty subgroups + stages
+    Array.prototype.forEach.call(document.querySelectorAll('.subgroup'), function(sg){
+      sg.classList.toggle('hidden', !sg.querySelector('.card:not(.hidden)'));
+    });
+    Array.prototype.forEach.call(document.querySelectorAll('.stage'), function(s){
+      s.classList.toggle('hidden', !s.querySelector('.card:not(.hidden)'));
+    });
+    var anyCard = cards.some(function(c){return !c.classList.contains('hidden');});
+    noResults.hidden = anyCard;
+    var active = anyKeys(state.persona) || anyKeys(state.type) || qq!=='';
+    clearBtn.hidden = !active;
+  }
+
+  chips.forEach(function(ch){
+    ch.addEventListener('click', function(){
+      var f = ch.getAttribute('data-facet'), v = ch.getAttribute('data-val');
+      var on = !state[f][v];
+      state[f][v] = on;
+      ch.setAttribute('aria-pressed', on ? 'true' : 'false');
+      apply();
+    });
+  });
+  q.addEventListener('input', function(){ state.q = q.value; apply(); });
+
+  function clearAll(){
+    state.persona = {}; state.type = {}; state.q = '';
+    q.value = '';
+    chips.forEach(function(c){ c.setAttribute('aria-pressed','false'); });
+    apply();
+  }
+  clearBtn.addEventListener('click', clearAll);
+  Array.prototype.forEach.call(document.querySelectorAll('[data-clear]'), function(b){
+    b.addEventListener('click', clearAll);
+  });
+})();
+</script>
