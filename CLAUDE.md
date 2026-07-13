@@ -35,6 +35,7 @@ This protocol is repeated in `LESSONS_LEARNED.md` as the canonical reference.
 ```
 claude-platform-playbook/
 ├── LICENSE                              CC-BY-4.0
+├── index.html                           Visual Pages landing page · decision-stage journey (evaluate→decide→pilot→scale→operate) · persona/type/search filters · thin router into artifacts (README = full reference index; serves at Pages root, takes precedence over README.md)
 ├── README.md                            Audience map + artifact list + as-of stamp
 ├── CLAUDE.md                            This file
 ├── .claude/commands/                    Slash commands (bump-as-of, etc.)
@@ -86,6 +87,7 @@ claude-platform-playbook/
     ├── value-realization-guide.md       Receives the playbook Day-90 handoff · actuals vs ROI projection · 5 metric families each w/ Goodhart counter-metric · per-surface leading indicators · quarterly renew/expand/kill table · team-level only (surveillance boundary held)
     ├── token-budget-governance.md       FinOps layer between cost-calculator estimate and maturity L2 gate · 4-level budget ladder mapped to platform controls (workspaces/spend caps) · caps-on-experiments alerts-on-prod · showback→chargeback graduation · monthly variance triage
     ├── agent-observability-guide.md     Day-2 telemetry between eval-pack (pre-ship) and incident-runbook (post-burn) · minimum telemetry schema · 6 golden signals · alert table routed to incident classes · PII-in-logs = top failure mode · judge sampling costed
+    ├── usage-compliance-monitoring.md   CISO/admin operational monitoring of employees' Claude PRODUCT usage (org-usage counterpart to agent-observability's app telemetry) · three admin planes (Admin API sk-ant-admin org-mgmt · Analytics API read:analytics usage · Compliance API scoped-keys activity-feed+content+delete) · audit logs (Enterprise · 180-day Console export · ids-not-content · CMEK-disables-export) · monitoring decision matrix · SOC/SIEM wiring (pull-based · 60+ DLP/eDiscovery partners) · eDiscovery+retention (Activity Feed 6yr · ZDR↔eDiscovery tradeoff) · SPINE = purpose-limitation line (per-user analytics on-by-default 2026-07-11; legit for security, forbidden for productivity surveillance; two-consumers/two-rule-sets; works-council gate — holds workforce-change §4 + value-realization boundary) · every platform fact [H]+primary URL, live-verified 2026-07-12/13 · BAA/ZDR routed to governance-overlay (never asserted) · adds 4 feature-inventory rows
     ├── model-deprecation-runbook.md     Planned migration path for incident class #2 · standing prep (pins, manifest, evals, cost baseline) · 6-step protocol (pin audit → parity → eval cert → cost re-forecast → staged cutover → decommission) · hyperscaler-lag caveat
     └── exit-portability-memo.md         What leaving Claude costs, component by component · portability ledger · hedges graded honestly (Bedrock≠model diversification, gateway=feature tax) · 5 week-1 actions · exit-theater named as its own failure mode
 ```
