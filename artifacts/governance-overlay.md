@@ -111,11 +111,17 @@ ZDR is a **separate enterprise agreement** distinct from no-train. Source: [Anth
 
 ⚠ **Surface split, not a contradiction:** code execution is **covered** on the Enterprise product surface but **not** on the first-party API surface above — same BAA article, two different tables. A future editor should NOT "reconcile" them into a single value. This Enterprise enumeration is the parent for the BAA claims in [`surface-rollout-matrix.md`](surface-rollout-matrix.md) and [`cowork-adoption-guide.md`](cowork-adoption-guide.md).
 
-**What the BAA does NOT cover** (as of 2026-07; the eligible set expands over time — confirm current scope with your Anthropic rep / the HIPAA Implementation Guide at signing):
-- Workbench, Console (use the API directly with a HIPAA-enabled org instead)
-- Claude Free, Pro, Max, Team plans
+**What the BAA does NOT cover** (as of 2026-07). Two different reasons — do not apply the same hedge to both:
+
+*Structural exclusions* — architectural, these do **not** expand over time:
+
+- Workbench, Console (the developer console is not a HIPAA-eligible product surface — use the API directly with a HIPAA-enabled org instead)
+- Claude Free, Pro, Max, Team plans (consumer / non-Enterprise tiers never carry a BAA)
+
+*Time-bound exclusions* — surface not yet in the HIPAA-ready set; the eligible set expands over time, so confirm current scope with your Anthropic rep / the HIPAA Implementation Guide at signing:
+
 - **Cowork** — a paid-plan product surface (GA, not beta), but BAA-excluded; "Cowork is not yet available for any HIPAA-ready Enterprise plans" (support.claude.com, 2026-07) — the "not yet" is Anthropic's own wording
-- **Claude Code** — bundled Enterprise seats cover **chat only**; "Claude Code usage is not covered, even when purchased as part of a bundled seat" (support.claude.com, 2026-07). Contact your account team for options
+- **Claude Code** — bundled Enterprise seats cover **chat only**; "Claude Code usage is not covered, even when purchased as part of a bundled seat" (support.claude.com, 2026-07). Contact your account team for options (the CLI / local path is not structurally barred — a covered route may exist, so confirm rather than assume never)
 - Beta features such as **Claude in Office** and **Claude Design**
 - **Claude Tag** (Slack surface, beta, launched 2026-06-23) — not yet enumerated in either direction by Anthropic's BAA covered-features list. Treat as **not covered until confirmed**, the same operational posture as Cowork/Design, not a silent fourth "probably fine."
 
