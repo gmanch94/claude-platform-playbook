@@ -792,14 +792,14 @@
       <div class="cell"><h4>Residency</h4><div class="v warn">Not stated — verify</div></div>
       <div class="cell"><h4>BAA</h4><div class="v no">Not covered</div></div>
     </div>
-    <div class="bites"><b>Where it bites:</b> Cowork spans Pro/Max (consumer) through Enterprise on one GA surface — the no-train default is <b>not uniform</b> across that range (§2), same carve-out as Claude Code. Layer that on top of the two settled facts: Cowork is explicitly <b>BAA-excluded</b> and outside the ZDR covered-surfaces list. Folder-scoping, egress control, and review-before-act limit blast radius — they don't change the retention or training answer.</div>
+    <div class="bites"><b>Where it bites:</b> Cowork spans Pro/Max (consumer) through Enterprise on one GA surface — the no-train default is <b>not uniform</b> across that range (§2), same carve-out as Claude Code. Layer that on top of the two settled facts: Cowork is explicitly <b>BAA-excluded as of 2026-07</b> (Anthropic's own wording: "not yet available for any HIPAA-ready Enterprise plans" — coverage expands over time, so confirm current scope with your rep at signing) and outside the ZDR covered-surfaces list. Folder-scoping, egress control, and review-before-act limit blast radius — they don't change the retention or training answer.</div>
     <div class="companions">Trace: <a href="governance-overlay.html">governance-overlay.md</a> §2 (consumer-tier carve-out), §4 ("Cowork — a paid-plan product surface, but BAA-excluded").</div>
   </div>
 
   <!-- 17. CLAUDE DESIGN -->
   <div class="feature">
     <h2>17. Claude Design (beta)<span class="surf prod">Enterprise product (beta)</span></h2>
-    <div class="stack-line">uploaded assets are stored <strong>persistently</strong>, with <strong>no residency control</strong> and no BAA</div>
+    <div class="stack-line">uploaded assets are stored <strong>persistently</strong>, with <strong>no residency control</strong> and no BAA (as of 2026-07, beta — confirm at signing)</div>
     <div class="diagram">
       <svg viewBox="0 0 900 200" xmlns="http://www.w3.org/2000/svg">
         <defs><marker id="ar17" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0,1 L9,5 L0,9 L2,5 z" fill="#2a2017"/></marker></defs>
@@ -974,6 +974,62 @@
     </div>
     <div class="bites"><b>Where it bites:</b> the local-data story is genuinely strong — <b>raw datasets and compute stay on your machine</b>, code runs in a sandbox, and you <b>approve each folder, network host, and remote job</b> before the agent touches it (all sourced). What crosses is the <b>prompt and the model's response</b>, held under standard retention — not a special persistent store like Design (#17) or Files API (#6). The trap is governance, not data locality: Claude Science ships on <b>consumer Pro/Max plans with no BAA</b>, its <b>BAA, ZDR, and <code>inference_geo</code> residency are unpublished</b> ("contact sales for specific needs"), and it's aimed at exactly the genomics / clinical / proteomics data most likely to be regulated. Anthropic's own docs state it is <b>not intended for clinical or diagnostic use.</b> Its 60+ connectors also reach external scientific databases — each host is approval-gated, but that's a second egress path to scope. Treat governance as <b>not stated → not covered until Anthropic confirms it</b>, the same posture as Cowork (#16) / Design (#17) / Tag (#18) — don't read "raw data stays local" as "regulated data is safe here."</div>
     <div class="companions">Trace: <a href="governance-overlay.html">governance-overlay.md</a> §2 (consumer-tier carve-out — no-train not uniform), §4 (BAA covered-features list — Claude Science not enumerated); <a href="surface-rollout-matrix.html">surface-rollout-matrix.md</a> (life-sciences deviation row); <a href="https://claude.com/docs/claude-science">claude.com/docs/claude-science</a> (local files + per-folder/host/job approval; not for clinical use); <a href="../docs/feature-inventory.html">feature-inventory.md</a> Product surfaces (sources).</div>
+  </div>
+
+  <!-- =================================================================== -->
+  <div class="sec-h">BAA coverage — by feature, not by seat</div>
+  <div class="sec-sub">The one mental model behind every BAA verdict above: coverage is scoped to the <strong>feature</strong>, not the <strong>seat</strong>. A bundled Enterprise seat that packages Claude Code with chat does <em>not</em> pull Claude Code under the BAA. [<a href="governance-overlay.html">governance-overlay.md</a> §4]</div>
+
+  <div class="feature">
+    <h2>BAA coverage map<span class="surf prod">HIPAA-ready Enterprise</span></h2>
+    <div class="stack-line">gate: activate + sign → covered features (PHI ok) · not-covered surfaces (no PHI) — the boundary runs by feature, and it bisects a bundled seat</div>
+    <div class="diagram">
+      <svg viewBox="0 0 900 400" xmlns="http://www.w3.org/2000/svg">
+        <defs><marker id="arBAA" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0,1 L9,5 L0,9 L2,5 z" fill="#2a2017"/></marker></defs>
+
+        <!-- gate -->
+        <rect class="box" x="250" y="10" width="400" height="52" rx="9" style="stroke:var(--ink)"/>
+        <text class="lbl" x="450" y="33" text-anchor="middle" font-weight="700">Gate — admin activates HIPAA + signs BAA</text>
+        <text class="sub" x="450" y="51" text-anchor="middle">Without it, nothing below is covered</text>
+        <path class="flow" d="M450,62 L450,82" marker-end="url(#arBAA)"/>
+
+        <!-- org container -->
+        <rect x="20" y="86" width="860" height="298" rx="10" fill="#fffdf9" stroke="var(--line)" stroke-width="2"/>
+        <text class="ztitle" x="40" y="106" text-anchor="start">HIPAA-READY ENTERPRISE ORG — HIPAA ACTIVATED + BAA SIGNED</text>
+
+        <!-- covered zone -->
+        <rect class="zone" x="40" y="118" width="470" height="182" rx="8" fill="rgba(21,128,61,0.10)"/>
+        <text class="ztitle" x="60" y="140" text-anchor="start" style="fill:var(--good)">&#10003; BAA-COVERED · PHI OK (MESSAGE CONTENT)</text>
+        <text class="lbl" x="60" y="172" text-anchor="start">Chat · Projects · Artifacts</text>
+        <text class="lbl" x="60" y="198" text-anchor="start">Voice · Web search · Research</text>
+        <text class="lbl" x="60" y="224" text-anchor="start">File creation &amp; code execution *</text>
+        <text class="lbl" x="60" y="250" text-anchor="start">Skills (admin-enabled)</text>
+
+        <!-- not-covered zone -->
+        <rect class="zone" x="545" y="118" width="315" height="182" rx="8" fill="rgba(185,28,28,0.09)"/>
+        <text class="ztitle" x="565" y="140" text-anchor="start" style="fill:var(--bad)">&#10007; NOT COVERED · NO PHI</text>
+        <text class="sub" x="565" y="168" text-anchor="start">Claude Code &#8594; contact account team</text>
+        <text class="sub" x="565" y="190" text-anchor="start">Cowork — not yet available</text>
+        <text class="sub" x="565" y="212" text-anchor="start">Claude Design · Office (beta)</text>
+        <text class="sub" x="565" y="234" text-anchor="start">Workbench · Console</text>
+        <text class="sub" x="565" y="256" text-anchor="start">3rd-party flows (MCP · connectors)</text>
+
+        <!-- boundary bisecting everything incl. the seat -->
+        <line class="boundary" x1="527" y1="120" x2="527" y2="366"/>
+        <text class="blab" x="527" y="210" text-anchor="middle" transform="rotate(-90 527 210)">BAA boundary</text>
+
+        <!-- bundled seat -->
+        <text class="ztitle" x="527" y="322" text-anchor="middle">ONE BUNDLED SEAT — BILLED AS ONE</text>
+        <rect class="box b-store" x="300" y="330" width="227" height="44" rx="9"/>
+        <text class="lbl" x="413" y="351" text-anchor="middle" font-weight="700">Chat</text>
+        <text class="sub" x="413" y="366" text-anchor="middle">covered &#10003;</text>
+        <rect class="box" x="527" y="330" width="230" height="44" rx="9" style="stroke:var(--bad)"/>
+        <text class="lbl" x="642" y="351" text-anchor="middle" font-weight="700">Claude Code</text>
+        <text class="sub" x="642" y="366" text-anchor="middle">not covered &#10007;</text>
+      </svg>
+    </div>
+    <div class="bites"><b>Where it bites:</b> an org buys "Enterprise + Claude Code," assumes the whole seat is HIPAA-covered, and an engineer runs PHI through Claude Code &#8594; breach. <b>Coverage &#8800; billing.</b> Two look-alikes to keep apart: <b>"file creation &amp; code execution"</b> (a feature inside chat) <em>is</em> covered; <b>"Claude Code"</b> (the agent) is <em>not</em> — same words, opposite verdict. PHI must stay in <b>message content only</b> — never in schema keys, enum / const / pattern values. To get Claude Code covered, contact your account team (not automatic). As of 2026-07 — coverage expands; confirm current scope at signing.</div>
+    <div class="companions">Trace: <a href="governance-overlay.html">governance-overlay.md</a> §4 (BAA covered / not-covered lists); sources: <a href="https://support.claude.com/en/articles/13296973-hipaa-ready-enterprise-plans">support.claude.com HIPAA-ready Enterprise</a> + <a href="https://privacy.claude.com/en/articles/8114513-business-associate-agreements-baa-for-commercial-customers">privacy.claude.com BAA</a>.</div>
   </div>
 
   <!-- =================================================================== -->

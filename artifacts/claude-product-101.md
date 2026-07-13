@@ -63,7 +63,7 @@ Cowork is a **desktop agent**: it reads and writes real files on your machine an
 
 This guide stays thin here on purpose — the full rollout and governance treatment is [`cowork-adoption-guide.md`](cowork-adoption-guide.md). The three gotchas to carry:
 
-- **It's BAA-excluded — no PHI, no regulated data in Cowork.** (Per [`../docs/feature-inventory.md`](../docs/feature-inventory.md); boundary → §8.)
+- **It's BAA-excluded as of 2026-07 — no PHI, no regulated data in Cowork** (coverage expands over time; confirm current scope with your admin / Anthropic rep before relying on it). (Per [`../docs/feature-inventory.md`](../docs/feature-inventory.md); boundary → §8.)
 - **Scope the folder tightly.** The agent can touch what's in scope; a broad scope is a broad blast radius.
 - **Review before you approve.** The gate only works if you actually read what it's about to do. Rubber-stamping the action is the same failure as rubber-stamping a draft, with write access.
 
@@ -101,7 +101,7 @@ The one product-specific add: **the product defaults the model** — you can ove
 
 A user-facing guide carries exactly one governance rule, and it's this: **confirm your surface is cleared for your data before you use it for real work.** You can *open* a surface that isn't approved for the data you're about to put in it — the app doesn't stop you.
 
-- **No PHI or regulated data in Cowork or Claude Design** — both are BAA-excluded.
+- **No PHI or regulated data in Cowork or Claude Design** — both are BAA-excluded as of 2026-07 (coverage expands; confirm current scope with your rep before relying on it).
 - **Tag / Science governance is unstated** — verify before regulated use, don't assume coverage.
 - **On Enterprise commercial, your inputs aren't used to train models** — but consumer plans are a separate policy surface, and BAA coverage on Enterprise is per-feature and admin-activated, not automatic.
 

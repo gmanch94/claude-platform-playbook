@@ -92,7 +92,7 @@ ZDR is a **separate enterprise agreement** distinct from no-train. Source: [Anth
 | Code execution tool | Not covered (and network access excluded even where the surrounding feature is covered) |
 | Files API, Batch API, Computer use, Skills API | Not covered (and not accessible to HIPAA-ready API users) |
 
-**Enterprise product surface — BAA-covered features** (from the live article's detailed "Product BAA coverage by surface" table, re-verified 2026-06-29; verify the full current list in the Implementation Guide at signing — the eligible set grows):
+**Enterprise product surface — BAA-covered features** (from the live article's detailed "Product BAA coverage by surface" table, re-verified 2026-07-12 against the current BAA + HIPAA-ready Enterprise articles; verify the full current list in the Implementation Guide at signing — the eligible set grows):
 
 | Enterprise feature | BAA-covered |
 |---|---|
@@ -103,17 +103,19 @@ ZDR is a **separate enterprise agreement** distinct from no-train. Source: [Anth
 | Voice | Covered |
 | Web search | Covered |
 | Research | Covered |
+| Skills | Covered (admin-enabled) |
 
-> **Skills — unconfirmed, treat as verify-at-signing.** An independent review flagged that the 2026-06-29 source update *may* have added Skills to this Enterprise-product covered list, but a first-hand fetch of the BAA article could not surface the row. Per cite-don't-infer, Skills is **not asserted covered here** — verify in the Implementation Guide at signing. (The first-party-API "Skills API" remains Not covered, above.)
+> **Skills — now confirmed covered (resolved 2026-07).** The earlier "unconfirmed" flag is closed: the HIPAA-ready Enterprise "Feature availability" list (support.claude.com, current) enumerates skills among covered features — verbatim, "users can also leverage connectors, enterprise search, file creation and code execution, web search, research, and skills" (subject to admin enablement). (The first-party-API "Skills API" remains Not covered, above — the two surfaces differ; do not reconcile.)
 
 **3rd-party integrations** (MCPs / Connectors / Enterprise Search / Claude in Chrome): available, but their **3rd-party data flows are not covered** by the BAA — verify per-integration at signing. (This is the same principle as the API-side "BAA does not extend to your MCP servers.")
 
 ⚠ **Surface split, not a contradiction:** code execution is **covered** on the Enterprise product surface but **not** on the first-party API surface above — same BAA article, two different tables. A future editor should NOT "reconcile" them into a single value. This Enterprise enumeration is the parent for the BAA claims in [`surface-rollout-matrix.md`](surface-rollout-matrix.md) and [`cowork-adoption-guide.md`](cowork-adoption-guide.md).
 
-**What the BAA does NOT cover:**
+**What the BAA does NOT cover** (as of 2026-07; the eligible set expands over time — confirm current scope with your Anthropic rep / the HIPAA Implementation Guide at signing):
 - Workbench, Console (use the API directly with a HIPAA-enabled org instead)
 - Claude Free, Pro, Max, Team plans
-- **Cowork** — a paid-plan product surface (GA, not beta), but BAA-excluded
+- **Cowork** — a paid-plan product surface (GA, not beta), but BAA-excluded; "Cowork is not yet available for any HIPAA-ready Enterprise plans" (support.claude.com, 2026-07) — the "not yet" is Anthropic's own wording
+- **Claude Code** — bundled Enterprise seats cover **chat only**; "Claude Code usage is not covered, even when purchased as part of a bundled seat" (support.claude.com, 2026-07). Contact your account team for options
 - Beta features such as **Claude in Office** and **Claude Design**
 - **Claude Tag** (Slack surface, beta, launched 2026-06-23) — not yet enumerated in either direction by Anthropic's BAA covered-features list. Treat as **not covered until confirmed**, the same operational posture as Cowork/Design, not a silent fourth "probably fine."
 

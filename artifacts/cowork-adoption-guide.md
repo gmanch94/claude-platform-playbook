@@ -118,7 +118,7 @@ Pick a baseline in Phase 0 so Phase 3 has evidence:
 
 1. **Connecting a drive root "to be safe."** The opposite — it grants Claude the whole drive. Scope to the narrowest folder that holds the task's files. → data blast radius.
 2. **Rubber-stamping review prompts.** Review-before-act is the core guardrail; "approve all" on sensitive folders removes it. → unintended edits/deletes.
-3. **PHI in a connected folder.** Cowork carries no BAA. Any PHI a connected folder exposes is outside HIPAA coverage. → compliance breach. [H]
+3. **PHI in a connected folder.** Cowork carries no BAA as of 2026-07 ("not yet available for any HIPAA-ready Enterprise plans" — support.claude.com; coverage expands over time, so confirm current scope with your Anthropic rep before relying on it). Any PHI a connected folder exposes is outside HIPAA coverage today. → compliance breach. [H]
 4. **Default-permissive egress on sensitive data.** Network egress follows your settings; an unset default plus a sensitive folder is an exfil path. → data leak.
 5. **Broad enablement with no admin owner.** On Team/Enterprise, enabling org-wide without assigning feature-access/spend/usage ownership means no one is watching the blast radius. → ungoverned agency.
 6. **Arbitrary plugins on Enterprise.** Without a private plugin marketplace, teams pull unvetted plugins into an agent that touches local files. → supply-chain surface. [H]
