@@ -4,7 +4,7 @@
 
 [`operating-model-guide.md`](operating-model-guide.md) decides *who owns* Claude; [`procurement-pack.md`](procurement-pack.md) decides *how you buy* it. This guide is the third enterprise-setup decision: *how you lay it out* — the tenancy reality, the prod/non-prod environment split, and the workspace topology underneath both. It doesn't invent new controls; it assembles the ones already scattered across the token-budget, eval, deprecation, governance, and procurement artifacts into the deployment-topology decision an architect actually makes.
 
-**Read §5 before you design anything.** The single most expensive mistake here isn't a topology choice — it's pointing a non-prod environment at real regulated data under a looser governance posture.
+**Read §6 before you design anything.** The single most expensive mistake here isn't a topology choice — it's pointing a non-prod environment at real regulated data under a looser governance posture.
 
 ---
 
@@ -21,7 +21,7 @@ If a client only ever consumes seats, they don't need environments — they need
 
 ## 2. Tenancy reality — what "single vs multi-tenant" actually maps to
 
-Claude's commercial platform is **multi-tenant SaaS**; inference runs on Anthropic's shared infrastructure. We're aware of no publicly-advertised single-tenant / dedicated-instance SKU in the standard Enterprise plan — but treat that as a verify-with-Anthropic question (§7), not a settled fact. What Anthropic offers is **logical isolation, not physical single-tenancy** — and those levers already exist:
+Claude's commercial platform is **multi-tenant SaaS**; inference runs on Anthropic's shared infrastructure. We're aware of no publicly-advertised single-tenant / dedicated-instance SKU in the standard Enterprise plan — but treat that as a verify-with-Anthropic question (§8), not a settled fact. What Anthropic offers is **logical isolation, not physical single-tenancy** — and those levers already exist:
 
 | Isolation you might be after | What Claude actually gives you | Where |
 |---|---|---|
@@ -46,7 +46,7 @@ Claude's native isolation unit on the build surface is the **workspace**. Map en
 | **Model pin** | test latest / preview freely | **pinned, eval-certified version only** |
 | **Budget** | **hard cap** (browns out, no harm done) | **alert thresholds (50/80/100%) + escalation, no cliff** |
 | **Rate / service tier** | standard | priority / committed capacity |
-| **Data** | **synthetic / anonymized only** (see §5) | real data under full governance |
+| **Data** | **synthetic / anonymized only** (see §6) | real data under full governance |
 | **Governance (ZDR / BAA / residency)** | match prod *if* it touches real data; else looser | full |
 | **Observability** | tagged `env=nonprod` | tagged `env=prod`, alerting live |
 
@@ -56,7 +56,40 @@ Making workspace boundaries match environment *and* budget boundaries means cost
 
 ---
 
-## 4. The promotion flow is the spine
+## 4. Workspace lifecycle — create · manage · archive · (no delete)
+
+The workspace is a managed object with a lifecycle, and the one surprising edge is at the end: **there is no hard-delete.** The terminal operation is **archive** — it is **irreversible** and it **cascades to every API key in the workspace**. Design teardown around that, not around a delete button that doesn't exist.
+
+Two control planes drive the same object — the **Console UI** and the **Admin API** (authenticate with an `sk-ant-admin…` key, an `org:admin` OAuth token, or **Workload Identity Federation** for keyless CI automation). **Only org admins create workspaces**; org users/developers are not auto-added. For the full what/why/how — the five roles, topology, day-2 ops, decommission, and a worked regulated-enterprise example — see the visual deep-dive [`enterprise-workspaces-guide.html`](enterprise-workspaces-guide.html).
+
+| Stage | Console | Admin API | Caveat that bites |
+|---|---|---|---|
+| **Create** | Settings → Workspaces → Create (name + color) | `POST /v1/organizations/workspaces` | Name by `{env}-{team}` and use the color to encode environment — a visual guard against wrong-workspace key use |
+| **Manage** — members / keys / limits | Workspace → members · keys · **Limits** tab | member + key endpoints; **Rate Limits API** (read), **Spend Limits API** (read/set) | Workspace spend cap must be **< org**; if unset, the **org limit still applies** — both levels are evaluated on every request |
+| **Archive** | Workspaces list → ellipsis → confirm | `POST /v1/organizations/workspaces/{id}/archive` | **Archives all keys. Cannot be undone.** Drain/rotate workloads off the keys *first*, then archive |
+| **Delete** | not offered | **no endpoint** | Archive is the only decommission path; **data is retained** per your retention policy |
+
+**The Default Workspace is immovable** — every org has one, it **cannot be renamed, archived, or deleted**, and its usage reports back with a **`null` `workspace_id`**. Traffic landing in Default is therefore un-attributable: treat "spend in Default" as an attribution leak to close, not a resting state.
+
+### Roles — least privilege is a real lever
+
+| Role | Can |
+|---|---|
+| **Workspace User** | Workbench (Console playground) only |
+| **Workspace Limited Developer** | Keys + API — but **no** session-tracing views and **no** file download |
+| **Workspace Developer** | Keys + API |
+| **Workspace Admin** | Full control of settings + members |
+| **Workspace Billing** | View billing — **inherited** from org billing; can't be hand-assigned |
+
+Org admins auto-hold Workspace Admin everywhere; org billing auto-holds Workspace Billing; everyone else is added per workspace. **Limited Developer** is the underused control — it keeps prompt/response traces and file exfil out of a team's reach while still letting them ship against the API. Default new members there; elevate deliberately.
+
+**"Delete my data" is a retention question, not a workspace op.** Archiving removes the operational container; it does **not** purge the data. A stakeholder who needs the *content* gone is asking for a **retention / ZDR / Compliance-API-delete** control ([`governance-overlay.md`](governance-overlay.md)), not an archive. Conflating the two is how a DSAR or eDiscovery-deletion obligation quietly fails.
+
+**Verify-in-Console:** whether an Admin-API archive is ever reversible — the UI states archive "cannot be undone", so treat it as terminal unless a rep confirms otherwise (max workspaces per org: §8).
+
+---
+
+## 5. The promotion flow is the spine
 
 `dev → staging → prod` is three copies of nothing until you add the gates that make it a pipeline:
 
@@ -68,7 +101,7 @@ Observability tags every request with its workspace — hence its environment �
 
 ---
 
-## 5. The landmine — non-prod is not a home for real regulated data
+## 6. The landmine — non-prod is not a home for real regulated data
 
 **Non-prod must not carry real regulated data unless it holds prod's full governance posture.** The common failure: pointing staging at prod data (PHI, PII, customer records) for "realistic testing" — but non-prod usually runs looser ZDR/BAA/retention, so real regulated data in a non-prod workspace is a **compliance breach**, not a convenience.
 
@@ -80,7 +113,7 @@ Two clean paths:
 
 ---
 
-## 6. How far to separate — three structural options
+## 7. How far to separate — three structural options
 
 | Option | Isolation | Overhead | When it's right |
 |---|---|---|---|
@@ -92,7 +125,7 @@ Default to separate workspaces in one org; escalate to separate orgs only when a
 
 ---
 
-## 7. Verify-at-signing / verify-in-Console
+## 8. Verify-at-signing / verify-in-Console
 
 Stated as questions to confirm directly — never asserted here:
 
@@ -103,19 +136,21 @@ Stated as questions to confirm directly — never asserted here:
 
 ---
 
-## 8. Failure modes
+## 9. Failure modes
 
 | Failure | What it looks like | Counter |
 |---|---|---|
-| **Real data in non-prod** | staging pointed at prod PHI for "realistic tests" under looser ZDR/BAA | synthetic data, or apply prod governance to the non-prod workspace (§5) |
+| **Real data in non-prod** | staging pointed at prod PHI for "realistic tests" under looser ZDR/BAA | synthetic data, or apply prod governance to the non-prod workspace (§6) |
 | **Shared prod key in dev** | one key across environments; a dev leak = prod exposure + blended attribution | one key set per workspace; rotate independently |
-| **No promotion gate** | a prompt or model change lands in prod with no eval run | eval-suite pass is the gate; staged cutover for model swaps (§4) |
+| **No promotion gate** | a prompt or model change lands in prod with no eval run | eval-suite pass is the gate; staged cutover for model swaps (§5) |
 | **Blanket org hard cap** | the month's last week browns out prod because an experiment ate the ceiling | cap experiments, alert prod ([`token-budget-governance.md`](token-budget-governance.md)) |
 | **Assumed single-tenant** | architecture built on a "dedicated instance" that isn't the commercial default | confirm the deployment model at signing before designing around it |
 | **Model-pin drift across envs** | dev on latest, prod on a pin, evals run against the wrong one | eval against the exact prod pin; keep a pin manifest per environment |
+| **Archived a live workspace** | archive cascades to all keys and can't be undone; a still-referenced key dies → outage | drain/rotate keys off the workspace, then archive (§4) |
+| **Archive assumed to purge data** | "we archived it, the data's gone" → a DSAR / eDiscovery deletion silently fails | archive removes the container, not the data; deletion is a retention / ZDR / Compliance-API control (§4) |
 
 ---
 
-**Cross-references:** [`operating-model-guide.md`](operating-model-guide.md) (who owns it) · [`procurement-pack.md`](procurement-pack.md) (how you buy it + §4 hyperscaler paths) · [`token-budget-governance.md`](token-budget-governance.md) (the workspace/budget ladder + caps) · [`eval-starter-pack.md`](eval-starter-pack.md) (the promotion gate) · [`model-deprecation-runbook.md`](model-deprecation-runbook.md) (staged cutover) · [`governance-overlay.md`](governance-overlay.md) + [`enterprise-data-boundaries.html`](enterprise-data-boundaries.html) (per-environment governance posture) · [`agent-observability-guide.md`](agent-observability-guide.md) (env-tagged telemetry) · [`maturity-model.md`](maturity-model.md) (the L2 gate) · [`docs/feature-inventory.md`](../docs/feature-inventory.md) (Console workspaces row).
+**Cross-references:** [`operating-model-guide.md`](operating-model-guide.md) (who owns it) · [`procurement-pack.md`](procurement-pack.md) (how you buy it + §4 hyperscaler paths) · [`token-budget-governance.md`](token-budget-governance.md) (the workspace/budget ladder + caps) · [`eval-starter-pack.md`](eval-starter-pack.md) (the promotion gate) · [`model-deprecation-runbook.md`](model-deprecation-runbook.md) (staged cutover) · [`governance-overlay.md`](governance-overlay.md) + [`enterprise-data-boundaries.html`](enterprise-data-boundaries.html) (per-environment governance posture) · [`agent-observability-guide.md`](agent-observability-guide.md) (env-tagged telemetry) · [`maturity-model.md`](maturity-model.md) (the L2 gate) · [`enterprise-workspaces-guide.html`](enterprise-workspaces-guide.html) (the workspace what/why/how deep-dive) · [`docs/feature-inventory.md`](../docs/feature-inventory.md) (Console workspaces row).
 
 © gmanch94 · CC-BY-4.0 · As of 2026-07. Verify pricing/models at anthropic.com.
