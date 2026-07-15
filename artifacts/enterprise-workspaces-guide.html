@@ -451,6 +451,7 @@
     </tbody>
   </table></div>
   <div class="body"><p><strong>Rule of thumb — one credential, one blast radius.</strong> Match custody to blast radius: guard the <strong>Admin</strong> credential hardest (it's org-wide — prefer <code>org:admin</code> OAuth or WIF over a long-lived <code>sk-ant-admin</code> key); rotate <strong>Messages-API</strong> keys per workspace; and remember the <strong>hyperscaler</strong> and <strong>subscription</strong> paths never touch a Console workspace, so their governance lives in the cloud account or the plan, not in a <code>workspace_id</code>.</p></div>
+  <div class="body"><p><strong>Provenance + scoping in depth:</strong> how a service account (<code>svac_</code>) and its federation rule are created and scoped, and where <code>CLAUDE_CODE_OAUTH_TOKEN</code> comes from, live in <a href="claude-code-enterprise-config.html">claude-code-enterprise-config.html</a> §5.1 (identity &amp; credentials) — this matrix is the map; that's the wiring.</p></div>
 
   <!-- ============================ HOW: topology ============================ -->
   <h2 id="topology"><span class="kicker">How · topology</span>How many workspaces, and how far to separate</h2>
