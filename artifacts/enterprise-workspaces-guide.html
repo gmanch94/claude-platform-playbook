@@ -162,6 +162,8 @@
     th { background:rgba(217,119,87,.12); }
     .ob-title, .wscard.def .wc-h, .inherit > span:first-child, .wc-h .pin { color:#d9b8a0; }
     .connflow .n { background:rgba(217,119,87,.12); }
+    .pr.dev { color:#8ea6ea; border-color:#3a4a7a; }
+    .pr.admin { color:#b79ae8; border-color:#4a3a6a; }
   }
   @media print { body { padding:0; } .hero { box-shadow:none; } a { color:inherit; text-decoration:none; } }
 </style>
@@ -276,7 +278,7 @@
   </div>
 
   <!-- org-structure model -->
-  <div class="orgmodel" role="img" aria-label="Org structure: an organization with org-level roles at the top cascades by inheritance into workspaces, each holding its own members, keys, limits and geo.">
+  <div class="orgmodel">
     <div class="org-band">
       <div class="ob-title">Organization <span class="ob-sub">one contract · one bill · managed via the Admin API (sk-ant-admin key / org:admin OAuth / WIF)</span></div>
       <div class="principals">
@@ -313,7 +315,7 @@
         <div class="wc-r"><b>limits</b> ≤ org · alerts</div>
         <div class="wc-r"><b>geo</b> us · set at create</div>
       </div>
-      <div class="wscard more">+ 6 more<br>(env × team)</div>
+      <div class="wscard more">+ 7 more<br>(env × team)</div>
     </div>
     <div class="om-cap"><strong>Read it top-down:</strong> org-level roles cascade into every workspace; workspace-level roles are assigned per workspace. Keys, limits, and geo live <em>in</em> the workspace — never at the org. The Default always exists and can't be removed.</div>
   </div>
