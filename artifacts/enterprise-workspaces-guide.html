@@ -1,0 +1,552 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Enterprise Workspaces Guide — what / why / how, end to end</title>
+<link href="https://fonts.googleapis.com/css2?family=Caveat:wght@500;700&family=Patrick+Hand&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --brand:#D97757; --brandd:#B45309; --ink:#241c14; --bg:#faf7f3; --card:#fffefb;
+    --line:#e8e0d3; --muted:#8a7e6e;
+    --ga:#15803d; --beta:#b45309; --prev:#6b7280; --ent:#7c3aed;
+    /* hand-drawn taxonomy */
+    --user:#D97757; --claude:#7C5E48; --tool:#1E40AF; --store:#15803d; --out:#9a3412;
+    /* scenario accent */
+    --mer:#0d7d78; --merbg:#eefaf8;
+    --good:#15803d; --warn:#b45309; --bad:#b91c1c;
+  }
+  * { box-sizing:border-box; margin:0; padding:0; }
+  body { font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif; background:var(--bg); color:var(--ink); padding:30px 22px 80px; line-height:1.55; -webkit-print-color-adjust:exact; print-color-adjust:exact; }
+  .wrap { max-width:1180px; margin:0 auto; }
+  .home { display:inline-block; font-weight:700; font-size:12px; text-transform:uppercase; letter-spacing:.8px; color:#c2622d; text-decoration:none; margin:0 0 12px; opacity:.85; }
+  header { border-bottom:2px solid var(--brand); padding-bottom:15px; margin-bottom:20px; }
+  header h1 { font-size:30px; font-weight:700; letter-spacing:-.2px; }
+  .asof { display:inline-block; background:var(--brand); color:#fff; padding:3px 10px; border-radius:12px; font-size:12px; font-weight:600; margin-left:8px; vertical-align:middle; }
+  header .sub { color:var(--muted); font-size:14.5px; margin-top:7px; max-width:940px; }
+  header .sub a, .thesis a, .body a, footer a, .fail a, .mer a { color:var(--brandd); }
+
+  h2 { font-size:22px; margin:34px 0 4px; letter-spacing:-.2px; scroll-margin-top:14px; }
+  h2 .kicker { font-size:12px; font-weight:700; text-transform:uppercase; letter-spacing:.08em; color:var(--brand); display:block; margin-bottom:2px; }
+  h3 { font-size:16px; margin:20px 0 8px; color:var(--brandd); }
+  .body { font-size:14.5px; }
+  .body p { margin:9px 0; }
+  .body ul { margin:8px 0 8px 20px; } .body li { margin:4px 0; font-size:14px; }
+  strong { color:var(--ink); }
+  code { font-family:ui-monospace,SFMono-Regular,Menlo,monospace; font-size:12.5px; background:rgba(0,0,0,.05); padding:1px 5px; border-radius:4px; }
+
+  .thesis { background:var(--card); border:1px solid var(--line); border-left:4px solid var(--brand); border-radius:8px; padding:14px 17px; margin-bottom:18px; font-size:14px; }
+  .thesis strong { color:var(--brandd); }
+
+  /* TL;DR fact cards */
+  .facts { display:grid; grid-template-columns:repeat(auto-fit,minmax(210px,1fr)); gap:11px; margin:14px 0 8px; }
+  .fact { background:var(--card); border:1px solid var(--line); border-top:3px solid var(--brand); border-radius:9px; padding:12px 14px; font-size:13px; }
+  .fact b { display:block; font-size:13.5px; color:var(--brandd); margin-bottom:3px; }
+  .fact.warn { border-top-color:var(--bad); } .fact.warn b { color:var(--bad); }
+
+  /* hand-drawn hero */
+  .hero { background:#fffefb; border:2px solid var(--ink); border-radius:10px; padding:14px; margin:14px 0 6px; box-shadow:5px 5px 0 var(--line); }
+  .hero svg { width:100%; height:auto; max-width:1000px; display:block; margin:0 auto; font-family:'Patrick Hand','Caveat',cursive; }
+  .hero .cap { font-family:'Caveat',cursive; font-size:17px; color:var(--muted); text-align:center; margin-top:6px; }
+  .legend { display:flex; gap:12px 18px; flex-wrap:wrap; align-items:center; background:var(--card); border:1px solid var(--line); border-radius:8px; padding:9px 14px; margin:12px 0 4px; font-size:12.5px; }
+  .legend .li { display:flex; align-items:center; gap:6px; }
+  .legend .sw { width:16px; height:13px; border:2px solid; border-radius:3px; }
+
+  /* status tags */
+  .tag { display:inline-block; font-size:10px; font-weight:700; text-transform:uppercase; letter-spacing:.04em; padding:2px 7px; border-radius:9px; line-height:1.4; vertical-align:middle; }
+  .tag.h { background:rgba(21,128,61,.12); color:var(--ga); }
+  .tag.ill { background:rgba(13,125,120,.12); color:var(--mer); }
+
+  /* Meridian scenario callout */
+  .mer { background:var(--merbg); border:1px solid #bfe6e2; border-left:4px solid var(--mer); border-radius:9px; padding:12px 15px; margin:12px 0; font-size:13.5px; }
+  .mer .ml { font-size:11px; font-weight:700; text-transform:uppercase; letter-spacing:.06em; color:var(--mer); margin-bottom:5px; display:flex; align-items:center; gap:7px; }
+  .mer p { margin:6px 0; } .mer strong { color:#0b615d; }
+
+  /* lifecycle flow */
+  .flow { display:flex; gap:10px; flex-wrap:wrap; align-items:stretch; margin:14px 0 6px; }
+  .stage { flex:1 1 200px; background:var(--card); border:1.5px solid var(--line); border-top:4px solid var(--brand); border-radius:10px; padding:12px 13px; font-size:13px; position:relative; }
+  .stage h4 { font-size:15px; color:var(--brandd); margin-bottom:6px; }
+  .stage .path { font-size:12px; color:var(--muted); margin:5px 0; }
+  .stage .path b { color:var(--ink); }
+  .stage .bite { margin-top:7px; font-size:12px; color:#7a3a35; background:rgba(185,28,28,.06); border-left:3px solid var(--bad); border-radius:5px; padding:6px 9px; }
+  .stage.deny { border-top-color:var(--bad); background:#fdf4f3; }
+  .stage.deny h4 { color:var(--bad); }
+  .arrow { align-self:center; color:#cbb89e; font-size:20px; font-weight:700; }
+
+  /* generic tables */
+  table { width:100%; border-collapse:collapse; margin:12px 0; font-size:13px; background:var(--card); border:1px solid var(--line); border-radius:8px; overflow:hidden; }
+  th, td { text-align:left; padding:8px 11px; border-bottom:1px solid var(--line); vertical-align:top; }
+  th { background:rgba(217,119,87,.07); font-size:12px; text-transform:uppercase; letter-spacing:.03em; color:var(--brandd); }
+  tr:last-child td { border-bottom:none; }
+  td .y { color:var(--good); font-weight:700; } td .n { color:var(--bad); font-weight:700; } td .i { color:var(--ent); font-weight:600; }
+  .tablewrap { overflow-x:auto; }
+
+  /* topology grid */
+  .topo { display:grid; grid-template-columns:auto repeat(3,1fr); gap:8px; margin:12px 0; font-size:12.5px; }
+  .topo .h { background:transparent; border:none; font-weight:700; color:var(--brandd); font-size:12px; text-transform:uppercase; letter-spacing:.03em; display:flex; align-items:center; justify-content:center; text-align:center; padding:4px; }
+  .topo .rl { display:flex; align-items:center; font-weight:700; color:var(--claude); padding:6px 8px; }
+  .ws { background:var(--card); border:1.5px solid var(--line); border-radius:8px; padding:8px 10px; }
+  .ws.prod { border-color:#d9a; border-left:4px solid var(--out); } .ws.stg { border-left:4px solid var(--warn); } .ws.dev { border-left:4px solid var(--tool); }
+  .ws b { display:block; font-size:12.5px; } .ws .m { color:var(--muted); font-size:11.5px; margin-top:2px; }
+
+  /* decision tree */
+  .tree { background:var(--card); border:1px solid var(--line); border-radius:9px; padding:14px 16px; margin:12px 0; font-size:13.5px; }
+  .tree .q { font-weight:700; color:var(--brandd); margin:8px 0 4px; }
+  .tree .opt { margin-left:14px; padding:6px 0 6px 14px; border-left:2px solid var(--line); }
+  .tree .opt b { color:var(--ink); }
+
+  /* limits stack */
+  .limits { background:var(--card); border:1px solid var(--line); border-radius:9px; padding:14px 16px; margin:12px 0; }
+  .bar { position:relative; height:34px; border-radius:6px; margin:8px 0; display:flex; align-items:center; padding:0 12px; font-size:12.5px; font-weight:600; color:#fff; }
+  .bar.org { background:#7C5E48; width:100%; }
+  .bar.ws { background:var(--brand); width:62%; }
+  .limits .note { font-size:12.5px; color:var(--muted); margin-top:6px; }
+
+  .verify { background:var(--card); border:1px solid var(--line); border-left:4px solid var(--prev); border-radius:8px; padding:12px 16px; margin:12px 0; font-size:13.5px; }
+  .verify li { margin:5px 0 5px 18px; }
+
+  /* org-structure model */
+  .orgmodel { border:1px solid var(--line); border-radius:11px; overflow:hidden; margin:14px 0 6px; background:var(--card); }
+  .org-band { background:linear-gradient(180deg, rgba(124,94,72,.10), rgba(124,94,72,.03)); border-bottom:1px dashed var(--line); padding:12px 15px; }
+  .ob-title { font-weight:700; font-size:15px; color:var(--claude); }
+  .ob-title .ob-sub { font-weight:400; font-size:12px; color:var(--muted); margin-left:6px; }
+  .principals { display:flex; flex-wrap:wrap; gap:7px; margin-top:9px; }
+  .pr { font-size:11.5px; font-weight:600; padding:3px 9px; border-radius:20px; border:1.5px solid var(--line); }
+  .pr.admin { color:#7c3aed; border-color:#c9b3ee; background:rgba(124,58,237,.06); }
+  .pr.bill { color:var(--brandd); border-color:#e6c39c; background:rgba(217,119,87,.06); }
+  .pr.dev { color:var(--tool); border-color:#b3c3ee; background:rgba(30,64,175,.05); }
+  .pr.user { color:var(--muted); }
+  .inherit { display:flex; flex-wrap:wrap; gap:6px 14px; align-items:center; padding:9px 15px; font-size:12px; color:var(--muted); border-bottom:1px dashed var(--line); }
+  .inherit > span:first-child { font-weight:700; color:var(--claude); font-family:'Caveat',cursive; font-size:15px; }
+  .inherit .ih strong { color:var(--ink); }
+  .wsrow { display:grid; grid-template-columns:repeat(auto-fit,minmax(178px,1fr)); gap:9px; padding:13px 15px; }
+  .wscard { border:1.5px solid var(--line); border-top:3px solid var(--brand); border-radius:9px; padding:9px 11px; font-size:12px; }
+  .wscard.def { border-top-color:var(--claude); background:rgba(124,94,72,.04); }
+  .wscard.more { border-style:dashed; display:flex; align-items:center; justify-content:center; text-align:center; color:var(--muted); font-weight:600; }
+  .wc-h { font-weight:700; font-size:13px; color:var(--brandd); margin-bottom:6px; display:flex; align-items:center; gap:6px; }
+  .wscard.def .wc-h { color:var(--claude); }
+  .wc-h .pin { font-size:9.5px; text-transform:uppercase; letter-spacing:.04em; font-weight:700; color:var(--claude); background:rgba(124,94,72,.12); padding:1px 6px; border-radius:8px; }
+  .wc-r { margin:3px 0; color:var(--muted); }
+  .wc-r b { color:var(--ink); font-weight:600; display:inline-block; min-width:50px; }
+  .om-cap { padding:10px 15px; border-top:1px dashed var(--line); font-size:12.5px; color:var(--muted); }
+  .om-cap strong { color:var(--brandd); }
+  .omnote { font-size:12.5px; color:var(--muted); margin:9px 2px 4px; line-height:1.5; }
+  .omnote strong { color:var(--brandd); } .omnote a { color:var(--brandd); }
+
+  /* connect & use */
+  .connflow { display:flex; flex-wrap:wrap; align-items:center; gap:7px; background:var(--card); border:1px solid var(--line); border-radius:9px; padding:11px 14px; margin:12px 0; font-size:12.5px; }
+  .connflow .n { font-weight:600; color:var(--ink); background:rgba(217,119,87,.06); border:1px solid var(--line); border-radius:7px; padding:5px 9px; }
+  .connflow .sep { color:#cbb89e; font-weight:700; }
+  .steps { display:grid; gap:9px; margin:14px 0 6px; counter-reset:step; }
+  .step { position:relative; background:var(--card); border:1px solid var(--line); border-left:4px solid var(--brand); border-radius:9px; padding:11px 14px 11px 46px; font-size:13.5px; }
+  .step::before { counter-increment:step; content:counter(step); position:absolute; left:11px; top:10px; width:25px; height:25px; border-radius:50%; background:var(--brand); color:#fff; font-weight:700; font-size:13px; display:flex; align-items:center; justify-content:center; }
+  .step b { color:var(--brandd); }
+
+  footer { margin-top:38px; padding-top:15px; border-top:1px solid var(--line); font-size:12px; color:var(--muted); }
+  footer .src { margin-bottom:9px; } footer .src b { color:var(--ink); }
+  footer .src a { word-break:break-word; }
+
+  @media (max-width:720px){
+    header h1 { font-size:24px; }
+    .flow { flex-direction:column; } .arrow { transform:rotate(90deg); }
+    .topo { grid-template-columns:1fr; } .topo .h { display:none; }
+    .ws::before { content:attr(data-team) " · "; font-weight:700; color:var(--claude); }
+  }
+  @media (prefers-color-scheme: dark){
+    :root { --bg:#17130f; --card:#201a15; --ink:#ece5db; --line:#3a3228; --muted:#a89a86; --merbg:#122a28; }
+    .hero { background:#f4efe6; box-shadow:5px 5px 0 #000; } /* keep the hand-drawn hero on a light canvas in both themes (matches reference-architectures.html) */
+    .hero .cap { color:#6f6455; }
+    .mer { border-color:#2e5a56; } .mer strong { color:#7fded7; }
+    .stage.deny { background:#2a1a19; }
+    .stage .bite { color:#e8b5b0; }
+    .topo .rl { color:#d9b8a0; }
+    code { background:rgba(255,255,255,.08); }
+    th { background:rgba(217,119,87,.12); }
+    .ob-title, .wscard.def .wc-h, .inherit > span:first-child, .wc-h .pin { color:#d9b8a0; }
+    .connflow .n { background:rgba(217,119,87,.12); }
+    .pr.dev { color:#8ea6ea; border-color:#3a4a7a; }
+    .pr.admin { color:#b79ae8; border-color:#4a3a6a; }
+  }
+  @media print { body { padding:0; } .hero { box-shadow:none; } a { color:inherit; text-decoration:none; } }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <a class="home" href="../">Claude Platform Playbook</a>
+  <header>
+    <h1>Enterprise Workspaces Guide <span class="asof">As of 2026-07</span></h1>
+    <div class="sub"><strong>What, why, and how</strong> of <strong>Console Workspaces</strong> — the isolation unit on Claude's build/API surface — followed end to end through one regulated enterprise. This is the deep-dive companion to <a href="enterprise-deployment-guide.html">enterprise-deployment-guide.html §4</a> (topology summary) and <a href="token-budget-governance.html">token-budget-governance.html</a> (the budget ladder). Every mechanic is grounded in <a href="../docs/feature-inventory.html">feature-inventory.md</a> and marked <span class="tag h">H</span> where verified live against <a href="https://platform.claude.com/docs/en/manage-claude/workspaces">platform.claude.com</a> on 2026-07-14. <span class="tag ill">Illustrative</span> marks the fictional scenario.</div>
+  </header>
+
+  <div class="thesis">
+    <strong>The one surprise up front:</strong> a workspace has a <em>create → manage → archive</em> lifecycle — but <strong>there is no hard-delete</strong>. Archive is the terminal state, it is <strong>irreversible</strong>, and it archives every API key in the workspace. Design your teardown around that, not around a delete button that doesn't exist.
+  </div>
+
+  <div class="facts">
+    <div class="fact warn"><b>No hard-delete</b>Terminal op is <strong>archive</strong>. No delete endpoint, no purge. Data is retained per your retention policy.</div>
+    <div class="fact warn"><b>Archive cascades + is final</b>Archiving archives <em>all</em> keys in the workspace and <strong>cannot be undone</strong>. Drain workloads off the keys first. <span class="tag h">H</span></div>
+    <div class="fact"><b>Default is immovable</b>Every org has a Default Workspace — it can't be renamed, archived, or deleted. Its usage reports as <code>null</code> <code>workspace_id</code>.</div>
+    <div class="fact"><b>Two control planes</b>Console UI <em>and</em> Admin API (<code>sk-ant-admin…</code> key, <code>org:admin</code> OAuth, or WIF for keyless CI). Only org admins create.</div>
+    <div class="fact"><b>Limits stack</b>Workspace limits can be <strong>tighter than the org, never looser</strong>. If unset, the org limit applies — both ceilings stay in force.</div>
+  </div>
+
+  <!-- ============================ HERO (hand-drawn) ============================ -->
+  <div class="hero">
+    <svg viewBox="0 0 1000 430" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="A workspace is a container inside your organization holding keys, members, limits and geo; sibling workspaces isolate teams and environments.">
+      <defs>
+        <marker id="ar" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0,1 L9,5 L0,9 L2,5 z" fill="#241c14"/></marker>
+      </defs>
+      <style>
+        .lbl{font-size:19px;fill:#241c14} .sub{font-size:12px;fill:#5a4a3a}
+        .anno{font-size:16px;fill:#B45309;font-family:'Caveat',cursive}
+        .box{fill:#fffefb;stroke-width:2.5} .org{stroke:#7C5E48} .wsx{stroke:#D97757}
+        .keys{stroke:#1E40AF} .mem{stroke:#9a3412} .lim{stroke:#15803d} .geo{stroke:#7c3aed}
+        .flw{stroke:#241c14;stroke-width:1.8;fill:none} .dash{stroke-dasharray:5 4;opacity:.55}
+      </style>
+      <!-- Org boundary -->
+      <path class="box org" d="M18,20 Q14,14 24,13 L978,17 Q988,15 986,26 L983,410 Q986,420 975,418 L26,415 Q15,418 17,407 Z" fill="none"/>
+      <text class="lbl" x="40" y="44" style="font-family:'Caveat',cursive;font-size:24px;fill:#7C5E48">Your Organization  (one contract · one bill · Admin API)</text>
+
+      <!-- Primary workspace container -->
+      <path class="box wsx" d="M44,72 Q40,64 52,63 L560,67 Q572,65 570,77 L567,392 Q570,402 558,400 L54,397 Q42,400 44,389 Z"/>
+      <text class="lbl" x="70" y="98" style="fill:#B45309">clinical-ai-prod  <tspan class="sub">— a workspace</tspan></text>
+
+      <!-- four things a workspace holds -->
+      <path class="box keys" d="M74,120 Q70,113 80,112 L290,116 Q300,114 298,125 L296,182 Q299,191 288,189 L82,187 Q71,190 73,180 Z"/>
+      <text class="lbl" x="90" y="146" style="fill:#1E40AF">API keys</text>
+      <text class="sub" x="90" y="168">scoped · rotate independently</text>
+
+      <path class="box mem" d="M320,120 Q316,113 326,112 L536,116 Q546,114 544,125 L542,182 Q545,191 534,189 L328,187 Q317,190 319,180 Z"/>
+      <text class="lbl" x="336" y="146" style="fill:#9a3412">Members + roles</text>
+      <text class="sub" x="336" y="168">5 roles · least-priv lever</text>
+
+      <path class="box lim" d="M74,214 Q70,207 80,206 L290,210 Q300,208 298,219 L296,276 Q299,285 288,283 L82,281 Q71,284 73,274 Z"/>
+      <text class="lbl" x="90" y="240" style="fill:#15803d">Limits</text>
+      <text class="sub" x="90" y="262">cap ≤ org · rate per tier</text>
+
+      <path class="box geo" d="M320,214 Q316,207 326,206 L536,210 Q546,208 544,219 L542,276 Q545,285 534,283 L328,281 Q317,284 319,274 Z"/>
+      <text class="lbl" x="336" y="240" style="fill:#7c3aed">Workspace geo</text>
+      <text class="sub" x="336" y="262">US only · set at create</text>
+
+      <text class="anno" x="80" y="320">↑ everything a workspace isolates — keys, people, budget, and where data lives</text>
+      <text class="sub" x="80" y="346" style="font-style:italic">NOT here: claude.ai Projects · Cowork — separate seat surfaces</text>
+      <text class="sub" x="80" y="366" style="font-style:italic">the workspace segments <tspan font-weight="700">programmatic API consumption</tspan>, not the seat product</text>
+
+      <!-- sibling workspaces (faded) -->
+      <path class="box wsx dash" d="M602,72 Q598,64 610,63 L956,67 Q968,65 966,77 L964,150 Q967,160 955,158 L612,156 Q600,159 602,148 Z"/>
+      <text class="lbl" x="626" y="104" style="fill:#B45309;opacity:.7">revenue-cycle-prod</text>
+      <text class="sub" x="626" y="126" style="opacity:.7">own keys · own cap · own members</text>
+
+      <path class="box wsx dash" d="M602,176 Q598,168 610,167 L956,171 Q968,169 966,181 L964,254 Q967,264 955,262 L612,260 Q600,263 602,252 Z"/>
+      <text class="lbl" x="626" y="208" style="fill:#B45309;opacity:.7">data-science-dev</text>
+      <text class="sub" x="626" y="230" style="opacity:.7">de-identified only · hard spend cap</text>
+
+      <path class="box org dash" d="M602,280 Q598,272 610,271 L956,275 Q968,273 966,285 L964,360 Q967,370 955,368 L612,366 Q600,369 602,358 Z"/>
+      <text class="lbl" x="626" y="312" style="fill:#7C5E48;opacity:.75">Default Workspace</text>
+      <text class="sub" x="626" y="334" style="opacity:.75">immovable · usage = null workspace_id</text>
+
+      <!-- isolation annotation -->
+      <path class="flw dash" d="M575,240 L600,220" marker-end="url(#ar)"/>
+      <text class="anno" x="700" y="392" text-anchor="middle">siblings are isolated — a leak or overspend in one can't reach the others</text>
+    </svg>
+    <div class="cap">A workspace is a container inside your org. It holds keys, people, budget, and residency — and it is walled off from its siblings.</div>
+  </div>
+  <div class="legend">
+    <span class="li"><span class="sw" style="border-color:var(--claude);background:rgba(124,94,72,.15)"></span>Org / Default</span>
+    <span class="li"><span class="sw" style="border-color:var(--user);background:rgba(217,119,87,.15)"></span>Workspace</span>
+    <span class="li"><span class="sw" style="border-color:var(--tool);background:rgba(30,64,175,.12)"></span>API keys</span>
+    <span class="li"><span class="sw" style="border-color:var(--out);background:rgba(154,52,18,.12)"></span>Members + roles</span>
+    <span class="li"><span class="sw" style="border-color:var(--store);background:rgba(21,128,61,.12)"></span>Limits</span>
+    <span class="li"><span class="sw" style="border-color:var(--ent);background:rgba(124,58,237,.12)"></span>Workspace geo</span>
+  </div>
+
+  <div class="mer">
+    <div class="ml"><span>◆ Meridian Health</span> <span class="tag ill">illustrative scenario</span></div>
+    <p>Throughout this guide we follow <strong>Meridian Health</strong> — a fictional ~4,000-employee regulated health system standing up Claude on the API surface. Three teams ship: <strong>Clinical-AI</strong> (patient-record summarization, touches PHI), <strong>Revenue-Cycle</strong> (claims + coding automation, touches PHI), <strong>Data-Science</strong> (population analytics, de-identified). A CISO owns governance; a platform lead owns the org; the CFO wants per-team chargeback. Meridian is a worked example, not an Anthropic customer.</p>
+  </div>
+
+  <!-- ============================ WHAT ============================ -->
+  <h2 id="what"><span class="kicker">What</span>A workspace is a container — and only for the API surface</h2>
+  <div class="body">
+    <p>A <strong>Console Workspace</strong> is the native isolation unit on Claude's <strong>build / API surface</strong>. It carries four things of its own, and that is the whole mental model:</p>
+    <ul>
+      <li><strong>API keys</strong> — workspace-scoped; a key belongs to exactly one workspace.</li>
+      <li><strong>Members + roles</strong> — who can do what <em>inside</em> this workspace (five roles, below).</li>
+      <li><strong>Limits</strong> — its own spend cap and per-model-tier rate limits.</li>
+      <li><strong>Workspace geo</strong> — data residency (at-rest storage + endpoint processing), <strong>chosen when the workspace is created and immutable afterwards</strong>; currently <code>us</code> only. <span class="tag h">H</span></li>
+    </ul>
+    <p><strong>What a workspace is <em>not</em>:</strong> it does not wrap claude.ai <strong>Projects</strong> (a seat-product knowledge container) or <strong>Cowork</strong> — separate surfaces with their own controls (<a href="surface-rollout-matrix.html">surface-rollout-matrix.html</a>). <em>One nuance:</em> when <strong>Claude Code</strong> is billed through the Console, Anthropic auto-creates a per-org Claude Code workspace and <strong>mints a separate API key for each developer</strong> inside it, with its own cap (counting toward the 100-workspace cap like any listed workspace); archiving it disables Console-billed Claude Code sign-in org-wide. So <em>that</em> path is workspace-mediated — the subscription-seat path is not, and <strong>hyperscaler</strong> traffic (Bedrock / Vertex / Foundry) authenticates and bills through that cloud account, sitting outside the Console workspace model entirely (no workspace, no <code>workspace_id</code>; attribution lives in your cloud project / IAM). A workspace segments <strong>programmatic API consumption</strong> — by team, environment, or project — nothing else. If a stakeholder says "put the marketing team in their own workspace" but marketing only uses chat and Projects, the workspace won't do what they think.</p>
+    <p>The hierarchy is <strong>organization → workspace → API key</strong>. One org (one contract, one bill) contains many workspaces; each workspace contains many keys, members, and limits — drawn as a structure below (org principals and inheritance on top, the workspaces underneath):</p>
+  </div>
+
+  <!-- org-structure model -->
+  <div class="orgmodel">
+    <div class="org-band">
+      <div class="ob-title">Organization <span class="ob-sub">one contract · one bill · managed via the Admin API (sk-ant-admin key / org:admin OAuth / WIF)</span></div>
+      <div class="principals">
+        <span class="pr admin">Org Admin</span>
+        <span class="pr bill">Org Billing</span>
+        <span class="pr dev">Org Developer</span>
+        <span class="pr user">Org User</span>
+      </div>
+    </div>
+    <div class="inherit">
+      <span>inheritance ↓</span>
+      <span class="ih">Org Admin → <strong>Workspace Admin</strong> everywhere (automatic)</span>
+      <span class="ih">Org Billing → <strong>Workspace Billing</strong> everywhere (automatic)</span>
+      <span class="ih">Org User / Developer → <strong>added per workspace</strong> (never automatic)</span>
+    </div>
+    <div class="wsrow">
+      <div class="wscard def">
+        <div class="wc-h">Default <span class="pin">immovable</span></div>
+        <div class="wc-r"><b>members</b> org admins (inherited)</div>
+        <div class="wc-r"><b>keys</b> sweep for strays</div>
+        <div class="wc-r"><b>usage</b> null workspace_id</div>
+      </div>
+      <div class="wscard">
+        <div class="wc-h">clinical-ai-prod</div>
+        <div class="wc-r"><b>members</b> Admin · Dev · Ltd-Dev · User</div>
+        <div class="wc-r"><b>keys</b> workspace-scoped</div>
+        <div class="wc-r"><b>limits</b> ≤ org · alerts</div>
+        <div class="wc-r"><b>geo</b> us · set at create</div>
+      </div>
+      <div class="wscard">
+        <div class="wc-h">rev-cycle-prod</div>
+        <div class="wc-r"><b>members</b> per-workspace</div>
+        <div class="wc-r"><b>keys</b> its own set</div>
+        <div class="wc-r"><b>limits</b> ≤ org · alerts</div>
+        <div class="wc-r"><b>geo</b> us · set at create</div>
+      </div>
+      <div class="wscard more">+ 7 more<br>(env × team)</div>
+    </div>
+    <div class="om-cap"><strong>Read it top-down:</strong> org-level roles cascade into every workspace; workspace-level roles are assigned per workspace. Keys, limits, and geo live <em>in</em> the workspace — never at the org. The Default always exists and can't be removed.</div>
+  </div>
+
+  <p class="omnote"><strong>How people get these roles:</strong> enterprise <strong>SSO</strong> (SAML — Team / Enterprise / Console) authenticates the human at login; <strong>SCIM / JIT + IdP group-mapping</strong> then provisions org membership and role / seat-tier, which cascades into workspaces by the inheritance above. SSO governs the <em>login</em>, not the API credential — keys still authenticate calls, and an already-issued key keeps working until it's revoked, independent of an SSO deprovision. Identity depth lives in <a href="claude-enterprise-architecture.html">claude-enterprise-architecture.html</a> (Access &amp; Identity).</p>
+
+  <div class="mer">
+    <div class="ml"><span>◆ Meridian Health</span> <span class="tag ill">illustrative</span></div>
+    <p>Meridian has <strong>one organization</strong> on an Enterprise/Platform contract. On day one it already has a <strong>Default Workspace</strong> it can't remove. The platform lead will create named workspaces per team and environment — the Default becomes a place to watch, not a place to run production (see day-2).</p>
+  </div>
+
+  <!-- ============================ WHY ============================ -->
+  <h2 id="why"><span class="kicker">Why</span>Why segment at all — five reasons, one principle</h2>
+  <div class="body">
+    <p>Everything you could run under a single key and one workspace. Enterprises don't, for five reasons:</p>
+    <ul>
+      <li><strong>Cost attribution</strong> — the Usage &amp; Cost API rolls up spend by <code>workspace_id</code>. Make the workspace boundary the budget boundary and per-team cost falls out for free. <span class="tag h">H</span></li>
+      <li><strong>Blast-radius containment</strong> — a leaked key, a runaway loop, or a bad prompt is scoped to one workspace's keys and one workspace's cap.</li>
+      <li><strong>Access control</strong> — five roles, assigned per workspace, keep one team out of another team's keys and traces.</li>
+      <li><strong>Environment isolation</strong> — dev / staging / prod as separate workspaces means a prod key is never shared into dev (<a href="enterprise-deployment-guide.html">enterprise-deployment-guide.html §3</a>).</li>
+      <li><strong>Governance posture</strong> — residency (Workspace geo) and the real-data-only-in-prod discipline are set per workspace.</li>
+    </ul>
+    <p>The single principle underneath all five: <strong>the workspace is the natural budget and blast-radius boundary — draw it once, and attribution, containment, and access follow it.</strong></p>
+  </div>
+  <div class="mer">
+    <div class="ml"><span>◆ Meridian Health</span> <span class="tag ill">illustrative</span></div>
+    <p>Meridian splits by <strong>environment × team</strong>. The CFO gets clean per-team chargeback (each team = a set of workspaces). The CISO gets PHI blast-radius isolation (a Clinical-AI key can't touch Revenue-Cycle data). And prod workspaces carry the BAA-covered posture + US residency that dev/staging deliberately don't — because dev/staging run <strong>synthetic / de-identified data only</strong>.</p>
+  </div>
+
+  <!-- ============================ HOW: lifecycle ============================ -->
+  <h2 id="lifecycle"><span class="kicker">How · lifecycle</span>Create → Manage → Archive → (there is no Delete)</h2>
+  <div class="body"><p>The same object is driven from two control planes — the <strong>Console UI</strong> and the <strong>Admin API</strong> (authenticate with an <code>sk-ant-admin…</code> key, an <code>org:admin</code> OAuth token, or <strong>Workload Identity Federation</strong> for keyless CI). <strong>Only org admins create workspaces</strong>; org users and developers are not auto-added. <span class="tag h">H</span></p></div>
+
+  <div class="flow">
+    <div class="stage">
+      <h4>1 · Create</h4>
+      <div class="path"><b>Console:</b> Settings → Workspaces → Create (name · color · geo)</div>
+      <div class="path"><b>API:</b> <code>POST /v1/organizations/workspaces</code></div>
+      <div class="bite">Name by <code>{env}-{team}</code>; color encodes environment (a guard against wrong-workspace key use). <strong>Geo is chosen here and can't change later</strong> (<code>us</code> only today).</div>
+    </div>
+    <div class="arrow">→</div>
+    <div class="stage">
+      <h4>2 · Manage</h4>
+      <div class="path"><b>Members / keys</b> · <b>Limits</b> tab (per model tier)</div>
+      <div class="path"><b>API:</b> member + key endpoints · Rate Limits API (read) · Spend Limits API (read/set)</div>
+      <div class="bite">Workspace cap is <strong>≤ org</strong> (tighter, never looser); if unset, the org limit applies.</div>
+    </div>
+    <div class="arrow">→</div>
+    <div class="stage">
+      <h4>3 · Archive</h4>
+      <div class="path"><b>Console:</b> list → ellipsis → confirm</div>
+      <div class="path"><b>API:</b> <code>POST …/workspaces/{id}/archive</code></div>
+      <div class="bite"><strong>Archives all keys. Cannot be undone.</strong> Drain / rotate workloads off the keys <em>first</em>.</div>
+    </div>
+    <div class="arrow">→</div>
+    <div class="stage deny">
+      <h4>4 · Delete ✗</h4>
+      <div class="path"><b>Console:</b> not offered</div>
+      <div class="path"><b>API:</b> no endpoint</div>
+      <div class="bite">Archive is the only decommission path. <strong>Data is retained</strong> per your retention policy — "delete" is a retention control, not a workspace op.</div>
+    </div>
+  </div>
+
+  <div class="body">
+    <p><strong>The Default Workspace is immovable</strong> — every org has one, it <strong>cannot be renamed, archived, or deleted</strong>, and its usage reports back with a <code>null</code> <code>workspace_id</code>. Traffic landing in Default is therefore un-attributable: treat "spend in Default" as an attribution leak to close, not a resting state. <span class="tag h">H</span></p>
+
+    <h3>The five roles — least privilege is a real lever</h3>
+    <div class="tablewrap"><table>
+      <thead><tr><th>Role</th><th>Can</th><th>Session traces / file download</th></tr></thead>
+      <tbody>
+        <tr><td><strong>Workspace User</strong></td><td>Workbench (Console playground) only</td><td class="n">✗</td></tr>
+        <tr><td><strong>Workspace Limited Developer</strong></td><td>Create/manage keys · use the API</td><td class="n">✗ — no tracing, no file download</td></tr>
+        <tr><td><strong>Workspace Developer</strong></td><td>Create/manage keys · use the API</td><td class="y">✓</td></tr>
+        <tr><td><strong>Workspace Admin</strong></td><td>Full control of settings + members</td><td class="y">✓</td></tr>
+        <tr><td><strong>Workspace Billing</strong></td><td>View billing — <em>inherited</em> from org billing; can't be hand-assigned</td><td>—</td></tr>
+      </tbody>
+    </table></div>
+    <p><strong>Inheritance:</strong> org admins auto-hold Workspace Admin on every workspace; org billing members auto-hold Workspace Billing on every workspace; everyone else must be <strong>added per workspace</strong>. The under-used control is <strong>Limited Developer</strong> — it lets a team ship against the API while keeping prompt/response <em>traces</em> and <em>file exfil</em> out of reach. Default new members there; elevate deliberately. <span class="tag h">H</span></p>
+
+    <h3>Limits stack — both levels always apply</h3>
+  </div>
+  <div class="limits">
+    <div class="bar org">Organization limit (spend + rate) — the ceiling</div>
+    <div class="bar ws">Workspace limit — ≤ org (tighter, not looser) · per model tier</div>
+    <div class="note">Both the workspace and org ceilings apply — a workspace can be <em>tighter</em> than the org, never looser (rate limits per request; spend caps cumulative monthly). If a workspace limit is unset, the org limit still applies. <span class="tag h">H</span></div>
+  </div>
+
+  <div class="mer">
+    <div class="ml"><span>◆ Meridian Health</span> <span class="tag ill">illustrative</span></div>
+    <p>Meridian's platform lead creates <code>clinical-ai-prod</code> via the <strong>Admin API from CI with WIF</strong> — no long-lived admin key sitting in a runner. Clinical engineers are added as <strong>Limited Developer</strong> (they ship, but can't pull PHI-bearing prompt traces or download files). Prod gets alert thresholds at 50/80/100%; the Data-Science <em>dev</em> workspace gets a hard spend cap that browns out harmlessly when an experiment runs long.</p>
+  </div>
+
+  <!-- ============================ HOW: connect & use ============================ -->
+  <h2 id="connect"><span class="kicker">How · connect &amp; use</span>How a team gets onto a workspace and starts calling</h2>
+  <div class="body"><p>Once the workspace and its roles exist, a developer connects in five moves. Nothing in application code is workspace-aware — the <strong>key</strong> carries the workspace.</p></div>
+
+  <div class="connflow">
+    <span class="n">You — added as a member</span><span class="sep">→</span>
+    <span class="n">get a workspace-scoped key</span><span class="sep">→</span>
+    <span class="n">set <code>ANTHROPIC_API_KEY</code></span><span class="sep">→</span>
+    <span class="n">call the API</span><span class="sep">→</span>
+    <span class="n">usage attributes to <code>workspace_id</code></span>
+  </div>
+
+  <div class="steps">
+    <div class="step"><b>An admin adds you to the workspace.</b> You can't self-join — an org admin or Workspace Admin adds you as a member with a role (org users and developers are added <em>per workspace</em>). Ask to start as <strong>Limited Developer</strong> unless you actually need session traces or file download. <span class="tag h">H</span></div>
+    <div class="step"><b>Create a workspace-scoped API key.</b> In that workspace, a Developer or Limited Developer creates a key — Console → the workspace → <em>API keys</em>, or the Admin API. The key belongs to this one workspace; it is what scopes every later call. <span class="tag h">H</span></div>
+    <div class="step"><b>Store the key as a secret.</b> Put it in your app or CI secret store as <code>ANTHROPIC_API_KEY</code> (or send it as the <code>x-api-key</code> header). Never commit it, and never reuse a prod key in dev — one key-set per workspace.</div>
+    <div class="step"><b>Call the API as normal.</b> Your SDK / HTTP requests with that key run against this workspace and draw on its limits — no other code change. Requests attribute to the workspace's <code>workspace_id</code> in usage reporting. <span class="tag h">H</span></div>
+    <div class="step"><b>Live inside the limits, then confirm attribution.</b> The workspace's rate + spend caps apply under the org ceiling (expect <code>429</code> on rate, a hard stop at the spend cap). Need more? Ask the admin to raise the <em>workspace</em> limit (still ≤ org) — not to hand you another key. Then check the Usage &amp; Cost API / dashboard filtered by your <code>workspace_id</code> shows your team's spend, and that nothing landed in Default. <span class="tag h">H</span></div>
+  </div>
+
+  <div class="mer">
+    <div class="ml"><span>◆ Meridian Health</span> <span class="tag ill">illustrative</span></div>
+    <p>A new Clinical-AI engineer is added to <code>clinical-ai-dev</code> as <strong>Limited Developer</strong> (no PHI-trace access), mints a key there, drops it into the team's CI secret store as <code>ANTHROPIC_API_KEY</code>, and ships against the synthetic-data dev workspace. Their spend shows up under <code>clinical-ai-dev</code> in the CFO's per-team rollup — never in Default, never blended with Revenue-Cycle.</p>
+  </div>
+
+  <!-- ============================ Credential axis ============================ -->
+  <h2 id="credentials"><span class="kicker">How · credentials</span>The credential axis — which credential authenticates which surface</h2>
+  <div class="body"><p>The connect flow above used one credential — a workspace API key. But programmatic traffic reaches Claude through several surfaces, each with its own credential, custody, and blast radius. This is the <strong>machine-auth axis</strong>; enterprise <strong>SSO / SCIM</strong> (the org-model footnote) is the separate <strong>human-auth axis</strong> — a login, never a substitute for the credentials below.</p></div>
+
+  <div class="tablewrap"><table>
+    <thead><tr><th>Surface (programmatic)</th><th>Credential</th><th>Custody / where it lives</th><th>Scope</th><th>Rotation / revoke</th><th>Attribution · blast radius</th></tr></thead>
+    <tbody>
+      <tr><td><strong>Messages API</strong> — your apps &amp; agents</td><td><code>x-api-key</code> workspace key</td><td>app / CI secret store</td><td>one workspace</td><td>per-key, independent</td><td><code>workspace_id</code>; a leak is scoped to that workspace <span class="tag h">H</span></td></tr>
+      <tr><td><strong>Admin API</strong> — org / member / workspace mgmt</td><td><code>sk-ant-admin…</code> key <em>or</em> <code>org:admin</code> OAuth token</td><td>tightly-held admin secret / short-lived token</td><td><strong>whole org</strong></td><td>key rotate / token expiry</td><td>org-wide — the highest blast radius <span class="tag h">H</span></td></tr>
+      <tr><td><strong>CI / automation</strong> (non-human)</td><td><strong>WIF</strong> → service account <code>svac_…</code></td><td>federated — no long-lived secret in the runner</td><td>scoped by federation rule</td><td>short-lived, auto-minted</td><td>per-service-account <span class="tag h">H</span></td></tr>
+      <tr><td><strong>Claude Code</strong> — Console-billed</td><td>per-developer Console API key</td><td>Console-minted, one per user</td><td>the auto Claude Code workspace</td><td>per-user; archive kills all keys</td><td>per-user; archiving = org-wide Claude Code sign-out <span class="tag h">H</span></td></tr>
+      <tr><td><strong>Claude Code</strong> — subscription</td><td><code>CLAUDE_CODE_OAUTH_TOKEN</code></td><td><code>claude setup-token</code>; inference-only</td><td>the Pro / Max / Team / Enterprise plan</td><td>~1-year token</td><td>billed to the plan — <em>no workspace</em> <span class="tag h">H</span></td></tr>
+      <tr><td><strong>Hyperscaler</strong> — Bedrock / Vertex / Foundry</td><td>cloud-provider credentials (IAM)</td><td>your cloud account</td><td>cloud project / subscription</td><td>cloud-native</td><td>cloud project / IAM — <strong>outside the workspace model</strong> <span class="tag h">H</span></td></tr>
+    </tbody>
+  </table></div>
+  <div class="body"><p><strong>Rule of thumb — one credential, one blast radius.</strong> Match custody to blast radius: guard the <strong>Admin</strong> credential hardest (it's org-wide — prefer <code>org:admin</code> OAuth or WIF over a long-lived <code>sk-ant-admin</code> key); rotate <strong>Messages-API</strong> keys per workspace; and remember the <strong>hyperscaler</strong> and <strong>subscription</strong> paths never touch a Console workspace, so their governance lives in the cloud account or the plan, not in a <code>workspace_id</code>.</p></div>
+  <div class="body"><p><strong>Provenance + scoping in depth:</strong> how a service account (<code>svac_</code>) and its federation rule are created and scoped, and where <code>CLAUDE_CODE_OAUTH_TOKEN</code> comes from, live in <a href="claude-code-enterprise-config.html">claude-code-enterprise-config.html</a> §5.1 (identity &amp; credentials) — this matrix is the map; that's the wiring.</p></div>
+
+  <!-- ============================ HOW: topology ============================ -->
+  <h2 id="topology"><span class="kicker">How · topology</span>How many workspaces, and how far to separate</h2>
+  <div class="body"><p>Map <strong>environment × team</strong> to workspaces. Meridian's grid — one workspace per cell, each with its own keys, cap, and posture:</p></div>
+
+  <div class="topo">
+    <div class="h"></div>
+    <div class="h">Clinical-AI</div><div class="h">Revenue-Cycle</div><div class="h">Data-Science</div>
+    <div class="rl">prod</div>
+    <div class="ws prod" data-team="Clinical-AI"><b>clinical-ai-prod</b><span class="m">BAA posture · US geo · alert 50/80/100</span></div>
+    <div class="ws prod" data-team="Revenue-Cycle"><b>rev-cycle-prod</b><span class="m">BAA posture · US geo · alerts</span></div>
+    <div class="ws prod" data-team="Data-Science"><b>data-sci-prod</b><span class="m">de-identified · alerts</span></div>
+    <div class="rl">staging</div>
+    <div class="ws stg" data-team="Clinical-AI"><b>clinical-ai-stg</b><span class="m">synthetic data · prod-like limits</span></div>
+    <div class="ws stg" data-team="Revenue-Cycle"><b>rev-cycle-stg</b><span class="m">synthetic data · prod-like</span></div>
+    <div class="ws stg" data-team="Data-Science"><b>data-sci-stg</b><span class="m">synthetic · prod-like</span></div>
+    <div class="rl">dev</div>
+    <div class="ws dev" data-team="Clinical-AI"><b>clinical-ai-dev</b><span class="m">synthetic · hard cap</span></div>
+    <div class="ws dev" data-team="Revenue-Cycle"><b>rev-cycle-dev</b><span class="m">synthetic · hard cap</span></div>
+    <div class="ws dev" data-team="Data-Science"><b>data-sci-dev</b><span class="m">synthetic · hard cap</span></div>
+  </div>
+
+  <div class="body"><p>Nine workspaces, one org, one bill. The next question is whether one org is enough or you need harder separation:</p></div>
+  <div class="tree">
+    <div class="q">Do the parts need separate <em>billing</em> or a hard <em>access</em> boundary?</div>
+    <div class="opt"><b>No →</b> <strong>Separate workspaces, one org</strong> — keys · budget · rate · members isolated; single contract, one bill. <em>The default for most.</em> Contained blast radius, clean attribution.</div>
+    <div class="opt"><b>Yes, a regulated / legal boundary →</b> <strong>Separate orgs</strong> — full access + billing separation, but duplicate admin + contract. Right only for a ring-fenced subsidiary; usually overkill.</div>
+    <div class="opt"><b>Already multi-account in cloud →</b> <strong>Hyperscaler environments</strong> — prod/non-prod maps to AWS accounts / GCP projects / Azure subscriptions + IAM (<a href="procurement-pack.html">procurement-pack.html §4</a>).</div>
+    <div class="q">How many workspaces can one org hold?</div>
+    <div class="opt"><strong>100 per organization</strong> — and archived workspaces <em>don't</em> count toward the cap (one more reason archive ≠ delete matters). Meridian's nine is comfortably routine. <span class="tag h">H</span></div>
+  </div>
+  <div class="mer">
+    <div class="ml"><span>◆ Meridian Health</span> <span class="tag ill">illustrative</span></div>
+    <p>Meridian stays in <strong>one org</strong>. It considered a separate org for a newly-acquired imaging subsidiary that must be legally ring-fenced — that's the one case where the duplicate-admin overhead is worth it. Everything else is a workspace.</p>
+  </div>
+
+  <!-- ============================ HOW: day-2 ============================ -->
+  <h2 id="day2"><span class="kicker">How · day-2 operations</span>Running the fleet without attribution debt</h2>
+  <div class="body"><ul>
+    <li><strong>Watch the Default Workspace.</strong> Its usage is <code>null</code> <code>workspace_id</code> — un-attributable. A key created there by accident is silent spend. Sweep for it.</li>
+    <li><strong>Showback before chargeback.</strong> Meter (workspace = team) → show teams their monthly spend for two clean cycles → only then move money to team budgets (<a href="token-budget-governance.html">token-budget-governance.html</a>).</li>
+    <li><strong>Cap experiments, alert prod.</strong> Hard caps on dev/sandbox (harmless brown-out); alert thresholds + escalation on prod (never a cliff). A blanket org cap browns out prod in the month's last week.</li>
+    <li><strong>Least privilege by default.</strong> New members → Limited Developer; elevate to Developer/Admin only when the trace/exfil access is actually needed.</li>
+    <li><strong>One key-set per workspace, rotated independently.</strong> Never share a prod key into dev — a dev leak then equals prod exposure plus blended attribution.</li>
+  </ul></div>
+
+  <!-- ============================ Decommission ============================ -->
+  <h2 id="decommission"><span class="kicker">How · decommission</span>Archiving is a ritual, not a button</h2>
+  <div class="body">
+    <p>Because archive <strong>cascades to every key</strong> and <strong>cannot be undone</strong>, treat it as a decommission ritual:</p>
+    <ul>
+      <li><strong>1 · Drain</strong> — move or retire every workload using the workspace's keys; confirm zero live traffic.</li>
+      <li><strong>2 · Export</strong> — pull any usage/cost history you need for the record (the Console keeps data, but capture what your FinOps or audit trail requires).</li>
+      <li><strong>3 · Archive</strong> — then archive, in Console or via <code>POST …/archive</code>. Keep an out-of-band changelog of who/when/why (the Console retains data, not your rationale).</li>
+    </ul>
+    <p><strong>"Delete my data" is a retention question, not a workspace op.</strong> Archiving removes the operational container; it does <em>not</em> purge the data. A stakeholder who needs the <em>content</em> gone is asking for a <strong>retention / ZDR / Compliance-API-delete</strong> control (<a href="governance-overlay.html">governance-overlay.html</a>), not an archive. Conflating the two is how a DSAR or eDiscovery-deletion obligation quietly fails.</p>
+  </div>
+  <div class="mer">
+    <div class="ml"><span>◆ Meridian Health</span> <span class="tag ill">illustrative</span></div>
+    <p>Meridian ran an <code>ambient-scribe-poc</code> workspace for a 60-day pilot. At the no-go decision they <strong>drained the two keys</strong> (the pilot app was pointed at a new home first), exported the cost history for the pilot write-up, then archived. When Legal later asked to <em>delete the pilot's PHI</em>, the team correctly routed that to the <strong>retention + Compliance-API</strong> path — archiving the workspace had removed the container, but the data lived under the retention policy until explicitly deleted.</p>
+  </div>
+
+  <!-- ============================ Failure modes ============================ -->
+  <h2 id="failures"><span class="kicker">Failure modes</span>What bites, and the counter</h2>
+  <div class="tablewrap"><table>
+    <thead><tr><th>Failure</th><th>What it looks like</th><th>Counter</th></tr></thead>
+    <tbody>
+      <tr><td><strong>Archived a live workspace</strong></td><td>Archive cascaded to a still-referenced key → instant outage, no undo</td><td>Drain / rotate keys off first, then archive (decommission ritual)</td></tr>
+      <tr><td><strong>Archive assumed to purge data</strong></td><td>"We archived it, the data's gone" → a DSAR / eDiscovery deletion silently fails</td><td>Archive removes the container, not the data; deletion is a retention / ZDR / Compliance-API control</td></tr>
+      <tr><td><strong>Traffic in the Default Workspace</strong></td><td>Keys created in Default → <code>null</code> attribution → chargeback impossible</td><td>Name + create workspaces up front; sweep Default for stray keys</td></tr>
+      <tr><td><strong>Shared prod key in dev</strong></td><td>One key across environments; a dev leak = prod exposure + blended cost</td><td>One key-set per workspace, rotated independently</td></tr>
+      <tr><td><strong>Over-permissioned team</strong></td><td>Every engineer a Developer → PHI-bearing prompt traces readable by all</td><td>Default to Limited Developer; elevate deliberately</td></tr>
+      <tr><td><strong>Blanket org hard cap</strong></td><td>Month's last week browns out prod because an experiment ate the ceiling</td><td>Hard-cap experiments; alert (don't cap) prod</td></tr>
+    </tbody>
+  </table></div>
+
+  <!-- ============================ Verify ============================ -->
+  <h2 id="verify"><span class="kicker">Verify with Anthropic</span>Open questions — confirm, don't assume</h2>
+  <div class="verify"><ul>
+    <li><strong>Additional Workspace-geo regions</strong> — <code>us</code> is the only geo today; confirm current options in Console if you need non-US at-rest residency (geo is immutable once the workspace is created).</li>
+    <li><strong>Is an Admin-API archive ever reversible?</strong> — the Console states archive "cannot be undone"; treat it as terminal unless your rep confirms otherwise.</li>
+    <li><strong>Per-workspace ZDR / BAA enablement</strong> — can a non-prod workspace carry prod's full posture? Verify at signing (<a href="governance-overlay.html">governance-overlay.html</a>).</li>
+    <li><strong>Single-tenant / dedicated deployment</strong> for very large enterprises — exists? terms? Verify with Anthropic.</li>
+  </ul></div>
+
+  <footer>
+    <div class="src"><b>Sources</b> — mechanics verified live 2026-07-14:
+      <a href="https://platform.claude.com/docs/en/manage-claude/workspaces">manage-claude/workspaces</a> (roles, inheritance, create, 100-workspace cap, env/team use cases, usage-by-workspace, Default=null) ·
+      <a href="https://support.claude.com/en/articles/9796807">Help Center: creating &amp; managing Workspaces</a> (archive cascades to keys + "cannot be undone"; Default immovable; rate-limit tab) ·
+      <a href="https://platform.claude.com/docs/en/manage-claude/admin-api">manage-claude/admin-api</a> (create + archive endpoints; Admin-key / <code>org:admin</code> OAuth / WIF) ·
+      <a href="https://platform.claude.com/docs/en/manage-claude/data-residency">data-residency</a> (Workspace geo — at-rest + processing, immutable at create, us-only) · Spend Limits + Rate Limits APIs. Grounded in <a href="../docs/feature-inventory.html">feature-inventory.md</a>.
+      Patterns synthesize Anthropic's documented use cases with this repo's <a href="enterprise-deployment-guide.html">deployment</a> + <a href="token-budget-governance.html">budget</a> guides; recommendations are this repo's, not observed field data. <em>Meridian Health is a fictional worked example.</em>
+    </div>
+    <div>© gmanch94 · CC-BY-4.0 · As of 2026-07. Verify pricing/models at anthropic.com.</div>
+  </footer>
+</div>
+</body>
+</html>
