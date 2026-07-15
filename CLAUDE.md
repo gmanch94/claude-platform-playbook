@@ -70,7 +70,7 @@ claude-platform-playbook/
     ├── data-advisory.md                 Pre-pilot data sizing — context window vs RAG, eval corpus counts, distillation trigger, cache eligibility, source taxonomy + governance flags
     ├── model-selection-guide.md         Opus / Sonnet / Haiku decision guide — 4-question framework, cascade pattern, tier-swap cost impact
     ├── subscription-selection-guide.md  Which Claude plan to buy — three-gate framework (compliance → size → build) across Free/Pro/Max/Team/Enterprise, plan-comparison table, seat-vs-API "need both" pattern
-    ├── multi-agent-patterns.md          5 multi-agent patterns · error-compounding math · sub-agent config · pattern decision table
+    ├── multi-agent-patterns.md          6 multi-agent patterns (incl. #6 dynamic workflows) · error-compounding math · sub-agent config · pattern decision table
     ├── incident-response-runbook.md     5 incident classes · symptoms → immediate actions → remediation → post-mortem template
     ├── roi-worksheet.html               Value side of cost-calculator · net ROI vs spend · payback · value/cost ratio · realized-capture discount · "five ways this number lies"
     ├── procurement-pack.md              Vendor-risk Q&A · security-questionnaire answers · DPA/BAA pre-sign checklist · SLA terms · direct-vs-hyperscaler path choice · surface-split · every row cites a governance § or "verify at signing"

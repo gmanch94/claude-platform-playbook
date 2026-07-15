@@ -2,7 +2,7 @@
 
 **As of 2026-07.** Pinned to Opus 4.8 / Sonnet 5 / Haiku 4.5. Companion to [`reference-architectures.html`](reference-architectures.html) (agentic workflow pattern) and [`eval-starter-pack.md`](eval-starter-pack.md) (tool-call accuracy eval). See [`../docs/feature-inventory.md`](../docs/feature-inventory.md) for canonical sub-agents / Agent SDK status.
 
-> **Read this before decomposing.** Multi-agent architectures are powerful and fragile. Each decomposition choice has a distinct failure mode. This artifact names 5 patterns, the error-compounding math that makes agents less reliable by default, and the mitigations that reverse the math.
+> **Read this before decomposing.** Multi-agent architectures are powerful and fragile. Each decomposition choice has a distinct failure mode. This artifact names 6 patterns, the error-compounding math that makes agents less reliable by default, and the mitigations that reverse the math.
 
 ---
 
@@ -42,7 +42,7 @@ Without at least mitigation 1, multi-agent systems will perform worse than a sin
 
 ---
 
-## 5 patterns
+## 6 patterns
 
 ### 1. Orchestrator-worker
 
@@ -140,6 +140,28 @@ User → Agent (Sonnet) → Proposed action
 
 ---
 
+### 6. Dynamic workflows (Claude-written orchestration)
+
+```
+You describe the task
+   → Claude writes a JavaScript orchestration script
+        → a runtime runs it in the background:
+             ├── fans out tens–hundreds of subagents in parallel
+             ├── the script holds the loop / branching / intermediate state
+             └── a quality pattern is baked in (adversarial cross-verify · multi-angle plan+judge)
+        → only the final, verified answer returns to your context
+```
+
+**When to use:** a task too big for one context — repo-wide audits, thousand-file migrations, cross-checked research sweeps — where you'd otherwise hand-build Patterns 1–4. Instead of writing the orchestrator yourself, Claude writes and runs the script. A Claude Code feature (GA, v2.1.154+); trigger with the `ultracode` keyword or "use a workflow to …". Detail: [`../docs/feature-inventory.md`](../docs/feature-inventory.md) dynamic-workflows row + [`claude-code-101.md`](claude-code-101.md) §10.
+
+**Failure mode:** it inherits every failure mode above, at scale — an unvalidated fan-out compounds errors across hundreds of agents; a silent cap (top-N, no-retry, sampling) reads as "covered everything" when it didn't; spawning agents without a budget ceiling runs away on cost.
+
+**Mitigation:** the script is where the mitigations live — have it validate or adversarially cross-verify each finding before it's reported (Pattern 4 at scale), surface what it dropped instead of silently truncating, and bound the fan-out. Opt-in and token-heavy by design; scope it to breadth / verification work, not simple single-context tasks.
+
+**Relation to the other five:** Patterns 1–5 are architectures you implement; a dynamic workflow is the Claude Code runtime that *writes and runs* them for you — most often Orchestrator-worker (#1) + Fan-out (#2) with a Validator-retry (#4) stage encoded as adversarial cross-review.
+
+---
+
 ## Sub-agent configuration (Claude Code context)
 
 For Claude Code workloads using the `Task` tool to spawn sub-agents:
@@ -172,6 +194,7 @@ See [`../docs/feature-inventory.md`](../docs/feature-inventory.md) sub-agents ro
 | Output quality is measurable; generation is non-deterministic | Validator-retry (#4) |
 | Action is irreversible or high-stakes | Human-in-loop gate (#5) |
 | Task requires dynamic planning and routing | Orchestrator-worker (#1) |
+| Task exceeds one context — repo-wide audit, mass migration, cross-checked research | Dynamic workflows (#6) |
 | Task fits in one call | Don't decompose |
 
 ---

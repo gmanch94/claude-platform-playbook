@@ -116,6 +116,9 @@ The seat surface is billed per user, separate from per-token API usage. **A subs
 | Agent SDK | GA | 2026-05 | docs.claude.com/en/api/agent-sdk | matrix, arch, claude-code-guide, multi-agent-patterns, maturity-model, enterprise-data-boundaries |
 | Plugins (bundled commands + skills + hooks + MCP servers) | GA | 2026-05 | docs.claude.com/en/docs/claude-code/plugins | matrix, arch, claude-code-guide, starter-skills, eval-pack |
 | Sub-agents (Task tool / parallel agents in Claude Code) | GA | 2026-05 | docs.claude.com/en/docs/claude-code/sub-agents | claude-code-guide, arch:code, multi-agent-patterns, claude-code-101 |
+| Dynamic workflows (Claude writes a JS script orchestrating many subagents at scale; background runtime; rerunnable; triggered by the `ultracode` keyword or "use a workflow"; encodes adversarial-verify quality patterns) | GA | 2026-07 | code.claude.com/docs/en/workflows | claude-code-101, multi-agent-patterns |
+
+**Dynamic workflows (added 2026-07-15, [H] live-verified against code.claude.com/docs/en/workflows):** Claude writes a JS orchestration script that fans out many subagents in a background runtime; the script holds the loop / branching / intermediate state, so the main context sees only the final answer, and it can encode repeatable quality patterns (independent adversarial cross-verification; multi-angle plan-and-judge). Requires **Claude Code v2.1.154+**; GA on **all paid plans** (Pro enables it via the Dynamic workflows row in `/config`), the Anthropic API, Amazon Bedrock, Google Cloud's Agent Platform, and Microsoft Foundry. Triggered by the `ultracode` keyword or "use a workflow …" (dismiss with Option/Alt+W). Sibling to the Sub-agents row — the orchestration layer above them.
 
 ---
 
