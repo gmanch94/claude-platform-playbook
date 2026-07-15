@@ -130,6 +130,8 @@
   .wc-r b { color:var(--ink); font-weight:600; display:inline-block; min-width:50px; }
   .om-cap { padding:10px 15px; border-top:1px dashed var(--line); font-size:12.5px; color:var(--muted); }
   .om-cap strong { color:var(--brandd); }
+  .omnote { font-size:12.5px; color:var(--muted); margin:9px 2px 4px; line-height:1.5; }
+  .omnote strong { color:var(--brandd); } .omnote a { color:var(--brandd); }
 
   /* connect & use */
   .connflow { display:flex; flex-wrap:wrap; align-items:center; gap:7px; background:var(--card); border:1px solid var(--line); border-radius:9px; padding:11px 14px; margin:12px 0; font-size:12.5px; }
@@ -273,7 +275,7 @@
       <li><strong>Limits</strong> — its own spend cap and per-model-tier rate limits.</li>
       <li><strong>Workspace geo</strong> — data residency (at-rest storage + endpoint processing), <strong>chosen when the workspace is created and immutable afterwards</strong>; currently <code>us</code> only. <span class="tag h">H</span></li>
     </ul>
-    <p><strong>What a workspace is <em>not</em>:</strong> it does not wrap claude.ai <strong>Projects</strong> (a seat-product knowledge container) or <strong>Cowork</strong> — separate surfaces with their own controls (<a href="surface-rollout-matrix.html">surface-rollout-matrix.html</a>). <em>One nuance:</em> when <strong>Claude Code</strong> is billed through the Console, Anthropic auto-creates a per-org Claude Code workspace with its own per-user keys and cap (counting toward the 100-workspace cap like any listed workspace), and archiving it disables Console-billed Claude Code sign-in org-wide — so <em>that</em> path is workspace-mediated; the subscription-seat path is not. A workspace segments <strong>programmatic API consumption</strong> — by team, environment, or project — nothing else. If a stakeholder says "put the marketing team in their own workspace" but marketing only uses chat and Projects, the workspace won't do what they think.</p>
+    <p><strong>What a workspace is <em>not</em>:</strong> it does not wrap claude.ai <strong>Projects</strong> (a seat-product knowledge container) or <strong>Cowork</strong> — separate surfaces with their own controls (<a href="surface-rollout-matrix.html">surface-rollout-matrix.html</a>). <em>One nuance:</em> when <strong>Claude Code</strong> is billed through the Console, Anthropic auto-creates a per-org Claude Code workspace and <strong>mints a separate API key for each developer</strong> inside it, with its own cap (counting toward the 100-workspace cap like any listed workspace); archiving it disables Console-billed Claude Code sign-in org-wide. So <em>that</em> path is workspace-mediated — the subscription-seat path is not, and <strong>hyperscaler</strong> traffic (Bedrock / Vertex / Foundry) authenticates and bills through that cloud account, sitting outside the Console workspace model entirely (no workspace, no <code>workspace_id</code>; attribution lives in your cloud project / IAM). A workspace segments <strong>programmatic API consumption</strong> — by team, environment, or project — nothing else. If a stakeholder says "put the marketing team in their own workspace" but marketing only uses chat and Projects, the workspace won't do what they think.</p>
     <p>The hierarchy is <strong>organization → workspace → API key</strong>. One org (one contract, one bill) contains many workspaces; each workspace contains many keys, members, and limits — drawn as a structure below (org principals and inheritance on top, the workspaces underneath):</p>
   </div>
 
@@ -319,6 +321,8 @@
     </div>
     <div class="om-cap"><strong>Read it top-down:</strong> org-level roles cascade into every workspace; workspace-level roles are assigned per workspace. Keys, limits, and geo live <em>in</em> the workspace — never at the org. The Default always exists and can't be removed.</div>
   </div>
+
+  <p class="omnote"><strong>How people get these roles:</strong> enterprise <strong>SSO</strong> (SAML — Team / Enterprise / Console) authenticates the human at login; <strong>SCIM / JIT + IdP group-mapping</strong> then provisions org membership and role / seat-tier, which cascades into workspaces by the inheritance above. SSO governs the <em>login</em>, not the API credential — keys still authenticate calls, and an already-issued key keeps working until it's revoked, independent of an SSO deprovision. Identity depth lives in <a href="claude-enterprise-architecture.html">claude-enterprise-architecture.html</a> (Access &amp; Identity).</p>
 
   <div class="mer">
     <div class="ml"><span>◆ Meridian Health</span> <span class="tag ill">illustrative</span></div>
