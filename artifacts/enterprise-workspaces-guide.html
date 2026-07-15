@@ -435,6 +435,23 @@
     <p>A new Clinical-AI engineer is added to <code>clinical-ai-dev</code> as <strong>Limited Developer</strong> (no PHI-trace access), mints a key there, drops it into the team's CI secret store as <code>ANTHROPIC_API_KEY</code>, and ships against the synthetic-data dev workspace. Their spend shows up under <code>clinical-ai-dev</code> in the CFO's per-team rollup — never in Default, never blended with Revenue-Cycle.</p>
   </div>
 
+  <!-- ============================ Credential axis ============================ -->
+  <h2 id="credentials"><span class="kicker">How · credentials</span>The credential axis — which credential authenticates which surface</h2>
+  <div class="body"><p>The connect flow above used one credential — a workspace API key. But programmatic traffic reaches Claude through several surfaces, each with its own credential, custody, and blast radius. This is the <strong>machine-auth axis</strong>; enterprise <strong>SSO / SCIM</strong> (the org-model footnote) is the separate <strong>human-auth axis</strong> — a login, never a substitute for the credentials below.</p></div>
+
+  <div class="tablewrap"><table>
+    <thead><tr><th>Surface (programmatic)</th><th>Credential</th><th>Custody / where it lives</th><th>Scope</th><th>Rotation / revoke</th><th>Attribution · blast radius</th></tr></thead>
+    <tbody>
+      <tr><td><strong>Messages API</strong> — your apps &amp; agents</td><td><code>x-api-key</code> workspace key</td><td>app / CI secret store</td><td>one workspace</td><td>per-key, independent</td><td><code>workspace_id</code>; a leak is scoped to that workspace <span class="tag h">H</span></td></tr>
+      <tr><td><strong>Admin API</strong> — org / member / workspace mgmt</td><td><code>sk-ant-admin…</code> key <em>or</em> <code>org:admin</code> OAuth token</td><td>tightly-held admin secret / short-lived token</td><td><strong>whole org</strong></td><td>key rotate / token expiry</td><td>org-wide — the highest blast radius <span class="tag h">H</span></td></tr>
+      <tr><td><strong>CI / automation</strong> (non-human)</td><td><strong>WIF</strong> → service account <code>svac_…</code></td><td>federated — no long-lived secret in the runner</td><td>scoped by federation rule</td><td>short-lived, auto-minted</td><td>per-service-account <span class="tag h">H</span></td></tr>
+      <tr><td><strong>Claude Code</strong> — Console-billed</td><td>per-developer Console API key</td><td>Console-minted, one per user</td><td>the auto Claude Code workspace</td><td>per-user; archive kills all keys</td><td>per-user; archiving = org-wide Claude Code sign-out <span class="tag h">H</span></td></tr>
+      <tr><td><strong>Claude Code</strong> — subscription</td><td><code>CLAUDE_CODE_OAUTH_TOKEN</code></td><td><code>claude setup-token</code>; inference-only</td><td>the Pro / Max / Team / Enterprise plan</td><td>~1-year token</td><td>billed to the plan — <em>no workspace</em> <span class="tag h">H</span></td></tr>
+      <tr><td><strong>Hyperscaler</strong> — Bedrock / Vertex / Foundry</td><td>cloud-provider credentials (IAM)</td><td>your cloud account</td><td>cloud project / subscription</td><td>cloud-native</td><td>cloud project / IAM — <strong>outside the workspace model</strong> <span class="tag h">H</span></td></tr>
+    </tbody>
+  </table></div>
+  <div class="body"><p><strong>Rule of thumb — one credential, one blast radius.</strong> Match custody to blast radius: guard the <strong>Admin</strong> credential hardest (it's org-wide — prefer <code>org:admin</code> OAuth or WIF over a long-lived <code>sk-ant-admin</code> key); rotate <strong>Messages-API</strong> keys per workspace; and remember the <strong>hyperscaler</strong> and <strong>subscription</strong> paths never touch a Console workspace, so their governance lives in the cloud account or the plan, not in a <code>workspace_id</code>.</p></div>
+
   <!-- ============================ HOW: topology ============================ -->
   <h2 id="topology"><span class="kicker">How · topology</span>How many workspaces, and how far to separate</h2>
   <div class="body"><p>Map <strong>environment × team</strong> to workspaces. Meridian's grid — one workspace per cell, each with its own keys, cap, and posture:</p></div>
