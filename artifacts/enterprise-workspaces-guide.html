@@ -105,6 +105,41 @@
   .verify { background:var(--card); border:1px solid var(--line); border-left:4px solid var(--prev); border-radius:8px; padding:12px 16px; margin:12px 0; font-size:13.5px; }
   .verify li { margin:5px 0 5px 18px; }
 
+  /* org-structure model */
+  .orgmodel { border:1px solid var(--line); border-radius:11px; overflow:hidden; margin:14px 0 6px; background:var(--card); }
+  .org-band { background:linear-gradient(180deg, rgba(124,94,72,.10), rgba(124,94,72,.03)); border-bottom:1px dashed var(--line); padding:12px 15px; }
+  .ob-title { font-weight:700; font-size:15px; color:var(--claude); }
+  .ob-title .ob-sub { font-weight:400; font-size:12px; color:var(--muted); margin-left:6px; }
+  .principals { display:flex; flex-wrap:wrap; gap:7px; margin-top:9px; }
+  .pr { font-size:11.5px; font-weight:600; padding:3px 9px; border-radius:20px; border:1.5px solid var(--line); }
+  .pr.admin { color:#7c3aed; border-color:#c9b3ee; background:rgba(124,58,237,.06); }
+  .pr.bill { color:var(--brandd); border-color:#e6c39c; background:rgba(217,119,87,.06); }
+  .pr.dev { color:var(--tool); border-color:#b3c3ee; background:rgba(30,64,175,.05); }
+  .pr.user { color:var(--muted); }
+  .inherit { display:flex; flex-wrap:wrap; gap:6px 14px; align-items:center; padding:9px 15px; font-size:12px; color:var(--muted); border-bottom:1px dashed var(--line); }
+  .inherit > span:first-child { font-weight:700; color:var(--claude); font-family:'Caveat',cursive; font-size:15px; }
+  .inherit .ih strong { color:var(--ink); }
+  .wsrow { display:grid; grid-template-columns:repeat(auto-fit,minmax(178px,1fr)); gap:9px; padding:13px 15px; }
+  .wscard { border:1.5px solid var(--line); border-top:3px solid var(--brand); border-radius:9px; padding:9px 11px; font-size:12px; }
+  .wscard.def { border-top-color:var(--claude); background:rgba(124,94,72,.04); }
+  .wscard.more { border-style:dashed; display:flex; align-items:center; justify-content:center; text-align:center; color:var(--muted); font-weight:600; }
+  .wc-h { font-weight:700; font-size:13px; color:var(--brandd); margin-bottom:6px; display:flex; align-items:center; gap:6px; }
+  .wscard.def .wc-h { color:var(--claude); }
+  .wc-h .pin { font-size:9.5px; text-transform:uppercase; letter-spacing:.04em; font-weight:700; color:var(--claude); background:rgba(124,94,72,.12); padding:1px 6px; border-radius:8px; }
+  .wc-r { margin:3px 0; color:var(--muted); }
+  .wc-r b { color:var(--ink); font-weight:600; display:inline-block; min-width:50px; }
+  .om-cap { padding:10px 15px; border-top:1px dashed var(--line); font-size:12.5px; color:var(--muted); }
+  .om-cap strong { color:var(--brandd); }
+
+  /* connect & use */
+  .connflow { display:flex; flex-wrap:wrap; align-items:center; gap:7px; background:var(--card); border:1px solid var(--line); border-radius:9px; padding:11px 14px; margin:12px 0; font-size:12.5px; }
+  .connflow .n { font-weight:600; color:var(--ink); background:rgba(217,119,87,.06); border:1px solid var(--line); border-radius:7px; padding:5px 9px; }
+  .connflow .sep { color:#cbb89e; font-weight:700; }
+  .steps { display:grid; gap:9px; margin:14px 0 6px; counter-reset:step; }
+  .step { position:relative; background:var(--card); border:1px solid var(--line); border-left:4px solid var(--brand); border-radius:9px; padding:11px 14px 11px 46px; font-size:13.5px; }
+  .step::before { counter-increment:step; content:counter(step); position:absolute; left:11px; top:10px; width:25px; height:25px; border-radius:50%; background:var(--brand); color:#fff; font-weight:700; font-size:13px; display:flex; align-items:center; justify-content:center; }
+  .step b { color:var(--brandd); }
+
   footer { margin-top:38px; padding-top:15px; border-top:1px solid var(--line); font-size:12px; color:var(--muted); }
   footer .src { margin-bottom:9px; } footer .src b { color:var(--ink); }
   footer .src a { word-break:break-word; }
@@ -125,6 +160,8 @@
     .topo .rl { color:#d9b8a0; }
     code { background:rgba(255,255,255,.08); }
     th { background:rgba(217,119,87,.12); }
+    .ob-title, .wscard.def .wc-h, .inherit > span:first-child, .wc-h .pin { color:#d9b8a0; }
+    .connflow .n { background:rgba(217,119,87,.12); }
   }
   @media print { body { padding:0; } .hero { box-shadow:none; } a { color:inherit; text-decoration:none; } }
 </style>
@@ -235,8 +272,52 @@
       <li><strong>Workspace geo</strong> — data residency (at-rest storage + endpoint processing), <strong>chosen when the workspace is created and immutable afterwards</strong>; currently <code>us</code> only. <span class="tag h">H</span></li>
     </ul>
     <p><strong>What a workspace is <em>not</em>:</strong> it does not wrap claude.ai <strong>Projects</strong> (a seat-product knowledge container) or <strong>Cowork</strong> — separate surfaces with their own controls (<a href="surface-rollout-matrix.html">surface-rollout-matrix.html</a>). <em>One nuance:</em> when <strong>Claude Code</strong> is billed through the Console, Anthropic auto-creates a per-org Claude Code workspace with its own per-user keys and cap (counting toward the 100-workspace cap like any listed workspace), and archiving it disables Console-billed Claude Code sign-in org-wide — so <em>that</em> path is workspace-mediated; the subscription-seat path is not. A workspace segments <strong>programmatic API consumption</strong> — by team, environment, or project — nothing else. If a stakeholder says "put the marketing team in their own workspace" but marketing only uses chat and Projects, the workspace won't do what they think.</p>
-    <p>The hierarchy is <strong>organization → workspace → API key</strong>. One org (one contract, one bill) contains many workspaces; each workspace contains many keys, members, and limits.</p>
+    <p>The hierarchy is <strong>organization → workspace → API key</strong>. One org (one contract, one bill) contains many workspaces; each workspace contains many keys, members, and limits — drawn as a structure below (org principals and inheritance on top, the workspaces underneath):</p>
   </div>
+
+  <!-- org-structure model -->
+  <div class="orgmodel" role="img" aria-label="Org structure: an organization with org-level roles at the top cascades by inheritance into workspaces, each holding its own members, keys, limits and geo.">
+    <div class="org-band">
+      <div class="ob-title">Organization <span class="ob-sub">one contract · one bill · managed via the Admin API (sk-ant-admin key / org:admin OAuth / WIF)</span></div>
+      <div class="principals">
+        <span class="pr admin">Org Admin</span>
+        <span class="pr bill">Org Billing</span>
+        <span class="pr dev">Org Developer</span>
+        <span class="pr user">Org User</span>
+      </div>
+    </div>
+    <div class="inherit">
+      <span>inheritance ↓</span>
+      <span class="ih">Org Admin → <strong>Workspace Admin</strong> everywhere (automatic)</span>
+      <span class="ih">Org Billing → <strong>Workspace Billing</strong> everywhere (automatic)</span>
+      <span class="ih">Org User / Developer → <strong>added per workspace</strong> (never automatic)</span>
+    </div>
+    <div class="wsrow">
+      <div class="wscard def">
+        <div class="wc-h">Default <span class="pin">immovable</span></div>
+        <div class="wc-r"><b>members</b> org admins (inherited)</div>
+        <div class="wc-r"><b>keys</b> sweep for strays</div>
+        <div class="wc-r"><b>usage</b> null workspace_id</div>
+      </div>
+      <div class="wscard">
+        <div class="wc-h">clinical-ai-prod</div>
+        <div class="wc-r"><b>members</b> Admin · Dev · Ltd-Dev · User</div>
+        <div class="wc-r"><b>keys</b> workspace-scoped</div>
+        <div class="wc-r"><b>limits</b> ≤ org · alerts</div>
+        <div class="wc-r"><b>geo</b> us · set at create</div>
+      </div>
+      <div class="wscard">
+        <div class="wc-h">rev-cycle-prod</div>
+        <div class="wc-r"><b>members</b> per-workspace</div>
+        <div class="wc-r"><b>keys</b> its own set</div>
+        <div class="wc-r"><b>limits</b> ≤ org · alerts</div>
+        <div class="wc-r"><b>geo</b> us · set at create</div>
+      </div>
+      <div class="wscard more">+ 6 more<br>(env × team)</div>
+    </div>
+    <div class="om-cap"><strong>Read it top-down:</strong> org-level roles cascade into every workspace; workspace-level roles are assigned per workspace. Keys, limits, and geo live <em>in</em> the workspace — never at the org. The Default always exists and can't be removed.</div>
+  </div>
+
   <div class="mer">
     <div class="ml"><span>◆ Meridian Health</span> <span class="tag ill">illustrative</span></div>
     <p>Meridian has <strong>one organization</strong> on an Enterprise/Platform contract. On day one it already has a <strong>Default Workspace</strong> it can't remove. The platform lead will create named workspaces per team and environment — the Default becomes a place to watch, not a place to run production (see day-2).</p>
@@ -321,6 +402,31 @@
   <div class="mer">
     <div class="ml"><span>◆ Meridian Health</span> <span class="tag ill">illustrative</span></div>
     <p>Meridian's platform lead creates <code>clinical-ai-prod</code> via the <strong>Admin API from CI with WIF</strong> — no long-lived admin key sitting in a runner. Clinical engineers are added as <strong>Limited Developer</strong> (they ship, but can't pull PHI-bearing prompt traces or download files). Prod gets alert thresholds at 50/80/100%; the Data-Science <em>dev</em> workspace gets a hard spend cap that browns out harmlessly when an experiment runs long.</p>
+  </div>
+
+  <!-- ============================ HOW: connect & use ============================ -->
+  <h2 id="connect"><span class="kicker">How · connect &amp; use</span>How a team gets onto a workspace and starts calling</h2>
+  <div class="body"><p>Once the workspace and its roles exist, a developer connects in five moves. Nothing in application code is workspace-aware — the <strong>key</strong> carries the workspace.</p></div>
+
+  <div class="connflow">
+    <span class="n">You — added as a member</span><span class="sep">→</span>
+    <span class="n">get a workspace-scoped key</span><span class="sep">→</span>
+    <span class="n">set <code>ANTHROPIC_API_KEY</code></span><span class="sep">→</span>
+    <span class="n">call the API</span><span class="sep">→</span>
+    <span class="n">usage attributes to <code>workspace_id</code></span>
+  </div>
+
+  <div class="steps">
+    <div class="step"><b>An admin adds you to the workspace.</b> You can't self-join — an org admin or Workspace Admin adds you as a member with a role (org users and developers are added <em>per workspace</em>). Ask to start as <strong>Limited Developer</strong> unless you actually need session traces or file download. <span class="tag h">H</span></div>
+    <div class="step"><b>Create a workspace-scoped API key.</b> In that workspace, a Developer or Limited Developer creates a key — Console → the workspace → <em>API keys</em>, or the Admin API. The key belongs to this one workspace; it is what scopes every later call. <span class="tag h">H</span></div>
+    <div class="step"><b>Store the key as a secret.</b> Put it in your app or CI secret store as <code>ANTHROPIC_API_KEY</code> (or send it as the <code>x-api-key</code> header). Never commit it, and never reuse a prod key in dev — one key-set per workspace.</div>
+    <div class="step"><b>Call the API as normal.</b> Your SDK / HTTP requests with that key run against this workspace and draw on its limits — no other code change. Requests attribute to the workspace's <code>workspace_id</code> in usage reporting. <span class="tag h">H</span></div>
+    <div class="step"><b>Live inside the limits, then confirm attribution.</b> The workspace's rate + spend caps apply under the org ceiling (expect <code>429</code> on rate, a hard stop at the spend cap). Need more? Ask the admin to raise the <em>workspace</em> limit (still ≤ org) — not to hand you another key. Then check the Usage &amp; Cost API / dashboard filtered by your <code>workspace_id</code> shows your team's spend, and that nothing landed in Default. <span class="tag h">H</span></div>
+  </div>
+
+  <div class="mer">
+    <div class="ml"><span>◆ Meridian Health</span> <span class="tag ill">illustrative</span></div>
+    <p>A new Clinical-AI engineer is added to <code>clinical-ai-dev</code> as <strong>Limited Developer</strong> (no PHI-trace access), mints a key there, drops it into the team's CI secret store as <code>ANTHROPIC_API_KEY</code>, and ships against the synthetic-data dev workspace. Their spend shows up under <code>clinical-ai-dev</code> in the CFO's per-team rollup — never in Default, never blended with Revenue-Cycle.</p>
   </div>
 
   <!-- ============================ HOW: topology ============================ -->
