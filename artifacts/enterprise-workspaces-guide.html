@@ -234,7 +234,7 @@
       <li><strong>Limits</strong> — its own spend cap and per-model-tier rate limits.</li>
       <li><strong>Workspace geo</strong> — data residency (at-rest storage + endpoint processing), <strong>chosen when the workspace is created and immutable afterwards</strong>; currently <code>us</code> only. <span class="tag h">H</span></li>
     </ul>
-    <p><strong>What a workspace is <em>not</em>:</strong> it does not wrap claude.ai <strong>Projects</strong> (a seat-product knowledge container) or <strong>Cowork</strong> — separate surfaces with their own controls (<a href="surface-rollout-matrix.html">surface-rollout-matrix.html</a>). <em>One nuance:</em> when <strong>Claude Code</strong> is billed through the Console, Anthropic auto-creates a per-org Claude Code workspace with its own key and cap — it counts toward the 100-workspace limit, and archiving it disables Console-billed Claude Code sign-in org-wide — so <em>that</em> path is workspace-mediated; the subscription-seat path is not. A workspace segments <strong>programmatic API consumption</strong> — by team, environment, or project — nothing else. If a stakeholder says "put the marketing team in their own workspace" but marketing only uses chat and Projects, the workspace won't do what they think.</p>
+    <p><strong>What a workspace is <em>not</em>:</strong> it does not wrap claude.ai <strong>Projects</strong> (a seat-product knowledge container) or <strong>Cowork</strong> — separate surfaces with their own controls (<a href="surface-rollout-matrix.html">surface-rollout-matrix.html</a>). <em>One nuance:</em> when <strong>Claude Code</strong> is billed through the Console, Anthropic auto-creates a per-org Claude Code workspace with its own per-user keys and cap (counting toward the 100-workspace cap like any listed workspace), and archiving it disables Console-billed Claude Code sign-in org-wide — so <em>that</em> path is workspace-mediated; the subscription-seat path is not. A workspace segments <strong>programmatic API consumption</strong> — by team, environment, or project — nothing else. If a stakeholder says "put the marketing team in their own workspace" but marketing only uses chat and Projects, the workspace won't do what they think.</p>
     <p>The hierarchy is <strong>organization → workspace → API key</strong>. One org (one contract, one bill) contains many workspaces; each workspace contains many keys, members, and limits.</p>
   </div>
   <div class="mer">
@@ -409,9 +409,9 @@
 
   <footer>
     <div class="src"><b>Sources</b> — mechanics verified live 2026-07-14:
-      <a href="https://platform.claude.com/docs/en/manage-claude/workspaces">manage-claude/workspaces</a> (roles, inheritance, create, env/team use cases, usage-by-workspace, Default=null) ·
+      <a href="https://platform.claude.com/docs/en/manage-claude/workspaces">manage-claude/workspaces</a> (roles, inheritance, create, 100-workspace cap, env/team use cases, usage-by-workspace, Default=null) ·
       <a href="https://support.claude.com/en/articles/9796807">Help Center: creating &amp; managing Workspaces</a> (archive cascades to keys + "cannot be undone"; Default immovable; rate-limit tab) ·
-      <a href="https://platform.claude.com/docs/en/manage-claude/admin-api">manage-claude/admin-api</a> (create + archive endpoints; 100-workspace cap; Admin-key / <code>org:admin</code> OAuth / WIF) ·
+      <a href="https://platform.claude.com/docs/en/manage-claude/admin-api">manage-claude/admin-api</a> (create + archive endpoints; Admin-key / <code>org:admin</code> OAuth / WIF) ·
       <a href="https://platform.claude.com/docs/en/manage-claude/data-residency">data-residency</a> (Workspace geo — at-rest + processing, immutable at create, us-only) · Spend Limits + Rate Limits APIs. Grounded in <a href="../docs/feature-inventory.html">feature-inventory.md</a>.
       Patterns synthesize Anthropic's documented use cases with this repo's <a href="enterprise-deployment-guide.html">deployment</a> + <a href="token-budget-governance.html">budget</a> guides; recommendations are this repo's, not observed field data. <em>Meridian Health is a fictional worked example.</em>
     </div>
