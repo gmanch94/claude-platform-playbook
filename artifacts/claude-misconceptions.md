@@ -116,6 +116,25 @@
 
 ---
 
+## 6. Tiers — one word, five meanings
+
+### "What tier are we on?" — as if there were only one.
+- **Reality.** "Tier" names *five* independent things in the Claude platform; conflating them is a recurring mis-budget / mis-architect driver. The map:
+
+| "Tier" | Values | Scope | Governs | Set by |
+|---|---|---|---|---|
+| **Usage tier** (rate-limit) | Start → Build → Scale, + Custom | Org | RPM / ITPM / OTPM ceilings | **Anthropic** — auto-advances with spend; request at ≥50% util |
+| **Service tier** | Standard / Priority / Batch | Per request | Latency priority + price of that call | You, per call (`service_tier`); **Priority closed to new purchase 2026-07** |
+| **Model tier** | Opus / Sonnet / Haiku (+ Fable) | Per request | Capability + $/token | You — pick the model |
+| **Plan tier** (seat) | Free / Pro / Max / Team / Enterprise | Per seat | Product subscription | What you buy |
+| **Seat tier** (Enterprise dual-seat) | Chat vs Chat + Claude Code | Per member | Which seat a member holds | Admin; caps what a custom role can grant |
+
+- **The two that get conflated:** **usage tier** (your org's overall throughput bracket — Anthropic-set, earned by spend) vs **service tier** (how a *single request* is prioritized and priced). One is *how much you're allowed overall*; the other is *how this one call is handled*. And **none of them is a role** — usage tier is org-level, spend caps attach to org / workspace / group / member, and roles carry only capabilities.
+- **Mis-decide.** Budgeting "Priority tier" as a purchasable prod lever (closed to new purchase); assuming a role or seat raises your rate-limit tier (only Anthropic does, org-wide); sizing capacity off the wrong "tier."
+- **Cite.** [docs.claude.com — rate limits](https://docs.claude.com/en/api/rate-limits); [docs.claude.com — service tiers](https://docs.claude.com/en/api/service-tiers); [`docs/feature-inventory.md`](../docs/feature-inventory.md) Models + subscription-plans + service-tiers + usage-tier rows.
+
+---
+
 ## How this artifact connects to the rest
 
 - **Runs before [`decision-spine.html`](decision-spine.html).** Disarms the priors that distort which branch the reader picks. A reader who believes "Claude refuses everything sensitive" exits at the anti-use branch when their use case is actually viable.

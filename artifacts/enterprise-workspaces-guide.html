@@ -453,6 +453,52 @@
   <div class="body"><p><strong>Rule of thumb — one credential, one blast radius.</strong> Match custody to blast radius: guard the <strong>Admin</strong> credential hardest (it's org-wide — prefer <code>org:admin</code> OAuth or WIF over a long-lived <code>sk-ant-admin</code> key); rotate <strong>Messages-API</strong> keys per workspace; and remember the <strong>hyperscaler</strong> and <strong>subscription</strong> paths never touch a Console workspace, so their governance lives in the cloud account or the plan, not in a <code>workspace_id</code>.</p></div>
   <div class="body"><p><strong>Provenance + scoping in depth:</strong> how a service account (<code>svac_</code>) and its federation rule are created and scoped, and where <code>CLAUDE_CODE_OAUTH_TOKEN</code> comes from, live in <a href="claude-code-enterprise-config.html">claude-code-enterprise-config.html</a> §5.1 (identity &amp; credentials) — this matrix is the map; that's the wiring.</p></div>
 
+  <!-- ============================ Identity axis ============================ -->
+  <h2 id="identity"><span class="kicker">How · identity &amp; access</span>The identity axis — representing people and groups</h2>
+  <div class="body"><p>The credential axis above is <strong>machine</strong> identity. This is the <strong>human</strong> one — the SSO / SCIM axis that table pointed at. The principle that governs it: <strong>a workspace isolates <em>resources</em>, never people</strong>. A <strong>group</strong> is a real object on Enterprise plans — a named collection of members you can create natively (<em>Org settings &rarr; Groups</em>) <em>or</em> sync from your identity provider (Okta, Entra) over SCIM. It is its own object, <em>not</em> a field on a user; membership is many-to-many, and a member's role + spend cap are <em>derived</em> through it. Represent a group by deciding what it is <em>for</em>: a permission tier (&rarr; a role) or a budget / blast-radius boundary (&rarr; a workspace). Keep those two axes separate.</p></div>
+
+  <div class="body"><p><strong>Two role systems reach Claude — don't conflate them.</strong> The Console (API / platform) side and the Enterprise seat (claude.ai) side carry <em>different</em> built-in role sets:</p></div>
+  <div class="tablewrap"><table>
+    <thead><tr><th>Layer</th><th>Set in</th><th>Built-in roles</th><th>Governs</th></tr></thead>
+    <tbody>
+      <tr><td><strong>Console — org</strong> (API / platform)</td><td>Console &rarr; Settings &rarr; Members</td><td>User · Claude Code User · Limited Developer · Developer · Billing · Admin <span class="tag h">H</span></td><td>who administers the org and who can reach the API</td></tr>
+      <tr><td><strong>Console — workspace</strong> (API)</td><td>per workspace</td><td>the five workspace roles in the lifecycle table above</td><td>key / trace / billing access <em>inside one workspace</em></td></tr>
+      <tr><td><strong>Enterprise seat</strong> (claude.ai)</td><td>Org settings &rarr; Roles</td><td><strong>Primary Owner · Owner · Admin · User</strong>, plus <strong>Custom</strong> <span class="tag h">H</span></td><td>product-surface access — features, connectors, models — via groups + capabilities when set to Custom</td></tr>
+    </tbody>
+  </table></div>
+
+  <h3>Built-in seat roles vs Custom</h3>
+  <div class="body"><p>The four built-in Enterprise seat roles — <strong>Primary Owner, Owner, Admin, User</strong> — carry fixed access and are <em>unaffected</em> by the capability system. To put a member under fine-grained RBAC you switch their role to <strong>Custom</strong>; only then do groups + capabilities (features, connectors, models, admin-permission areas) govern what they can do. Built-in and Custom coexist, so migration is gradual. One consequence worth knowing: you <em>can't</em> layer extra admin permissions onto a built-in role — to delegate (say) billing without handing over Owner, move the person to a Custom role in a group that grants exactly that. <span class="tag h">H</span></p></div>
+
+  <h3>Groups + capabilities are additive</h3>
+  <div class="body"><p>Enterprise <strong>groups</strong> are real objects — they even carry their own <strong>group spend limits</strong> — and they're how members reach custom roles: <em>member &rarr; group &rarr; role</em>. Capabilities compose <strong>additively</strong>, which drives the recommended shape: one base <strong>"Standard Access"</strong> role for everyone (web search, memory, projects) assigned through an "All Users" group, then thin <strong>additive</strong> roles (a "Cowork Enabled" role that only adds Cowork) layered via extra groups. No conflict resolution, no per-person toggling. <span class="tag h">H</span></p></div>
+
+  <h3>Make the IdP the source of truth</h3>
+  <div class="body"><p>You <em>can</em> create groups natively in Console, but the durable pattern is to <strong>source them from your IdP</strong> — author membership once, and let SCIM provision <em>and</em> deprovision it:</p>
+  <ul>
+    <li><strong>One IdP group per role</strong>, and (unless you're single-seat) one per <strong>seat tier</strong>.</li>
+    <li>Map those IdP groups to <strong>"Custom"</strong> roles in the <strong>role-mappings table</strong> (Org settings &rarr; Organization and access). Provisioning then sets each member's role from their group membership. <span class="tag h">H</span></li>
+    <li><strong>SCIM</strong> directory-sync handles add <em>and remove</em> automatically — <strong>deprovisioning on offboarding is the security win</strong>; JIT instead provisions on first SSO login.</li>
+  </ul></div>
+
+  <div class="tablewrap"><table>
+    <thead><tr><th>Identity failure mode</th><th>Counter</th></tr></thead>
+    <tbody>
+      <tr><td><strong>SCIM / SAML email-attribute mismatch</strong> — the #1 cause of login failure (Okta <code>user.login</code> vs <code>user.email</code>; Entra's SCIM-email must equal its SSO-email)</td><td>Pin both integrations to the <em>same</em> email field before rollout <span class="tag h">H</span></td></tr>
+      <tr><td><strong>Entra pushes SCIM only ~every 40 min</strong> — deprovisioning is not instant</td><td>For urgent offboarding, also disable the member in Claude directly <span class="tag h">H</span></td></tr>
+      <tr><td><strong>SCIM is Enterprise / Console-org only</strong> — Team gets SSO but not SCIM; consumer plans neither</td><td>Verify your plan tier before designing around auto-provisioning <span class="tag h">H</span></td></tr>
+      <tr><td><strong>Dual-seat plans</strong> — a custom role <em>can't</em> override a seat-level restriction (a Chat-only seat won't get Claude Code from a role)</td><td>Plan the role structure <em>with</em> seat assignments; the seat is the ceiling <span class="tag h">H</span></td></tr>
+      <tr><td><strong>RBAC gates on top of the org setting</strong> — a capability needs <em>both</em> the org toggle and the role toggle on; role changes take up to ~15 min</td><td>Enable at the org first, then the role; expect propagation lag <span class="tag h">H</span></td></tr>
+    </tbody>
+  </table></div>
+
+  <div class="body"><p><strong>The two axes stay orthogonal.</strong> A person holds <em>one</em> seat role / group (their permissions) but can be a member of <em>many</em> workspaces (their resources). Map IdP groups &rarr; roles for <strong>who-can-do-what</strong>; map teams &rarr; workspaces for <strong>budget + blast radius</strong>. A group is never a workspace, and a workspace never carries permissions.</p></div>
+
+  <div class="mer">
+    <div class="ml"><span>◆ Meridian Health</span> <span class="tag ill">illustrative</span></div>
+    <p>Meridian authors membership in <strong>Okta</strong>. An "All Users" group maps to a base <strong>Standard Access</strong> Custom role; a <em>Clinical-Eng</em> Okta group adds a role granting Claude Code + Web Search; <em>Marketing</em> gets a "Cowork Enabled" additive role. When a clinician leaves, Okta deprovisioning removes the seat automatically — no manual Console step. That same clinician is <em>separately</em> a <strong>Workspace Limited Developer</strong> in <code>clinical-ai-dev</code>: their <em>seat role</em> (identity, from Okta) and their <em>workspace membership</em> (resource, per workspace) sit on different axes and are never conflated.</p>
+  </div>
+
   <!-- ============================ HOW: topology ============================ -->
   <h2 id="topology"><span class="kicker">How · topology</span>How many workspaces, and how far to separate</h2>
   <div class="body"><p>Map <strong>environment × team</strong> to workspaces. Meridian's grid — one workspace per cell, each with its own keys, cap, and posture:</p></div>

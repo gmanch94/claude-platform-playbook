@@ -48,7 +48,7 @@ Unit-economics levers the budget owner should demand before granting a budget in
 | **Prompt caching** | Cache reads ≈ 10% of input price; 60–80% steady-state reduction vs naive use on cache-shaped workloads | High-volume workloads with stable system prompts / shared context ([`data-advisory.md`](data-advisory.md) cache-eligibility shape) |
 | **Batch API** | ≈ 50% off all rates | Anything that tolerates async turnaround |
 | **Tier mix** | Haiku ≈ 3× cheaper than Sonnet at standard rates (≈ 2× during Sonnet 5's introductory pricing through 2026-08-31), ≈ 5× vs Opus | Route by task difficulty per [`model-selection-guide.md`](model-selection-guide.md); cascade pattern |
-| **Priority tier** | Committed-capacity purchase for latency-sensitive prod — a commitment decision, not a discount; verify current terms | Only after volume is proven stable |
+| **Priority tier** | **Closed to new purchase (2026-07)** — existing capacity commitments run to contract end; new guaranteed capacity is contact-sales, and it's unsupported on Sonnet 5. No longer a self-serve lever | Only orgs with an existing commitment; otherwise n/a |
 
 **Budget-increase protocol:** no workload gets more budget until it shows its lever usage. "We need 2× budget" with 0% cache hit rate on a cacheable workload is an engineering request wearing a finance costume.
 
