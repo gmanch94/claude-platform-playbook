@@ -74,7 +74,7 @@ When actuals diverge from forecast, the cause is one of four — in order of how
 | **Invoice discovery** | The bill is the monitoring system | The L2 gate: alerts at 50/80/100% of forecast, wired in week 1 of any production workload |
 | **Blanket org cap** | Production brownout in the last week of the month | Cap placement rule above — caps on experiments, alerts on prod |
 | **Optimizing $/token instead of $/task** | Cheaper model, more retries, higher total cost per completed task | $/task is the only budget SLO; $/token is diagnostics |
-| **Attribution debt** | One shared API key across six teams; chargeback impossible, so accountability never arrives | Workspace-per-team from day 1 — it's free at setup and painful to retrofit |
+| **Attribution debt** | One shared API key across six teams; chargeback impossible, so accountability never arrives | Workspace-per-team from day 1 — it's free at setup and painful to retrofit · each workload its own non-human identity ([`service-accounts-guide.md`](service-accounts-guide.md)) |
 | **Gateway metering blind spot** | An abstraction layer aggregates all traffic under one identity | If you run a gateway ([`exit-portability-memo.md`](exit-portability-memo.md)), it must propagate per-team attribution or the ladder collapses |
 | **Seat/API double vision** | API budget scrutinized monthly; seat spend (plans, Cowork, Tag) unreviewed | One review covers both — the org-level row is *total* AI spend |
 
