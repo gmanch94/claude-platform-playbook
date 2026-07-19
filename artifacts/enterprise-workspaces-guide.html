@@ -57,7 +57,7 @@
   .tag.h { background:rgba(21,128,61,.12); color:var(--ga); }
   .tag.ill { background:rgba(13,125,120,.12); color:var(--mer); }
 
-  /* Meridian scenario callout */
+  /* Karekal scenario callout */
   .mer { background:var(--merbg); border:1px solid #bfe6e2; border-left:4px solid var(--mer); border-radius:9px; padding:12px 15px; margin:12px 0; font-size:13.5px; }
   .mer .ml { font-size:11px; font-weight:700; text-transform:uppercase; letter-spacing:.06em; color:var(--mer); margin-bottom:5px; display:flex; align-items:center; gap:7px; }
   .mer p { margin:6px 0; } .mer strong { color:#0b615d; }
@@ -261,8 +261,8 @@
   </div>
 
   <div class="mer">
-    <div class="ml"><span>◆ Meridian Health</span> <span class="tag ill">illustrative scenario</span></div>
-    <p>Throughout this guide we follow <strong>Meridian Health</strong> — a fictional ~4,000-employee regulated health system standing up Claude on the API surface. Three teams ship: <strong>Clinical-AI</strong> (patient-record summarization, touches PHI), <strong>Revenue-Cycle</strong> (claims + coding automation, touches PHI), <strong>Data-Science</strong> (population analytics, de-identified). A CISO owns governance; a platform lead owns the org; the CFO wants per-team chargeback. Meridian is a worked example, not an Anthropic customer.</p>
+    <div class="ml"><span>◆ Karekal Health</span> <span class="tag ill">illustrative scenario</span></div>
+    <p>Throughout this guide we follow <strong>Karekal Health</strong> — a fictional ~4,000-employee regulated health system standing up Claude on the API surface. Three teams ship: <strong>Clinical-AI</strong> (patient-record summarization, touches PHI), <strong>Revenue-Cycle</strong> (claims + coding automation, touches PHI), <strong>Data-Science</strong> (population analytics, de-identified). A CISO owns governance; a platform lead owns the org; the CFO wants per-team chargeback. Karekal is a worked example, not an Anthropic customer.</p>
   </div>
 
   <!-- ============================ WHAT ============================ -->
@@ -325,8 +325,8 @@
   <p class="omnote"><strong>How people get these roles:</strong> enterprise <strong>SSO</strong> (SAML — Team / Enterprise / Console) authenticates the human at login; <strong>SCIM / JIT + IdP group-mapping</strong> then provisions org membership and role / seat-tier, which cascades into workspaces by the inheritance above. SSO governs the <em>login</em>, not the API credential — keys still authenticate calls, and an already-issued key keeps working until it's revoked, independent of an SSO deprovision. Identity depth lives in <a href="claude-enterprise-architecture.html">claude-enterprise-architecture.html</a> (Access &amp; Identity).</p>
 
   <div class="mer">
-    <div class="ml"><span>◆ Meridian Health</span> <span class="tag ill">illustrative</span></div>
-    <p>Meridian has <strong>one organization</strong> on an Enterprise/Platform contract. On day one it already has a <strong>Default Workspace</strong> it can't remove. The platform lead will create named workspaces per team and environment — the Default becomes a place to watch, not a place to run production (see day-2).</p>
+    <div class="ml"><span>◆ Karekal Health</span> <span class="tag ill">illustrative</span></div>
+    <p>Karekal has <strong>one organization</strong> on an Enterprise/Platform contract. On day one it already has a <strong>Default Workspace</strong> it can't remove. The platform lead will create named workspaces per team and environment — the Default becomes a place to watch, not a place to run production (see day-2).</p>
   </div>
 
   <!-- ============================ WHY ============================ -->
@@ -343,8 +343,8 @@
     <p>The single principle underneath all five: <strong>the workspace is the natural budget and blast-radius boundary — draw it once, and attribution, containment, and access follow it.</strong></p>
   </div>
   <div class="mer">
-    <div class="ml"><span>◆ Meridian Health</span> <span class="tag ill">illustrative</span></div>
-    <p>Meridian splits by <strong>environment × team</strong>. The CFO gets clean per-team chargeback (each team = a set of workspaces). The CISO gets PHI blast-radius isolation (a Clinical-AI key can't touch Revenue-Cycle data). And prod workspaces carry the BAA-covered posture + US residency that dev/staging deliberately don't — because dev/staging run <strong>synthetic / de-identified data only</strong>.</p>
+    <div class="ml"><span>◆ Karekal Health</span> <span class="tag ill">illustrative</span></div>
+    <p>Karekal splits by <strong>environment × team</strong>. The CFO gets clean per-team chargeback (each team = a set of workspaces). The CISO gets PHI blast-radius isolation (a Clinical-AI key can't touch Revenue-Cycle data). And prod workspaces carry the BAA-covered posture + US residency that dev/staging deliberately don't — because dev/staging run <strong>synthetic / de-identified data only</strong>.</p>
   </div>
 
   <!-- ============================ HOW: lifecycle ============================ -->
@@ -406,8 +406,8 @@
   </div>
 
   <div class="mer">
-    <div class="ml"><span>◆ Meridian Health</span> <span class="tag ill">illustrative</span></div>
-    <p>Meridian's platform lead creates <code>clinical-ai-prod</code> via the <strong>Admin API from CI with WIF</strong> — no long-lived admin key sitting in a runner. Clinical engineers are added as <strong>Limited Developer</strong> (they ship, but can't pull PHI-bearing prompt traces or download files). Prod gets alert thresholds at 50/80/100%; the Data-Science <em>dev</em> workspace gets a hard spend cap that browns out harmlessly when an experiment runs long.</p>
+    <div class="ml"><span>◆ Karekal Health</span> <span class="tag ill">illustrative</span></div>
+    <p>Karekal's platform lead creates <code>clinical-ai-prod</code> via the <strong>Admin API from CI with WIF</strong> — no long-lived admin key sitting in a runner. Clinical engineers are added as <strong>Limited Developer</strong> (they ship, but can't pull PHI-bearing prompt traces or download files). Prod gets alert thresholds at 50/80/100%; the Data-Science <em>dev</em> workspace gets a hard spend cap that browns out harmlessly when an experiment runs long.</p>
   </div>
 
   <!-- ============================ HOW: connect & use ============================ -->
@@ -431,7 +431,7 @@
   </div>
 
   <div class="mer">
-    <div class="ml"><span>◆ Meridian Health</span> <span class="tag ill">illustrative</span></div>
+    <div class="ml"><span>◆ Karekal Health</span> <span class="tag ill">illustrative</span></div>
     <p>A new Clinical-AI engineer is added to <code>clinical-ai-dev</code> as <strong>Limited Developer</strong> (no PHI-trace access), mints a key there, drops it into the team's CI secret store as <code>ANTHROPIC_API_KEY</code>, and ships against the synthetic-data dev workspace. Their spend shows up under <code>clinical-ai-dev</code> in the CFO's per-team rollup — never in Default, never blended with Revenue-Cycle.</p>
   </div>
 
@@ -451,7 +451,7 @@
     </tbody>
   </table></div>
   <div class="body"><p><strong>Rule of thumb — one credential, one blast radius.</strong> Match custody to blast radius: guard the <strong>Admin</strong> credential hardest (it's org-wide — prefer <code>org:admin</code> OAuth or WIF over a long-lived <code>sk-ant-admin</code> key); rotate <strong>Messages-API</strong> keys per workspace; and remember the <strong>hyperscaler</strong> and <strong>subscription</strong> paths never touch a Console workspace, so their governance lives in the cloud account or the plan, not in a <code>workspace_id</code>.</p></div>
-  <div class="body"><p><strong>Provenance + scoping in depth:</strong> how a service account (<code>svac_</code>) and its federation rule are created and scoped, and where <code>CLAUDE_CODE_OAUTH_TOKEN</code> comes from, live in <a href="claude-code-enterprise-config.html">claude-code-enterprise-config.html</a> §5.1 (identity &amp; credentials) — this matrix is the map; that's the wiring.</p></div>
+  <div class="body"><p><strong>Provenance + scoping in depth:</strong> how a service account (<code>svac_</code>) and its federation rule are created and scoped, and where <code>CLAUDE_CODE_OAUTH_TOKEN</code> comes from, live in <a href="claude-code-enterprise-config.html">claude-code-enterprise-config.html</a> §5.1 (identity &amp; credentials) — this matrix is the map; that's the wiring. The plain concept behind this axis — what a service account is, which of these credentials is (and isn't) one, and the person-vs-machine decision — is <a href="service-accounts-guide.html">service-accounts-guide.html</a>.</p></div>
 
   <!-- ============================ Identity axis ============================ -->
   <h2 id="identity"><span class="kicker">How · identity &amp; access</span>The identity axis — representing people and groups</h2>
@@ -495,13 +495,13 @@
   <div class="body"><p><strong>The two axes stay orthogonal.</strong> A person holds <em>one</em> seat role / group (their permissions) but can be a member of <em>many</em> workspaces (their resources). Map IdP groups &rarr; roles for <strong>who-can-do-what</strong>; map teams &rarr; workspaces for <strong>budget + blast radius</strong>. A group is never a workspace, and a workspace never carries permissions.</p></div>
 
   <div class="mer">
-    <div class="ml"><span>◆ Meridian Health</span> <span class="tag ill">illustrative</span></div>
-    <p>Meridian authors membership in <strong>Okta</strong>. An "All Users" group maps to a base <strong>Standard Access</strong> Custom role; a <em>Clinical-Eng</em> Okta group adds a role granting Claude Code + Web Search; <em>Marketing</em> gets a "Cowork Enabled" additive role. When a clinician leaves, Okta deprovisioning removes the seat automatically — no manual Console step. That same clinician is <em>separately</em> a <strong>Workspace Limited Developer</strong> in <code>clinical-ai-dev</code>: their <em>seat role</em> (identity, from Okta) and their <em>workspace membership</em> (resource, per workspace) sit on different axes and are never conflated.</p>
+    <div class="ml"><span>◆ Karekal Health</span> <span class="tag ill">illustrative</span></div>
+    <p>Karekal authors membership in <strong>Okta</strong>. An "All Users" group maps to a base <strong>Standard Access</strong> Custom role; a <em>Clinical-Eng</em> Okta group adds a role granting Claude Code + Web Search; <em>Marketing</em> gets a "Cowork Enabled" additive role. When a clinician leaves, Okta deprovisioning removes the seat automatically — no manual Console step. That same clinician is <em>separately</em> a <strong>Workspace Limited Developer</strong> in <code>clinical-ai-dev</code>: their <em>seat role</em> (identity, from Okta) and their <em>workspace membership</em> (resource, per workspace) sit on different axes and are never conflated.</p>
   </div>
 
   <!-- ============================ HOW: topology ============================ -->
   <h2 id="topology"><span class="kicker">How · topology</span>How many workspaces, and how far to separate</h2>
-  <div class="body"><p>Map <strong>environment × team</strong> to workspaces. Meridian's grid — one workspace per cell, each with its own keys, cap, and posture:</p></div>
+  <div class="body"><p>Map <strong>environment × team</strong> to workspaces. Karekal's grid — one workspace per cell, each with its own keys, cap, and posture:</p></div>
 
   <div class="topo">
     <div class="h"></div>
@@ -527,11 +527,11 @@
     <div class="opt"><b>Yes, a regulated / legal boundary →</b> <strong>Separate orgs</strong> — full access + billing separation, but duplicate admin + contract. Right only for a ring-fenced subsidiary; usually overkill.</div>
     <div class="opt"><b>Already multi-account in cloud →</b> <strong>Hyperscaler environments</strong> — prod/non-prod maps to AWS accounts / GCP projects / Azure subscriptions + IAM (<a href="procurement-pack.html">procurement-pack.html §4</a>).</div>
     <div class="q">How many workspaces can one org hold?</div>
-    <div class="opt"><strong>100 per organization</strong> — and archived workspaces <em>don't</em> count toward the cap (one more reason archive ≠ delete matters). Meridian's nine is comfortably routine. <span class="tag h">H</span></div>
+    <div class="opt"><strong>100 per organization</strong> — and archived workspaces <em>don't</em> count toward the cap (one more reason archive ≠ delete matters). Karekal's nine is comfortably routine. <span class="tag h">H</span></div>
   </div>
   <div class="mer">
-    <div class="ml"><span>◆ Meridian Health</span> <span class="tag ill">illustrative</span></div>
-    <p>Meridian stays in <strong>one org</strong>. It considered a separate org for a newly-acquired imaging subsidiary that must be legally ring-fenced — that's the one case where the duplicate-admin overhead is worth it. Everything else is a workspace.</p>
+    <div class="ml"><span>◆ Karekal Health</span> <span class="tag ill">illustrative</span></div>
+    <p>Karekal stays in <strong>one org</strong>. It considered a separate org for a newly-acquired imaging subsidiary that must be legally ring-fenced — that's the one case where the duplicate-admin overhead is worth it. Everything else is a workspace.</p>
   </div>
 
   <!-- ============================ HOW: day-2 ============================ -->
@@ -556,8 +556,8 @@
     <p><strong>"Delete my data" is a retention question, not a workspace op.</strong> Archiving removes the operational container; it does <em>not</em> purge the data. A stakeholder who needs the <em>content</em> gone is asking for a <strong>retention / ZDR / Compliance-API-delete</strong> control (<a href="governance-overlay.html">governance-overlay.html</a>), not an archive. Conflating the two is how a DSAR or eDiscovery-deletion obligation quietly fails.</p>
   </div>
   <div class="mer">
-    <div class="ml"><span>◆ Meridian Health</span> <span class="tag ill">illustrative</span></div>
-    <p>Meridian ran an <code>ambient-scribe-poc</code> workspace for a 60-day pilot. At the no-go decision they <strong>drained the two keys</strong> (the pilot app was pointed at a new home first), exported the cost history for the pilot write-up, then archived. When Legal later asked to <em>delete the pilot's PHI</em>, the team correctly routed that to the <strong>retention + Compliance-API</strong> path — archiving the workspace had removed the container, but the data lived under the retention policy until explicitly deleted.</p>
+    <div class="ml"><span>◆ Karekal Health</span> <span class="tag ill">illustrative</span></div>
+    <p>Karekal ran an <code>ambient-scribe-poc</code> workspace for a 60-day pilot. At the no-go decision they <strong>drained the two keys</strong> (the pilot app was pointed at a new home first), exported the cost history for the pilot write-up, then archived. When Legal later asked to <em>delete the pilot's PHI</em>, the team correctly routed that to the <strong>retention + Compliance-API</strong> path — archiving the workspace had removed the container, but the data lived under the retention policy until explicitly deleted.</p>
   </div>
 
   <!-- ============================ Failure modes ============================ -->
@@ -589,7 +589,7 @@
       <a href="https://support.claude.com/en/articles/9796807">Help Center: creating &amp; managing Workspaces</a> (archive cascades to keys + "cannot be undone"; Default immovable; rate-limit tab) ·
       <a href="https://platform.claude.com/docs/en/manage-claude/admin-api">manage-claude/admin-api</a> (create + archive endpoints; Admin-key / <code>org:admin</code> OAuth / WIF) ·
       <a href="https://platform.claude.com/docs/en/manage-claude/data-residency">data-residency</a> (Workspace geo — at-rest + processing, immutable at create, us-only) · Spend Limits + Rate Limits APIs. Grounded in <a href="../docs/feature-inventory.html">feature-inventory.md</a>.
-      Patterns synthesize Anthropic's documented use cases with this repo's <a href="enterprise-deployment-guide.html">deployment</a> + <a href="token-budget-governance.html">budget</a> guides; recommendations are this repo's, not observed field data. <em>Meridian Health is a fictional worked example.</em>
+      Patterns synthesize Anthropic's documented use cases with this repo's <a href="enterprise-deployment-guide.html">deployment</a> + <a href="token-budget-governance.html">budget</a> guides; recommendations are this repo's, not observed field data. <em>Karekal Health is a fictional worked example.</em>
     </div>
     <div>© gmanch94 · CC-BY-4.0 · As of 2026-07. Verify pricing/models at anthropic.com.</div>
   </footer>

@@ -318,7 +318,7 @@ Grounding: Claude Code ships a floor you build on — **read-only permissions by
 
 ### 5.1 Identity & credentials
 
-`forceLoginMethod` / `forceLoginOrgUUID` (org lock) and the Console **Claude Code vs Developer** role are in §2. More facts the security review will ask for (the surface→credential overview is the *credential axis* in [`enterprise-workspaces-guide.html`](enterprise-workspaces-guide.html)):
+`forceLoginMethod` / `forceLoginOrgUUID` (org lock) and the Console **Claude Code vs Developer** role are in §2. More facts the security review will ask for (the surface→credential overview is the *credential axis* in [`enterprise-workspaces-guide.html`](enterprise-workspaces-guide.html), and the plain person-vs-machine concept — what a service account is and which of these credentials is one — is [`service-accounts-guide.md`](service-accounts-guide.md)):
 
 - **Where the login token sits on disk** — set your endpoint policy accordingly: macOS = encrypted Keychain; Linux = `~/.claude/.credentials.json` (mode `0600`); Windows = `%USERPROFILE%\.claude\.credentials.json` (inherits the profile's ACLs). **Failure mode:** if endpoint policy lets that file go group- or world-readable, a stolen token is full session + tenant access. `[H — iam]`
 - **Who can see usage** — the analytics dashboards are role-gated: `claude.ai/analytics/claude-code` (Team/Enterprise; Admins + Owners) and `platform.claude.com/claude-code` (Console; the `UsageView` permission — Developer / Billing / Admin / Owner / Primary Owner). Route managers there rather than standing up a parallel report. `[H — analytics]`
