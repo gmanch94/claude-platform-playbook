@@ -1,0 +1,208 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Claude Platform Playbook — Legal-Hold &amp; eDiscovery Flow</title>
+<style>
+  :root{
+    --ink:#2b2b2b; --muted:#8c8c8c; --accent:#c2622d;
+    --go:#1f6f5c; --gobg:#eaf3ee; --gobd:#bcd8c8;
+    --danger:#9e3636; --dangerbg:#fbecec; --dangerbd:#e3b9b9;
+    --warn:#8a5310; --warnbg:#fbf1e2; --warnbd:#e6cfa8;
+    --card:#ffffff; --cardbd:#e3dfd6; --bg:#faf8f4;
+    --banner:#eaf3ee; --bannerbd:#bcd8c8; --line2:#cdcabf;
+    --badge:#c2622d;
+  }
+  *{box-sizing:border-box}
+  body{margin:0;background:var(--bg);color:var(--ink);
+    font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;
+    line-height:1.5;-webkit-font-smoothing:antialiased}
+  .wrap{max-width:1200px;margin:0 auto;padding:28px 22px 40px}
+  .brand{display:inline-block;font-size:12px;font-weight:700;text-transform:uppercase;letter-spacing:.8px;color:var(--accent);text-decoration:none;margin:0 0 12px;opacity:.85}
+  .brand:hover{opacity:1;text-decoration:underline}
+  h1{font-size:25px;margin:0 0 4px;font-weight:700}
+  .sub{color:#5a5a5a;font-size:14px;margin:0 0 6px;max-width:900px}
+  .asof{color:#777;font-size:12.5px;margin:0 0 18px}
+  .asof strong{color:#5a5a5a}
+  .frame{font-size:14px;color:#444;margin:0 0 14px;max-width:900px}
+  .frame strong{color:var(--ink)}
+  svg{width:100%;height:auto;display:block;background:transparent}
+  .legend{display:flex;flex-wrap:wrap;gap:14px;margin:12px 2px 0;font-size:12.5px;color:#555}
+  .legend span{display:inline-flex;align-items:center;gap:6px}
+  .sw{width:13px;height:13px;border-radius:3px;display:inline-block;border:1px solid rgba(0,0,0,.12)}
+  .how{font-size:13px;color:#555;margin:16px 2px 0;max-width:900px}
+  .how b{color:var(--ink)}
+  .companion{font-size:13.5px;margin:18px 2px 0;padding-top:14px;border-top:1px solid #e7e3da;color:#444}
+  .companion a{color:var(--accent);text-decoration:none;font-weight:600}
+  .companion a:hover{text-decoration:underline}
+  footer{margin-top:22px;font-size:12px;color:#888;border-top:1px solid #e7e3da;padding-top:12px}
+  /* SVG type */
+  .t-banner{fill:#1c5540;font-size:15px;font-weight:800}
+  .t-banner-s{fill:#356; font-size:12.5px}
+  .t-label{fill:var(--ink);font-size:13px;font-weight:800;letter-spacing:.4px}
+  .t-fork-h{fill:#fff;font-size:14px;font-weight:800;letter-spacing:.3px}
+  .t-fork{fill:#3a3a3a;font-size:12.5px}
+  .t-fork-em{font-weight:700}
+  .t-step-n{fill:#fff;font-size:14px;font-weight:800}
+  .t-step{fill:var(--ink);font-size:15px;font-weight:700}
+  .t-sub{fill:#555;font-size:12.5px}
+  .t-note{fill:#444;font-size:12.5px}
+  .t-note-h{font-weight:700}
+  .t-danger{fill:var(--danger);font-size:12.5px}
+  .t-danger-h{fill:var(--danger);font-size:13px;font-weight:800}
+  .t-warn{fill:var(--warn);font-size:12.5px}
+  .t-warn-h{fill:var(--warn);font-size:13px;font-weight:800}
+  .t-bound{fill:var(--danger);font-size:13px;font-weight:600}
+  .conn{fill:none;stroke:var(--line2);stroke-width:2.6}
+  .tie{fill:none;stroke:var(--line2);stroke-width:1.8;stroke-dasharray:3 4}
+  @media print{
+    body{background:#fff}
+    .wrap{max-width:none;padding:0}
+    .how,.companion,.frame,.legend{color:#000}
+    @page{margin:12mm}
+  }
+  @media (max-width:640px){ h1{font-size:21px} .legend{font-size:11.5px} }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <a class="brand" href="../">Claude Platform Playbook</a>
+  <h1>Legal-Hold &amp; eDiscovery — Response Flow</h1>
+  <p class="sub">The one-glance companion to the <strong>legal-hold / eDiscovery runbook</strong>: which lever a legal request pulls, and the 7-step response when a hold lands.</p>
+  <p class="asof"><strong>As of 2026-07.</strong> Platform mechanics, not legal advice. Pin to current surface — refresh monthly.</p>
+  <p class="frame">Read top-down. The <strong>fork</strong> is which lever a request pulls — green <strong>preserves / produces</strong>, red <strong>deletes</strong>. The <strong>spine</strong> is the response when a hold lands: <strong>preserve first, before you scope</strong>, because the auto-delete clock doesn't pause while counsel scopes. Red marks a trap that destroys producibility; the banner is the fact everything hangs on — there is no "legal hold" button.</p>
+
+  <svg viewBox="0 0 1160 940" role="img" aria-label="Flowchart. Top banner: Claude has no legal-hold button; preservation is assembled from extending retention plus the Compliance API. A fork splits a legal request into preserve/produce (green: litigation hold, eDiscovery, regulator, via extend retention plus Compliance API retrieve; trap is ZDR or short retention meaning you cannot produce) versus delete (red: RTBF, DSAR, erasure via Compliance API delete; under an active hold this may be spoliation, reconcile first). Below, a 7-step response spine: 1 preserve now before you scope, 2 scope with counsel, 3 confirm it still exists (Enterprise equals content, API Platform equals events only), 4 provision a least-privilege content key to legal not the SOC, 5 retrieve via Compliance API, 6 produce plus chain of custody, 7 release and restore retention. Bottom strip: platform mechanics not legal advice; items marked with a question mark are undocumented, confirm with Anthropic.">
+
+    <!-- ===== hero banner ===== -->
+    <rect x="20" y="8" width="1120" height="50" rx="14" fill="var(--banner)" stroke="var(--bannerbd)" stroke-width="2"/>
+    <text x="580" y="30" text-anchor="middle" class="t-banner">Claude has no "legal hold" button. You assemble it:</text>
+    <text x="580" y="48" text-anchor="middle" class="t-banner-s">EXTEND RETENTION (preserve, documented) &#8226; COMPLIANCE API (retrieve / delete) &#8226; the rest is [?] — confirm with Anthropic</text>
+
+    <!-- ===== fork ===== -->
+    <text x="580" y="84" text-anchor="middle" class="t-label">A LEGAL REQUEST ARRIVES — WHICH DIRECTION?</text>
+    <!-- connector from fork title down to the two pills -->
+    <path class="conn" d="M580 92 L580 104 M300 104 L860 104 M300 104 L300 120 M860 104 L860 120"/>
+
+    <!-- preserve/produce pill (green) -->
+    <rect x="40" y="120" width="520" height="118" rx="13" fill="var(--gobg)" stroke="var(--gobd)" stroke-width="2"/>
+    <rect x="40" y="120" width="520" height="26" rx="13" fill="var(--go)"/>
+    <rect x="40" y="133" width="520" height="13" fill="var(--go)"/>
+    <text x="300" y="138" text-anchor="middle" class="t-fork-h">PRESERVE / PRODUCE</text>
+    <text x="60" y="168" class="t-fork"><tspan class="t-fork-em">Litigation hold &#8226; eDiscovery &#8226; regulatory request</tspan></text>
+    <text x="60" y="190" class="t-fork">Lever: <tspan class="t-fork-em">extend retention</tspan> (stop deletion) + <tspan class="t-fork-em">Compliance API retrieve</tspan></text>
+    <text x="60" y="212" class="t-danger"><tspan class="t-fork-em">&#9888; Trap A:</tspan> ZDR / short retention = you can't produce what</text>
+    <text x="60" y="228" class="t-danger">you chose not to retain.</text>
+
+    <!-- delete pill (red) -->
+    <rect x="600" y="120" width="520" height="118" rx="13" fill="var(--dangerbg)" stroke="var(--dangerbd)" stroke-width="2"/>
+    <rect x="600" y="120" width="520" height="26" rx="13" fill="var(--danger)"/>
+    <rect x="600" y="133" width="520" height="13" fill="var(--danger)"/>
+    <text x="860" y="138" text-anchor="middle" class="t-fork-h">DELETE</text>
+    <text x="620" y="168" class="t-fork"><tspan class="t-fork-em">RTBF / DSAR / erasure</tspan></text>
+    <text x="620" y="190" class="t-fork">Lever: <tspan class="t-fork-em">Compliance API delete</tspan></text>
+    <text x="620" y="212" class="t-danger"><tspan class="t-fork-em">&#9888; Trap B:</tspan> under an active hold this MAY be spoliation</text>
+    <text x="620" y="228" class="t-danger">&#8212; reconcile against active holds FIRST (a legal call).</text>
+
+    <!-- ===== spine label ===== -->
+    <text x="60" y="286" class="t-label">WHEN A HOLD LANDS &#183; THE 7-STEP RESPONSE</text>
+    <text x="470" y="286" class="t-warn-h">preserve BEFORE you scope</text>
+
+    <!-- vertical connectors between steps (x=300) -->
+    <path class="conn" d="M300 372 L300 392"/>
+    <path class="conn" d="M300 452 L300 472"/>
+    <path class="conn" d="M300 532 L300 552"/>
+    <path class="conn" d="M300 612 L300 632"/>
+    <path class="conn" d="M300 692 L300 712"/>
+    <path class="conn" d="M300 772 L300 792"/>
+
+    <!-- step 1 — PRESERVE (green, emphasized) -->
+    <rect x="70" y="304" width="460" height="68" rx="12" fill="var(--gobg)" stroke="var(--go)" stroke-width="2.4"/>
+    <circle cx="70" cy="338" r="16" fill="var(--go)"/><text x="70" y="343" text-anchor="middle" class="t-step-n">1</text>
+    <text x="98" y="332" class="t-step" style="fill:#1c5540">PRESERVE NOW &#8212; before you scope</text>
+    <text x="98" y="356" class="t-sub">extend retention org-wide &#183; stops the auto-delete clock</text>
+
+    <!-- step 2 — SCOPE -->
+    <rect x="70" y="392" width="460" height="60" rx="12" fill="var(--card)" stroke="var(--cardbd)"/>
+    <circle cx="70" cy="422" r="16" fill="var(--badge)"/><text x="70" y="427" text-anchor="middle" class="t-step-n">2</text>
+    <text x="98" y="418" class="t-step">SCOPE with counsel</text>
+    <text x="98" y="440" class="t-sub">custodians &#183; date range &#183; data types &#183; which surface</text>
+
+    <!-- step 3 — CONFIRM -->
+    <rect x="70" y="472" width="460" height="60" rx="12" fill="var(--card)" stroke="var(--cardbd)"/>
+    <circle cx="70" cy="502" r="16" fill="var(--badge)"/><text x="70" y="507" text-anchor="middle" class="t-step-n">3</text>
+    <text x="98" y="498" class="t-step">CONFIRM it still exists</text>
+    <text x="98" y="520" class="t-sub">check ZDR + retention age against the hold's date range</text>
+
+    <!-- step 4 — PROVISION KEY -->
+    <rect x="70" y="552" width="460" height="60" rx="12" fill="var(--card)" stroke="var(--cardbd)"/>
+    <circle cx="70" cy="582" r="16" fill="var(--badge)"/><text x="70" y="587" text-anchor="middle" class="t-step-n">4</text>
+    <text x="98" y="578" class="t-step">PROVISION content-scoped key</text>
+    <text x="98" y="600" class="t-sub">least-privilege &#183; held by legal / records</text>
+
+    <!-- step 5 — RETRIEVE -->
+    <rect x="70" y="632" width="460" height="60" rx="12" fill="var(--card)" stroke="var(--cardbd)"/>
+    <circle cx="70" cy="662" r="16" fill="var(--badge)"/><text x="70" y="667" text-anchor="middle" class="t-step-n">5</text>
+    <text x="98" y="658" class="t-step">RETRIEVE</text>
+    <text x="98" y="680" class="t-sub">Compliance API content endpoints (Enterprise)</text>
+
+    <!-- step 6 — PRODUCE -->
+    <rect x="70" y="712" width="460" height="60" rx="12" fill="var(--card)" stroke="var(--cardbd)"/>
+    <circle cx="70" cy="742" r="16" fill="var(--badge)"/><text x="70" y="747" text-anchor="middle" class="t-step-n">6</text>
+    <text x="98" y="738" class="t-step">PRODUCE + chain of custody</text>
+    <text x="98" y="760" class="t-sub">export to review platform &#183; log who / when / scope</text>
+
+    <!-- step 7 — RELEASE -->
+    <rect x="70" y="792" width="460" height="60" rx="12" fill="var(--card)" stroke="var(--cardbd)"/>
+    <circle cx="70" cy="822" r="16" fill="var(--badge)"/><text x="70" y="827" text-anchor="middle" class="t-step-n">7</text>
+    <text x="98" y="818" class="t-step">RELEASE</text>
+    <text x="98" y="840" class="t-sub">restore normal retention when the hold lifts</text>
+
+    <!-- ===== right-hand callouts, tied to steps ===== -->
+    <!-- ZDR trap → step 1/3 -->
+    <path class="tie" d="M530 338 L600 338"/>
+    <rect x="600" y="304" width="520" height="70" rx="12" fill="var(--dangerbg)" stroke="var(--dangerbd)" stroke-width="2"/>
+    <text x="620" y="328" class="t-danger-h">&#9888; ZDR / short retention?</text>
+    <text x="620" y="348" class="t-danger">Content may already be GONE — you can't produce what you</text>
+    <text x="620" y="364" class="t-danger">didn't retain (Trap A). Tell counsel now — a producibility finding.</text>
+
+    <!-- surface split → step 3 -->
+    <path class="tie" d="M530 502 L600 502"/>
+    <rect x="600" y="472" width="520" height="60" rx="12" fill="var(--warnbg)" stroke="var(--warnbd)" stroke-width="2"/>
+    <text x="620" y="496" class="t-warn-h">Surface decides everything</text>
+    <text x="620" y="516" class="t-warn">Enterprise = <tspan style="font-weight:700">content</tspan>. API Platform = <tspan style="font-weight:700">events only</tspan>, no content.</text>
+
+    <!-- key → SOC boundary → step 4 -->
+    <path class="tie" d="M530 582 L600 582"/>
+    <rect x="600" y="552" width="520" height="60" rx="12" fill="var(--card)" stroke="var(--cardbd)"/>
+    <text x="620" y="576" class="t-note"><tspan class="t-note-h">Content key &#8594; legal / records, NOT the SOC.</tspan></text>
+    <text x="620" y="596" class="t-note">Over-scoping the content key is the standing failure mode.</text>
+
+    <!-- no-button reminder → step 6/7 -->
+    <path class="tie" d="M530 742 L600 742"/>
+    <rect x="600" y="712" width="520" height="60" rx="12" fill="var(--warnbg)" stroke="var(--warnbd)" stroke-width="2"/>
+    <text x="620" y="736" class="t-warn"><tspan class="t-warn-h">No named "legal hold" primitive.</tspan> What you did = extend</text>
+    <text x="620" y="756" class="t-warn">retention. Say that to a court; confirm per-matter semantics [?].</text>
+
+    <!-- ===== boundary strip ===== -->
+    <rect x="20" y="876" width="1120" height="56" rx="13" fill="var(--dangerbg)" stroke="var(--dangerbd)" stroke-width="2"/>
+    <text x="580" y="900" text-anchor="middle" class="t-bound">&#128721; Platform mechanics, not legal advice. Scope of hold, what's responsive, and spoliation are legal calls — route to counsel.</text>
+    <text x="580" y="920" text-anchor="middle" class="t-bound" style="font-weight:500;font-size:12px">Items marked [?] — retention suspension &#183; per-matter hold &#183; content query params &#183; Public-Sector path — are undocumented. Confirm with Anthropic.</text>
+  </svg>
+
+  <div class="legend" aria-hidden="true">
+    <span><i class="sw" style="background:var(--go)"></i> preserve / produce (go)</span>
+    <span><i class="sw" style="background:var(--danger)"></i> delete / trap (danger)</span>
+    <span><i class="sw" style="background:var(--warn)"></i> watch-out</span>
+    <span><i class="sw" style="background:var(--badge)"></i> response step</span>
+  </div>
+
+  <p class="how"><b>How to use it.</b> Hand it to Legal / Compliance and the admin who executes, next to the runbook. The two things that must land at a glance: <b>preserve before you scope</b> (top of the spine — the delete clock doesn't pause for you) and <b>there is no "legal hold" button</b> (the banner). The full protocol, the sourcing grades, and the confirm-with-Anthropic list live in the runbook.</p>
+
+  <p class="companion"><b>Companion:</b> the full runbook — standing prep, the scope-reality table, the request-type matrix, the 7-step protocol with sourcing, and the open items to confirm with Anthropic — is <a href="legal-hold-ediscovery-runbook.html">legal-hold-ediscovery-runbook.md</a>. For the admin planes and credentials this relies on, <a href="usage-compliance-monitoring.html">usage-compliance-monitoring.md</a>; for retention + ZDR <em>policy</em> depth, <a href="governance-overlay.html">governance-overlay.md</a>.</p>
+
+  <footer>&copy; gmanch94 &middot; CC-BY-4.0 &middot; As of 2026-07. Verify pricing/models at anthropic.com. Not legal advice.</footer>
+</div>
+</body>
+</html>
