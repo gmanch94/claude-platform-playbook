@@ -112,7 +112,16 @@ URLS (spot-check, 10 of N unique)
 
 If >10 unique URLs exist, note "sampled 10 of N — run full audit manually."
 
-### 7. Summary report
+### 7. Artifact count consistency
+
+Run `node scripts/check-counts.mjs` — a deterministic guard (no deps). It asserts the artifact count agrees everywhere:
+
+- `artifacts/` file count (ground truth) **==** README `## Artifacts` catalog rows **==** every stated count in `docs/scope.md` (`now ships N`, `full N-row catalog`, `All N mapped`) and `CLAUDE.md` (`currently ships N`).
+- Reports `index.html` card count as **info** (visual companions are reached via a parent card's sub-links, so `cards <= artifacts` is expected — not a mismatch).
+
+Exit 0 = PASS, exit 1 = a mismatch (or a `??` = a count sentence was reworded and the regex needs re-pointing). This retires the recurring "bumped an artifact, forgot the count" drift (precedent 2026-07-19: the docs said 46 while the repo held 51). Report the script's output verbatim under a `COUNTS` heading. If `node` is unavailable, say so and fall back to comparing `ls artifacts | wc -l` against the README catalog rows by hand.
+
+### 8. Summary report
 
 Print a single consolidated block:
 
@@ -124,6 +133,7 @@ MODEL PINS    X ok  Y wrong  Z floating
 INVENTORY     last verified N days ago  X missing refs
 PRODUCT SURF  X ok  Y due/stale  Z drift
 URLS          X ok  Y broken  (sampled Z of N)
+COUNTS        N artifacts · all refs agree  (or: K mismatched)
 
 Action needed:
   [ ] /bump-as-of              — Y files have stale stamps
@@ -131,6 +141,7 @@ Action needed:
   [ ] Update feature-inventory — N days since last verify
   [ ] Re-verify product surfaces — Y rows past 14-day window, Z status-drift
   [ ] Fix broken URLs          — Y links returning non-200
+  [ ] Fix artifact count       — a stated count ≠ artifacts/ (node scripts/check-counts.mjs)
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━
 ```
 
