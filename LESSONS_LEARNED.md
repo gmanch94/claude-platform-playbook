@@ -20,6 +20,19 @@ Running log of process lessons for working in this repo. Append, don't overwrite
 
 ## Universal process lessons
 
+### Never rewrite tracked text files with PowerShell `Set-Content -Encoding utf8` (Windows)
+
+Windows PowerShell 5.1 writes UTF-8 **with a byte-order mark**. A bulk regex-swap pass over `index.html` and `docs/feature-inventory.md` (2026-07-23, during the `claude-security-layers` rename) prepended BOMs that merged in [#57](https://github.com/gmanch94/claude-platform-playbook/pull/57) and needed a follow-up [#58](https://github.com/gmanch94/claude-platform-playbook/pull/58) to strip.
+
+- **Use the native Write/Edit tools** for tracked text files. If a scripted rewrite is genuinely necessary: `[System.IO.File]::WriteAllText($p, $s, (New-Object System.Text.UTF8Encoding $false))`.
+- **Tell-tale in review:** a diff-stat far larger than the edit justifies, on a file you only touched with a regex swap. A whole-file rewrite means the encoding or line endings moved.
+- **Detection:** scan `git ls-files` text files for a leading `EF BB BF` — `$b=[System.IO.File]::ReadAllBytes($p); $b[0] -eq 0xEF -and $b[1] -eq 0xBB -and $b[2] -eq 0xBF`.
+- **Why it matters here:** a BOM is invisible in the editor and in rendered `git diff`, but it ships. Ahead of a markdown file's first `#` it can suppress heading parsing on some renderers. Same family as the `.md`→`.html` and phantom-table gotchas — *the source looks fine and only the shipped artifact is wrong.*
+
+### Verify **every** SVG, not just the first, on multi-diagram pages
+
+The house render-probe grabbed `document.querySelector('svg')` — the first one. On a page with six workflow diagrams that checks 1/6 and reports green. Switching to `querySelectorAll` and iterating (2026-07-23) immediately caught a real defect: a callout line running to `x=1297` inside a `1120`-wide viewBox on diagram 2. Per-SVG assertions worth keeping: viewBox overflow, text escaping its own box, and 0 unresolved `var()` in `fill`/`stroke` (the Safari/Firefox trap).
+
 ### Background agent + session-limit edge case
 
 When launching a background `Agent` to produce a file deliverable while parent session usage is already high:
