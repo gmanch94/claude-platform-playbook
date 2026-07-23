@@ -1,4 +1,4 @@
-﻿# Claude Platform Feature Inventory
+# Claude Platform Feature Inventory
 
 **Single source of truth.** All artifacts in this repo reference this file. Update this first, propagate second.
 
