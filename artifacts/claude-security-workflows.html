@@ -1,0 +1,529 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Claude security layers — the stack and each workflow</title>
+<style>
+  :root{
+    --bg:#ffffff; --fg:#0f172a; --muted:#475569; --line:#cbd5e1;
+    --panel:#f8fafc; --accent:#0f766e; --accent-bg:#ccfbf1;
+    --warn:#b45309; --warn-bg:#fef3c7; --trap:#b91c1c; --trap-bg:#fee2e2;
+  }
+  @media (prefers-color-scheme: dark){
+    :root{ --bg:#0b1220; --fg:#e2e8f0; --muted:#94a3b8; --line:#334155;
+           --panel:#111c2e; --accent:#5eead4; --accent-bg:#083344;
+           --warn:#fbbf24; --warn-bg:#3b2f10; --trap:#fca5a5; --trap-bg:#3f1414; }
+  }
+  *{box-sizing:border-box}
+  body{
+    margin:0; padding:28px 20px 48px;
+    background:var(--bg); color:var(--fg);
+    font:15px/1.55 -apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;
+  }
+  .wrap{max-width:1160px;margin:0 auto}
+  h1{font-size:26px;margin:0 0 6px;letter-spacing:-.01em}
+  .sub{color:var(--muted);font-size:14px;margin:0 0 4px}
+  .stamp{color:var(--muted);font-size:12.5px;margin:0 0 22px}
+  h2{font-size:16px;margin:38px 0 4px;letter-spacing:.02em;text-transform:uppercase;color:var(--muted)}
+  h3{font-size:18px;margin:30px 0 2px;letter-spacing:-.01em}
+  h3 .n{color:var(--accent);font-variant-numeric:tabular-nums}
+  .lede{color:var(--muted);font-size:13.5px;margin:0 0 10px}
+  .svgbox{background:#ffffff;border:1px solid var(--line);border-radius:10px;padding:8px;overflow-x:auto}
+  svg{display:block;width:100%;height:auto;min-width:820px}
+  .chips{display:flex;flex-wrap:wrap;gap:7px;margin:0 0 10px}
+  .chip{font-size:12px;padding:3px 9px;border-radius:999px;border:1px solid var(--line);background:var(--panel);color:var(--fg)}
+  .chip.w{background:var(--warn-bg);border-color:var(--warn)}
+  .chip.t{background:var(--trap-bg);border-color:var(--trap)}
+  .chip.a{background:var(--accent-bg);border-color:var(--accent)}
+  .note{border-left:3px solid var(--trap);background:var(--trap-bg);border-radius:0 8px 8px 0;
+        padding:10px 14px;margin:12px 0 0;font-size:13.5px}
+  .grid{display:grid;gap:14px;grid-template-columns:repeat(auto-fit,minmax(270px,1fr));margin-top:14px}
+  .card{border:1px solid var(--line);border-radius:10px;padding:14px 16px;background:var(--panel)}
+  .card h4{margin:0 0 8px;font-size:14px}
+  .card p{font-size:13.5px;margin:0 0 6px}
+  code{font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;font-size:12.5px;
+       background:rgba(127,127,127,.16);padding:1px 5px;border-radius:4px}
+  table{border-collapse:collapse;width:100%;font-size:13.5px;margin-top:6px}
+  th,td{border:1px solid var(--line);padding:8px 10px;text-align:left;vertical-align:top}
+  th{background:var(--panel);font-size:12.5px;letter-spacing:.02em;text-transform:uppercase;color:var(--muted)}
+  tr.me td{background:var(--accent-bg);font-weight:600}
+  .legend{display:flex;gap:18px;flex-wrap:wrap;font-size:12.5px;color:var(--muted);margin:10px 0 0}
+  .legend span{display:inline-flex;align-items:center;gap:7px}
+  .sw{width:13px;height:13px;border-radius:3px;display:inline-block;border:1px solid var(--line)}
+  footer{margin-top:40px;padding-top:14px;border-top:1px solid var(--line);color:var(--muted);font-size:12.5px}
+  a{color:inherit}
+  @media print{
+    body{padding:0;background:#fff;color:#0f172a}
+    .card,.chip{background:#f8fafc}
+    .svgbox{border:none;break-inside:avoid}
+    svg{min-width:0}
+    h3{break-after:avoid}
+  }
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <h1>Claude security layers — the stack, and each workflow</h1>
+  <p class="sub">Six code-security layers, two adjacent controls, four differently-named products. This page shows where each sits and how each actually runs.</p>
+  <p class="stamp">Visual companion to <a href="claude-security-layers.html">claude-security-layers.md</a> · all mechanics <code>[H]</code> against <code>code.claude.com</code> docs, verified 2026-07-23</p>
+
+  <h2>The stack</h2>
+  <div class="svgbox">
+  <svg viewBox="0 0 1120 616" xmlns="http://www.w3.org/2000/svg" role="img"
+       aria-label="Six-layer defense-in-depth stack for Claude code security, earliest catch at the top, with the newest layer highlighted.">
+    <rect x="0" y="0" width="1120" height="616" fill="#ffffff"/>
+    <text x="30" y="26" font-family="-apple-system,Segoe UI,Roboto,Helvetica,Arial,sans-serif" font-size="15" font-weight="700" fill="#0f172a">Defense in depth — earliest catch at the top, broadest catch at the bottom</text>
+    <text x="30" y="48" font-family="-apple-system,Segoe UI,Roboto,Helvetica,Arial,sans-serif" font-size="12.5" fill="#475569">Each layer catches what the one above it missed. None of them replaces another.</text>
+
+    <rect x="30" y="66" width="1060" height="74" rx="8" fill="#f1f5f9" stroke="#cbd5e1" stroke-width="1"/>
+    <line x1="270" y1="66" x2="270" y2="140" stroke="#cbd5e1" stroke-width="1"/>
+    <line x1="560" y1="66" x2="560" y2="140" stroke="#cbd5e1" stroke-width="1"/>
+    <text x="50" y="98" font-family="-apple-system,Segoe UI,Roboto,Helvetica,Arial,sans-serif" font-size="13" font-weight="700" fill="#0f172a">1 · In session</text>
+    <text x="50" y="117" font-family="-apple-system,Segoe UI,Roboto,Helvetica,Arial,sans-serif" font-size="11.5" fill="#475569">as Claude types</text>
+    <text x="290" y="98" font-family="-apple-system,Segoe UI,Roboto,Helvetica,Arial,sans-serif" font-size="14" font-weight="600" fill="#0f172a">Security guidance plugin</text>
+    <text x="290" y="118" font-family="ui-monospace,Menlo,Consolas,monospace" font-size="11.5" fill="#475569">free · all plans · 3 checkpoints</text>
+    <text x="580" y="96" font-family="-apple-system,Segoe UI,Roboto,Helvetica,Arial,sans-serif" font-size="12.5" fill="#0f172a">Claude reviews its own edits and fixes them in the same session.</text>
+    <text x="580" y="115" font-family="-apple-system,Segoe UI,Roboto,Helvetica,Arial,sans-serif" font-size="12.5" fill="#0f172a">Guidance, never a hard block.</text>
+
+    <rect x="30" y="152" width="1060" height="74" rx="8" fill="#f1f5f9" stroke="#cbd5e1" stroke-width="1"/>
+    <line x1="270" y1="152" x2="270" y2="226" stroke="#cbd5e1" stroke-width="1"/>
+    <line x1="560" y1="152" x2="560" y2="226" stroke="#cbd5e1" stroke-width="1"/>
+    <text x="50" y="184" font-family="-apple-system,Segoe UI,Roboto,Helvetica,Arial,sans-serif" font-size="13" font-weight="700" fill="#0f172a">2 · On demand</text>
+    <text x="50" y="203" font-family="-apple-system,Segoe UI,Roboto,Helvetica,Arial,sans-serif" font-size="11.5" fill="#475569">single pass</text>
+    <text x="290" y="184" font-family="ui-monospace,Menlo,Consolas,monospace" font-size="13.5" font-weight="600" fill="#0f172a">/security-review</text>
+    <text x="290" y="204" font-family="-apple-system,Segoe UI,Roboto,Helvetica,Arial,sans-serif" font-size="11.5" fill="#475569">built in · no install · no gate</text>
+    <text x="580" y="182" font-family="-apple-system,Segoe UI,Roboto,Helvetica,Arial,sans-serif" font-size="12.5" fill="#0f172a">One-time security pass on the current branch. The cheapest way</text>
+    <text x="580" y="201" font-family="-apple-system,Segoe UI,Roboto,Helvetica,Arial,sans-serif" font-size="12.5" fill="#0f172a">to ask "did I just do something stupid" before opening a PR.</text>
+
+    <rect x="30" y="238" width="1060" height="74" rx="8" fill="#ccfbf1" stroke="#0d9488" stroke-width="2.5"/>
+    <line x1="270" y1="238" x2="270" y2="312" stroke="#0d9488" stroke-width="1"/>
+    <line x1="560" y1="238" x2="560" y2="312" stroke="#0d9488" stroke-width="1"/>
+    <text x="50" y="270" font-family="-apple-system,Segoe UI,Roboto,Helvetica,Arial,sans-serif" font-size="13" font-weight="700" fill="#042f2e">3 · On demand</text>
+    <text x="50" y="289" font-family="-apple-system,Segoe UI,Roboto,Helvetica,Arial,sans-serif" font-size="11.5" font-weight="700" fill="#0f766e">DEEP SCAN — newest</text>
+    <text x="290" y="268" font-family="-apple-system,Segoe UI,Roboto,Helvetica,Arial,sans-serif" font-size="14.5" font-weight="700" fill="#042f2e">Claude Security plugin</text>
+    <text x="290" y="288" font-family="ui-monospace,Menlo,Consolas,monospace" font-size="12" fill="#0f766e">/claude-security · beta · paid plan</text>
+    <text x="580" y="266" font-family="-apple-system,Segoe UI,Roboto,Helvetica,Arial,sans-serif" font-size="12.5" font-weight="600" fill="#042f2e">Agent team maps architecture, threat-models, hunts, then reviews</text>
+    <text x="580" y="285" font-family="-apple-system,Segoe UI,Roboto,Helvetica,Arial,sans-serif" font-size="12.5" font-weight="600" fill="#042f2e">every finding independently. Repo or diff. Findings become patches</text>
+    <text x="580" y="304" font-family="-apple-system,Segoe UI,Roboto,Helvetica,Arial,sans-serif" font-size="12.5" font-weight="600" fill="#042f2e">you review and apply yourself.</text>
+
+    <rect x="30" y="324" width="1060" height="74" rx="8" fill="#f1f5f9" stroke="#cbd5e1" stroke-width="1"/>
+    <line x1="270" y1="324" x2="270" y2="398" stroke="#cbd5e1" stroke-width="1"/>
+    <line x1="560" y1="324" x2="560" y2="398" stroke="#cbd5e1" stroke-width="1"/>
+    <text x="50" y="356" font-family="-apple-system,Segoe UI,Roboto,Helvetica,Arial,sans-serif" font-size="13" font-weight="700" fill="#0f172a">4 · On pull request</text>
+    <text x="50" y="375" font-family="-apple-system,Segoe UI,Roboto,Helvetica,Arial,sans-serif" font-size="11.5" fill="#475569">team gate</text>
+    <text x="290" y="356" font-family="-apple-system,Segoe UI,Roboto,Helvetica,Arial,sans-serif" font-size="14" font-weight="600" fill="#0f172a">Code Review · ultrareview</text>
+    <text x="290" y="376" font-family="-apple-system,Segoe UI,Roboto,Helvetica,Arial,sans-serif" font-size="11.5" fill="#475569">research preview · Team, Enterprise</text>
+    <text x="580" y="354" font-family="-apple-system,Segoe UI,Roboto,Helvetica,Arial,sans-serif" font-size="12.5" fill="#0f172a">Multi-agent correctness and security review with full codebase</text>
+    <text x="580" y="373" font-family="-apple-system,Segoe UI,Roboto,Helvetica,Arial,sans-serif" font-size="12.5" fill="#0f172a">context. The only layer that runs whether the author asked or not.</text>
+    <text x="580" y="392" font-family="-apple-system,Segoe UI,Roboto,Helvetica,Arial,sans-serif" font-size="12" font-weight="600" fill="#b91c1c">Unavailable under Zero Data Retention.</text>
+
+    <rect x="30" y="410" width="1060" height="74" rx="8" fill="#f1f5f9" stroke="#cbd5e1" stroke-width="1"/>
+    <line x1="270" y1="410" x2="270" y2="484" stroke="#cbd5e1" stroke-width="1"/>
+    <line x1="560" y1="410" x2="560" y2="484" stroke="#cbd5e1" stroke-width="1"/>
+    <text x="50" y="442" font-family="-apple-system,Segoe UI,Roboto,Helvetica,Arial,sans-serif" font-size="13" font-weight="700" fill="#0f172a">5 · Managed</text>
+    <text x="50" y="461" font-family="-apple-system,Segoe UI,Roboto,Helvetica,Arial,sans-serif" font-size="11.5" fill="#475569">always on</text>
+    <text x="290" y="442" font-family="-apple-system,Segoe UI,Roboto,Helvetica,Arial,sans-serif" font-size="14" font-weight="600" fill="#0f172a">Claude Security (product)</text>
+    <text x="290" y="462" font-family="-apple-system,Segoe UI,Roboto,Helvetica,Arial,sans-serif" font-size="11.5" fill="#475569">Enterprise · premium seats</text>
+    <text x="580" y="440" font-family="-apple-system,Segoe UI,Roboto,Helvetica,Arial,sans-serif" font-size="12.5" fill="#0f172a">Hosted scanning that monitors connected repositories. No session</text>
+    <text x="580" y="459" font-family="-apple-system,Segoe UI,Roboto,Helvetica,Arial,sans-serif" font-size="12.5" fill="#0f172a">to keep open, no developer to remember to run it.</text>
+
+    <rect x="30" y="496" width="1060" height="74" rx="8" fill="#f8fafc" stroke="#cbd5e1" stroke-width="1" stroke-dasharray="5 4"/>
+    <line x1="270" y1="496" x2="270" y2="570" stroke="#cbd5e1" stroke-width="1"/>
+    <line x1="560" y1="496" x2="560" y2="570" stroke="#cbd5e1" stroke-width="1"/>
+    <text x="50" y="528" font-family="-apple-system,Segoe UI,Roboto,Helvetica,Arial,sans-serif" font-size="13" font-weight="700" fill="#0f172a">6 · In CI</text>
+    <text x="50" y="547" font-family="-apple-system,Segoe UI,Roboto,Helvetica,Arial,sans-serif" font-size="11.5" fill="#475569">not Anthropic</text>
+    <text x="290" y="528" font-family="-apple-system,Segoe UI,Roboto,Helvetica,Arial,sans-serif" font-size="14" font-weight="600" fill="#0f172a">Your existing SAST + SCA</text>
+    <text x="290" y="548" font-family="-apple-system,Segoe UI,Roboto,Helvetica,Arial,sans-serif" font-size="11.5" fill="#475569">keep these</text>
+    <text x="580" y="526" font-family="-apple-system,Segoe UI,Roboto,Helvetica,Arial,sans-serif" font-size="12.5" fill="#0f172a">Language-specific rules, supply-chain checks, policy enforcement.</text>
+    <text x="580" y="545" font-family="-apple-system,Segoe UI,Roboto,Helvetica,Arial,sans-serif" font-size="12.5" fill="#0f172a">Claude reasons about your code, not your dependency graph.</text>
+
+    <text x="30" y="596" font-family="-apple-system,Segoe UI,Roboto,Helvetica,Arial,sans-serif" font-size="11.5" fill="#475569">Layers 1-3 need a developer in a session. Layer 4 runs on the PR. Layer 5 runs without anyone. Data-handling terms differ per surface — see governance-overlay.</text>
+  </svg>
+  </div>
+
+  <div class="legend">
+    <span><i class="sw" style="background:#ccfbf1;border-color:#0d9488"></i> newest layer (beta)</span>
+    <span><i class="sw" style="background:#f1f5f9"></i> Anthropic layer</span>
+    <span><i class="sw" style="background:#f8fafc;border-style:dashed"></i> not an Anthropic product</span>
+  </div>
+
+  <h2>The workflows</h2>
+
+  <h3><span class="n">1</span> · Security guidance plugin — in session</h3>
+  <p class="lede"><code>/plugin install security-guidance@claude-plugins-official</code> — three checkpoints at three depths, wired as hooks.</p>
+  <div class="chips">
+    <span class="chip">GA</span><span class="chip">all Claude Code users</span><span class="chip">free</span>
+    <span class="chip a">catches the most volume</span>
+    <span class="chip t">never blocks a write</span>
+  </div>
+  <div class="svgbox">
+  <svg viewBox="0 0 1120 226" xmlns="http://www.w3.org/2000/svg" role="img"
+       aria-label="Security guidance plugin workflow: SessionStart bootstrap, UserPromptSubmit baseline, per-edit pattern match, end-of-turn diff review, commit and push review.">
+    <rect x="0" y="0" width="1120" height="226" fill="#ffffff"/>
+    <text x="20" y="20" font-family="ui-monospace,Menlo,Consolas,monospace" font-size="11.5" fill="#475569">hook lifecycle, one turn</text>
+
+    <rect x="20" y="34" width="196" height="76" rx="8" fill="#f1f5f9" stroke="#cbd5e1"/>
+    <text x="34" y="58" font-family="ui-monospace,Menlo,Consolas,monospace" font-size="11.5" font-weight="700" fill="#0f172a">SessionStart</text>
+    <text x="34" y="78" font-family="-apple-system,Segoe UI,Arial,sans-serif" font-size="11.5" fill="#475569">Bootstrap the plugin</text>
+    <text x="34" y="94" font-family="-apple-system,Segoe UI,Arial,sans-serif" font-size="11.5" fill="#475569">Python environment</text>
+    <line x1="216" y1="72" x2="232" y2="72" stroke="#94a3b8" stroke-width="1.5"/>
+    <polygon points="240,72 230,67 230,77" fill="#94a3b8"/>
+
+    <rect x="240" y="34" width="196" height="76" rx="8" fill="#f1f5f9" stroke="#cbd5e1"/>
+    <text x="254" y="58" font-family="ui-monospace,Menlo,Consolas,monospace" font-size="11.5" font-weight="700" fill="#0f172a">UserPromptSubmit</text>
+    <text x="254" y="78" font-family="-apple-system,Segoe UI,Arial,sans-serif" font-size="11.5" fill="#475569">Snapshot working-tree</text>
+    <text x="254" y="94" font-family="-apple-system,Segoe UI,Arial,sans-serif" font-size="11.5" fill="#475569">baseline to diff against</text>
+    <line x1="436" y1="72" x2="452" y2="72" stroke="#94a3b8" stroke-width="1.5"/>
+    <polygon points="460,72 450,67 450,77" fill="#94a3b8"/>
+
+    <rect x="460" y="34" width="196" height="76" rx="8" fill="#ccfbf1" stroke="#0d9488" stroke-width="2"/>
+    <text x="474" y="58" font-family="ui-monospace,Menlo,Consolas,monospace" font-size="11.5" font-weight="700" fill="#042f2e">PostToolUse · edits</text>
+    <text x="474" y="78" font-family="-apple-system,Segoe UI,Arial,sans-serif" font-size="11.5" fill="#0f766e">Per-edit pattern match</text>
+    <text x="474" y="94" font-family="-apple-system,Segoe UI,Arial,sans-serif" font-size="11.5" fill="#0f766e">Fast · deterministic</text>
+    <line x1="656" y1="72" x2="672" y2="72" stroke="#94a3b8" stroke-width="1.5"/>
+    <polygon points="680,72 670,67 670,77" fill="#94a3b8"/>
+
+    <rect x="680" y="34" width="196" height="76" rx="8" fill="#ccfbf1" stroke="#0d9488" stroke-width="2"/>
+    <text x="694" y="58" font-family="ui-monospace,Menlo,Consolas,monospace" font-size="11.5" font-weight="700" fill="#042f2e">Stop · end of turn</text>
+    <text x="694" y="78" font-family="-apple-system,Segoe UI,Arial,sans-serif" font-size="11.5" fill="#0f766e">Model reviews the turn</text>
+    <text x="694" y="94" font-family="-apple-system,Segoe UI,Arial,sans-serif" font-size="11.5" fill="#0f766e">diff in the background</text>
+    <line x1="876" y1="72" x2="892" y2="72" stroke="#94a3b8" stroke-width="1.5"/>
+    <polygon points="900,72 890,67 890,77" fill="#94a3b8"/>
+
+    <rect x="900" y="34" width="196" height="76" rx="8" fill="#f1f5f9" stroke="#cbd5e1"/>
+    <text x="914" y="58" font-family="ui-monospace,Menlo,Consolas,monospace" font-size="11.5" font-weight="700" fill="#0f172a">Bash · commit, push</text>
+    <text x="914" y="78" font-family="-apple-system,Segoe UI,Arial,sans-serif" font-size="11.5" fill="#475569">Commit review, capped</text>
+    <text x="914" y="94" font-family="-apple-system,Segoe UI,Arial,sans-serif" font-size="11.5" fill="#475569">at 20 per rolling hour</text>
+
+    <path d="M778 110 L778 132 L468 132 L468 118" fill="none" stroke="#0d9488" stroke-width="1.5" stroke-dasharray="4 3"/>
+    <polygon points="468,110 463,120 473,120" fill="#0d9488"/>
+    <text x="490" y="147" font-family="-apple-system,Segoe UI,Arial,sans-serif" font-size="11.5" fill="#0f766e">findings re-prompt Claude, which fixes them as a follow-up in the same session</text>
+
+    <rect x="20" y="160" width="1076" height="54" rx="8" fill="#fee2e2" stroke="#b91c1c"/>
+    <text x="36" y="181" font-family="-apple-system,Segoe UI,Arial,sans-serif" font-size="12.5" fill="#7f1d1d">Blind spots: commits you make in your own shell are never reviewed. Guidance files can add checks but cannot disable built-ins.</text>
+    <text x="36" y="200" font-family="-apple-system,Segoe UI,Arial,sans-serif" font-size="12.5" fill="#7f1d1d">On Amazon Bedrock and Google Cloud's Agent Platform the model-backed reviews skip entirely, leaving only the per-edit pattern match.</text>
+  </svg>
+  </div>
+  <div class="note"><b>Guidance is not enforcement.</b> This layer surfaces findings for Claude to fix. It does not block writes and does not guarantee every violation is caught — a guidance rule saying to ignore a vulnerability class does not suppress those findings. For a hard stop, pair it with a blocking hook or a CI check.</div>
+
+  <h3><span class="n">2</span> · <code>/security-review</code> — on demand, single pass</h3>
+  <p class="lede">Built in. No install, no plan gate, no marketplace.</p>
+  <div class="chips">
+    <span class="chip">GA</span><span class="chip">all plans</span><span class="chip">included usage</span>
+    <span class="chip a">cheapest pre-PR check</span>
+    <span class="chip t">nothing durable comes out</span>
+  </div>
+  <div class="svgbox">
+  <svg viewBox="0 0 1120 160" xmlns="http://www.w3.org/2000/svg" role="img"
+       aria-label="Security review workflow: you ask, single pass over the current branch, findings in session, you fix. No report file and no independent verification.">
+    <rect x="0" y="0" width="1120" height="160" fill="#ffffff"/>
+    <text x="20" y="20" font-family="ui-monospace,Menlo,Consolas,monospace" font-size="11.5" fill="#475569">one pass, in the session</text>
+
+    <rect x="20" y="34" width="250" height="76" rx="8" fill="#f1f5f9" stroke="#cbd5e1"/>
+    <text x="34" y="58" font-family="ui-monospace,Menlo,Consolas,monospace" font-size="12" font-weight="700" fill="#0f172a">/security-review</text>
+    <text x="34" y="78" font-family="-apple-system,Segoe UI,Arial,sans-serif" font-size="11.5" fill="#475569">You ask, or Claude invokes</text>
+    <text x="34" y="94" font-family="-apple-system,Segoe UI,Arial,sans-serif" font-size="11.5" fill="#475569">it via the Skill tool</text>
+    <line x1="270" y1="72" x2="286" y2="72" stroke="#94a3b8" stroke-width="1.5"/>
+    <polygon points="294,72 284,67 284,77" fill="#94a3b8"/>
+
+    <rect x="294" y="34" width="250" height="76" rx="8" fill="#ccfbf1" stroke="#0d9488" stroke-width="2"/>
+    <text x="308" y="58" font-family="-apple-system,Segoe UI,Arial,sans-serif" font-size="12.5" font-weight="700" fill="#042f2e">Single security pass</text>
+    <text x="308" y="78" font-family="-apple-system,Segoe UI,Arial,sans-serif" font-size="11.5" fill="#0f766e">Over the current branch,</text>
+    <text x="308" y="94" font-family="-apple-system,Segoe UI,Arial,sans-serif" font-size="11.5" fill="#0f766e">one agent, one look</text>
+    <line x1="544" y1="72" x2="560" y2="72" stroke="#94a3b8" stroke-width="1.5"/>
+    <polygon points="568,72 558,67 558,77" fill="#94a3b8"/>
+
+    <rect x="568" y="34" width="250" height="76" rx="8" fill="#f1f5f9" stroke="#cbd5e1"/>
+    <text x="582" y="58" font-family="-apple-system,Segoe UI,Arial,sans-serif" font-size="12.5" font-weight="700" fill="#0f172a">Findings in the session</text>
+    <text x="582" y="78" font-family="-apple-system,Segoe UI,Arial,sans-serif" font-size="11.5" fill="#475569">No report file, no revision</text>
+    <text x="582" y="94" font-family="-apple-system,Segoe UI,Arial,sans-serif" font-size="11.5" fill="#475569">stamp, no second opinion</text>
+    <line x1="818" y1="72" x2="834" y2="72" stroke="#94a3b8" stroke-width="1.5"/>
+    <polygon points="842,72 832,67 832,77" fill="#94a3b8"/>
+
+    <rect x="842" y="34" width="254" height="76" rx="8" fill="#f1f5f9" stroke="#cbd5e1"/>
+    <text x="856" y="58" font-family="-apple-system,Segoe UI,Arial,sans-serif" font-size="12.5" font-weight="700" fill="#0f172a">You fix, then move on</text>
+    <text x="856" y="78" font-family="-apple-system,Segoe UI,Arial,sans-serif" font-size="11.5" fill="#475569">Nothing persists once the</text>
+    <text x="856" y="94" font-family="-apple-system,Segoe UI,Arial,sans-serif" font-size="11.5" fill="#475569">session ends</text>
+
+    <text x="20" y="140" font-family="-apple-system,Segoe UI,Arial,sans-serif" font-size="12" fill="#475569">Need a durable artifact, a second opinion on each finding, or a stamp tying the verdict to a commit? That is layer 3.</text>
+  </svg>
+  </div>
+
+  <h3><span class="n">3</span> · Claude Security plugin — on demand, deep scan</h3>
+  <p class="lede"><code>/claude-security</code> — one command, three jobs. The newest layer, in beta.</p>
+  <div class="chips">
+    <span class="chip a">BETA</span><span class="chip w">paid plan · CC v2.1.154+</span>
+    <span class="chip w">python3 3.9.6+ · git</span>
+    <span class="chip t">may use significant tokens</span>
+    <span class="chip t">session must stay open</span>
+  </div>
+  <div class="svgbox">
+  <svg viewBox="0 0 1120 292" xmlns="http://www.w3.org/2000/svg" role="img"
+       aria-label="Claude Security plugin workflow: menu, choose scope with file count and relative cost, confirm, agent fleet maps and threat-models and hunts and independently reviews, report directory with three files, suggest patches, patches drafted in a scratch copy that you apply.">
+    <rect x="0" y="0" width="1120" height="292" fill="#ffffff"/>
+    <text x="20" y="20" font-family="ui-monospace,Menlo,Consolas,monospace" font-size="11.5" fill="#475569">scan, then report, then patches</text>
+
+    <rect x="20" y="34" width="240" height="80" rx="8" fill="#f1f5f9" stroke="#cbd5e1"/>
+    <text x="34" y="58" font-family="ui-monospace,Menlo,Consolas,monospace" font-size="12" font-weight="700" fill="#0f172a">/claude-security</text>
+    <text x="34" y="78" font-family="-apple-system,Segoe UI,Arial,sans-serif" font-size="11.5" fill="#475569">Menu of three jobs, or ask</text>
+    <text x="34" y="94" font-family="-apple-system,Segoe UI,Arial,sans-serif" font-size="11.5" fill="#475569">directly: "scan my branch",</text>
+    <text x="34" y="110" font-family="-apple-system,Segoe UI,Arial,sans-serif" font-size="11.5" fill="#475569">"scan commit abc1234"</text>
+    <line x1="260" y1="74" x2="276" y2="74" stroke="#94a3b8" stroke-width="1.5"/>
+    <polygon points="284,74 274,69 274,79" fill="#94a3b8"/>
+
+    <rect x="284" y="34" width="240" height="80" rx="8" fill="#f1f5f9" stroke="#cbd5e1"/>
+    <text x="298" y="58" font-family="-apple-system,Segoe UI,Arial,sans-serif" font-size="12.5" font-weight="700" fill="#0f172a">Choose what to scan</text>
+    <text x="298" y="78" font-family="-apple-system,Segoe UI,Arial,sans-serif" font-size="11.5" fill="#475569">Whole repo, a focused area,</text>
+    <text x="298" y="94" font-family="-apple-system,Segoe UI,Arial,sans-serif" font-size="11.5" fill="#475569">or a diff. Each option shows</text>
+    <text x="298" y="110" font-family="-apple-system,Segoe UI,Arial,sans-serif" font-size="11.5" fill="#475569">file count and relative cost</text>
+    <line x1="524" y1="74" x2="540" y2="74" stroke="#94a3b8" stroke-width="1.5"/>
+    <polygon points="548,74 538,69 538,79" fill="#94a3b8"/>
+
+    <rect x="548" y="34" width="240" height="80" rx="8" fill="#fef3c7" stroke="#b45309" stroke-width="2"/>
+    <text x="562" y="58" font-family="-apple-system,Segoe UI,Arial,sans-serif" font-size="12.5" font-weight="700" fill="#7c2d12">Confirm the run</text>
+    <text x="562" y="78" font-family="-apple-system,Segoe UI,Arial,sans-serif" font-size="11.5" fill="#7c2d12">Nothing runs until you say</text>
+    <text x="562" y="94" font-family="-apple-system,Segoe UI,Arial,sans-serif" font-size="11.5" fill="#7c2d12">so. May take a while and</text>
+    <text x="562" y="110" font-family="-apple-system,Segoe UI,Arial,sans-serif" font-size="11.5" fill="#7c2d12">use a lot of tokens</text>
+    <line x1="788" y1="74" x2="804" y2="74" stroke="#94a3b8" stroke-width="1.5"/>
+    <polygon points="812,74 802,69 802,79" fill="#94a3b8"/>
+
+    <rect x="812" y="34" width="284" height="80" rx="8" fill="#ccfbf1" stroke="#0d9488" stroke-width="2"/>
+    <text x="826" y="56" font-family="-apple-system,Segoe UI,Arial,sans-serif" font-size="12.5" font-weight="700" fill="#042f2e">Agent fleet runs</text>
+    <text x="826" y="74" font-family="-apple-system,Segoe UI,Arial,sans-serif" font-size="11.5" fill="#0f766e">map architecture, build a threat</text>
+    <text x="826" y="90" font-family="-apple-system,Segoe UI,Arial,sans-serif" font-size="11.5" fill="#0f766e">model, hunt, then independently</text>
+    <text x="826" y="106" font-family="-apple-system,Segoe UI,Arial,sans-serif" font-size="11.5" fill="#0f766e">review every finding</text>
+
+    <path d="M954 114 L954 132 L140 132 L140 150" fill="none" stroke="#94a3b8" stroke-width="1.5"/>
+    <polygon points="140,158 135,148 145,148" fill="#94a3b8"/>
+
+    <rect x="20" y="158" width="300" height="80" rx="8" fill="#f1f5f9" stroke="#cbd5e1"/>
+    <text x="34" y="180" font-family="-apple-system,Segoe UI,Arial,sans-serif" font-size="12.5" font-weight="700" fill="#0f172a">Timestamped report directory</text>
+    <text x="34" y="198" font-family="ui-monospace,Menlo,Consolas,monospace" font-size="11" fill="#475569">CLAUDE-SECURITY-RESULTS.md</text>
+    <text x="34" y="214" font-family="ui-monospace,Menlo,Consolas,monospace" font-size="11" fill="#475569">CLAUDE-SECURITY-RESULTS.jsonl</text>
+    <text x="34" y="230" font-family="ui-monospace,Menlo,Consolas,monospace" font-size="11" fill="#475569">CLAUDE-SECURITY-REVISION.json</text>
+    <line x1="320" y1="198" x2="336" y2="198" stroke="#94a3b8" stroke-width="1.5"/>
+    <polygon points="344,198 334,193 334,203" fill="#94a3b8"/>
+
+    <rect x="344" y="158" width="300" height="80" rx="8" fill="#f1f5f9" stroke="#cbd5e1"/>
+    <text x="358" y="180" font-family="-apple-system,Segoe UI,Arial,sans-serif" font-size="12.5" font-weight="700" fill="#0f172a">Suggest patches</text>
+    <text x="358" y="198" font-family="-apple-system,Segoe UI,Arial,sans-serif" font-size="11.5" fill="#475569">Pick findings by ID, or say</text>
+    <text x="358" y="214" font-family="-apple-system,Segoe UI,Arial,sans-serif" font-size="11.5" fill="#475569">"fix finding F3". Stale ones</text>
+    <text x="358" y="230" font-family="-apple-system,Segoe UI,Arial,sans-serif" font-size="11.5" fill="#475569">are skipped, not patched blind</text>
+    <line x1="644" y1="198" x2="660" y2="198" stroke="#94a3b8" stroke-width="1.5"/>
+    <polygon points="668,198 658,193 658,203" fill="#94a3b8"/>
+
+    <rect x="668" y="158" width="428" height="80" rx="8" fill="#ccfbf1" stroke="#0d9488" stroke-width="2"/>
+    <text x="682" y="180" font-family="-apple-system,Segoe UI,Arial,sans-serif" font-size="12.5" font-weight="700" fill="#042f2e">Patches drafted in a scratch copy — you apply them</text>
+    <text x="682" y="198" font-family="-apple-system,Segoe UI,Arial,sans-serif" font-size="11.5" fill="#0f766e">Your source files stay untouched until you choose to apply a patch yourself.</text>
+    <text x="682" y="214" font-family="-apple-system,Segoe UI,Arial,sans-serif" font-size="11.5" fill="#0f766e">The revision stamp ties the report to the exact commit it describes, so the</text>
+    <text x="682" y="230" font-family="-apple-system,Segoe UI,Arial,sans-serif" font-size="11.5" fill="#0f766e">plugin knows when a report is stale and offers a fresh scan instead.</text>
+
+    <text x="20" y="264" font-family="-apple-system,Segoe UI,Arial,sans-serif" font-size="12" fill="#475569">The report directory is the only change a scan makes to your checkout, and it carries its own .gitignore. Delete that one file to commit a report as an audit</text>
+    <text x="20" y="281" font-family="-apple-system,Segoe UI,Arial,sans-serif" font-size="12" fill="#b91c1c">trail — deliberately: it lists live, exploitable weaknesses with exploit scenarios, and then inherits your repository's access model.</text>
+  </svg>
+  </div>
+
+  <h3><span class="n">4</span> · Code Review and <code>/code-review ultra</code> — on pull request</h3>
+  <p class="lede">The only layer that runs whether the author remembered or not — and the one with a real per-review price.</p>
+  <div class="chips">
+    <span class="chip w">research preview</span><span class="chip w">Team, Enterprise</span>
+    <span class="chip w">~$15–25 per review</span><span class="chip w">usage credits, not plan usage</span>
+    <span class="chip t">unavailable under ZDR</span>
+    <span class="chip t">ultra: no Bedrock, GCP, Foundry</span>
+  </div>
+  <div class="svgbox">
+  <svg viewBox="0 0 1120 300" xmlns="http://www.w3.org/2000/svg" role="img"
+       aria-label="Code Review workflow: owner enables, GitHub App installs, per-repository review behavior, PR event triggers, multi-agent review with full codebase context, inline PR comments. Below, the ultrareview sub-mode bundles the repo to a remote sandbox and returns findings that can be applied to the working tree.">
+    <rect x="0" y="0" width="1120" height="300" fill="#ffffff"/>
+    <text x="20" y="20" font-family="ui-monospace,Menlo,Consolas,monospace" font-size="11.5" fill="#475569">track A — Code Review, automatic on the PR</text>
+
+    <rect x="20" y="34" width="196" height="80" rx="8" fill="#f1f5f9" stroke="#cbd5e1"/>
+    <text x="34" y="56" font-family="-apple-system,Segoe UI,Arial,sans-serif" font-size="12.5" font-weight="700" fill="#0f172a">Owner enables</text>
+    <text x="34" y="76" font-family="-apple-system,Segoe UI,Arial,sans-serif" font-size="11.5" fill="#475569">Org-level switch, then</text>
+    <text x="34" y="92" font-family="-apple-system,Segoe UI,Arial,sans-serif" font-size="11.5" fill="#475569">the GitHub App install</text>
+    <text x="34" y="108" font-family="-apple-system,Segoe UI,Arial,sans-serif" font-size="11.5" fill="#475569">flow</text>
+    <line x1="216" y1="74" x2="232" y2="74" stroke="#94a3b8" stroke-width="1.5"/>
+    <polygon points="240,74 230,69 230,79" fill="#94a3b8"/>
+
+    <rect x="240" y="34" width="196" height="80" rx="8" fill="#f1f5f9" stroke="#cbd5e1"/>
+    <text x="254" y="56" font-family="-apple-system,Segoe UI,Arial,sans-serif" font-size="12.5" font-weight="700" fill="#0f172a">Review Behavior</text>
+    <text x="254" y="76" font-family="-apple-system,Segoe UI,Arial,sans-serif" font-size="11.5" fill="#475569">Per repository: on PR</text>
+    <text x="254" y="92" font-family="-apple-system,Segoe UI,Arial,sans-serif" font-size="11.5" fill="#475569">open, on every push,</text>
+    <text x="254" y="108" font-family="-apple-system,Segoe UI,Arial,sans-serif" font-size="11.5" fill="#475569">or manual only</text>
+    <line x1="436" y1="74" x2="452" y2="74" stroke="#94a3b8" stroke-width="1.5"/>
+    <polygon points="460,74 450,69 450,79" fill="#94a3b8"/>
+
+    <rect x="460" y="34" width="196" height="80" rx="8" fill="#f1f5f9" stroke="#cbd5e1"/>
+    <text x="474" y="56" font-family="-apple-system,Segoe UI,Arial,sans-serif" font-size="12.5" font-weight="700" fill="#0f172a">Trigger</text>
+    <text x="474" y="76" font-family="-apple-system,Segoe UI,Arial,sans-serif" font-size="11.5" fill="#475569">The configured event, or</text>
+    <text x="474" y="92" font-family="ui-monospace,Menlo,Consolas,monospace" font-size="11" fill="#475569">@claude review</text>
+    <text x="474" y="108" font-family="-apple-system,Segoe UI,Arial,sans-serif" font-size="11.5" fill="#475569">which also runs on drafts</text>
+    <line x1="656" y1="74" x2="672" y2="74" stroke="#94a3b8" stroke-width="1.5"/>
+    <polygon points="680,74 670,69 670,79" fill="#94a3b8"/>
+
+    <rect x="680" y="34" width="196" height="80" rx="8" fill="#ccfbf1" stroke="#0d9488" stroke-width="2"/>
+    <text x="694" y="56" font-family="-apple-system,Segoe UI,Arial,sans-serif" font-size="12.5" font-weight="700" fill="#042f2e">Multi-agent review</text>
+    <text x="694" y="76" font-family="-apple-system,Segoe UI,Arial,sans-serif" font-size="11.5" fill="#0f766e">Full codebase context.</text>
+    <text x="694" y="92" font-family="-apple-system,Segoe UI,Arial,sans-serif" font-size="11.5" fill="#0f766e">Reads CLAUDE.md and</text>
+    <text x="694" y="108" font-family="-apple-system,Segoe UI,Arial,sans-serif" font-size="11.5" fill="#0f766e">REVIEW.md for house rules</text>
+    <line x1="876" y1="74" x2="892" y2="74" stroke="#94a3b8" stroke-width="1.5"/>
+    <polygon points="900,74 890,69 890,79" fill="#94a3b8"/>
+
+    <rect x="900" y="34" width="196" height="80" rx="8" fill="#f1f5f9" stroke="#cbd5e1"/>
+    <text x="914" y="56" font-family="-apple-system,Segoe UI,Arial,sans-serif" font-size="12.5" font-weight="700" fill="#0f172a">Inline PR comments</text>
+    <text x="914" y="76" font-family="-apple-system,Segoe UI,Arial,sans-serif" font-size="11.5" fill="#475569">Severity-tagged. Cap nit</text>
+    <text x="914" y="92" font-family="-apple-system,Segoe UI,Arial,sans-serif" font-size="11.5" fill="#475569">volume in REVIEW.md so</text>
+    <text x="914" y="108" font-family="-apple-system,Segoe UI,Arial,sans-serif" font-size="11.5" fill="#475569">reviews stay actionable</text>
+
+    <line x1="20" y1="136" x2="1096" y2="136" stroke="#cbd5e1" stroke-width="1" stroke-dasharray="4 4"/>
+    <text x="20" y="160" font-family="ui-monospace,Menlo,Consolas,monospace" font-size="11.5" fill="#475569">track B — ultrareview, the deeper sub-mode you invoke yourself</text>
+
+    <rect x="20" y="174" width="196" height="80" rx="8" fill="#f1f5f9" stroke="#cbd5e1"/>
+    <text x="34" y="196" font-family="ui-monospace,Menlo,Consolas,monospace" font-size="11.5" font-weight="700" fill="#0f172a">/code-review ultra</text>
+    <text x="34" y="216" font-family="-apple-system,Segoe UI,Arial,sans-serif" font-size="11.5" fill="#475569">Branch vs default branch,</text>
+    <text x="34" y="232" font-family="-apple-system,Segoe UI,Arial,sans-serif" font-size="11.5" fill="#475569">plus uncommitted and</text>
+    <text x="34" y="248" font-family="-apple-system,Segoe UI,Arial,sans-serif" font-size="11.5" fill="#475569">staged changes</text>
+    <line x1="216" y1="214" x2="232" y2="214" stroke="#94a3b8" stroke-width="1.5"/>
+    <polygon points="240,214 230,209 230,219" fill="#94a3b8"/>
+
+    <rect x="240" y="174" width="196" height="80" rx="8" fill="#fef3c7" stroke="#b45309" stroke-width="2"/>
+    <text x="254" y="196" font-family="-apple-system,Segoe UI,Arial,sans-serif" font-size="12.5" font-weight="700" fill="#7c2d12">Repo state uploaded</text>
+    <text x="254" y="216" font-family="-apple-system,Segoe UI,Arial,sans-serif" font-size="11.5" fill="#7c2d12">Bundled and sent to a</text>
+    <text x="254" y="232" font-family="-apple-system,Segoe UI,Arial,sans-serif" font-size="11.5" fill="#7c2d12">remote sandbox on Claude</text>
+    <text x="254" y="248" font-family="-apple-system,Segoe UI,Arial,sans-serif" font-size="11.5" fill="#7c2d12">Code on the web</text>
+    <line x1="436" y1="214" x2="452" y2="214" stroke="#94a3b8" stroke-width="1.5"/>
+    <polygon points="460,214 450,209 450,219" fill="#94a3b8"/>
+
+    <rect x="460" y="174" width="196" height="80" rx="8" fill="#ccfbf1" stroke="#0d9488" stroke-width="2"/>
+    <text x="474" y="196" font-family="-apple-system,Segoe UI,Arial,sans-serif" font-size="12.5" font-weight="700" fill="#042f2e">Reviewer agent fleet</text>
+    <text x="474" y="216" font-family="-apple-system,Segoe UI,Arial,sans-serif" font-size="11.5" fill="#0f766e">Finds bugs, then verifies</text>
+    <text x="474" y="232" font-family="-apple-system,Segoe UI,Arial,sans-serif" font-size="11.5" fill="#0f766e">them before reporting</text>
+    <line x1="656" y1="214" x2="672" y2="214" stroke="#94a3b8" stroke-width="1.5"/>
+    <polygon points="680,214 670,209 670,219" fill="#94a3b8"/>
+
+    <rect x="680" y="174" width="196" height="80" rx="8" fill="#f1f5f9" stroke="#cbd5e1"/>
+    <text x="694" y="196" font-family="-apple-system,Segoe UI,Arial,sans-serif" font-size="12.5" font-weight="700" fill="#0f172a">Findings return</text>
+    <text x="694" y="216" font-family="-apple-system,Segoe UI,Arial,sans-serif" font-size="11.5" fill="#475569">Back into your session.</text>
+    <text x="694" y="232" font-family="ui-monospace,Menlo,Consolas,monospace" font-size="11" fill="#475569">--fix</text>
+    <text x="694" y="248" font-family="-apple-system,Segoe UI,Arial,sans-serif" font-size="11.5" fill="#475569">applies them to the tree</text>
+    <line x1="876" y1="214" x2="892" y2="214" stroke="#94a3b8" stroke-width="1.5"/>
+    <polygon points="900,214 890,209 890,219" fill="#94a3b8"/>
+
+    <rect x="900" y="174" width="196" height="80" rx="8" fill="#fee2e2" stroke="#b91c1c" stroke-width="2"/>
+    <text x="914" y="196" font-family="-apple-system,Segoe UI,Arial,sans-serif" font-size="12.5" font-weight="700" fill="#7f1d1d">Or quietly downgrades</text>
+    <text x="914" y="216" font-family="-apple-system,Segoe UI,Arial,sans-serif" font-size="11.5" fill="#7f1d1d">Where ultrareview is not</text>
+    <text x="914" y="232" font-family="-apple-system,Segoe UI,Arial,sans-serif" font-size="11.5" fill="#7f1d1d">available, the command</text>
+    <text x="914" y="248" font-family="-apple-system,Segoe UI,Arial,sans-serif" font-size="11.5" fill="#7f1d1d">runs a local review instead</text>
+
+    <text x="20" y="282" font-family="-apple-system,Segoe UI,Arial,sans-serif" font-size="12" fill="#475569">Free ultrareview runs: Pro 3, Max 3, Team and Enterprise none. Everything beyond that bills as usage credits, which must be turned on or Claude Code blocks the launch.</text>
+  </svg>
+  </div>
+  <div class="note"><b>The governance read.</b> Two of the strongest layers are off the table under Zero Data Retention, and ultrareview is also off the table on Bedrock, Google Cloud's Agent Platform, and Microsoft Foundry. If that is your posture, your realistic stack is layers 1, 2, 3 and 6 — decide that at design time, not at rollout.</div>
+
+  <h3><span class="n">5</span> · Claude Security (managed product) — hosted, always on</h3>
+  <p class="lede">The only layer that scans without a developer in a session.</p>
+  <div class="chips">
+    <span class="chip w">public beta</span><span class="chip w">Enterprise</span>
+    <span class="chip w">premium seats required</span><span class="chip w">consumption billing</span>
+    <span class="chip t">minutes to hours per scan</span>
+  </div>
+  <div class="svgbox">
+  <svg viewBox="0 0 1120 268" xmlns="http://www.w3.org/2000/svg" role="img"
+       aria-label="Managed Claude Security workflow: four setup gates, then open the security page, select a repository and optionally scope to a directory or branch, run the scan which takes minutes to hours, then review findings with type severity file and line.">
+    <rect x="0" y="0" width="1120" height="268" fill="#ffffff"/>
+    <text x="20" y="20" font-family="ui-monospace,Menlo,Consolas,monospace" font-size="11.5" fill="#475569">setup — four gates, all required</text>
+
+    <rect x="20" y="32" width="262" height="60" rx="8" fill="#fef3c7" stroke="#b45309"/>
+    <text x="34" y="54" font-family="-apple-system,Segoe UI,Arial,sans-serif" font-size="12" font-weight="700" fill="#7c2d12">1 · Extra Usage enabled</text>
+    <text x="34" y="74" font-family="-apple-system,Segoe UI,Arial,sans-serif" font-size="11.5" fill="#7c2d12">Consumption billing. Set a spend limit.</text>
+
+    <rect x="292" y="32" width="262" height="60" rx="8" fill="#fef3c7" stroke="#b45309"/>
+    <text x="306" y="54" font-family="-apple-system,Segoe UI,Arial,sans-serif" font-size="12" font-weight="700" fill="#7c2d12">2 · GitHub App access</text>
+    <text x="306" y="74" font-family="-apple-system,Segoe UI,Arial,sans-serif" font-size="11.5" fill="#7c2d12">Granted on the repos you want scanned.</text>
+
+    <rect x="564" y="32" width="262" height="60" rx="8" fill="#fef3c7" stroke="#b45309"/>
+    <text x="578" y="54" font-family="-apple-system,Segoe UI,Arial,sans-serif" font-size="12" font-weight="700" fill="#7c2d12">3 · Premium seats</text>
+    <text x="578" y="74" font-family="-apple-system,Segoe UI,Arial,sans-serif" font-size="11.5" fill="#7c2d12">Standard seats exclude Code on the Web.</text>
+
+    <rect x="836" y="32" width="260" height="60" rx="8" fill="#fef3c7" stroke="#b45309"/>
+    <text x="850" y="54" font-family="-apple-system,Segoe UI,Arial,sans-serif" font-size="12" font-weight="700" fill="#7c2d12">4 · Feature switched on</text>
+    <text x="850" y="74" font-family="-apple-system,Segoe UI,Arial,sans-serif" font-size="11" fill="#7c2d12">In the claude.ai admin console.</text>
+
+    <line x1="558" y1="92" x2="558" y2="112" stroke="#94a3b8" stroke-width="1.5"/>
+    <polygon points="558,120 553,110 563,110" fill="#94a3b8"/>
+    <text x="20" y="140" font-family="ui-monospace,Menlo,Consolas,monospace" font-size="11.5" fill="#475569">then, per scan</text>
+
+    <rect x="20" y="152" width="256" height="80" rx="8" fill="#f1f5f9" stroke="#cbd5e1"/>
+    <text x="34" y="174" font-family="ui-monospace,Menlo,Consolas,monospace" font-size="11.5" font-weight="700" fill="#0f172a">claude.ai/security</text>
+    <text x="34" y="194" font-family="-apple-system,Segoe UI,Arial,sans-serif" font-size="11.5" fill="#475569">Or the Security icon in the</text>
+    <text x="34" y="210" font-family="-apple-system,Segoe UI,Arial,sans-serif" font-size="11.5" fill="#475569">sidebar. Scan history lives</text>
+    <text x="34" y="226" font-family="-apple-system,Segoe UI,Arial,sans-serif" font-size="11.5" fill="#475569">in the same place</text>
+    <line x1="276" y1="192" x2="292" y2="192" stroke="#94a3b8" stroke-width="1.5"/>
+    <polygon points="300,192 290,187 290,197" fill="#94a3b8"/>
+
+    <rect x="300" y="152" width="256" height="80" rx="8" fill="#ccfbf1" stroke="#0d9488" stroke-width="2"/>
+    <text x="314" y="174" font-family="-apple-system,Segoe UI,Arial,sans-serif" font-size="12.5" font-weight="700" fill="#042f2e">Select repo, scope it</text>
+    <text x="314" y="194" font-family="-apple-system,Segoe UI,Arial,sans-serif" font-size="11.5" fill="#0f766e">Optionally narrow to a</text>
+    <text x="314" y="210" font-family="-apple-system,Segoe UI,Arial,sans-serif" font-size="11.5" fill="#0f766e">directory or branch —</text>
+    <text x="314" y="226" font-family="-apple-system,Segoe UI,Arial,sans-serif" font-size="11.5" fill="#0f766e">advised on large repos</text>
+    <line x1="556" y1="192" x2="572" y2="192" stroke="#94a3b8" stroke-width="1.5"/>
+    <polygon points="580,192 570,187 570,197" fill="#94a3b8"/>
+
+    <rect x="580" y="152" width="256" height="80" rx="8" fill="#f1f5f9" stroke="#cbd5e1"/>
+    <text x="594" y="174" font-family="-apple-system,Segoe UI,Arial,sans-serif" font-size="12.5" font-weight="700" fill="#0f172a">Scan runs, hosted</text>
+    <text x="594" y="194" font-family="-apple-system,Segoe UI,Arial,sans-serif" font-size="11.5" fill="#475569">Several minutes to several</text>
+    <text x="594" y="210" font-family="-apple-system,Segoe UI,Arial,sans-serif" font-size="11.5" fill="#475569">hours, depending on repo</text>
+    <text x="594" y="226" font-family="-apple-system,Segoe UI,Arial,sans-serif" font-size="11.5" fill="#475569">size. Nothing to keep open</text>
+    <line x1="836" y1="192" x2="852" y2="192" stroke="#94a3b8" stroke-width="1.5"/>
+    <polygon points="860,192 850,187 850,197" fill="#94a3b8"/>
+
+    <rect x="860" y="152" width="236" height="80" rx="8" fill="#f1f5f9" stroke="#cbd5e1"/>
+    <text x="874" y="174" font-family="-apple-system,Segoe UI,Arial,sans-serif" font-size="12.5" font-weight="700" fill="#0f172a">Review findings</text>
+    <text x="874" y="194" font-family="-apple-system,Segoe UI,Arial,sans-serif" font-size="11.5" fill="#475569">Vulnerability type, severity,</text>
+    <text x="874" y="210" font-family="-apple-system,Segoe UI,Arial,sans-serif" font-size="11.5" fill="#475569">affected file and line, and a</text>
+    <text x="874" y="226" font-family="-apple-system,Segoe UI,Arial,sans-serif" font-size="11.5" fill="#475569">description of the issue</text>
+
+    <text x="20" y="256" font-family="-apple-system,Segoe UI,Arial,sans-serif" font-size="12" fill="#475569">Anthropic advises scoping large repositories to a directory to raise the success rate — treat whole-monorepo scanning as unproven rather than assumed.</text>
+  </svg>
+  </div>
+
+  <h2>Adjacent — different axis, often confused</h2>
+  <div class="grid">
+    <div class="card">
+      <h4>Runtime containment (Claude Code)</h4>
+      <p>Sandboxed Bash (<code>/sandbox</code>) for filesystem and network isolation, the working-directory write boundary, <code>denyRead</code> rules, Accept Edits mode.</p>
+      <p>Constrains <em>what the agent can do</em>, not <em>what the code contains</em>. Full treatment in <code>agentic-threat-model.md</code> and <code>claude-code-enterprise-config.md</code>.</p>
+    </div>
+    <div class="card">
+      <h4>Usage governance (Compliance API)</h4>
+      <p>Programmatic access to Claude Enterprise conversation content and activity events, wired into 60+ DLP, SIEM, eDiscovery and identity platforms.</p>
+      <p>Governs <em>how people use Claude</em>, and scans no code at all. Full treatment in <code>usage-compliance-monitoring.md</code> and <code>legal-hold-ediscovery-runbook.md</code>.</p>
+    </div>
+    <div class="card">
+      <h4>Your own CI scanners</h4>
+      <p>Keep them. The layers above are additive to SAST and SCA, not a migration path off them.</p>
+      <p>Claude reasons about your code; it does not replace language rule packs, dependency scanning, or policy enforcement. A plan that retires CI because "Claude reviews it now" is itself a finding.</p>
+    </div>
+  </div>
+
+  <h2>Four things called "Claude security"</h2>
+  <table>
+    <thead><tr><th>Thing</th><th>What it actually is</th><th>When</th><th>Who gets it</th></tr></thead>
+    <tbody>
+      <tr class="me"><td>Claude Security <strong>plugin</strong></td><td>Claude Code plugin. On-demand deep scan, reviewed report, patches. Beta.</td><td>~2026-07-21</td><td>Claude Code, paid plan</td></tr>
+      <tr><td>Security <strong>guidance</strong> plugin</td><td>Different plugin. Reviews Claude's own edits as it writes, three checkpoints. Free.</td><td>2026-05-26</td><td>All Claude Code users</td></tr>
+      <tr><td>Claude Security (<strong>product</strong>)</td><td>Managed hosted service scanning connected repositories from claude.ai.</td><td>2026-04-30</td><td>Enterprise, premium seats</td></tr>
+      <tr><td><strong>Compliance API</strong> + partners</td><td>Not code scanning. DLP / SIEM / eDiscovery governance of Claude <em>usage</em>. 60+ partners.</td><td>2026-05-21</td><td>Enterprise + Platform</td></tr>
+    </tbody>
+  </table>
+
+  <footer>
+    Sources: <code>code.claude.com</code> docs for <code>claude-security</code>, <code>security-guidance</code>, <code>code-review</code>, <code>ultrareview</code>, <code>security</code>, <code>sandboxing</code> · the Claude Security getting-started tutorial · the Claude Security public-beta and Compliance-API partner blog posts. All live-fetched 2026-07-23. Deep-scan plugin announcement date inferred from @claudeai; no dated blog post located. No BAA, residency, or retention claim is made here, and no ZDR claim beyond the two stated availability exclusions — see <code>governance-overlay.md</code>.<br><br>
+    © gmanch94 · CC-BY-4.0 · As of 2026-07. Verify pricing/models at anthropic.com.
+  </footer>
+
+</div>
+</body>
+</html>
