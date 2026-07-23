@@ -74,6 +74,15 @@ The as-of stamp is **load-bearing** on `cost-calculator.html` — readers commit
 
 ## Repo-specific lessons
 
+### 2026-07-23 — surface drift is its own class; the refresh routine now audits for it
+
+**The monthly feature-surface refresh missed that Cowork moved from desktop-only local execution to remote execution on Anthropic's servers + web/mobile beta.** The routine checked status / pricing / doc-URL health — none of which changed — so a status/pricing-only diff read "no drift" while the inventory row and 8 dependent artifacts (`cowork-101`, `cowork-101-workflow`, `cowork-adoption-guide`, `claude-product-101`, `surface-rollout-matrix`, `claude-enterprise-architecture`, `agentic-threat-model`, `README`) stayed stale. Caught only by an independent blind reviewer who fetched the live `support.claude.com` get-started article.
+
+- **Root cause 1 — wrong sources.** Product-surface facts (Cowork/Design/Tag/Science) live on `support.claude.com` + `claude.com/product/*`; `docs.claude.com` doesn't cover them, and the routine wasn't fetching the support pages.
+- **Root cause 2 — wrong diff dimensions.** The diff checked status/pricing/URL/new/removed. **Availability surfaces** (desktop/web/mobile), **execution/hosting model** (local vs remote; files-local vs files-in-account), **plan gate**, and **governance flags** are separate drift dimensions none of those catch.
+- **Fix (2026-07-23):** updated the cloud routine `trig_019PnZmQxwkS5r9iLU9aWthe` — STEP 2 fetches `support.claude.com` + product pages for the product surfaces; STEP 3 added availability / execution / plan / governance as first-class diff dimensions and put the four product surfaces on the every-run attention list; STEP 4c greps dependents for stale surface phrases (`isolated VM`, `not web/mobile`, `on your machine`, `desktop-only`) so a surface change is fixed everywhere, not half-corrected. CLAUDE.md's Automation description updated to match.
+- **Meta:** a "no drift" from a checker that only inspects the dimensions that didn't change is a false negative, not a clean bill. When a class of fact slips through, add the dimension to the checker — don't just fix the instance.
+
 ### 2026-07-11 — the source is not the artifact (kramdown phantom-table render bug)
 
 **A raw ` | ` in prose or a list item renders as a table on GitHub Pages — invisible in the source and the editor, only visible on the published HTML.** `claude-code-enterprise-config.md` §5.4 wrote an exporter list `` `otlp` | `prometheus` | `console` | `none` `` inside a bullet; kramdown parsed the text-level pipes as table cells and chopped the sentence into a phantom table on the live `.html`. The `.md` looked perfect. Caught only by fetching the **live rendered page** and seeing tab-separated cells where the pipes were.
