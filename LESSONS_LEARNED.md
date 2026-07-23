@@ -26,7 +26,10 @@ Windows PowerShell 5.1 writes UTF-8 **with a byte-order mark**. A bulk regex-swa
 
 - **Use the native Write/Edit tools** for tracked text files. If a scripted rewrite is genuinely necessary: `[System.IO.File]::WriteAllText($p, $s, (New-Object System.Text.UTF8Encoding $false))`.
 - **Tell-tale in review:** a diff-stat far larger than the edit justifies, on a file you only touched with a regex swap. A whole-file rewrite means the encoding or line endings moved.
-- **Detection:** scan `git ls-files` text files for a leading `EF BB BF` — `$b=[System.IO.File]::ReadAllBytes($p); $b[0] -eq 0xEF -and $b[1] -eq 0xBB -and $b[2] -eq 0xBF`.
+- **Detection — scan for BOTH, the BOM is the lesser problem.** A first pass caught only the BOM and declared victory; a blind review two commits later found the real damage. `Get-Content -Raw` decodes with the **ANSI codepage**, so the re-encode **double-encodes every multi-byte character** — 158 mojibake sequences were sitting in `docs/feature-inventory.md` and 15 in `index.html`, live on the public site, after the "fix."
+  - BOM: `$b=[System.IO.File]::ReadAllBytes($p); $b[0] -eq 0xEF -and $b[1] -eq 0xBB -and $b[2] -eq 0xBF`
+  - Mojibake: count `[char]0x00E2` occurrences against real em-dashes (`[char]0x2014`). A file with many of the former and few of the latter is corrupted. **Don't grep for the literal `â€"` string** — the console encoding mangles it and PowerShell fails to parse it.
+- **Repair by restoring the pre-corruption blob, not by transforming bytes.** `git checkout <good-sha> -- <files>`, then re-apply the intended edits with the native Edit tool. A mojibake-reversal transform is lossy and unverifiable; a restore is provably correct. (Note `git show <sha>:<path> > file` in PowerShell re-adds a BOM through the redirect — use `git checkout`, which writes raw blob bytes.)
 - **Why it matters here:** a BOM is invisible in the editor and in rendered `git diff`, but it ships. Ahead of a markdown file's first `#` it can suppress heading parsing on some renderers. Same family as the `.md`→`.html` and phantom-table gotchas — *the source looks fine and only the shipped artifact is wrong.*
 
 ### Verify **every** SVG, not just the first, on multi-diagram pages
