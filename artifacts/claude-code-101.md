@@ -202,7 +202,7 @@ Type `/` to see all; the full reference is [docs.claude.com/en/docs/claude-code/
 - **Set up a repo:** `/init` (scaffold CLAUDE.md) · `/memory` · `/mcp` · `/permissions`
 - **During a task:** `/model` · `/effort` · `/plan` · `/context` · `/compact` · `/btw` (a quick aside that *doesn't* pollute conversation history)
 - **Parallel work:** `/tasks` (what's running) · `/background` (detach the session to keep running) · `/batch` (decompose a codebase-wide change into per-[worktree](https://docs.claude.com/en/docs/claude-code/worktrees) units)
-- **Before you ship:** `/diff` · `/code-review` (correctness pass on the diff; `--fix` applies findings) · `/review` (fast read-only pass on a GitHub PR) · `/security-review`
+- **Before you ship:** `/diff` · `/code-review` (correctness pass on the diff; `--fix` applies findings; `ultra` runs the deeper cloud review) · `/review` (fast read-only pass on a GitHub PR) · `/security-review` · `/claude-security` (the deep-scan plugin, once installed). Which of these to reach for, and what each costs: [`claude-security-layers.md`](claude-security-layers.md)
 - **Between sessions:** `/clear` (new task, keep memory) · `/resume` (return to a past session) · `/branch` (fork one)
 - **When something's wrong:** `/rewind` (roll code **and** conversation back to a checkpoint — the undo most people don't know exists)
 

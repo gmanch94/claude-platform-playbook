@@ -40,6 +40,8 @@ No single control holds. Each threat is caught at the layer it's cheapest to sto
 | **Data / egress** | What can leave, and to where. PII scrub, secret block, egress allow-list, folder scope, residency. | T3, T6 | [`enterprise-data-boundaries.html`](enterprise-data-boundaries.html), `[gov §5]` |
 | **Human / process** | Real review on high-stakes actions; audit log; cost gates; kill switch. | T5, T7, T10 | [`adoption-playbook.md`](adoption-playbook.md), `[gov §9]` `[gov §15]` |
 
+**Scanning the code the agent writes is a separate stack.** This model covers what the agent can *do*. For what its output *contains* — and which of Anthropic's six code-security layers to turn on, at what plan and price — see [`claude-security-layers.md`](claude-security-layers.md). Note that layer 1 there is guidance, not enforcement: it never blocks a write, so it does not substitute for the tool/capability controls above.
+
 ---
 
 ## Before you ship an agent — five design questions

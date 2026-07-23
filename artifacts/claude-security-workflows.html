@@ -66,7 +66,7 @@
 <div class="wrap">
 
   <h1>Claude security layers — the stack, and each workflow</h1>
-  <p class="sub">Six code-security layers, two adjacent controls, four differently-named products. This page shows where each sits and how each actually runs.</p>
+  <p class="sub">Five Anthropic code-security layers over your own CI, two adjacent controls on a different axis, four differently-named products. This page shows where each sits and how each actually runs.</p>
   <p class="stamp">Visual companion to <a href="claude-security-layers.html">claude-security-layers.md</a> · all mechanics <code>[H]</code> against <code>code.claude.com</code> docs, verified 2026-07-23</p>
 
   <h2>The stack</h2>
@@ -83,9 +83,9 @@
     <text x="50" y="98" font-family="-apple-system,Segoe UI,Roboto,Helvetica,Arial,sans-serif" font-size="13" font-weight="700" fill="#0f172a">1 · In session</text>
     <text x="50" y="117" font-family="-apple-system,Segoe UI,Roboto,Helvetica,Arial,sans-serif" font-size="11.5" fill="#475569">as Claude types</text>
     <text x="290" y="98" font-family="-apple-system,Segoe UI,Roboto,Helvetica,Arial,sans-serif" font-size="14" font-weight="600" fill="#0f172a">Security guidance plugin</text>
-    <text x="290" y="118" font-family="ui-monospace,Menlo,Consolas,monospace" font-size="11.5" fill="#475569">free · all plans · 3 checkpoints</text>
+    <text x="290" y="118" font-family="ui-monospace,Menlo,Consolas,monospace" font-size="11.5" fill="#475569">all plans · free to install</text>
     <text x="580" y="96" font-family="-apple-system,Segoe UI,Roboto,Helvetica,Arial,sans-serif" font-size="12.5" fill="#0f172a">Claude reviews its own edits and fixes them in the same session.</text>
-    <text x="580" y="115" font-family="-apple-system,Segoe UI,Roboto,Helvetica,Arial,sans-serif" font-size="12.5" fill="#0f172a">Guidance, never a hard block.</text>
+    <text x="580" y="115" font-family="-apple-system,Segoe UI,Roboto,Helvetica,Arial,sans-serif" font-size="12.5" fill="#0f172a">Guidance, never a hard block. Model-backed reviews spend plan usage.</text>
 
     <rect x="30" y="152" width="1060" height="74" rx="8" fill="#f1f5f9" stroke="#cbd5e1" stroke-width="1"/>
     <line x1="270" y1="152" x2="270" y2="226" stroke="#cbd5e1" stroke-width="1"/>
@@ -113,21 +113,23 @@
     <line x1="560" y1="324" x2="560" y2="398" stroke="#cbd5e1" stroke-width="1"/>
     <text x="50" y="356" font-family="-apple-system,Segoe UI,Roboto,Helvetica,Arial,sans-serif" font-size="13" font-weight="700" fill="#0f172a">4 · On pull request</text>
     <text x="50" y="375" font-family="-apple-system,Segoe UI,Roboto,Helvetica,Arial,sans-serif" font-size="11.5" fill="#475569">team gate</text>
-    <text x="290" y="356" font-family="-apple-system,Segoe UI,Roboto,Helvetica,Arial,sans-serif" font-size="14" font-weight="600" fill="#0f172a">Code Review · ultrareview</text>
-    <text x="290" y="376" font-family="-apple-system,Segoe UI,Roboto,Helvetica,Arial,sans-serif" font-size="11.5" fill="#475569">research preview · Team, Enterprise</text>
+    <text x="290" y="352" font-family="-apple-system,Segoe UI,Roboto,Helvetica,Arial,sans-serif" font-size="14" font-weight="600" fill="#0f172a">Code Review · ultrareview</text>
+    <text x="290" y="371" font-family="-apple-system,Segoe UI,Roboto,Helvetica,Arial,sans-serif" font-size="11.5" fill="#475569">Code Review: Team, Enterprise</text>
+    <text x="290" y="387" font-family="-apple-system,Segoe UI,Roboto,Helvetica,Arial,sans-serif" font-size="11.5" fill="#475569">ultrareview: any paid plan</text>
     <text x="580" y="354" font-family="-apple-system,Segoe UI,Roboto,Helvetica,Arial,sans-serif" font-size="12.5" fill="#0f172a">Multi-agent correctness and security review with full codebase</text>
-    <text x="580" y="373" font-family="-apple-system,Segoe UI,Roboto,Helvetica,Arial,sans-serif" font-size="12.5" fill="#0f172a">context. The only layer that runs whether the author asked or not.</text>
-    <text x="580" y="392" font-family="-apple-system,Segoe UI,Roboto,Helvetica,Arial,sans-serif" font-size="12" font-weight="600" fill="#b91c1c">Unavailable under Zero Data Retention.</text>
+    <text x="580" y="373" font-family="-apple-system,Segoe UI,Roboto,Helvetica,Arial,sans-serif" font-size="12.5" fill="#0f172a">context. Runs whether the author remembered to ask or not.</text>
+    <text x="580" y="392" font-family="-apple-system,Segoe UI,Roboto,Helvetica,Arial,sans-serif" font-size="12" font-weight="600" fill="#b91c1c">Both unavailable under ZDR. No hyperscaler exclusion stated for Code Review.</text>
 
     <rect x="30" y="410" width="1060" height="74" rx="8" fill="#f1f5f9" stroke="#cbd5e1" stroke-width="1"/>
     <line x1="270" y1="410" x2="270" y2="484" stroke="#cbd5e1" stroke-width="1"/>
     <line x1="560" y1="410" x2="560" y2="484" stroke="#cbd5e1" stroke-width="1"/>
     <text x="50" y="442" font-family="-apple-system,Segoe UI,Roboto,Helvetica,Arial,sans-serif" font-size="13" font-weight="700" fill="#0f172a">5 · Managed</text>
     <text x="50" y="461" font-family="-apple-system,Segoe UI,Roboto,Helvetica,Arial,sans-serif" font-size="11.5" fill="#475569">always on</text>
-    <text x="290" y="442" font-family="-apple-system,Segoe UI,Roboto,Helvetica,Arial,sans-serif" font-size="14" font-weight="600" fill="#0f172a">Claude Security (product)</text>
-    <text x="290" y="462" font-family="-apple-system,Segoe UI,Roboto,Helvetica,Arial,sans-serif" font-size="11.5" fill="#475569">Enterprise · premium seats</text>
-    <text x="580" y="440" font-family="-apple-system,Segoe UI,Roboto,Helvetica,Arial,sans-serif" font-size="12.5" fill="#0f172a">Hosted scanning that monitors connected repositories. No session</text>
-    <text x="580" y="459" font-family="-apple-system,Segoe UI,Roboto,Helvetica,Arial,sans-serif" font-size="12.5" fill="#0f172a">to keep open, no developer to remember to run it.</text>
+    <text x="290" y="438" font-family="-apple-system,Segoe UI,Roboto,Helvetica,Arial,sans-serif" font-size="14" font-weight="600" fill="#0f172a">Claude Security (product)</text>
+    <text x="290" y="457" font-family="-apple-system,Segoe UI,Roboto,Helvetica,Arial,sans-serif" font-size="11.5" fill="#475569">Enterprise · premium seats</text>
+    <text x="290" y="473" font-family="-apple-system,Segoe UI,Roboto,Helvetica,Arial,sans-serif" font-size="11.5" font-weight="600" fill="#b91c1c">GitHub.com repos only</text>
+    <text x="580" y="440" font-family="-apple-system,Segoe UI,Roboto,Helvetica,Arial,sans-serif" font-size="12.5" fill="#0f172a">Hosted scanning that monitors connected repositories, on a schedule</text>
+    <text x="580" y="459" font-family="-apple-system,Segoe UI,Roboto,Helvetica,Arial,sans-serif" font-size="12.5" fill="#0f172a">if you set one. No session to keep open, no developer to remember.</text>
 
     <rect x="30" y="496" width="1060" height="74" rx="8" fill="#f8fafc" stroke="#cbd5e1" stroke-width="1" stroke-dasharray="5 4"/>
     <line x1="270" y1="496" x2="270" y2="570" stroke="#cbd5e1" stroke-width="1"/>
@@ -139,7 +141,7 @@
     <text x="580" y="526" font-family="-apple-system,Segoe UI,Roboto,Helvetica,Arial,sans-serif" font-size="12.5" fill="#0f172a">Language-specific rules, supply-chain checks, policy enforcement.</text>
     <text x="580" y="545" font-family="-apple-system,Segoe UI,Roboto,Helvetica,Arial,sans-serif" font-size="12.5" fill="#0f172a">Claude reasons about your code, not your dependency graph.</text>
 
-    <text x="30" y="596" font-family="-apple-system,Segoe UI,Roboto,Helvetica,Arial,sans-serif" font-size="11.5" fill="#475569">Layers 1-3 need a developer in a session. Layer 4 runs on the PR. Layer 5 runs without anyone. Data-handling terms differ per surface — see governance-overlay.</text>
+    <text x="30" y="596" font-family="-apple-system,Segoe UI,Roboto,Helvetica,Arial,sans-serif" font-size="11.5" fill="#475569">Layers 1-3 need a developer in a session. Layer 4 runs on the PR. Layer 5 runs on a schedule, without anyone. Data-handling terms differ per surface — see governance-overlay.</text>
   </svg>
   </div>
 
@@ -154,9 +156,11 @@
   <h3><span class="n">1</span> · Security guidance plugin — in session</h3>
   <p class="lede"><code>/plugin install security-guidance@claude-plugins-official</code> — three checkpoints at three depths, wired as hooks.</p>
   <div class="chips">
-    <span class="chip">GA</span><span class="chip">all Claude Code users</span><span class="chip">free</span>
+    <span class="chip">GA</span><span class="chip">all Claude Code users</span><span class="chip">free to install</span>
     <span class="chip a">catches the most volume</span>
+    <span class="chip w">model-backed reviews spend plan usage</span>
     <span class="chip t">never blocks a write</span>
+    <span class="chip t">one env var turns it off</span>
   </div>
   <div class="svgbox">
   <svg viewBox="0 0 1120 226" xmlns="http://www.w3.org/2000/svg" role="img"
@@ -230,15 +234,15 @@
 
     <rect x="294" y="34" width="250" height="76" rx="8" fill="#ccfbf1" stroke="#0d9488" stroke-width="2"/>
     <text x="308" y="58" font-family="-apple-system,Segoe UI,Arial,sans-serif" font-size="12.5" font-weight="700" fill="#042f2e">Single security pass</text>
-    <text x="308" y="78" font-family="-apple-system,Segoe UI,Arial,sans-serif" font-size="11.5" fill="#0f766e">Over the current branch,</text>
-    <text x="308" y="94" font-family="-apple-system,Segoe UI,Arial,sans-serif" font-size="11.5" fill="#0f766e">one agent, one look</text>
+    <text x="308" y="78" font-family="-apple-system,Segoe UI,Arial,sans-serif" font-size="11.5" fill="#0f766e">Over the current branch. It</text>
+    <text x="308" y="94" font-family="-apple-system,Segoe UI,Arial,sans-serif" font-size="11.5" fill="#0f766e">verifies its own findings</text>
     <line x1="544" y1="72" x2="560" y2="72" stroke="#94a3b8" stroke-width="1.5"/>
     <polygon points="568,72 558,67 558,77" fill="#94a3b8"/>
 
     <rect x="568" y="34" width="250" height="76" rx="8" fill="#f1f5f9" stroke="#cbd5e1"/>
     <text x="582" y="58" font-family="-apple-system,Segoe UI,Arial,sans-serif" font-size="12.5" font-weight="700" fill="#0f172a">Findings in the session</text>
     <text x="582" y="78" font-family="-apple-system,Segoe UI,Arial,sans-serif" font-size="11.5" fill="#475569">No report file, no revision</text>
-    <text x="582" y="94" font-family="-apple-system,Segoe UI,Arial,sans-serif" font-size="11.5" fill="#475569">stamp, no second opinion</text>
+    <text x="582" y="94" font-family="-apple-system,Segoe UI,Arial,sans-serif" font-size="11.5" fill="#475569">stamp, no verifier agents</text>
     <line x1="818" y1="72" x2="834" y2="72" stroke="#94a3b8" stroke-width="1.5"/>
     <polygon points="842,72 832,67 832,77" fill="#94a3b8"/>
 
@@ -302,7 +306,7 @@
     <text x="34" y="180" font-family="-apple-system,Segoe UI,Arial,sans-serif" font-size="12.5" font-weight="700" fill="#0f172a">Timestamped report directory</text>
     <text x="34" y="198" font-family="ui-monospace,Menlo,Consolas,monospace" font-size="11" fill="#475569">CLAUDE-SECURITY-RESULTS.md</text>
     <text x="34" y="214" font-family="ui-monospace,Menlo,Consolas,monospace" font-size="11" fill="#475569">CLAUDE-SECURITY-RESULTS.jsonl</text>
-    <text x="34" y="230" font-family="ui-monospace,Menlo,Consolas,monospace" font-size="11" fill="#475569">CLAUDE-SECURITY-REVISION.json</text>
+    <text x="34" y="230" font-family="ui-monospace,Menlo,Consolas,monospace" font-size="11" fill="#475569">CLAUDE-SECURITY-REVISION-*.json</text>
     <line x1="320" y1="198" x2="336" y2="198" stroke="#94a3b8" stroke-width="1.5"/>
     <polygon points="344,198 334,193 334,203" fill="#94a3b8"/>
 
@@ -328,10 +332,12 @@
   <h3><span class="n">4</span> · Code Review and <code>/code-review ultra</code> — on pull request</h3>
   <p class="lede">The only layer that runs whether the author remembered or not — and the one with a real per-review price.</p>
   <div class="chips">
-    <span class="chip w">research preview</span><span class="chip w">Team, Enterprise</span>
-    <span class="chip w">~$15–25 per review</span><span class="chip w">usage credits, not plan usage</span>
-    <span class="chip t">unavailable under ZDR</span>
-    <span class="chip t">ultra: no Bedrock, GCP, Foundry</span>
+    <span class="chip w">research preview</span>
+    <span class="chip w">Code Review: Team, Enterprise · ~$15–25/review</span>
+    <span class="chip a">ultrareview: any paid plan · Pro/Max 3 free, one-time · then ~$5–25</span>
+    <span class="chip w">usage credits, not plan usage</span>
+    <span class="chip t">both unavailable under ZDR</span>
+    <span class="chip t">ultra only: no Bedrock, GCP, Foundry</span>
   </div>
   <div class="svgbox">
   <svg viewBox="0 0 1120 300" xmlns="http://www.w3.org/2000/svg" role="img"
@@ -417,22 +423,24 @@
     <text x="914" y="232" font-family="-apple-system,Segoe UI,Arial,sans-serif" font-size="11.5" fill="#7f1d1d">available, the command</text>
     <text x="914" y="248" font-family="-apple-system,Segoe UI,Arial,sans-serif" font-size="11.5" fill="#7f1d1d">runs a local review instead</text>
 
-    <text x="20" y="282" font-family="-apple-system,Segoe UI,Arial,sans-serif" font-size="12" fill="#475569">Free ultrareview runs: Pro 3, Max 3, Team and Enterprise none. Everything beyond that bills as usage credits, which must be turned on or Claude Code blocks the launch.</text>
+    <text x="20" y="282" font-family="-apple-system,Segoe UI,Arial,sans-serif" font-size="12" fill="#475569">Free ultrareview runs: Pro 3, Max 3 — a one-time allotment that does not refresh. Team and Enterprise get none. Paid runs bill ~$5-25 as usage credits, which must be turned on first.</text>
   </svg>
   </div>
-  <div class="note"><b>The governance read.</b> Two of the strongest layers are off the table under Zero Data Retention, and ultrareview is also off the table on Bedrock, Google Cloud's Agent Platform, and Microsoft Foundry. If that is your posture, your realistic stack is layers 1, 2, 3 and 6 — decide that at design time, not at rollout.</div>
+  <div class="note"><b>The governance read — two constraints, two different losses.</b> <b>ZDR on</b> removes both Code Review and ultrareview, leaving layers 1, 2, 3 and 6. <b>Bedrock / Google Cloud's Agent Platform / Foundry only, ZDR off</b> removes ultrareview only — no hyperscaler exclusion is stated for Code Review, so keep it. Conflating the two costs you the one layer that runs whether the author remembered or not. Decide at design time, not at rollout.</div>
 
   <h3><span class="n">5</span> · Claude Security (managed product) — hosted, always on</h3>
   <p class="lede">The only layer that scans without a developer in a session.</p>
   <div class="chips">
-    <span class="chip w">public beta</span><span class="chip w">Enterprise</span>
+    <span class="chip w">public beta</span><span class="chip w">Enterprise (Team, Max "coming soon")</span>
     <span class="chip w">premium seats required</span><span class="chip w">consumption billing</span>
+    <span class="chip a">scheduled scans · webhooks · CSV/MD export</span>
+    <span class="chip t">GitHub.com repos only</span>
     <span class="chip t">minutes to hours per scan</span>
   </div>
   <div class="svgbox">
-  <svg viewBox="0 0 1120 268" xmlns="http://www.w3.org/2000/svg" role="img"
-       aria-label="Managed Claude Security workflow: four setup gates, then open the security page, select a repository and optionally scope to a directory or branch, run the scan which takes minutes to hours, then review findings with type severity file and line.">
-    <rect x="0" y="0" width="1120" height="268" fill="#ffffff"/>
+  <svg viewBox="0 0 1120 292" xmlns="http://www.w3.org/2000/svg" role="img"
+       aria-label="Managed Claude Security workflow: four setup gates, then open the security page, select a GitHub.com repository and optionally scope to a directory or branch, run the scan which takes minutes to hours, then review and route findings. Best value comes from putting scans on a schedule with a named owner.">
+    <rect x="0" y="0" width="1120" height="292" fill="#ffffff"/>
     <text x="20" y="20" font-family="ui-monospace,Menlo,Consolas,monospace" font-size="11.5" fill="#475569">setup — four gates, all required</text>
 
     <rect x="20" y="32" width="262" height="60" rx="8" fill="#fef3c7" stroke="#b45309"/>
@@ -441,7 +449,7 @@
 
     <rect x="292" y="32" width="262" height="60" rx="8" fill="#fef3c7" stroke="#b45309"/>
     <text x="306" y="54" font-family="-apple-system,Segoe UI,Arial,sans-serif" font-size="12" font-weight="700" fill="#7c2d12">2 · GitHub App access</text>
-    <text x="306" y="74" font-family="-apple-system,Segoe UI,Arial,sans-serif" font-size="11.5" fill="#7c2d12">Granted on the repos you want scanned.</text>
+    <text x="306" y="74" font-family="-apple-system,Segoe UI,Arial,sans-serif" font-size="11.5" fill="#7c2d12">GitHub.com only — no GitLab, no Bitbucket.</text>
 
     <rect x="564" y="32" width="262" height="60" rx="8" fill="#fef3c7" stroke="#b45309"/>
     <text x="578" y="54" font-family="-apple-system,Segoe UI,Arial,sans-serif" font-size="12" font-weight="700" fill="#7c2d12">3 · Premium seats</text>
@@ -465,9 +473,9 @@
 
     <rect x="300" y="152" width="256" height="80" rx="8" fill="#ccfbf1" stroke="#0d9488" stroke-width="2"/>
     <text x="314" y="174" font-family="-apple-system,Segoe UI,Arial,sans-serif" font-size="12.5" font-weight="700" fill="#042f2e">Select repo, scope it</text>
-    <text x="314" y="194" font-family="-apple-system,Segoe UI,Arial,sans-serif" font-size="11.5" fill="#0f766e">Optionally narrow to a</text>
-    <text x="314" y="210" font-family="-apple-system,Segoe UI,Arial,sans-serif" font-size="11.5" fill="#0f766e">directory or branch —</text>
-    <text x="314" y="226" font-family="-apple-system,Segoe UI,Arial,sans-serif" font-size="11.5" fill="#0f766e">advised on large repos</text>
+    <text x="314" y="194" font-family="-apple-system,Segoe UI,Arial,sans-serif" font-size="11.5" fill="#0f766e">Narrow to a directory or</text>
+    <text x="314" y="210" font-family="-apple-system,Segoe UI,Arial,sans-serif" font-size="11.5" fill="#0f766e">branch (advised on large</text>
+    <text x="314" y="226" font-family="-apple-system,Segoe UI,Arial,sans-serif" font-size="11.5" fill="#0f766e">repos); Regular or Extended</text>
     <line x1="556" y1="192" x2="572" y2="192" stroke="#94a3b8" stroke-width="1.5"/>
     <polygon points="580,192 570,187 570,197" fill="#94a3b8"/>
 
@@ -481,30 +489,45 @@
 
     <rect x="860" y="152" width="236" height="80" rx="8" fill="#f1f5f9" stroke="#cbd5e1"/>
     <text x="874" y="174" font-family="-apple-system,Segoe UI,Arial,sans-serif" font-size="12.5" font-weight="700" fill="#0f172a">Review findings</text>
-    <text x="874" y="194" font-family="-apple-system,Segoe UI,Arial,sans-serif" font-size="11.5" fill="#475569">Vulnerability type, severity,</text>
-    <text x="874" y="210" font-family="-apple-system,Segoe UI,Arial,sans-serif" font-size="11.5" fill="#475569">affected file and line, and a</text>
-    <text x="874" y="226" font-family="-apple-system,Segoe UI,Arial,sans-serif" font-size="11.5" fill="#475569">description of the issue</text>
+    <text x="874" y="194" font-family="-apple-system,Segoe UI,Arial,sans-serif" font-size="11.5" fill="#475569">Type, severity, file and line.</text>
+    <text x="874" y="210" font-family="-apple-system,Segoe UI,Arial,sans-serif" font-size="11.5" fill="#475569">Webhook to Slack or Jira,</text>
+    <text x="874" y="226" font-family="-apple-system,Segoe UI,Arial,sans-serif" font-size="11.5" fill="#475569">export CSV or Markdown</text>
 
-    <text x="20" y="256" font-family="-apple-system,Segoe UI,Arial,sans-serif" font-size="12" fill="#475569">Anthropic advises scoping large repositories to a directory to raise the success rate — treat whole-monorepo scanning as unproven rather than assumed.</text>
+    <path d="M978 232 L978 246 L428 246 L428 236" fill="none" stroke="#0d9488" stroke-width="1.5" stroke-dasharray="4 3"/>
+    <polygon points="428,228 423,238 433,238" fill="#0d9488"/>
+    <text x="446" y="250" font-family="-apple-system,Segoe UI,Arial,sans-serif" font-size="11.5" fill="#0f766e">put it on a schedule and give the queue a named owner — that is the whole value of this layer</text>
+
+    <text x="20" y="266" font-family="-apple-system,Segoe UI,Arial,sans-serif" font-size="12" fill="#475569">Anthropic advises scoping large repositories to a directory to raise the success rate — treat whole-monorepo scanning as unproven rather than assumed.</text>
   </svg>
   </div>
 
-  <h2>Adjacent — different axis, often confused</h2>
+  <h2>Gates in one place</h2>
+  <table>
+    <thead><tr><th>Layer</th><th>Status</th><th>Plan</th><th>Billing</th><th>Repo hosts</th><th>ZDR?</th><th>Hyperscaler?</th></tr></thead>
+    <tbody>
+      <tr><td>1 · Guidance plugin</td><td>GA</td><td>All Claude Code users</td><td>Free to install; <strong>model-backed reviews spend plan usage</strong></td><td>Any (local)</td><td>Not stated — verify</td><td>Model-backed reviews <strong>skip</strong> on Bedrock, GCP</td></tr>
+      <tr><td>2 · <code>/security-review</code></td><td>GA</td><td>All</td><td>Plan usage</td><td>Any (local)</td><td>Not stated — verify</td><td>Not stated — verify</td></tr>
+      <tr class="me"><td>3 · Claude Security plugin</td><td>Beta</td><td>Paid plan, v2.1.154+</td><td>Plan usage; token-heavy</td><td><strong>Any</strong> — incl. GitLab, Bitbucket, no-inbound networks</td><td>Not stated — verify</td><td>Not stated — verify</td></tr>
+      <tr><td>4 · Code Review</td><td>Research preview</td><td><strong>Team, Enterprise</strong></td><td>Usage credits, <strong>~$15–25</strong>/review</td><td>GitHub; self-hosted via GH Enterprise Server</td><td><strong>Unavailable</strong></td><td><strong>No exclusion stated</strong></td></tr>
+      <tr><td>4b · Ultrareview</td><td>Research preview</td><td><strong>Any paid plan.</strong> Pro/Max 3 free, one-time</td><td>Usage credits, <strong>~$5–25</strong>/review</td><td>Local bundle; PR mode needs GitHub</td><td><strong>Unavailable</strong></td><td><strong>Unavailable</strong> on Bedrock, GCP, Foundry</td></tr>
+      <tr><td>5 · Managed product</td><td>Public beta</td><td>Enterprise, premium seats</td><td>Consumption (Extra Usage)</td><td><strong>GitHub.com only</strong></td><td>Not stated — verify</td><td>n/a</td></tr>
+      <tr><td>6 · Your CI</td><td>n/a</td><td>n/a</td><td>Yours</td><td>Yours</td><td>n/a</td><td>n/a</td></tr>
+    </tbody>
+  </table>
+  <p class="lede"><strong>verify</strong> = not asserted in the docs reviewed 2026-07-23; an absent exclusion is not a stated guarantee. <strong>n/a</strong> = the question doesn't apply to that layer.</p>
+
+  <h2>Adjacent — a different axis, often confused</h2>
+  <p class="lede">Neither of these scans code. Both get called "Claude security."</p>
   <div class="grid">
     <div class="card">
       <h4>Runtime containment (Claude Code)</h4>
       <p>Sandboxed Bash (<code>/sandbox</code>) for filesystem and network isolation, the working-directory write boundary, <code>denyRead</code> rules, Accept Edits mode.</p>
-      <p>Constrains <em>what the agent can do</em>, not <em>what the code contains</em>. Full treatment in <code>agentic-threat-model.md</code> and <code>claude-code-enterprise-config.md</code>.</p>
+      <p>Constrains <em>what the agent can do</em>, not <em>what the code contains</em>. Full treatment in <a href="agentic-threat-model.html">agentic-threat-model.md</a> and <a href="claude-code-enterprise-config.html">claude-code-enterprise-config.md</a>.</p>
     </div>
     <div class="card">
       <h4>Usage governance (Compliance API)</h4>
       <p>Programmatic access to Claude Enterprise conversation content and activity events, wired into 60+ DLP, SIEM, eDiscovery and identity platforms.</p>
-      <p>Governs <em>how people use Claude</em>, and scans no code at all. Full treatment in <code>usage-compliance-monitoring.md</code> and <code>legal-hold-ediscovery-runbook.md</code>.</p>
-    </div>
-    <div class="card">
-      <h4>Your own CI scanners</h4>
-      <p>Keep them. The layers above are additive to SAST and SCA, not a migration path off them.</p>
-      <p>Claude reasons about your code; it does not replace language rule packs, dependency scanning, or policy enforcement. A plan that retires CI because "Claude reviews it now" is itself a finding.</p>
+      <p>Governs <em>how people use Claude</em>, and scans no code at all. Full treatment in <a href="usage-compliance-monitoring.html">usage-compliance-monitoring.md</a> and <a href="legal-hold-ediscovery-runbook.html">legal-hold-ediscovery-runbook.md</a>.</p>
     </div>
   </div>
 
@@ -520,7 +543,7 @@
   </table>
 
   <footer>
-    Sources: <code>code.claude.com</code> docs for <code>claude-security</code>, <code>security-guidance</code>, <code>code-review</code>, <code>ultrareview</code>, <code>security</code>, <code>sandboxing</code> · the Claude Security getting-started tutorial · the Claude Security public-beta and Compliance-API partner blog posts. All live-fetched 2026-07-23. Deep-scan plugin announcement date inferred from @claudeai; no dated blog post located. No BAA, residency, or retention claim is made here, and no ZDR claim beyond the two stated availability exclusions — see <code>governance-overlay.md</code>.<br><br>
+    Sources: <code>code.claude.com</code> docs for <code>claude-security</code>, <code>security-guidance</code>, <code>code-review</code>, <code>ultrareview</code>, <code>security</code>, <code>sandboxing</code> · the Claude Security getting-started tutorial · the Claude Security public-beta and Compliance-API partner blog posts. All live-fetched 2026-07-23. Deep-scan plugin announcement date inferred from @claudeai; no dated blog post located. No BAA, residency, or retention claim is made here, and no ZDR claim beyond the two stated availability exclusions — see <a href="governance-overlay.html">governance-overlay.md</a>.<br><br>
     © gmanch94 · CC-BY-4.0 · As of 2026-07. Verify pricing/models at anthropic.com.
   </footer>
 

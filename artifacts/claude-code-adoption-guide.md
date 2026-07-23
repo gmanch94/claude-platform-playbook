@@ -40,6 +40,7 @@ Hand engineers [`claude-code-101.md`](claude-code-101.md) (the individual-practi
 | **Permission posture** | `acceptEdits` mode in safe sandboxes; `default` for production-adjacent repos | Never `bypassPermissions` (--dangerously-skip-permissions) outside a throwaway container. |
 | **Hooks-first or skills-first** | Hooks for safety (block destructive ops); Skills for repeatability | If team has zero shared conventions, start with Skills. |
 | **Plugin distribution** | One team plugin, source-controlled in a dedicated repo | Multiple plugins only after 2–3 teams adopt. |
+| **Code-security layers** | Guidance plugin day 1 (near-free, catches the most volume) + `/security-review` in the ship ritual | Add PR-time Code Review once a team ships to production — it is the only layer that runs whether the author remembered or not, at ~$15–25/review. See [`claude-security-layers.md`](claude-security-layers.md) for the full chooser and the ZDR / hyperscaler exclusions. |
 | **MCP servers** | One per system worth automating (issue tracker, internal docs, secrets-aware DB read-only) | Wait on MCP until a real reach-out is needed. Don't pre-build. |
 | **Headless / CI usage** | Optional, after Phase 2 | Skip for week 1. |
 | **Remote Control** | Off (default on Team/Enterprise until an Owner enables it) | Enable per-team if steering long sessions from mobile is worth the device-risk tradeoff below. Requires claude.ai OAuth — doesn't work with a bare API key. |
