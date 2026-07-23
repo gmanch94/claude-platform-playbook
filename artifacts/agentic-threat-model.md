@@ -77,7 +77,7 @@ Use this **before** the agent ships (design + review gate); reach for the runboo
 - [`hooks-starter-pack.md`](hooks-starter-pack.md) — block-secrets, PII scrub, branch guard, audit log (T3, T4, T6).
 - [`mcp-starter-pack.md`](mcp-starter-pack.md) — read-only-by-default server scope (T2, T4).
 - [`anti-use-cases.md`](anti-use-cases.md) — workloads to keep agents off entirely (T1).
-- [`cowork-adoption-guide.md`](cowork-adoption-guide.md) — folder-scope, egress, review-before-act, isolated VM (T3, T10).
+- [`cowork-adoption-guide.md`](cowork-adoption-guide.md) — folder-scope, egress, review-before-act, remote isolated execution (T3, T10).
 - [`surface-rollout-matrix.md`](surface-rollout-matrix.md) — Claude Tag's three-tier permission model + Member Access controls (T8, T9).
 - [`incident-response-runbook.md`](incident-response-runbook.md) — the reactive counterpart.
 - Framework anchor: OWASP LLM / agentic-AI risk taxonomy ([genai.owasp.org](https://genai.owasp.org)).
