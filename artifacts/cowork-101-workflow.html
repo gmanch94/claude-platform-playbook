@@ -1,0 +1,240 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Claude Platform Playbook — Cowork 101 Workflow</title>
+<style>
+  :root{
+    --ink:#2b2b2b; --muted:#8c8c8c; --accent:#c2622d;
+    --card:#ffffff; --cardbd:#e3dfd6; --bg:#faf8f4; --line2:#cdcabf;
+  }
+  *{box-sizing:border-box}
+  body{margin:0;background:var(--bg);color:var(--ink);
+    font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;
+    line-height:1.5;-webkit-font-smoothing:antialiased}
+  .wrap{max-width:1200px;margin:0 auto;padding:28px 22px 40px}
+  .brand{display:inline-block;font-size:12px;font-weight:700;text-transform:uppercase;letter-spacing:.8px;color:var(--accent);text-decoration:none;margin:0 0 12px;opacity:.85}
+  .brand:hover{opacity:1;text-decoration:underline}
+  h1{font-size:25px;margin:0 0 4px;font-weight:700}
+  .sub{color:#5a5a5a;font-size:14px;margin:0 0 6px;max-width:920px}
+  .asof{color:#777;font-size:12.5px;margin:0 0 18px}
+  .asof strong{color:#5a5a5a}
+  .frame{font-size:14px;color:#444;margin:0 0 8px;max-width:920px}
+  .frame strong{color:var(--ink)}
+  .cap{font-size:13px;color:#666;margin:24px 2px 6px;font-weight:700;letter-spacing:.3px;text-transform:uppercase}
+  svg{width:100%;height:auto;display:block;background:transparent}
+  .legend{display:flex;flex-wrap:wrap;gap:14px;margin:14px 2px 0;font-size:12.5px;color:#555}
+  .legend span{display:inline-flex;align-items:center;gap:6px}
+  .sw{width:13px;height:13px;border-radius:3px;display:inline-block;border:1px solid rgba(0,0,0,.12)}
+  .how{font-size:13px;color:#555;margin:18px 2px 0;max-width:920px}
+  .how b{color:var(--ink)}
+  .companion{font-size:13.5px;margin:18px 2px 0;padding-top:14px;border-top:1px solid #e7e3da;color:#444}
+  .companion a{color:var(--accent);text-decoration:none;font-weight:600}
+  .companion a:hover{text-decoration:underline}
+  footer{margin-top:22px;font-size:12px;color:#888;border-top:1px solid #e7e3da;padding-top:12px}
+  /* SVG type — literal-hex fills (CSS var() does not resolve in SVG presentation attributes on Safari/Firefox) */
+  .t-title{fill:#2b2b2b;font-size:14px;font-weight:800;letter-spacing:.4px}
+  .t-h{fill:#ffffff;font-size:13px;font-weight:800;letter-spacing:.3px}
+  .t-box{fill:#2b2b2b;font-size:14px;font-weight:700}
+  .t-num{fill:#ffffff;font-size:14px;font-weight:800}
+  .t-sub{fill:#555555;font-size:12.5px}
+  .t-user{fill:#c2622d;font-size:14px;font-weight:800}
+  .t-claude{fill:#7a5230;font-size:14px;font-weight:800}
+  .t-store{fill:#1f6f5c;font-size:14px;font-weight:800}
+  .t-out{fill:#b0501f;font-size:14px;font-weight:800}
+  .t-go{fill:#1f6f5c;font-size:12.5px}
+  .t-go-h{fill:#1f6f5c;font-size:14px;font-weight:800}
+  .t-danger{fill:#9e3636;font-size:12.5px}
+  .t-danger-h{fill:#9e3636;font-size:14px;font-weight:800}
+  .t-warn{fill:#8a5310;font-size:12.5px}
+  .t-warn-h{fill:#8a5310;font-size:13px;font-weight:800}
+  .t-strip{fill:#7a2f2f;font-size:13px;font-weight:600}
+  .conn{fill:none;stroke:#9a9384;stroke-width:2.4}
+  .loop{fill:none;stroke:#b9b3a5;stroke-width:2;stroke-dasharray:4 4}
+  @media print{
+    body{background:#fff}
+    .wrap{max-width:none;padding:0}
+    .how,.companion,.frame,.legend{color:#000}
+    @page{margin:12mm}
+  }
+  @media (max-width:640px){ h1{font-size:21px} .legend{font-size:11.5px} }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <a class="brand" href="../">Claude Platform Playbook</a>
+  <h1>Cowork 101 — the workflow, at a glance</h1>
+  <p class="sub">The visual companion to the <strong>Cowork 101</strong> field guide: what happens when you hand Cowork a task, the review gate that needs your explicit yes, and why the connected folder is the whole governance story.</p>
+  <p class="asof"><strong>As of 2026-07.</strong> Pinned to the current Cowork surface — refresh monthly. Not legal advice.</p>
+  <p class="frame">Three pictures. <strong>1</strong> — the task lifecycle, one loop with two checkpoints (review the plan, verify the deliverable). <strong>2</strong> — the review gate: the one test for what needs your explicit approval. <strong>3</strong> — the folder as the privilege dial. Colours: <strong>orange = you</strong>, <strong>brown = Cowork</strong>, <strong>green = connected folder / safe</strong>, <strong>dark-orange = the deliverable</strong>, <strong>red = stop-and-check</strong>.</p>
+
+  <p class="cap">1 &middot; The task lifecycle</p>
+  <svg viewBox="0 0 1160 348" role="img" aria-label="The Cowork task lifecycle as a six-stage loop. Stage 1 Brief (you): goal, folder, format. Stage 2 Plan (Cowork): its plan, before acting. Stage 3 Gate (you): read, then approve. Stage 4 Work (Cowork): real file edits, sub-agents. Stage 5 Deliverable: xlsx, pptx, doc — finished. Stage 6 Verify (you): open it, check against the source; if not right, re-brief and re-run, looping back to stage 1. Two warnings: the review gate only protects if you read it — approving blind is write access on autopilot; and the isolated environment on Anthropic's servers protects your computer but does not change what Claude can do to the folders you connect, whose edits are real.">
+
+    <defs>
+      <marker id="ar" markerWidth="9" markerHeight="9" refX="7" refY="3" orient="auto" markerUnits="userSpaceOnUse">
+        <path d="M0,0 L7,3 L0,6 Z" fill="#9a9384"/>
+      </marker>
+      <marker id="arup" markerWidth="9" markerHeight="9" refX="3" refY="2" orient="auto" markerUnits="userSpaceOnUse">
+        <path d="M0,0 L6,2 L0,4 Z" fill="#b9b3a5"/>
+      </marker>
+    </defs>
+
+    <text x="20" y="26" class="t-title">THE COWORK TASK LIFECYCLE &#8212; one loop, two checkpoints</text>
+
+    <!-- stage boxes -->
+    <!-- 1 BRIEF -->
+    <rect x="20" y="104" width="170" height="104" rx="12" fill="#ffffff" stroke="#e3dfd6"/>
+    <circle cx="46" cy="130" r="15" fill="#c2622d"/><text x="46" y="135" text-anchor="middle" class="t-num">1</text>
+    <text x="34" y="170" class="t-user">BRIEF</text>
+    <text x="34" y="190" class="t-sub">goal &#183; folder &#183; format</text>
+    <!-- 2 PLAN -->
+    <rect x="208" y="104" width="170" height="104" rx="12" fill="#ffffff" stroke="#e3dfd6"/>
+    <circle cx="234" cy="130" r="15" fill="#7a5230"/><text x="234" y="135" text-anchor="middle" class="t-num">2</text>
+    <text x="222" y="170" class="t-claude">PLAN</text>
+    <text x="222" y="190" class="t-sub">its plan, before acting</text>
+    <!-- 3 GATE -->
+    <rect x="396" y="104" width="170" height="104" rx="12" fill="#ffffff" stroke="#e3b9b9" stroke-width="2"/>
+    <circle cx="422" cy="130" r="15" fill="#9e3636"/><text x="422" y="135" text-anchor="middle" class="t-num">3</text>
+    <text x="410" y="170" class="t-danger-h">GATE</text>
+    <text x="410" y="190" class="t-sub">read, then approve</text>
+    <!-- 4 WORK -->
+    <rect x="584" y="104" width="170" height="104" rx="12" fill="#ffffff" stroke="#e3dfd6"/>
+    <circle cx="610" cy="130" r="15" fill="#7a5230"/><text x="610" y="135" text-anchor="middle" class="t-num">4</text>
+    <text x="598" y="170" class="t-claude">WORK</text>
+    <text x="598" y="190" class="t-sub">real edits, sub-agents</text>
+    <!-- 5 DELIVERABLE -->
+    <rect x="772" y="104" width="170" height="104" rx="12" fill="#ffffff" stroke="#e3dfd6"/>
+    <circle cx="798" cy="130" r="15" fill="#b0501f"/><text x="798" y="135" text-anchor="middle" class="t-num">5</text>
+    <text x="786" y="170" class="t-out">DELIVERABLE</text>
+    <text x="786" y="190" class="t-sub">xlsx &#183; pptx &#183; doc</text>
+    <!-- 6 VERIFY -->
+    <rect x="960" y="104" width="170" height="104" rx="12" fill="#ffffff" stroke="#e3dfd6"/>
+    <circle cx="986" cy="130" r="15" fill="#c2622d"/><text x="986" y="135" text-anchor="middle" class="t-num">6</text>
+    <text x="974" y="170" class="t-user">VERIFY</text>
+    <text x="974" y="190" class="t-sub">open it, check source</text>
+
+    <!-- connectors -->
+    <path class="conn" marker-end="url(#ar)" d="M190 130 L204 130"/>
+    <path class="conn" marker-end="url(#ar)" d="M378 130 L392 130"/>
+    <path class="conn" marker-end="url(#ar)" d="M566 130 L580 130"/>
+    <path class="conn" marker-end="url(#ar)" d="M754 130 L768 130"/>
+    <path class="conn" marker-end="url(#ar)" d="M942 130 L956 130"/>
+
+    <!-- loop back verify -> brief -->
+    <path class="loop" marker-end="url(#arup)" d="M1045 208 L1045 232 L105 232 L105 208"/>
+    <text x="575" y="227" text-anchor="middle" class="t-sub">&#8635; not right? re-brief &amp; re-run</text>
+
+    <!-- warning strips -->
+    <rect x="20" y="256" width="1110" height="34" rx="10" fill="#fbecec" stroke="#e3b9b9"/>
+    <text x="575" y="277" text-anchor="middle" class="t-danger"><tspan font-weight="800">&#9888; The gate only protects if you READ it</tspan> &#8212; approving blind is write-access on autopilot.</text>
+    <rect x="20" y="298" width="1110" height="34" rx="10" fill="#fbf1e2" stroke="#e6cfa8"/>
+    <text x="575" y="319" text-anchor="middle" class="t-warn"><tspan font-weight="800">The isolated environment protects your computer &#8212; NOT the folders you connect.</tspan> Those edits are real.</text>
+  </svg>
+
+  <p class="cap">2 &middot; The review gate &mdash; what needs your explicit yes</p>
+  <svg viewBox="0 0 1160 392" role="img" aria-label="The review gate decision. One test before any irreversible or outward-facing step: can this be undone quietly if it is wrong? YES: let it run — reversible, internal, low-stakes, no extra approval. NO: you approve it explicitly — per-action consent, a task-level go-ahead does not carry. Two NO categories: ASK-FIRST (overwrite or delete a file, send a message or email, change permissions, spend money, change settings) and HARD-STOP, never on autopilot (permanently delete data, move money, publish externally, change who can access — approve each every time). Example: telling Cowork to sort last quarter's invoices into folders authorizes the sort itself, but deleting a duplicate or emailing a vendor each need their own yes.">
+    <text x="20" y="26" class="t-title">THE REVIEW GATE &#8212; what needs your explicit yes</text>
+
+    <!-- question banner -->
+    <rect x="20" y="42" width="1120" height="56" rx="13" fill="#fbf1e2" stroke="#e6cfa8" stroke-width="2"/>
+    <text x="580" y="68" text-anchor="middle" class="t-warn">Before any step that is irreversible or outward-facing, one test:</text>
+    <text x="580" y="89" text-anchor="middle" class="t-box" style="font-size:15px">can this be undone quietly if it&#8217;s wrong?</text>
+
+    <!-- branches -->
+    <path class="conn" marker-end="url(#ar)" d="M470 98 L300 130"/>
+    <path class="conn" marker-end="url(#ar)" d="M700 98 L870 130"/>
+
+    <!-- YES card -->
+    <rect x="60" y="134" width="440" height="60" rx="12" fill="#eaf3ee" stroke="#bcd8c8" stroke-width="2"/>
+    <text x="80" y="161" class="t-go-h">&#10003; YES &#8212; let it run</text>
+    <text x="80" y="182" class="t-sub">reversible &#183; internal &#183; low-stakes. No extra approval.</text>
+
+    <!-- NO card -->
+    <rect x="660" y="134" width="440" height="60" rx="12" fill="#fbecec" stroke="#e3b9b9" stroke-width="2"/>
+    <text x="680" y="161" class="t-danger-h">&#9888; NO &#8212; you approve it, explicitly</text>
+    <text x="680" y="182" class="t-danger">per-action consent. A task &#8220;go ahead&#8221; doesn&#8217;t carry.</text>
+
+    <!-- example card (left, under YES) -->
+    <rect x="60" y="224" width="440" height="150" rx="12" fill="#ffffff" stroke="#e3dfd6"/>
+    <text x="80" y="252" class="t-box">Example &#8212; the invoice sort</text>
+    <text x="80" y="278" class="t-sub">You say: &#8220;sort last quarter&#8217;s invoices into folders.&#8221;</text>
+    <text x="80" y="306" class="t-go">&#10003; authorizes: the sort itself</text>
+    <text x="80" y="332" class="t-danger">&#9995; needs its own yes: deleting a &#8220;duplicate&#8221;;</text>
+    <text x="80" y="350" class="t-danger">emailing a vendor about a mismatch it found</text>
+
+    <!-- ASK-FIRST sub-card -->
+    <rect x="660" y="224" width="210" height="150" rx="12" fill="#fbf1e2" stroke="#e6cfa8"/>
+    <rect x="660" y="224" width="210" height="26" rx="12" fill="#8a5310"/>
+    <rect x="660" y="237" width="210" height="13" fill="#8a5310"/>
+    <text x="765" y="242" text-anchor="middle" class="t-h">ASK-FIRST</text>
+    <text x="676" y="272" class="t-warn">&#8226; overwrite / delete a file</text>
+    <text x="676" y="294" class="t-warn">&#8226; send a message or email</text>
+    <text x="676" y="316" class="t-warn">&#8226; change permissions</text>
+    <text x="676" y="338" class="t-warn">&#8226; spend money</text>
+    <text x="676" y="360" class="t-warn">&#8226; change settings</text>
+
+    <!-- HARD-STOP sub-card -->
+    <rect x="890" y="224" width="210" height="150" rx="12" fill="#fbecec" stroke="#e3b9b9"/>
+    <rect x="890" y="224" width="210" height="26" rx="12" fill="#9e3636"/>
+    <rect x="890" y="237" width="210" height="13" fill="#9e3636"/>
+    <text x="995" y="242" text-anchor="middle" class="t-h">HARD-STOP</text>
+    <text x="904" y="272" class="t-danger">&#8226; permanently delete data</text>
+    <text x="904" y="294" class="t-danger">&#8226; move money</text>
+    <text x="904" y="316" class="t-danger">&#8226; publish externally</text>
+    <text x="904" y="338" class="t-danger">&#8226; change who can access</text>
+    <text x="904" y="360" class="t-danger" style="font-weight:700">approve each, every time</text>
+  </svg>
+
+  <p class="cap">3 &middot; The folder is the privilege dial</p>
+  <svg viewBox="0 0 1160 300" role="img" aria-label="The connected folder is the privilege dial. Scope tight: connect the narrowest folder that holds the task's files, for example reports-Q3 — blast radius is just that folder. Scope broad to be safe: connecting the drive root or a synced drive grants Claude everything in it — blast radius is the whole drive. Note: the isolated environment on Anthropic's servers protects your computer, not the folders you connect; egress follows the settings you set, and an unset default on a sensitive folder is an exfil path.">
+    <text x="20" y="26" class="t-title">THE FOLDER IS THE PRIVILEGE DIAL &#8212; connect the smallest key</text>
+
+    <!-- GOOD card -->
+    <rect x="40" y="52" width="490" height="150" rx="13" fill="#eaf3ee" stroke="#bcd8c8" stroke-width="2"/>
+    <rect x="40" y="52" width="490" height="26" rx="13" fill="#1f6f5c"/>
+    <rect x="40" y="65" width="490" height="13" fill="#1f6f5c"/>
+    <text x="285" y="70" text-anchor="middle" class="t-h">&#10003; SCOPE TIGHT</text>
+    <rect x="70" y="96" width="200" height="40" rx="8" fill="#ffffff" stroke="#bcd8c8"/>
+    <text x="170" y="121" text-anchor="middle" class="t-box">reports-Q3/</text>
+    <text x="300" y="112" class="t-go">blast radius =</text>
+    <text x="300" y="133" class="t-go-h">just this folder</text>
+    <text x="70" y="168" class="t-sub">the narrowest folder that holds the task&#8217;s files</text>
+
+    <!-- vs -->
+    <text x="580" y="132" text-anchor="middle" class="t-title">vs</text>
+
+    <!-- BAD card -->
+    <rect x="630" y="52" width="490" height="150" rx="13" fill="#fbecec" stroke="#e3b9b9" stroke-width="2"/>
+    <rect x="630" y="52" width="490" height="26" rx="13" fill="#9e3636"/>
+    <rect x="630" y="65" width="490" height="13" fill="#9e3636"/>
+    <text x="875" y="70" text-anchor="middle" class="t-h">&#9888; SCOPE BROAD &#8220;to be safe&#8221;</text>
+    <rect x="660" y="96" width="280" height="40" rx="8" fill="#ffffff" stroke="#e3b9b9"/>
+    <text x="800" y="121" text-anchor="middle" class="t-box">C:\  &#183;  synced drive root</text>
+    <text x="960" y="112" class="t-danger">blast radius =</text>
+    <text x="960" y="133" class="t-danger-h">the WHOLE drive</text>
+    <text x="660" y="168" class="t-danger">connecting a root grants Claude everything in it</text>
+
+    <!-- note strip -->
+    <rect x="40" y="224" width="1080" height="56" rx="13" fill="#fbf1e2" stroke="#e6cfa8" stroke-width="2"/>
+    <text x="580" y="248" text-anchor="middle" class="t-warn-h">The isolated environment (on Anthropic's servers) protects your computer &#8212; not the folders you connect.</text>
+    <text x="580" y="268" text-anchor="middle" class="t-warn">Egress follows the settings you set; unset default on a sensitive folder = an exfil path.</text>
+  </svg>
+
+  <div class="legend" aria-hidden="true">
+    <span><i class="sw" style="background:#c2622d"></i> you</span>
+    <span><i class="sw" style="background:#7a5230"></i> Cowork</span>
+    <span><i class="sw" style="background:#1f6f5c"></i> connected folder / safe</span>
+    <span><i class="sw" style="background:#b0501f"></i> the deliverable</span>
+    <span><i class="sw" style="background:#9e3636"></i> stop &amp; check</span>
+  </div>
+
+  <p class="how"><b>How to use it.</b> Hand it to anyone you onboard onto Cowork, next to the 101. The two things that must land at a glance: <b>the loop has two checkpoints</b> (review the plan, verify the deliverable — skipping either removes where you stay in control), and <b>the folder is the privilege dial</b> (the smallest key that does the job). The full mechanics, the four worked examples, and the failure-mode list live in the guide.</p>
+
+  <p class="companion"><b>Companion:</b> the full field guide &#8212; the lifecycle in prose, the daily loop, sub-agents, scheduled tasks, four worked examples, and the &#8220;approach with extreme caution&#8221; failure modes &#8212; is <a href="cowork-101.html">cowork-101.md</a>. For the org rollout + governance, <a href="cowork-adoption-guide.html">cowork-adoption-guide.md</a>; for the other product surfaces, <a href="claude-product-101.html">claude-product-101.md</a>.</p>
+
+  <footer>&copy; gmanch94 &middot; CC-BY-4.0 &middot; As of 2026-07. Verify Cowork availability + governance at support.claude.com.</footer>
+</div>
+</body>
+</html>

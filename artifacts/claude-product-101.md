@@ -59,9 +59,9 @@ Three behaviors that aren't obvious from the UI:
 
 ## 4. Cowork — when Claude acts, not just answers
 
-Cowork is a **desktop agent**: it reads and writes real files on your machine and runs commands, folder-scoped and egress-controlled, with a **review-before-act** gate. It earns its extra privilege when the task *is* the file work — reorganizing a folder, running a multi-step transform across documents, driving a tool. When you just need an answer or a draft, chat or a Project is the right, lower-privilege choice.
+Cowork is an **agent that acts on your files**: it reads and writes the real files in folders you connect and runs commands, folder-scoped and egress-controlled, with a **review-before-act** gate. (Its session runs remotely on Anthropic's servers; the desktop app is what bridges it to your local folders — web/mobile are in beta.) It earns its extra privilege when the task *is* the file work — reorganizing a folder, running a multi-step transform across documents, driving a tool. When you just need an answer or a draft, chat or a Project is the right, lower-privilege choice.
 
-This guide stays thin here on purpose — the full rollout and governance treatment is [`cowork-adoption-guide.md`](cowork-adoption-guide.md). The three gotchas to carry:
+This guide stays thin here on purpose — the operator's how-to is [`cowork-101.md`](cowork-101.md), and the full rollout and governance treatment is [`cowork-adoption-guide.md`](cowork-adoption-guide.md). The three gotchas to carry:
 
 - **It's BAA-excluded as of 2026-07 — no PHI, no regulated data in Cowork** (coverage expands over time; confirm current scope with your admin / Anthropic rep before relying on it). (Per [`../docs/feature-inventory.md`](../docs/feature-inventory.md); boundary → §8.)
 - **Scope the folder tightly.** The agent can touch what's in scope; a broad scope is a broad blast radius.
