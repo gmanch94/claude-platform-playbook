@@ -16,6 +16,7 @@
 import { readFileSync, readdirSync } from 'node:fs';
 import { fileURLToPath } from 'node:url';
 import { dirname, join } from 'node:path';
+import { Script } from 'node:vm';
 
 const ROOT = join(dirname(fileURLToPath(import.meta.url)), '..');
 const read = (p) => readFileSync(join(ROOT, p), 'utf8');
@@ -133,6 +134,37 @@ function malformedTables(rel) {
   return issues;
 }
 
+// --- inline <script> syntax in HTML artifacts (does the page's JS even parse?) ---
+// Precedent 2026-07-25: a new code comment in claude-code-config-builder.html contained a glob
+// with the block-comment terminator inside it, which closed the comment early and made the whole
+// 110KB inline script fail to parse. Every checkbox list rendered empty and the tool produced no
+// output at all — but the page still LOOKED fine, because all the static markup was untouched.
+//
+// Nothing else here could see it: the count guard and the pipe scanner both read Markdown, and the
+// only other witness is a browser probe. This is the cheap deterministic version of that probe —
+// it proves the script parses, not that it behaves.
+function badScripts(rel) {
+  const src = read(rel);
+  const issues = [];
+  const re = /<script(?![^>]*\bsrc=)[^>]*>([\s\S]*?)<\/script>/g;
+  let m, i = 0;
+  while ((m = re.exec(src)) !== null) {
+    i++;
+    const body = m[1];
+    if (!body.trim()) continue;
+    const line = src.slice(0, m.index).split(/\r?\n/).length;
+    try {
+      new Script(body);
+    } catch (e) {
+      issues.push(`script #${i} (opens at line ${line}) does not parse: ${e.message}`);
+    }
+  }
+  return issues;
+}
+
+const htmlFiles = readdirSync(join(ROOT, 'artifacts')).filter((f) => f.endsWith('.html')).map((f) => `artifacts/${f}`);
+const scriptIssues = htmlFiles.flatMap((f) => badScripts(f).map((m) => `${f} ${m}`));
+
 const mdFiles = [
   ...['artifacts', 'docs'].flatMap((d) =>
     readdirSync(join(ROOT, d)).filter((f) => f.endsWith('.md')).map((f) => `${d}/${f}`),
@@ -209,6 +241,13 @@ for (const r of crossResults) {
   );
 }
 
+console.log(`\nInline <script> syntax (${htmlFiles.length} HTML artifacts):`);
+if (scriptIssues.length === 0) {
+  console.log('  OK       every inline script parses');
+} else {
+  for (const s of scriptIssues) console.log(`  BROKEN   ${s}`);
+}
+
 console.log(`\nMarkdown table structure (${mdFiles.length} files):`);
 if (tableIssues.length === 0) {
   console.log('  OK       every table has one header, a separator on row 2, and a consistent column count');
@@ -218,6 +257,10 @@ if (tableIssues.length === 0) {
 
 if (failed) {
   console.log(`\nFAIL — artifact count is inconsistent. Make every count equal ${N} (ground truth = artifacts/ file count).`);
+  process.exit(1);
+}
+if (scriptIssues.length) {
+  console.log("\nFAIL — an inline script doesn't parse. The page renders its static markup and produces NOTHING else; it looks fine and is dead.");
   process.exit(1);
 }
 if (tableIssues.length) {
