@@ -101,6 +101,32 @@ The as-of stamp is **load-bearing** on `cost-calculator.html` — readers commit
 
 ## Repo-specific lessons
 
+### 2026-07-25 — the parent-doc diff is a real gate, and it can come back "no"
+
+`claude-code-config-builder.html` is downstream of `claude-code-enterprise-config.md` §2/§4/§5, and **no guard catches builder-vs-parent drift** — not `check-counts.mjs`, not `/stale-check`, not `/doc-verify`. So the UX review's wording and field-structure proposals were held back behind a manual diff while six other PRs shipped. The diff paid for itself on the first item it touched.
+
+**The review recommended merging two fields. The diff said no, for two reasons the reviewers could not have had.**
+
+The proposal was to fold the extra-credential **env var** field and the extra **`denyRead` path** field into one labelled group with two inputs, modelled on the marketplace `src`/`repo` pair. It reads as an obvious tidy-up — the fields are adjacent, and a code comment already flagged pasting a path into the env field as "the likely slip."
+
+1. **The parent doc forbids it on the merits.** §4 keeps `credentials.envVars` "separate from general filesystem rules" and states plainly that *no path rule reaches an env var*. One field feeding both would blur precisely the distinction that section spends two paragraphs establishing — and the builder is the artifact most likely to be read as authoritative on it.
+2. **The builder's own logic forbids it independently.** The two fields have different visibility *by design*: env vars are emitted inside the sandbox block and vanish with it, while extra paths also feed `permissions.deny` and stay visible with the sandbox off. A shared `.fld` would hide both together — silently breaking the `val()` hidden-guard from #77, the fix for the very bug class this artifact exists to demonstrate.
+
+Reason 2 is the transferable half. **A blind reviewer proposes against the rendered artifact; they cannot see an invariant that lives in the render function.** Neither reviewer was wrong to suggest it, and neither could have caught it. That asymmetry is the argument for the diff being a step rather than a rubber stamp — it is where the artifact's own constraints get to answer back.
+
+Shipped instead as a **visual** group: one heading, two separate `.fld` elements, labels carrying the distinction ("variable NAMES, not paths" / "absolute PATHS, not variable names"). The reviewer's goal — stop the paste-into-the-wrong-field slip — met without collapsing the surfaces.
+
+**Record which of four outcomes each item got**, because "I did the diff" is not a result:
+
+| Outcome | This round |
+|---|---|
+| Cleared, applied as proposed | MCP `none` → checkbox · org-name label · "Advisory" by name · two hint lead sentences |
+| **Changed by the diff** | the env-var / path merge → visual grouping only |
+| Already shipped earlier | card retitles (#82) · drawer badges (#80) |
+| Verified, no change needed | the json tab's mutating label — both names appear in the parent doc |
+
+**Generalizes to:** any artifact downstream of a source-of-truth doc with no drift guard — the builder against the config guide, `system-card-readout.md` §4 against the live card, any future composer over a reference doc. Gate the change, run the diff for real, and expect a "no" often enough to be worth the step.
+
 ### 2026-07-25 — a UX complaint is a finding, and the blind-review policy generalizes to it
 
 "The config builder is not intuitive" was a one-line report. Treated as a review target rather than a styling note, it returned **three correctness bugs** in `claude-code-config-builder.html` that four prior review rounds, a `doc-verify`, a live probe and a green count guard had all passed over. Landed as #77.
