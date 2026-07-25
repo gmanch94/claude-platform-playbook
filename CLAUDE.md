@@ -122,9 +122,10 @@ A new model release (e.g., Opus 5.1) is **not** a routine inventory edit — it'
 2. Diff the **behavioral contract**, not just the name: thinking/effort defaults, rejected params + newly-invalid *combinations*, cache floor, context/output ceilings, tokenizer, and **capability or tier regressions** (Opus 5 dropped web fetch and Priority Tier support). These break lift-and-shift silently.
 3. Search-replace old version → new in every artifact (`Grep -l` to enumerate) — but **preserve version-history, price-comparison, and "(prev)" references**; only current-state pins flip.
 4. **Re-read for advice that assumed the old defaults.** The label swap is the easy half; guidance that is stale-but-not-obviously-wrong is what ships broken (2026-07-24: a guide's "default off" rule survived a clean label sweep and contradicted its own new header).
-5. Update the guards too — `/stale-check`'s model-pin rules encode the *old* pin and will report green on the drift they exist to catch.
-6. Update README footer; run `/bump-as-of` for the as-of stamps
-7. Blind-review (2 reviewers, factual + decision-utility lenses), then PR — sponsor reviews
+5. **Read the model's system card, not just the launch post** ([anthropic.com/system-cards](https://www.anthropic.com/system-cards)). The launch post carries capability and pricing. The system card is the *only* source for the RSP/ASL determination, safeguard **policy** changes (what became newly blocked or unblocked), measured prompt-injection robustness, and the honesty/hallucination profile — governance facts with no docs-page equivalent, which a launch-post-only sweep misses entirely. Land them as `feature-inventory.md` Compliance rows (precedent: Opus 5, 2026-07-24). Carry each number's **test conditions** with it — the cards measure with production safeguards disabled.
+6. Update the guards too — `/stale-check`'s model-pin rules encode the *old* pin and will report green on the drift they exist to catch.
+7. Update README footer; run `/bump-as-of` for the as-of stamps
+8. Blind-review (2 reviewers, factual + decision-utility lenses), then PR — sponsor reviews
 
 ### When pricing changes
 

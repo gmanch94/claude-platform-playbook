@@ -203,7 +203,23 @@ EU AI Act sorts AI systems into 4 risk classes. Claude (the model) is a general-
 
 **GPAI Code of Practice:** Anthropic is a signatory to the EU AI Act GPAI Code of Practice (verify current status at [ai-act.eu](https://digital-strategy.ec.europa.eu/en/policies/ai-act)). For deployers building high-risk applications: the GPAI Code imposes upstream transparency and safety obligations on Anthropic as model provider; your conformity assessment can reference Anthropic's Code of Practice commitments as evidence of GPAI-layer compliance. Request the current GPAI documentation package from Anthropic when preparing a conformity assessment file.
 
-**Responsible Scaling Policy (RSP) and Model Card:** Anthropic publishes a Responsible Scaling Policy and per-model model cards covering safety evaluations, capability thresholds, and deployment commitments. For high-risk application assessments (EU AI Act Annex III, NIST AI RMF Map), these documents are primary evidence of upstream risk management. Source: [anthropic.com/responsible-scaling-policy](https://www.anthropic.com/responsible-scaling-policy); model cards at [anthropic.com/research/model-specification](https://www.anthropic.com/model-card) — verify current URLs at signing.
+**Frontier Compliance Framework (FCF) — the named artifact to cite.** Anthropic states that for models falling under applicable regulatory regimes it has formalized its obligations in a **Frontier Compliance Framework**, which documents its technical and organizational protocols for systemic-risk assessment and mitigation. The FCF is explicitly named as Anthropic's compliance framework for **California's Transparency in Frontier AI Act (TFAIA)** and the **EU AI Act GPAI Code of Practice**. Source: Claude Opus 5 System Card §1.3 ([anthropic.com/claude-opus-5-system-card](https://www.anthropic.com/claude-opus-5-system-card), 2026-07-24). Two practical uses: cite the FCF alongside the RSP and the per-model system card as GPAI-layer evidence in your conformity file, and ask for it by name in a vendor questionnaire rather than accepting a generic "we have a responsible AI program."
+
+**EEA contracting entity.** The same section states that **Anthropic Ireland, Limited is the provider of Anthropic's general-purpose AI models in the European Economic Area**. Name it in EU legal review and check it matches the entity on your executed agreement — a mismatch between the regulatory provider and your counterparty is the kind of thing that surfaces late and expensively.
+
+**Responsible Scaling Policy (RSP) and Model Card:** Anthropic publishes a Responsible Scaling Policy and per-model model cards covering safety evaluations, capability thresholds, and deployment commitments. For high-risk application assessments (EU AI Act Annex III, NIST AI RMF Map), these documents are primary evidence of upstream risk management. Source: [anthropic.com/responsible-scaling-policy](https://www.anthropic.com/responsible-scaling-policy); model cards at [anthropic.com/research/model-specification](https://www.anthropic.com/model-card) — verify current URLs at signing. System cards are indexed at [anthropic.com/system-cards](https://www.anthropic.com/system-cards).
+
+**What the RSP determination actually says for the model you're deploying** — the answer a risk committee asks for by name, and the reason to read the system card rather than the launch post. For **Opus 5** (system card §2.1.3, 2026-07-24):
+
+| RSP question | Determination for Opus 5 |
+|---|---|
+| Chem/bio, non-novel (**CB-1**) | **Conservatively treated as having the capability.** Anthropic applies **the same ASL-3 protections as Opus 4.8**: real-time classifier guards, access controls for guard exemptions, bug bounty + threat intelligence, rapid-response jailbreak patching, and security controls against model-weight theft. |
+| Chem/bio, novel (**CB-2**) | **Threshold not crossed.** |
+| Autonomy TM1 — misaligned AI in high-stakes settings | **Applicable**, as it was to prior models; assessed risk **not raised**. |
+| Autonomy TM2 — automated AI R&D | **Not applicable.** No sustained 2× AI-attributable acceleration; not close to substituting for senior research staff. |
+| Overall alignment risk | Assessed **very low**. |
+
+Two things to carry from that table. First, **"ASL-3 protections apply" is the citable fact** — it names a defined protection tier rather than a marketing assurance, and it is unchanged from Opus 4.8, so a model upgrade did not move your upstream control story. Second, **a determination is per-model and re-made each release**; pin the model version in any assessment that leans on it, and re-read the card when you re-tier (see [`model-deprecation-runbook.md`](model-deprecation-runbook.md)). *Failure mode if skipped:* your conformity file cites an RSP posture established for a model you no longer run.
 
 ---
 
@@ -342,6 +358,10 @@ Claude has built-in safety and refusal behavior, but **prompt injection** is you
 | Red team eval set | Adversarial inputs in CI |
 
 **Computer use 2.0 specific:** the model sees and acts on a live UI — a malicious page can attempt injection via on-screen text. Run computer use only against trusted targets, or in an isolated environment with no access to sensitive credentials.
+
+**What Anthropic now supplies on its side (2026-07).** Two vendor layers ship across the agentic products: **prompt-injection probes** that inspect tool results before the model acts on them, and **connector "auto mode"** (products using the Chrome connectors, including Cowork), which adds **a classifier that blocks dangerous tool calls** — data in, actions out, so an attack must defeat both. Claude Cowork never runs without the probes. Measured on Opus 5: indirect-prompt-injection attack success **2.0% at 15 attempts** (Opus 4.8: 5.5%), and **0 of 129 browser-use scenarios succeeded with connector auto mode enabled** (Opus 4.8, unsafeguarded: 31.5%). Source: Opus 5 System Card §5.2 — full numbers and per-surface breakdown in [`../docs/feature-inventory.md`](../docs/feature-inventory.md).
+
+⚠ **Four caveats, all load-bearing if you quote these numbers to a risk committee.** (1) The model-level figures were measured **with production safeguards disabled**, so they describe the raw model, not your deployment. (2) The adaptive-attacker tests are deliberately permissive — the attacker optimizes against the same scenarios with many attempts. (3) A 0% on a fixed 129-scenario set is a strong result, **not a proof of impossibility**; Anthropic notes the Opus 5 bug bounty had not yet run. (4) Do not confuse connector auto mode with **Claude Code's permission "auto mode,"** which relaxes approval prompts and is the opposite kind of control. The application-layer patterns in the table above stay yours — see [`agentic-threat-model.md`](agentic-threat-model.md) for what the vendor layers do and don't cover.
 
 ---
 

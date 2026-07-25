@@ -104,7 +104,7 @@ The newest layer, in **beta**. Announced via [@claudeai on X](https://x.com/clau
 2. **Scan a set of changes** — a branch's diff against its base, an open PR's diff, or a single commit (`scan commit abc1234`). **Only committed changes are scanned** — commit or stash work-in-progress first, or run a full scan, which reads the working tree.
 3. **Suggest patches** — pick findings from the report; each patch is drafted **in a scratch copy of your repository**, so source files stay untouched until you apply one yourself.
 
-You can skip the menu: `/claude-security scan my branch`, or plain language. It works best in **auto mode**, so the scan's agents aren't stopped by a permission prompt at every step `[H]`.
+You can skip the menu: `/claude-security scan my branch`, or plain language. It works best in **auto mode**, so the scan's agents aren't stopped by a permission prompt at every step `[H]`. ⚠ *Name collision:* that is Claude Code's **permission** auto mode. Anthropic's connector products (Cowork, Claude in Chrome) also ship an unrelated **connector "auto mode"** — a prompt-injection safeguard that blocks dangerous tool calls (see [`agentic-threat-model.md`](agentic-threat-model.md)). One relaxes approval prompts; the other adds a block. Same two words, opposite direction.
 
 **The gate** `[H]`:
 
@@ -220,6 +220,15 @@ Two more things get filed under "Claude security" that are not code-scanning lay
 
 **Usage governance (Compliance API + partners).** Programmatic access to Claude Enterprise conversation content and activity events, wired into 60+ DLP / SIEM / eDiscovery / identity platforms `[H]`. It governs *how people use Claude*, and scans no code at all. Full treatment: [usage-compliance-monitoring.md](usage-compliance-monitoring.md) and [legal-hold-ediscovery-runbook.md](legal-hold-ediscovery-runbook.md).
 
+**Model-level cyber safeguards — the floor underneath every layer.** None of the six layers can find a bug the *model* refuses to discuss. Anthropic's cyber classifiers therefore set the ceiling on what any of them can do, and that ceiling moved with **Opus 5** (System Card §3.2, §3.4, 2026-07-24 `[H]` — [anthropic.com/claude-opus-5-system-card](https://www.anthropic.com/claude-opus-5-system-card)):
+
+- **Vulnerability discovery in source code is now permitted at all access levels, including general availability.** Anthropic's stated reasoning: finding bugs in code is core to the secure development lifecycle, so unblocking it reduces the vulnerability surface shipped into the world. Practically, this is why an AppSec engineer asking Claude to audit *their own source* should no longer hit a wall.
+- **Vulnerability discovery in compiled binaries stays blocked** — the same skill without source access skews offensive. Anthropic acknowledges this blocks some legitimate work.
+- **False-positive blocks on defensive work dropped** — secure coding, patching known vulnerabilities, incident response, containment, defensive configuration management.
+- **The mechanism is two-stage:** an activation probe screens all traffic and escalates flagged traffic to a trained LLM classifier that decides whether to block. Nothing here is a plan entitlement — it is model-level and applies wherever Opus 5 runs.
+
+**If a legitimate security team still hits blocks, there is a route that isn't a workaround: the Cyber Verification Program** `[H]`. Anthropic offers exemptions that remove cyber blocks for verified defensive activity — bug-bounty hunting, vulnerability research and verification — and states that **Enterprise customers can apply to have mitigations removed to enable penetration testing**. *Application mechanics, eligibility criteria, and turnaround are not stated in the card — verify with your Anthropic rep before planning a pentest engagement around it.* **Failure mode if you skip this:** a red team quietly adopts jailbreak-flavored prompting to get past a classifier, which is both against the Usage Policy and a governance finding waiting to happen — the sanctioned path exists precisely so that doesn't become the norm.
+
 ---
 
 ## 10. Choosing — what to turn on
@@ -296,6 +305,7 @@ Grades: `[H]` primary (Anthropic docs/blog) · `[M]` reputable secondary · `[?]
 - `[M]` [Claude Security product page](https://claude.com/product/claude-security) — adversarial verification, data-flow tracing, scheduled scans, webhook/export/dismissal surface (§7, vendor copy). Its FAQ says the plugin is available "for all Claude Code users," which conflicts with the docs' paid-plan gate; this artifact follows the docs.
 - `[M]` [@claudeai — plugin available in beta](https://x.com/claudeai/status/2079990597973057691) — the beta announcement; date inferred, no dated blog post located.
 - `[M]` [SecurityWeek](https://www.securityweek.com/anthropic-releases-new-claude-sandbox-security-guidance-plugin/) and [Help Net Security](https://www.helpnetsecurity.com/2026/05/27/anthropic-claude-code-security-guidance-plugin/) — the *guidance* plugin, 2026-05-26/27, and the 30–40% figure.
+- `[H]` [Claude Opus 5 System Card](https://www.anthropic.com/claude-opus-5-system-card) — 2026-07-24, §3.2 and §3.4: the two-stage cyber classifier, the source-code-vulnerability unblock, the compiled-binary block, and the Cyber Verification Program (§9).
 
 ---
 
