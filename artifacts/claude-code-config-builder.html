@@ -110,7 +110,7 @@
   <a class="home" href="../">Claude Platform Playbook</a>
   <header>
     <h1>Claude Code Managed-Controls Builder <span class="asof">As of 2026-07</span></h1>
-    <div class="sub">Answer five posture questions; get the deployable bundle for <em>your</em> delivery mechanism — <code>managed-settings.json</code>, the delivery wrapper, a managed <code>CLAUDE.md</code>, and a filled operator checklist. Every field is traceable to a section of <a href="claude-code-enterprise-config.html">claude-code-enterprise-config.md</a>; this tool composes that content, it doesn't add claims. Mechanics verified <code>[H]</code> against <a href="https://docs.claude.com/en/docs/claude-code/permissions">permissions</a> + <a href="https://docs.claude.com/en/docs/claude-code/sandboxing">sandboxing</a>, 2026-07-25.</div>
+    <div class="sub">Answer six posture questions; get the deployable bundle for <em>your</em> delivery mechanism — <code>managed-settings.json</code>, the delivery wrapper, a managed <code>CLAUDE.md</code>, and a filled operator checklist. Every field is traceable to a section of <a href="claude-code-enterprise-config.html">claude-code-enterprise-config.md</a>; this tool composes that content, it doesn't add claims. Mechanics verified <code>[H]</code> against <a href="https://docs.claude.com/en/docs/claude-code/permissions">permissions</a> + <a href="https://docs.claude.com/en/docs/claude-code/sandboxing">sandboxing</a>, 2026-07-25.</div>
   </header>
 
   <div class="thesis">
@@ -122,7 +122,7 @@
     <div>
       <div class="card">
         <h2><span class="n">1</span>Posture</h2>
-        <div class="lede">Five answers. Each expands to a field set, and shows what breaks if you skip it (§2 of the config guide).</div>
+        <div class="lede">Six answers. Each expands to a field set, and shows what breaks if you skip it (§2 of the config guide).</div>
 
         <div class="q" id="q-delivery">
           <label>Delivery mechanism</label>
@@ -211,6 +211,21 @@
           <div class="hint">Pre-approves Claude's own <code>WebFetch</code> tool for these domains; everything else still prompts. <b>Deliberately not derived from the egress list above</b> — subprocess network reach and "Claude may fetch this without asking" are two different trust decisions, and one field feeding both would grant a permission you didn't choose. Leave blank to emit no allow rules.</div>
           <input type="text" id="f-webfetch" placeholder="docs.karekal.internal, *.github.com">
         </div>
+        <div class="fld" id="fld-mcp" hidden>
+          <label>Allowed MCP servers <span style="color:var(--bad)">— required once MCP lockdown is on</span></label>
+          <div class="hint">Comma-separated server names. <b>This is the allowlist that <code>allowManagedMcpServersOnly</code> governs</b>, and leaving it unset is <em>not</em> the same as empty: unset means <b>all servers allowed</b>, so the lock flag alone restricts nothing. Enter <code>none</code> to emit an empty allowlist (admit zero servers).</div>
+          <input type="text" id="f-mcp" placeholder="github, sentry, internal-docs">
+        </div>
+        <div class="fld" id="fld-models" hidden>
+          <label>Allowed models <span style="color:var(--bad)">— required at Maximum</span></label>
+          <div class="hint">Comma-separated model IDs. <code>enforceAvailableModels</code> only extends the allowlist to the Default option <b>when <code>availableModels</code> is a non-empty array</b> — on its own it does nothing. Pin IDs from <a href="../docs/feature-inventory.html">feature-inventory.md</a> rather than aliases.</div>
+          <input type="text" id="f-models" placeholder="claude-opus-5, claude-sonnet-5, claude-haiku-4-5-20251001">
+        </div>
+        <div class="fld" id="fld-gateway" hidden>
+          <label>Gateway URL <span style="color:var(--bad)">— required for gateway login</span></label>
+          <div class="hint">Gateway sign-in is <em>selected</em> by <code>forceLoginMethod: "gateway"</code>, not restricted by it, and it does not authenticate against an Anthropic org — so <b><code>forceLoginOrgUUID</code> does not apply</b>. Restrict access at your gateway's identity provider, and set <code>forceLoginGatewayUrl</code> so the URL is filled in and locked.</div>
+          <input type="text" id="f-gateway" placeholder="https://claude-gateway.karekal.internal">
+        </div>
         <div class="fld" id="fld-excluded" hidden>
           <label>Sandbox <code>excludedCommands</code> <span style="color:var(--muted);font-weight:400">(empty by default — each entry runs UNSANDBOXED)</span></label>
           <div class="hint">Comma-separated. Previously this shipped <code>docker *</code> silently; it no longer does. Be aware <code>docker run -v /:/host</code> reaches the host filesystem just as <code>/var/run/docker.sock</code> does — an exemption here is the same class of hole as the socket the linter blocks.</div>
@@ -236,7 +251,7 @@
         <div id="actions"></div>
         <div class="note" style="margin-top:10px"><b>Also emitted, always, so you can review it here rather than discover it in the JSON:</b> <code>Bash(curl *)</code>, <code>Bash(wget *)</code>, <code>Bash(nc *)</code>, <code>Bash(ssh *)</code> are added to <code>deny</code>. That is the docs' own remedy for argument-constrained network rules being fragile — but an org-wide <code>ssh</code> deny surprises people, so it is stated up front. If your engineers need <code>ssh</code> from a Claude session, move it to the ask list by hand after export and record why.</div>
         <details class="adv">
-          <summary>Advanced — every remaining managed-settings field</summary>
+          <summary>Advanced — additional managed-settings fields (not the full set)</summary>
           <div class="body" id="advanced"></div>
         </details>
 
@@ -299,9 +314,9 @@ const OPTS = {
   provider: [
     { v:"api",      l:"Anthropic API",       fm:"" },
     { v:"claudeai", l:"claude.ai subscription", fm:"" },
-    { v:"bedrock",  l:"AWS Bedrock",         fm:"On a hyperscaler Claude Code emits <b>no</b> usage telemetry and there are no per-user spend limits — budget an LLM gateway <em>before</em> rollout if you need per-user cost control." },
-    { v:"vertex",   l:"GCP Vertex",          fm:"Same: no telemetry from your cloud. Also pin model versions — the <code>sonnet</code>/<code>opus</code> aliases follow a built-in default and fall back silently at startup." },
-    { v:"foundry",  l:"Azure AI Foundry",    fm:"Same: no telemetry from your cloud, and unpinned aliases drift model-to-model under you." }
+    { v:"bedrock",  l:"AWS Bedrock",         fm:"OTel metrics still flow — what's missing is <b>Claude-account identity</b>: with no Claude account in the session only <code>user.id</code> and <code>session.id</code> are populated, so attach identity yourself via <code>OTEL_RESOURCE_ATTRIBUTES</code> (per user, through managed settings or a launch wrapper). Console spend controls don't cover hyperscaler usage, so <b>per-user spend limits</b> are the real gateway rationale." },
+    { v:"vertex",   l:"GCP Vertex",          fm:"Same identity gap — set <code>OTEL_RESOURCE_ATTRIBUTES</code> yourself. Also pin model versions: the <code>sonnet</code>/<code>opus</code> aliases follow a built-in default and fall back silently at startup." },
+    { v:"foundry",  l:"Azure AI Foundry",    fm:"Same identity gap, and unpinned aliases drift model-to-model under you." }
   ],
   sandbox: [
     { v:"off",      l:"Off",                 fm:"<code>permissions.deny</code> is a <em>decision-layer</em> gate. With no sandbox, an <code>npm install</code> post-install script or a Python file handle reaches paths your deny rules never see." },
@@ -375,7 +390,9 @@ const KNOWN_TOOLS = ["Bash","Read","Edit","Write","WebFetch","WebSearch","Glob",
 
 const OS_PATHS = {
   server:   { path:"claude.ai admin console → Claude Code settings", fmt:"console" },
-  plist:    { path:"/Library/Managed Preferences/com.anthropic.claudecode.plist", fmt:"plist" },
+  // The doc names the com.anthropic.claudecode managed-preferences DOMAIN and says to deploy via
+  // configuration profiles; the concrete path below is the macOS convention, i.e. an inference.
+  plist:    { path:"com.anthropic.claudecode domain (conventionally /Library/Managed Preferences/…)", fmt:"plist" },
   registry: { path:"HKLM\\SOFTWARE\\Policies\\ClaudeCode → Settings", fmt:"reg" },
   file:     { path:"macOS /Library/Application Support/ClaudeCode/ · Linux+WSL /etc/claude-code/ · Windows C:\\Program Files\\ClaudeCode\\", fmt:"file" }
 };
@@ -402,7 +419,7 @@ const ADV = [
   { k:"allowUnixSockets", l:"sandbox.network.allowUnixSockets incl. docker.sock", on:false, why:"⚠ Allowing <code>/var/run/docker.sock</code> effectively grants <b>host access</b>. Nests under <code>network</code>, and is <b>macOS only</b> — on Linux/WSL2 it is ignored (the seccomp filter can't inspect socket paths; <code>allowAllUnixSockets</code> is the blunt equivalent)." },
   { k:"weakNested", l:"sandbox.enableWeakerNestedSandbox (Linux + WSL2)", on:false, why:"⚠ For unprivileged Docker environments. <b>Reduces security</b> — only where other isolation is enforced. Default false." },
   { k:"fsDisabled", l:"sandbox.filesystem.disabled (v2.1.216+)", on:false, why:"⚠ Network isolation only. <code>denyRead</code> and <code>credentials.files</code> stop applying; <code>credentials.envVars</code> keeps working." },
-  { k:"cleanup", l:"cleanupPeriodDays: 30", on:true, why:"Bounds local transcript retention on the machine." },
+  { k:"cleanup", l:"cleanupPeriodDays: 7 (tightened from the default)", on:false, why:"<b>30 is already the documented default</b>, so emitting 30 is a no-op dressed as a control. This emits <b>7</b> — an actual tightening of how long session files and application data persist locally (minimum 1)." },
   { k:"announce", l:"companyAnnouncements", on:true, why:"Without it the policy lives in a wiki nobody opens." }
 ];
 ADV.forEach(a => S.adv[a.k] = a.on);
@@ -417,7 +434,10 @@ function buildSettings(){
   const o = { "$schema":"https://json.schemastore.org/claude-code-settings.json" };
   const deny = [], ask = [], allow = [];
 
-  activeAssets().forEach(a => (a.paths||[]).forEach(p => deny.push(`Read(${p})`)));
+  // A Read deny also blocks Edit on the same path (v2.1.208+) — but NOT Write or NotebookEdit.
+  // Read-only denies therefore left Write able to create/overwrite ~/.ssh/**, .env, and *.pem.
+  // An explicit Edit deny is what covers every file-editing tool.
+  activeAssets().forEach(a => (a.paths||[]).forEach(p => { deny.push(`Read(${p})`); deny.push(`Edit(${p})`); }));
   NET_BINS.forEach(b => deny.push(`Bash(${b} *)`));
   ACTIONS.filter(a => S.actions[a.id]).forEach(a => ask.push(a.rule));
 
@@ -443,7 +463,13 @@ function buildSettings(){
 
   // Identity — omitted entirely when unsupplied. Never a placeholder string.
   if (S.loginMethod) o.forceLoginMethod = S.loginMethod;
-  if (val("f-uuid")) o.forceLoginOrgUUID = val("f-uuid");
+  // forceLoginOrgUUID does not apply to gateway sign-in (it doesn't authenticate against an
+  // Anthropic org), so emitting it there would imply a lock that isn't there.
+  if (S.loginMethod !== "gateway" && val("f-uuid")) o.forceLoginOrgUUID = val("f-uuid");
+  if (S.loginMethod === "gateway" && val("f-gateway")) o.forceLoginGatewayUrl = val("f-gateway");
+  // Server-managed delivery can be blocked until policy is freshly fetched, rather than falling
+  // back to cached or no settings. This is the "fail-closed startup mode" — it IS a settings key.
+  if (S.delivery === "server") o.forceRemoteSettingsRefresh = true;
 
   if (S.adv.disableBypassPermissionsMode) o.disableBypassPermissionsMode = "disable";
   if (S.adv.disableRemoteControl) o.disableRemoteControl = true;
@@ -474,10 +500,19 @@ function buildSettings(){
     }
     const extraDeny = listOf("f-extradeny");
     if (files.length || extraDeny.length) sb.filesystem = { denyRead: [...files.map(f => f.path), ...extraDeny] };
+    // Array sandbox keys MERGE across scopes, so a developer's own settings.json can append
+    // allowRead / allowedDomains entries and re-open what you just closed. These two managed-only
+    // keys are what make the hardened values actually authoritative.
+    if (S.sandbox === "hardened") {
+      sb.filesystem = Object.assign(sb.filesystem||{}, { allowManagedReadPathsOnly:true });
+      sb.network = Object.assign(sb.network||{}, { allowManagedDomainsOnly:true });
+    }
     if (S.adv.fsDisabled) sb.filesystem = Object.assign(sb.filesystem||{}, { disabled:true });
     if (S.sandbox === "hardened") {
       const dom = egressList().filter(d => d);
-      if (dom.length) sb.network = { allowedDomains: dom };
+      // MERGE, never replace: a bare assignment here silently dropped allowManagedDomainsOnly
+      // set just above, which is exactly the lock-flag-lost-to-an-overwrite class.
+      if (dom.length) sb.network = Object.assign(sb.network||{}, { allowedDomains: dom });
     }
     if (S.adv.allowAppleEvents) sb.allowAppleEvents = true;
     // network.allowUnixSockets — nested under network, NOT a direct sandbox child, and macOS only.
@@ -503,15 +538,27 @@ function buildSettings(){
   if (Object.keys(env).length) o.env = env;
 
   // Supply chain
+  // NEVER emit a lock flag without the allowlist it governs. Four separate findings
+  // (allowManagedMcpServersOnly, enforceAvailableModels, and the two sandbox allowManaged*Only
+  // keys) were one convention error: the flag shipped, the list it gates did not, and the
+  // operator got a green export whose gate was inert.
   if (S.lockdown !== "baseline") {
     const src = val("f-mkt-src"), repo = val("f-mkt-repo");
     if (src && repo) o.strictKnownMarketplaces = [{ source:src, repo:repo }];
-    o.allowManagedMcpServersOnly = true;
+    const mcp = mcpList();
+    if (mcp !== null) {
+      o.allowedMcpServers = mcp.map(n => ({ serverName:n }));
+      o.allowManagedMcpServersOnly = true;
+    }
   }
   if (S.lockdown === "maximum") {
     o.allowManagedHooksOnly = true;
     o.strictPluginOnlyCustomization = true;
-    o.enforceAvailableModels = true;
+    const models = listOf("f-models");
+    if (models.length) { o.availableModels = models; o.enforceAvailableModels = true; }
+    // Without this, --plugin-dir / --plugin-url / --agents / --mcp-config on the CLI bypass
+    // strictKnownMarketplaces for a single run, which undoes the whole marketplace allowlist.
+    o.disableSideloadFlags = true;
   }
 
   // Cloud routing
@@ -524,7 +571,7 @@ function buildSettings(){
     if (S.provider === "foundry") o.env.CLAUDE_CODE_USE_FOUNDRY = "1";
   }
 
-  if (S.adv.cleanup) o.cleanupPeriodDays = 30;
+  if (S.adv.cleanup) o.cleanupPeriodDays = 7;
   if (S.adv.announce) {
     const org = val("f-org") || "Your org";
     o.companyAnnouncements = [
@@ -536,6 +583,14 @@ function buildSettings(){
 }
 
 function listOf(id){ return val(id).split(",").map(s => s.trim()).filter(Boolean); }
+/* null = operator hasn't supplied a list, so no lock flag may be emitted.
+   [] = deliberate empty allowlist (admit zero), which is NOT the same as unset. */
+function mcpList(){
+  const raw = val("f-mcp");
+  if (!raw) return null;
+  if (/^none$/i.test(raw)) return [];
+  return listOf("f-mcp");
+}
 function egressList(){ return listOf("f-egress"); }
 function webfetchList(){ return listOf("f-webfetch"); }
 
@@ -643,7 +698,11 @@ function lint(o){
 
   // 7. a widening on one side undoing the restriction on the other
   if (o.sandbox) {
-    if (o.sandbox.filesystem && o.sandbox.filesystem.disabled &&
+    const scrubOn = !!(o.env && o.env.CLAUDE_CODE_SUBPROCESS_ENV_SCRUB);
+    if (o.sandbox.filesystem && o.sandbox.filesystem.disabled && scrubOn)
+      add("warn", "<code>filesystem.disabled</code> is set but <b>does nothing</b> — with <code>CLAUDE_CODE_SUBPROCESS_ENV_SCRUB</code> set, Claude Code ignores it from every source, including managed settings, and keeps filesystem isolation on.",
+        "Not a hole, just an inert key. Remove it to avoid implying the layer is off, or unset the scrub if you genuinely want the filesystem layer disabled.");
+    else if (o.sandbox.filesystem && o.sandbox.filesystem.disabled &&
         ((o.sandbox.credentials && o.sandbox.credentials.files) || (o.sandbox.filesystem.denyRead||[]).length))
       add("block", "<code>filesystem.disabled</code> is set while credential <b>file</b> protections are configured — those stop applying.",
         "The filesystem layer enforces denyRead and credentials.files. Only credentials.envVars survives, because env scrubbing is independent of the filesystem layer.");
@@ -678,20 +737,38 @@ function lint(o){
         : "Read/Edit deny rules never reach arbitrary subprocess I/O. Enable the sandbox, or tick the decision-layer-only acknowledgment under Sandbox posture to proceed deliberately.");
   } else {
     const envAssets = activeAssets().filter(a => (a.envVars||[]).length);
-    const covered = !!(o.sandbox && o.sandbox.credentials && o.sandbox.credentials.envVars) || !!S.adv.envScrub;
+    // The env scrub does NOT count here: it strips Anthropic and cloud-provider credentials
+    // only, and every asset in this list (GITHUB_TOKEN, NPM_TOKEN, …) is neither.
+    const covered = !!(o.sandbox && o.sandbox.credentials && (o.sandbox.credentials.envVars||[]).length);
     if (envAssets.length && !covered) add("block",
       "Environment-variable credentials are ticked but nothing unsets them for sandboxed commands.",
-      "Sandboxed Bash inherits the parent environment including credentials. Use sandbox.credentials.envVars or CLAUDE_CODE_SUBPROCESS_ENV_SCRUB.");
+      "Sandboxed Bash inherits the parent environment including credentials. Use sandbox.credentials.envVars — CLAUDE_CODE_SUBPROCESS_ENV_SCRUB does NOT cover these, it strips only Anthropic and cloud-provider credentials.");
   }
 
   /* ------- required-value blockers (fail-closed export gate) ------- */
+  /* ------- check 10: a lock flag with no allowlist behind it (the recurring convention error) ------- */
+  const LOCKS = [
+    ["allowManagedMcpServersOnly","allowedMcpServers","Unset means <b>all servers allowed</b> — not none. The flag alone restricts nothing."],
+    ["enforceAvailableModels","availableModels","Documented as having no effect when <code>availableModels</code> is unset or empty."]
+  ];
+  LOCKS.forEach(([flag, list, why]) => {
+    if (o[flag] && !(Array.isArray(o[list]) ? true : o[list]))
+      add("block", `<code>${flag}</code> is set with no <code>${list}</code> — the gate is inert.`, why);
+  });
+
   const req = [];
   // Strict UUID shape. The old /^[0-9a-fA-F-]{8,}$/ accepted "deadbeef" and "--------" while
   // the page promises a malformed value blocks every login — so the operator inferred a check
   // that wasn't happening. Validating PRESENCE is not validating VALIDITY.
   const UUID_RE = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
-  if (!val("f-uuid")) req.push(["Organization UUID", "forceLoginOrgUUID is omitted, so nothing stops an engineer signing into a personal account and taking work with them."]);
+  // Gateway sign-in doesn't authenticate against an Anthropic org, so the UUID is irrelevant
+  // there — demanding it was a blocking gate asking for a documented-inert value.
+  if (S.loginMethod === "gateway") {
+    if (!val("f-gateway")) req.push(["Gateway URL", "forceLoginGatewayUrl is omitted, so the gateway URL is neither pre-filled nor locked. Restrict who can reach it at your gateway's identity provider — forceLoginOrgUUID does not apply to gateway sign-in."]);
+  } else if (!val("f-uuid")) req.push(["Organization UUID", "forceLoginOrgUUID is omitted, so nothing stops an engineer signing into a personal account and taking work with them."]);
   else if (!UUID_RE.test(val("f-uuid"))) req.push(["Organization UUID is not a valid UUID", "Expected 8-4-4-4-12 hex (e.g. 3f2c1a8e-5b7d-4e9f-8a10-2c4d6e8f0a12). A malformed value fails closed and blocks EVERY login on the fleet — a truncated paste is the usual cause."]);
+  if (S.lockdown !== "baseline" && mcpList() === null) req.push(["Allowed MCP servers", "Without it the MCP lock flag is omitted entirely — because emitting the flag with no allowlist would mean 'all servers allowed', the opposite of the lockdown you selected. Enter 'none' for a zero-server allowlist."]);
+  if (S.lockdown === "maximum" && !listOf("f-models").length) req.push(["Allowed models", "enforceAvailableModels has no effect without a non-empty availableModels array, so model restriction would be silently absent at your strictest tier."]);
   if (S.telemetry !== "off" && !val("f-otlp")) req.push(["OTLP endpoint", "Telemetry is enabled with nowhere to send it — the exporter is configured and silently drops."]);
   else if (S.telemetry !== "off" && !/^https?:\/\/[^\s]+$/i.test(val("f-otlp"))) req.push(["OTLP endpoint is not a URL", "Expected http(s)://host:port. An unparseable endpoint drops telemetry silently."]);
   if (S.sandbox === "hardened" && sandboxRunsHere() && !egressList().length) req.push(["Sandbox egress allowlist", "A hardened sandbox with an empty allowedDomains admits nothing — every package install breaks."]);
@@ -709,6 +786,13 @@ function lint(o){
   // OS scope, not delivery mechanism, is what determines whether the sandbox runs. Keying this
   // off delivery missed it for server-managed, file, and plist — 3 of the 4 mechanisms, and the
   // common ones. A Windows-inclusive fleet must never see a green sandbox column.
+  // Server-managed settings reach only accounts ALREADY authenticated into the org, so they
+  // cannot redirect a developer's FIRST login — which is exactly what the identity lock is for.
+  // The documented answer is to set the identity keys in both places, so this is a warn with an
+  // instruction, not a block: the config is right, the delivery of two keys needs a second path.
+  if (S.delivery === "server" && (o.forceLoginOrgUUID || o.forceLoginMethod)) add("warn",
+    "Server-managed delivery <b>cannot gate a first login</b> — it reaches only accounts already authenticated into your organization. Your identity lock will not stop a developer's initial sign-in to a personal account.",
+    "Documented fix: deploy forceLoginMethod + forceLoginOrgUUID through device management (MDM/file) AS WELL. These are the one exception to one-source-wins — set them in both places, and note that cached server-managed settings replace the device-managed file entirely. Switch delivery to plist/registry/file to generate that second artifact.");
   if (S.sandbox !== "off" && S.osScope === "mixed") add("warn",
     "Mixed fleet with the sandbox enabled — <b>the sandbox does not exist on native Windows</b> (macOS / Linux / WSL2 only), so it is inert on the Windows share of these machines.",
     "The sandbox block deploys and does nothing there. The coverage matrix marks those cells partial for this reason. Either split the policy by platform, standardise developers onto WSL2, or compensate outside Claude Code on the Windows machines.");
@@ -744,11 +828,14 @@ function wrap(o){
   if (fmt === "reg") {
     const escaped = JSON.stringify(o).replace(/\\/g,"\\\\").replace(/"/g,'\\"');
     return "Windows Registry Editor Version 5.00\n\n" +
-      "; Group Policy / Intune. The whole settings document goes in one REG_SZ value.\n" +
-      "; NOTE: the value type and escaping below are this tool's reading of a doc that names the\n" +
-      "; key path but not the encoding. VERIFY against the settings doc before a fleet push —\n" +
-      "; a malformed managed file fails closed and can lock out every machine.\n" +
-      "; The legacy C:\\ProgramData\\ClaudeCode\\ path was removed in v2.1.75.\n\n" +
+      "; Group Policy / Intune. The documented shape is a `Settings` value of type REG_SZ or\n" +
+      "; REG_EXPAND_SZ containing the JSON document; \" and \\ are escaped below accordingly.\n" +
+      "; Also documented: HKCU\\SOFTWARE\\Policies\\ClaudeCode is a user-level fallback at the\n" +
+      "; LOWEST policy priority, used only when no admin-level source exists — a user can plant\n" +
+      "; one, so confirm an HKLM source is present rather than assuming HKCU is unreachable.\n" +
+      "; The legacy C:\\ProgramData\\ClaudeCode\\ path was removed in v2.1.75.\n" +
+      "; Note: this file is written UTF-8. Regedit expects UTF-16LE for Version 5.00, which is\n" +
+      "; fine for ASCII content — re-save as UTF-16LE if your org name carries non-ASCII text.\n\n" +
       "[HKEY_LOCAL_MACHINE\\SOFTWARE\\Policies\\ClaudeCode]\n" +
       '"Settings"="' + escaped + '"\n';
   }
@@ -762,8 +849,15 @@ function wrap(o){
       "# 4. Confirm on a target machine with /status — Setting sources should name\n" +
       "#    'Enterprise managed settings (remote)' and the managed values must be un-editable.\n" +
       "#\n" +
-      "# Do NOT also drop a managed-settings.json on disk: within the managed tier exactly one\n" +
-      "# source wins, and a stray file is silently ignored rather than merged.\n\n" +
+      "# ONE DELIBERATE EXCEPTION to one-source-wins — the identity keys.\n" +
+      "# Server-managed settings reach only accounts ALREADY authenticated into your org, so they\n" +
+      "# cannot redirect a developer's FIRST login. Deploy forceLoginMethod + forceLoginOrgUUID\n" +
+      "# through device management (MDM plist / HKLM registry / file) AS WELL as here. Note that\n" +
+      "# cached server-managed settings replace the device-managed file entirely, so set the keys\n" +
+      "# in BOTH places rather than relying on a merge.\n" +
+      "#\n" +
+      "# Everything else: do NOT also drop a managed-settings.json on disk. Within the managed\n" +
+      "# tier exactly one source wins, and a stray file is silently ignored rather than merged.\n\n" +
       json + "\n";
   }
   // File delivery emits CLEAN JSON, deliberately. It used to prepend // path comments, which
@@ -901,7 +995,9 @@ function checklist(o, findings){
   if (S.delivery === "file")
     L.push("- [ ] Place `managed-settings.json` at the correct per-OS path — **macOS** `/Library/Application Support/ClaudeCode/` · **Linux / WSL** `/etc/claude-code/` · **Windows** `C:\\Program Files\\ClaudeCode\\`. The JSON tab's output is deploy-ready as-is; it carries no comments, because a managed file must be strict JSON.");
   if (S.delivery === "server")
-    L.push("- [ ] Enable the **fail-closed startup mode** so a machine that can't fetch policy refuses to run unmanaged. It is an option in the claude.ai admin console's Claude Code settings alongside the managed-settings field — **confirm the exact control name there**; this tool does not have a settings key for it.");
+    L.push("- [ ] Enable the **fail-closed startup mode** so a machine that can't fetch policy refuses to run unmanaged. It is an option in the claude.ai admin console's Claude Code settings alongside the managed-settings field.");
+  if (S.delivery === "server")
+    L.push("- [ ] Fail-closed startup **is a settings key, and this bundle emits it**: `forceRemoteSettingsRefresh: true` blocks CLI startup until remote managed settings are freshly fetched, exiting rather than continuing with cached or no settings. Confirm on a canary that startup still succeeds on your network first — this is the key most likely to strand a machine behind a flaky proxy.");
 
   L.push("", "## Rollback — decide this BEFORE you push, not during", "",
     "- [ ] Write down how to **remove or replace the managed file on a machine that can no longer start Claude Code**, for your mechanism specifically. Managed security fields fail closed, so the failure mode you are planning for is *the tool won't launch*, which means you cannot fix it from inside the tool.",
@@ -915,7 +1011,8 @@ function checklist(o, findings){
   L.push("", "## Identity", "",
     "- [ ] Confirm the org UUID against your Claude Console / Enterprise admin settings.",
     "- [ ] Set the Console default role for new invites to **Claude Code**, not Developer (Developer can mint any API key).",
-    "- [ ] **Open item, verify with Anthropic:** `forceLoginMethod`'s documented block-list names `ANTHROPIC_API_KEY`, `ANTHROPIC_AUTH_TOKEN`, and `apiKeyHelper` — but **not** `CLAUDE_CODE_OAUTH_TOKEN`. Whether it stops a `claude setup-token` session is undocumented. Don't rely on it; control the subscription instead (SCIM group → seat tier), and give CI a non-human credential.");
+    "- [ ] **Know the `setup-token` gap — it is documented, not open.** `claude setup-token` (and `/install-github-app`) enforce **only `forceLoginMethod`**, not `forceLoginOrgUUID`, so a seat-holder can mint a one-year CI token **in a different organization**. From v2.1.212 every first-party login path enforces `forceLoginMethod` (VS Code extension, Agent SDK, `setup-token`, `/install-github-app`); before that, terminal logins only.",
+    "- [ ] Therefore control the **seat**, not the flag: provision Team/Enterprise seats via SCIM group-mapping only to humans who need the product, and give CI a **non-human credential** (Workload Identity Federation service account, or a Console Claude Code key) so automation never authenticates as a person.");
 
   if (["bedrock","vertex","foundry"].includes(S.provider))
     L.push("", "## Cloud routing", "",
@@ -982,7 +1079,7 @@ function renderCov(o){
   act.forEach(a => {
     const hasPath = (a.paths||[]).length, hasEnv = (a.envVars||[]).length;
     const sbCovered = !fsOff && (a.sandboxPaths||[]).some(p => denyRead.includes(p) || credFiles.includes(p));
-    const envCovered = (a.envVars||[]).length ? ((a.envVars||[]).every(v => credEnv.includes(v)) || !!S.adv.envScrub) : null;
+    const envCovered = (a.envVars||[]).length ? (a.envVars||[]).every(v => credEnv.includes(v)) : null;
     // A sandbox-dependent cell can NEVER read as fully covered on a fleet where the sandbox
     // doesn't run. On native Windows it is a gap; on a mixed fleet it is partial.
     const sbCell = (verdict, label) => {
@@ -1001,8 +1098,10 @@ function renderCov(o){
     else c.push(sbCell(sbCovered ? "y" : "n", sbCovered ? "denyRead + credentials.files" : "GAP — no sandbox path"));
     if (S.sandbox === "off") c.push(["n","GAP — no egress control"]);
     else c.push(sbCell(egress ? "y" : "n", egress ? "allowedDomains" : "GAP — no allowlist"));
+    // CLAUDE_CODE_SUBPROCESS_ENV_SCRUB strips ANTHROPIC AND CLOUD-PROVIDER credentials only.
+    // GITHUB_TOKEN / NPM_TOKEN / PYPI_TOKEN / CARGO_REGISTRY_TOKEN are neither, so the scrub
+    // must not count as coverage for them — it was printing a green cell for an untouched var.
     if (envCovered === null) c.push(["na","n/a"]);
-    else if (envCovered && S.adv.envScrub) c.push(["y", credEnv.length ? "credentials.envVars + env scrub" : "env scrub"]);
     else if (envCovered) c.push(sbCell("y","credentials.envVars"));
     else c.push(["n","GAP — inherited by subprocesses"]);
     h += `<tr><td><b>${esc(a.l)}</b></td>` + c.map(([k,t]) => `<td class="${k}">${esc(t)}</td>`).join("") + "</tr>";
@@ -1046,6 +1145,10 @@ function render(){
   document.getElementById("fld-otlp").hidden = (S.telemetry === "off");
   document.getElementById("fld-egress").hidden = (S.sandbox !== "hardened" || !sandboxRunsHere());
   document.getElementById("fld-excluded").hidden = (S.sandbox !== "hardened" || !sandboxRunsHere());
+  document.getElementById("fld-mcp").hidden = (S.lockdown === "baseline");
+  document.getElementById("fld-models").hidden = (S.lockdown !== "maximum");
+  document.getElementById("fld-gateway").hidden = (S.loginMethod !== "gateway");
+  document.getElementById("f-uuid").closest(".fld").hidden = (S.loginMethod === "gateway");
   document.getElementById("fld-extradeny").hidden = (S.sandbox === "off" || !sandboxRunsHere());
   // The acknowledgment only appears when a decision-layer-only posture is actually in play.
   const ackRow = document.getElementById("ack-row");
