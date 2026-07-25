@@ -100,19 +100,21 @@ The current readout in the shape above. **This section expires; replace it whole
 
 ---
 
-## 5. What to do with the readout — six actions, six owners
+## 5. What to do with the readout — seven actions, seven owners
 
-A readout that ends in "noted" was not worth writing. Each row below is a decision the card should trigger within two weeks of a release.
+A readout that ends in "noted" was not worth writing. Each row below is a decision the card should trigger within two weeks of a release. **A1 is the gating one** — it is the action nobody is usually assigned, and without it none of the rest fire.
 
 | Action | Owner | Trigger to act | Failure mode if skipped |
 |---|---|---|---|
-| **0. Read the card and produce this readout.** Someone has to, or none of the rows below ever fire. | Whoever owns the model-version pin — AI platform / architecture | Within two weeks of adopting a model | The release passes as a docs-only change and every action below silently doesn't happen. |
-| **Record the protection tier and determination** against the model version in your risk register, and give it to whoever maintains your conformity file. | Risk / compliance | Every release you adopt | Your conformity file cites a posture established for a model you no longer run. |
-| **Re-read the safeguard policy delta** and tell the affected team. A newly-unblocked capability is an enablement message; a newly-blocked one is an incident waiting to be reported as an outage. | Security engineering | Any change to what the model is permitted to help with | An AppSec team quietly works around a classifier, or a team never learns a block was lifted. |
-| **Brief the capability delta** — what the model can now do that a misuser could exploit, and what that implies for your monitoring. | CISO | Any release with a material capability jump | The security org learns the capability curve moved from an incident rather than from a release note. |
-| **Re-check the agentic surfaces** against the new robustness numbers, then **confirm the vendor safeguard layers are actually on**. Start from [`governance-overlay.md`](governance-overlay.md) §14 for which layers exist per surface; **if you cannot determine the state from your admin surface, that gap is the finding** — record it rather than assuming on. | Security architect | Any release, before broadening agent scope | You inherit a control statement you never verified was on. |
-| **Hold the verification standard** — brief managers that accuracy gains do not license less checking, and cite the hallucination delta. | Enablement / people lead | Any release where the honesty profile moved | Rubber-stamping spreads exactly when the errors get harder to spot. |
-| **Re-run your own evals** on the workloads where a re-tiering or spend decision depends on capability — and check whether the capability delta holds on your data at all. | Platform / eng lead | Before re-tiering, always | You re-tier on the vendor's harness and discover the delta doesn't hold on your data. |
+| # | Action | Owner | Trigger to act | Failure mode if skipped |
+|---|---|---|---|---|
+| **A1** | **Read the card and produce this readout.** Someone has to, or none of the rows below ever fire. | Whoever owns the model-version pin — AI platform / architecture | Within two weeks of adopting a model | The release passes as a docs-only change and every action below silently doesn't happen. |
+| **A2** | **Record the protection tier and determination** against the model version in your risk register, and give it to whoever maintains your conformity file. | Risk / compliance | Every release you adopt | Your conformity file cites a posture established for a model you no longer run. |
+| **A3** | **Re-read the safeguard policy delta** and tell the affected team. A newly-unblocked capability is an enablement message; a newly-blocked one is an incident waiting to be reported as an outage. | Security engineering | Any change to what the model is permitted to help with | An AppSec team quietly works around a classifier, or a team never learns a block was lifted. |
+| **A4** | **Brief the capability delta** — what the model can now do that a misuser could exploit, and what that implies for your monitoring. | CISO | Any release with a material capability jump | The security org learns the capability curve moved from an incident rather than from a release note. |
+| **A5** | **Re-check the agentic surfaces** against the new robustness numbers, then **confirm the vendor safeguard layers are actually on**. Start from [`governance-overlay.md`](governance-overlay.md) §14 for which layers exist per surface; **if you cannot determine the state from your admin surface, that gap is the finding** — record it rather than assuming on. | Security architect | Any release, before broadening agent scope | You inherit a control statement you never verified was on. |
+| **A6** | **Hold the verification standard** — brief managers that accuracy gains do not license less checking, and cite the hallucination delta. | Enablement / people lead | Any release where the honesty profile moved | Rubber-stamping spreads exactly when the errors get harder to spot. |
+| **A7** | **Re-run your own evals** on the workloads where a re-tiering or spend decision depends on capability — and check whether the capability delta holds on your data at all. | Platform / eng lead | Before re-tiering, always | You re-tier on the vendor's harness and discover the delta doesn't hold on your data. |
 
 **Cadence.** Read the card within two weeks of adopting a model, not at release — you want the version you actually run. Re-read the RSP determination whenever you re-tier. Everything else can wait for the monthly refresh.
 
