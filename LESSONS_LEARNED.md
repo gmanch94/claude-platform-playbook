@@ -74,6 +74,27 @@ The as-of stamp is **load-bearing** on `cost-calculator.html` — readers commit
 
 ## Repo-specific lessons
 
+### 2026-07-25 — a freshness stamp on the container hides the staleness of its contents
+
+A `/stale-check` run reported `feature-inventory.md` Last-verified **2026-07-24** — one day old, comfortably inside the 14-day product-surface window. Three of the five product-surface rows were sitting at as-of **2026-06**, and one of them was factually wrong.
+
+**Why the check couldn't see it.** A refresh that verifies *some* rows still bumps the **file-level** stamp. From then on the file looks fresh and the skipped rows are invisible — the stamp certifies the container, not the contents. The 14-day window was doing nothing, because it was measuring the wrong thing.
+
+- **Fix:** compare **each row's own as-of**, never the file-level date. Anchored in `/stale-check` step 5 with the precedent.
+- **Generalizes past this repo:** any per-item table under a document-level freshness stamp has this hole — a partial refresh is indistinguishable from a complete one. The item-level timestamp is the only honest signal, and the aggregate stamp actively conceals its absence.
+
+**What the stale row was hiding.** Claude Design was logged as **Team / Enterprise**; the admin guide says it is **"available in beta to Pro, Max, Team, and Enterprise plans,"** default off on Enterprise only. Wrong in the **permissive** direction: the surface reaches individual paid seats with no org gate, while the plan most likely to want it gated is the one where it ships off. It had propagated to five artifacts.
+
+- **Root cause of the wrong gate: I read the article's *title* as its plan gate.** "Claude Design admin guide **for Team and Enterprise plans**" scopes the *admin instructions*; the availability sentence sits in the body and says something broader. **A title is not an availability statement** — find the sentence that says *available to*.
+- Same shape as the negative-claim rule already in `~/.claude/rules/artifact-quality.md`: a plausible-looking artifact of the *source's structure* got mistaken for the source's *claim*.
+
+**Two smaller catches from the same run,** both worth noting because neither is the kind of thing a stamp or count guard sees:
+
+- A permission **label** was wrong — `can-use` / `can-edit` where the UI says **`Can view` / `Can edit`** — and had propagated into an SVG diagram. Labels are what an admin searches the UI for; a wrong one costs real minutes.
+- A doc URL 404'd (`agents-and-tools/code-execution` → `agents-and-tools/tool-use/code-execution-tool`). URL health is the one class the spot-check *does* catch — it just has to be run.
+
+**And a false lead worth recording, because it nearly became a fix.** Before correcting Claude Design I "fixed" its `surf prod` badge from *Enterprise product* to *Paid-plan product* in `enterprise-data-boundaries.html` — then found Chat, Projects, and Artifacts carry the identical badge and are also on Pro/Max. The badge is a **category** (product surface vs API vs procurement), not a plan gate. Reverted both edits; the plan-gate fact went in the prose instead. **Before "correcting" a label, check what its siblings use it to mean** — a taxonomy read as a claim produces a confident wrong edit, and this one would have made the page inconsistent while feeling like a fix.
+
 ### 2026-07-25 — the comparison, not the number: quoting two measurements taken under different conditions
 
 The Opus 5 system-card sweep landed a browser-use prompt-injection row reading **"31.5% → 0%"** across three files. Both numbers were transcribed correctly from the card. The *comparison* was wrong: 31.5% is Opus 4.8 **unsafeguarded**, 0-of-129 is Opus 5 **with connector auto mode on**. The card publishes the missing cell one column over — **Opus 4.8 with the same safeguard was already at 0.08% (1 of 129)**. The generational delta lives almost entirely in the unsafeguarded condition (31.5% → 3.70%). Caught by a blind factual reviewer; I had shipped it twice, and an advisor pass over the same diff hadn't flagged it either.
