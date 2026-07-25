@@ -110,6 +110,28 @@ Three related traps from the same pass:
 
 **Assert expected keys positively.** `JSON.parse` succeeding and "no placeholders present" both pass on `{}`. Every one of the above was caught by an assertion of the form *this key must exist with this value in this combination* — never by reading the code.
 
+### 2026-07-25 — the drift a guard can't see, found by a question instead
+
+One user question — *are we protecting critical IP ranges, internal and external?* — surfaced three defects in an artifact that had shipped clean the same day through a blind review, a doc-verify pass, a 27-combination browser probe, and a green count guard. None of those could have found any of them, and the reason each was invisible is the lesson:
+
+- **A parent field the child never rendered.** `network.deniedDomains` sat in the parent artifact's template *and* its prose; the generator downstream of it had no field for it. This is exactly the builder-vs-parent drift the coupling contract in `scope.md` says **no guard catches** — and the contract was right, which is worse than it sounds: writing "no guard catches this" and then relying on the guards is not a mitigation. **A named unguarded gap needs a periodic manual diff, or it is just a documented hope.**
+- **A green cell that overstated the control.** The coverage matrix marked egress covered whenever an allowlist existed — but without the managed lock flag the sandbox *prompts* and a developer approves the host, and even when it blocks, the proxy never inspects TLS (a documented domain-fronting path). **Every cell in a coverage matrix needs its states enumerated before its logic is written.** "Covered / not covered" was the bug; the honest axis was blocked / prompted / absent, and it was cheap to add only because the question forced it.
+- **A question the platform cannot answer at all.** There is no IP/CIDR primitive; the fields are hostname patterns. The right output is not silence and not a guess — it is the searched terms plus where the capability *does* live (the proxy layer), so the reader stops looking in the wrong file.
+
+**The nesting class recurred, and that makes it a rule.** A new linter check read `o.enableWeakerNetworkIsolation`; the key nests **inside** the sandbox block, so the check would have been permanently silent — the second instance in one artifact of the same shape as the earlier `sandbox.allowUnixSockets` / `sandbox.network.allowUnixSockets` defect. Two instances of one class is a convention problem: **confirm every new config key's nesting against the settings table's own key name, never from the prose describing it** — and a silent check is indistinguishable from a passing one, so plant a defect and watch it fire.
+
+**The usability reviewer then found five HIGH defects in the fix itself**, and the pattern across them is worth more than any one:
+
+- **A validator that accepts the exact input the change existed to reject.** The hostname regex accepts all-digit labels, so `169.254.169.254` passed and was emitted — while the field hint said the docs don't state whether a bare IP matches, and the checklist then certified the entry as the one nothing can override. **An entry that might be inert must never read as a denial.** The shape check was written for typos and reused as a semantic gate.
+- **The overstatement moved down a level instead of leaving.** The matrix stopped granting green for an allowlist and started granting it for a *proxy port number* — which the page cannot verify is listening, terminating TLS, or trusted. **A field the tool cannot verify must not upgrade a coverage cell**; it earns a checklist row instead.
+- **A guard inverted in the same commit that fixed an inverted guard.** A new check's macOS warning was gated `osScope !== "unix"`, but `unix` is labelled "macOS / Linux / WSL2" — so it was silent exactly where macOS lives and fired on Windows, where the sandbox doesn't exist. Fixing one instance of a class does not inoculate the next line you write.
+- **Advice text was HTML-escaped**, printing every `<code>` and `<b>` in a reason as literal markup — the field names in the most important sentence were the least readable part of it. Pre-existing, and the new reasons multiplied it.
+- **A hard block whose reason names a remedy the tool doesn't offer** reads as a bug. Either offer the exit or name the narrower configuration; here it became "put that one binary in `excludedCommands` instead."
+
+**Probe hygiene, learned the hard way:** three of that round's re-verifications came back false because my probe *toggled* checkboxes rather than setting them absolutely, leaking state between assertions. **Force state, don't flip it** — and when an assertion fails, print the page's own text before believing the failure. Two of the three "failures" were my regex (`prompts` vs `prompt`) and one was a blocker from a different, correct check.
+
+**Encoded, not just noted:** `check-counts.mjs` gained a **cross-file counted-claims** section (a count stated in one file, implemented in another). It caught two live drifts on its first run — three docs said "9-check linter" against 10 implemented checks, and "five posture questions" against six. The existing in-prose guard couldn't see either, because the sentence and the thing it counts live in **different files**. Same class as the in-prose lesson below, one file-boundary further out.
+
 ### 2026-07-25 — a freshness stamp on the container hides the staleness of its contents
 
 A `/stale-check` run reported `feature-inventory.md` Last-verified **2026-07-24** — one day old, comfortably inside the 14-day product-surface window. Three of the five product-surface rows were sitting at as-of **2026-06**, and one of them was factually wrong.

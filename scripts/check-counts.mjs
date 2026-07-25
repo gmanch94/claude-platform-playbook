@@ -70,6 +70,25 @@ const prose = [
   ['artifacts/system-card-readout.md', /—\s*(\w+) actions, \w+ owners/,           /^\|\s*\*\*A\d+\*\*\s*\|/gm, '§5 actions'],
 ];
 
+// --- cross-file counted claims (a count stated in one file, implemented in another) ---
+// Precedent 2026-07-25: three docs described the config builder's linter as "9-check"
+// while the file implemented 10, and as "5 posture questions" while it asked 6 — both
+// drifted when the code grew, and neither section above can see it, because the stated
+// count and the counted thing live in DIFFERENT files (prose in .md, rows in .html).
+// This is the same class as the in-prose guard, one file-boundary further out.
+// To extend: [statedFile, statedRe (capture group 1 = the number or number-word),
+//             countedFile, rowRe (global), label].
+// KNOWN LIMIT: the linter rows are counted by their `// N. ` comment marker, so a check
+// added WITHOUT that comment convention leaves this green. The convention is therefore
+// load-bearing — number every new check's comment, or this guard silently under-counts.
+const crossFile = [
+  ['CLAUDE.md',     /(\w+)-check rule linter/,        'artifacts/claude-code-config-builder.html', /^\s*\/\/ \d+\. /gm,        'builder linter checks (CLAUDE.md)'],
+  ['README.md',     /A \*\*(\w+)-check rule linter/,  'artifacts/claude-code-config-builder.html', /^\s*\/\/ \d+\. /gm,        'builder linter checks (README)'],
+  ['CLAUDE.md',     /(\w+) posture questions \(deliv/, 'artifacts/claude-code-config-builder.html', /class="q" id="q-/g,        'builder posture questions (CLAUDE.md)'],
+  ['README.md',     /from (\w+) posture answers \(deliv/, 'artifacts/claude-code-config-builder.html', /class="q" id="q-/g,     'builder posture questions (README)'],
+  ['docs/scope.md', /\*\*(\w+) posture questions \+ an advanced drawer\*\*/, 'artifacts/claude-code-config-builder.html', /class="q" id="q-/g, 'builder posture questions (scope)'],
+];
+
 // --- malformed markdown tables (structure, not counts) ---
 // Precedent 2026-07-25: an edit inserted a new 5-column header above the rows but
 // left the original 4-column header in place. GitHub/kramdown renders the second
@@ -130,6 +149,13 @@ const proseResults = prose.map(([file, statedRe, rowRe, label]) => {
   return { file, label, stated, actual };
 });
 
+const crossResults = crossFile.map(([sFile, sRe, cFile, rowRe, label]) => {
+  const m = read(sFile).match(sRe);
+  const stated = m ? toNum(m[1]) : null;
+  const actual = (read(cFile).match(rowRe) || []).length;
+  return { file: sFile, label, stated, actual };
+});
+
 // --- report ---
 console.log(`Ground truth: artifacts/ holds ${N} files (.md + .html)\n`);
 let failed = false;
@@ -164,6 +190,21 @@ for (const r of proseResults) {
   if (!ok) proseFailed = true;
   console.log(
     `  ${ok ? 'OK      ' : 'MISMATCH'} ${r.label}: says ${r.stated}, has ${r.actual} row(s)` +
+    `${ok ? '' : `  → fix ${r.file}`}`,
+  );
+}
+
+console.log('\nCross-file counted claims (a count stated in one file, implemented in another):');
+for (const r of crossResults) {
+  if (r.stated === null) {
+    console.log(`  ??       ${r.label}: PATTERN NOT FOUND — the sentence was reworded; re-point this regex`);
+    proseFailed = true;
+    continue;
+  }
+  const ok = r.stated === r.actual;
+  if (!ok) proseFailed = true;
+  console.log(
+    `  ${ok ? 'OK      ' : 'MISMATCH'} ${r.label}: says ${r.stated}, file has ${r.actual}` +
     `${ok ? '' : `  → fix ${r.file}`}`,
   );
 }
