@@ -10,7 +10,7 @@
 
 ## Standing preparation (before any notice exists)
 
-You cannot run this runbook well from a cold start. Four things must already be true:
+You cannot run this runbook well from a cold start. Five things must already be true:
 
 | Prep item | Why | Where it's specified |
 |---|---|---|
@@ -18,6 +18,7 @@ You cannot run this runbook well from a cold start. Four things must already be 
 | **A model-pin manifest** — one grep-able list of every workload × model ID × owner | Step 1 below is a lookup, not an archaeology dig | [`token-budget-governance.md`](token-budget-governance.md) budget ladder doubles as the inventory |
 | **Regression eval suite ≥ v1 per workload** | The only thing that can *certify* a successor is a suite that scored the incumbent | [`eval-starter-pack.md`](eval-starter-pack.md) regression template |
 | **Cost baseline per workload** ($ per task, current model) | Migration changes cost even at identical list price — see step 4 | [`cost-calculator.html`](cost-calculator.html) |
+| **The successor's system card, read** — its RSP/ASL determination, safeguard-policy changes, and honesty profile | The determination is **per-model and re-made every release**; a migration silently re-bases the upstream risk posture your conformity file cites. The launch post does not carry any of it | [`governance-overlay.md`](governance-overlay.md) §7 |
 
 ---
 

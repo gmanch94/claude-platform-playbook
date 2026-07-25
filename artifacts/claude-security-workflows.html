@@ -66,8 +66,8 @@
 <div class="wrap">
 
   <h1>Claude security layers — the stack, and each workflow</h1>
-  <p class="sub">Five Anthropic code-security layers over your own CI, two adjacent controls on a different axis, four differently-named products. This page shows where each sits and how each actually runs.</p>
-  <p class="stamp">Visual companion to <a href="claude-security-layers.html">claude-security-layers.md</a> · all mechanics <code>[H]</code> against <code>code.claude.com</code> docs, verified 2026-07-23</p>
+  <p class="sub">Five Anthropic code-security layers over your own CI, three controls outside that stack (two adjacent, one underneath), four differently-named products. This page shows where each sits and how each actually runs.</p>
+  <p class="stamp">Visual companion to <a href="claude-security-layers.html">claude-security-layers.md</a> · all mechanics <code>[H]</code> against <code>code.claude.com</code> docs, verified 2026-07-23 · the model-level cyber classifiers <code>[H]</code> against the <a href="https://www.anthropic.com/claude-opus-5-system-card">Claude Opus 5 System Card</a>, 2026-07-24</p>
 
   <h2>The stack</h2>
   <div class="svgbox">
@@ -516,8 +516,8 @@
   </table>
   <p class="lede"><strong>verify</strong> = not asserted in the docs reviewed 2026-07-23; an absent exclusion is not a stated guarantee. <strong>n/a</strong> = the question doesn't apply to that layer.</p>
 
-  <h2>Adjacent — a different axis, often confused</h2>
-  <p class="lede">Neither of these scans code. Both get called "Claude security."</p>
+  <h2>Adjacent and underneath — different axes, often confused</h2>
+  <p class="lede">None of these three scans code. The first two get called "Claude security"; the third sits beneath the whole stack and bounds what every layer above can do.</p>
   <div class="grid">
     <div class="card">
       <h4>Runtime containment (Claude Code)</h4>
@@ -528,6 +528,11 @@
       <h4>Usage governance (Compliance API)</h4>
       <p>Programmatic access to Claude Enterprise conversation content and activity events, wired into 60+ DLP, SIEM, eDiscovery and identity platforms.</p>
       <p>Governs <em>how people use Claude</em>, and scans no code at all. Full treatment in <a href="usage-compliance-monitoring.html">usage-compliance-monitoring.md</a> and <a href="legal-hold-ediscovery-runbook.html">legal-hold-ediscovery-runbook.md</a>.</p>
+    </div>
+    <div class="card">
+      <h4>Model-level cyber classifiers <span class="chip">underneath</span></h4>
+      <p>An activation probe screens all traffic and escalates flagged traffic to a trained LLM classifier. No layer above can find a bug the model refuses to discuss, so this sets the ceiling on all six.</p>
+      <p><strong>Changed with Opus 5:</strong> vulnerability discovery <em>in source code</em> is permitted at all access levels including general availability; <em>compiled binaries</em> stay blocked. The <strong>Cyber Verification Program</strong> exempts verified defensive work, and Enterprise can apply to unblock penetration testing. Full treatment in <a href="claude-security-layers.html">claude-security-layers.md</a> §9.</p>
     </div>
   </div>
 

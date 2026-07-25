@@ -66,6 +66,8 @@ Which surface is cleared for *you* is a rollout decision — see [`surface-rollo
 
 Verification *is* the practitioner skill — see [`workforce-change-guide.md`](workforce-change-guide.md) §3. A team that can't verify never safely adopts; a team that verifies nothing ships errors faster.
 
+**"The new model is smarter, so I can check less" — no.** On a closed-book factual benchmark, Anthropic measured Opus 5 as **11% higher in accuracy than the previous model and 6% higher in hallucination rate** (Claude Opus 5 System Card §6.5.1, 2026-07-24; the card doesn't say whether those are percentage points or relative change, so read them as direction, not size). Both went up. A model that is right more often *and* confidently wrong more often is harder to catch, not easier — the errors arrive wearing the same tone as the correct answers. Anthropic's own reviewer also flagged, from preliminary measurements, that **one step of a long job may not check the step before it** — so a long multi-step run is not self-verifying either. Keep the list above exactly as long as it was.
+
 ---
 
 ## 🛑 The boundary — before you paste or connect anything
