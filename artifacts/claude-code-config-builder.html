@@ -400,8 +400,19 @@ const NET_BINS = ["curl","wget","nc","ssh"];
 
 /* Canonical tool names this tool knows. Unknown names are a soft warning (verify against the
    tools reference); a name containing a space is a hard error — canonical names have none. */
-const KNOWN_TOOLS = ["Bash","Read","Edit","Write","WebFetch","WebSearch","Glob","Grep","NotebookEdit",
+/* "PowerShell" was missing, so a valid PowerShell(...) rule pasted into the merge box was warned
+   "not in this tool's known-name list" — a guard firing on correct input, for the third time in
+   this file. It is a real tool with its own rule namespace (tools-reference#powershell-tool). */
+const KNOWN_TOOLS = ["Bash","PowerShell","Read","Edit","Write","WebFetch","WebSearch","Glob","Grep","NotebookEdit",
   "Task","TaskStop","TodoWrite","EndConversation","Agent","SlashCommand","KillShell","BashOutput"];
+
+/* PowerShell network reach, in two halves that the docs make non-negotiable:
+   - CMDLETS: aliases canonicalize, so the cmdlet name also covers iwr / irm / and the curl and
+     wget aliases where those exist. Write the cmdlet, get the aliases free.
+   - NATIVE binaries are NOT cmdlets. No canonicalization reaches curl.exe / wget.exe / ssh, so
+     they need their own rules. Listing only one half is the mistake this set exists to avoid. */
+const PS_CMDLETS = ["Invoke-WebRequest","Invoke-RestMethod","Start-BitsTransfer"];
+const PS_NATIVE  = ["curl","curl.exe","wget","wget.exe","ssh"];
 
 const OS_PATHS = {
   server:   { path:"claude.ai admin console → Claude Code settings", fmt:"console" },
@@ -429,6 +440,8 @@ const ADV = [
   { k:"disableBypassPermissionsMode", l:'disableBypassPermissionsMode: "disable"', on:true,  why:"One <code>--dangerously-skip-permissions</code> alias otherwise removes every guardrail." },
   { k:"disableRemoteControl", l:"disableRemoteControl", on:false, why:"Per-device kill for driving a session from a phone or browser." },
   { k:"skipWebFetchPreflight", l:"skipWebFetchPreflight", on:false, why:"Skips the domain-safety preflight. Sometimes required on locked-down networks; you lose the check." },
+  { k:"psMirror", l:"Mirror shell rules into PowerShell(…)", on:true, why:"Emits the network denies and your ask-list a second time as <code>PowerShell(…)</code> rules, because <b>a <code>Bash(</code> policy covers one of two shell tools</b>. The PowerShell tool is <b>auto-enabled on Windows without Git Bash</b>, so an org that never opted in can have it — and native Windows has no sandbox, making permission rules the whole perimeter there. Cmdlet names are emitted for the aliases (which canonicalize) <em>and</em> the native <code>curl.exe</code>/<code>wget.exe</code> forms (which don't)." },
+  { k:"psDisable", l:'env CLAUDE_CODE_USE_POWERSHELL_TOOL: "0"', on:false, why:"The single-shell posture. Documented as opting out of the <em>rollout</em> on Windows — but whether it disables the tool on a Windows machine <b>without</b> Git Bash, where it is auto-enabled and would otherwise be the only shell, is <b>not stated</b>. Verify on a canary before relying on it; mirroring the rules is the posture that doesn't depend on an unconfirmed flag." },
   { k:"envScrub", l:"CLAUDE_CODE_SUBPROCESS_ENV_SCRUB", on:true, why:"Strips Anthropic + cloud-provider credentials from <b>all</b> subprocesses. Sandboxed Bash otherwise inherits the parent environment." },
   { k:"allowAppleEvents", l:"sandbox.allowAppleEvents (macOS)", on:false, why:"⚠ Removes code-execution isolation — sandboxed commands can launch other apps <b>unsandboxed</b>." },
   { k:"allowUnixSockets", l:"sandbox.network.allowUnixSockets incl. docker.sock", on:false, why:"⚠ <b>Blocks export</b> (check 8). Allowing <code>/var/run/docker.sock</code> effectively grants <b>host access</b>. Nests under <code>network</code>, and is <b>macOS only</b> — on Linux/WSL2 it is ignored (the seccomp filter can't inspect socket paths; <code>allowAllUnixSockets</code> is the blunt equivalent)." },
@@ -458,6 +471,14 @@ function buildSettings(){
   activeAssets().forEach(a => (a.paths||[]).forEach(p => { deny.push(`Read(${p})`); deny.push(`Edit(${p})`); }));
   NET_BINS.forEach(b => deny.push(`Bash(${b} *)`));
   ACTIONS.filter(a => S.actions[a.id]).forEach(a => ask.push(a.rule));
+  // Mirror into the OTHER shell. Bash(...) rules cover one of two shell tools, and the PowerShell
+  // tool is auto-enabled on Windows without Git Bash — the same fleet that has no sandbox — so an
+  // unmirrored policy is half a policy exactly where permission rules are the whole perimeter.
+  if (S.adv.psMirror) {
+    PS_CMDLETS.forEach(c => deny.push(`PowerShell(${c} *)`));
+    PS_NATIVE.forEach(b => deny.push(`PowerShell(${b} *)`));
+    ACTIONS.filter(a => S.actions[a.id]).forEach(a => ask.push(a.rule.replace(/^Bash\(/, "PowerShell(")));
+  }
 
   // WebFetch allow rules come from their OWN field, never from the sandbox egress list.
   // Deriving them from egress silently converted one input into two unrelated trust
@@ -568,6 +589,7 @@ function buildSettings(){
     env.OTEL_LOG_USER_PROMPTS = "0";
   }
   if (S.adv.envScrub) env.CLAUDE_CODE_SUBPROCESS_ENV_SCRUB = "1";
+  if (S.adv.psDisable) env.CLAUDE_CODE_USE_POWERSHELL_TOOL = "0";
   if (Object.keys(env).length) o.env = env;
 
   // Supply chain
@@ -668,7 +690,7 @@ function sandboxPartial(){ return S.osScope === "mixed"; }
 /* Is the fleet left with decision-layer protection only? */
 function decisionLayerOnly(){ return S.sandbox === "off" || S.osScope === "windows"; }
 
-/* ---------------- the linter: 13 checks (12 can block export; #12 is advisory) ---------------- */
+/* ---------------- the linter: 14 checks (13 can block export; #12 is advisory) ---------------- */
 function toolOf(rule){ const m = /^([A-Za-z ]+)(\(|$)/.exec(rule); return m ? m[1].trim() : rule; }
 function specOf(rule){ const m = /^[A-Za-z ]+\((.*)\)$/.exec(rule); return m ? m[1] : null; }
 
@@ -845,6 +867,22 @@ function lint(o){
   else if (proxyOwn && !weakNet && S.osScope !== "windows")
     add("warn", "A custom sandbox proxy is set on a fleet that may include macOS — Go-based tools (<code>gh</code>, <code>gcloud</code>, <code>terraform</code>) will fail TLS verification there until <code>enableWeakerNetworkIsolation</code> is set.",
       "Friction, not a hole — but it looks like a broken tool to the developer. The alternative is listing those tools in excludedCommands, which runs them unsandboxed instead. Stage on a canary either way.");
+
+  // 14. a Bash-only shell policy while a second shell tool may be live
+  const psRules = [...deny, ...ask, ...allow].filter(r => toolOf(r) === "PowerShell").length;
+  const bashNet = deny.some(r => toolOf(r) === "Bash" && NET_BINS.some(b => new RegExp("^" + b + "\\b").test(specOf(r) || "")));
+  const psOff = !!(o.env && o.env.CLAUDE_CODE_USE_POWERSHELL_TOOL === "0");
+  if (bashNet && !psRules && !psOff) {
+    // Severity tracks availability, not taste: on a Windows-inclusive fleet the tool can be
+    // AUTO-enabled (no Git Bash) and there is no sandbox underneath, so the gap is real and
+    // blocking. Unix-only, the tool is opt-in, so the same gap is a warning.
+    const win = S.osScope !== "unix";
+    add(win ? "block" : "warn",
+      `Your network denies cover <b>Bash only</b>, and no <code>PowerShell(…)</code> rule is emitted${win ? " on a fleet that includes Windows" : ""}.`,
+      win
+        ? "The PowerShell tool is a second shell with its own rule namespace, AUTO-enabled on Windows without Git Bash — so an org that never opted in can have it. That is also the fleet with no sandbox, which makes permission rules the whole perimeter. Tick \"Mirror shell rules into PowerShell(…)\" under Advanced, or set CLAUDE_CODE_USE_POWERSHELL_TOOL to 0 — noting the flag's effect on an auto-enabled machine is undocumented, so mirroring is the posture that doesn't depend on it."
+        : "On macOS/Linux/WSL the PowerShell tool is opt-in, so this is a gap only if someone enables it (or a hook or skill sets shell: powershell, which works regardless of the tool flag). Mirroring the rules costs nothing and closes it.");
+  }
 
   const req = [];
   // Strict UUID shape. The old /^[0-9a-fA-F-]{8,}$/ accepted "deadbeef" and "--------" while
@@ -1138,6 +1176,15 @@ function checklist(o, findings){
       "- [ ] Budget a tuning pass: an over-tight `allowedDomains` blocks legitimate package installs, and some tools need an `excludedCommands` entry.",
       "- [ ] Confirm `sandbox.credentials` requires **v2.1.187+** and `filesystem.disabled` requires **v2.1.216+**. Below the gate they are silent no-ops — pin a minimum client version in your fleet tooling.");
 
+  L.push("", "## Shells — your policy covers one of two", "",
+    "- [ ] **Confirm which shell tools are live on your machines.** The `PowerShell` tool is **auto-enabled on Windows without Git Bash**, on a progressive rollout on Windows *with* Git Bash, and opt-in on macOS/Linux/WSL. Both namespaces can be live on one machine. **Owner: platform.**",
+    (S.adv.psMirror
+      ? "- [x] Shell rules are **mirrored** into `PowerShell(…)` in this bundle — cmdlet names (aliases canonicalize) plus the native `curl.exe`/`wget.exe` forms (they don't)."
+      : "- [ ] **Mirror your rules into `PowerShell(…)`, or accept a Bash-only policy knowingly.** This bundle does **not** mirror them. On native Windows there is no sandbox, so permission rules are the whole perimeter there."),
+    ...(S.adv.psDisable ? ["- [ ] `CLAUDE_CODE_USE_POWERSHELL_TOOL=0` is emitted — **verify it on a canary.** It is documented as opting out of the *rollout*; its effect on a Windows machine without Git Bash, where the tool is auto-enabled, is **not stated**. If it does not disable the tool there, your Bash-only rules are still half a policy on those machines."] : []),
+    "- [ ] **Check your hooks and skills separately.** A hook with `shell: powershell` runs in PowerShell **regardless** of the tool flag, and skill frontmatter can select it too. A shell decision made at the tool level is not automatically inherited there.",
+    "- [ ] **Note the execution-policy posture:** PowerShell is spawned with `-ExecutionPolicy Bypass` at *process* scope. Group Policy `MachinePolicy`/`UserPolicy` still applies; set `CLAUDE_CODE_POWERSHELL_RESPECT_EXECUTION_POLICY=1` to honour the machine's effective policy. **Owner: Windows platform.**");
+
   if (S.sandbox !== "off" && sandboxRunsHere())
     L.push("", "## Network egress — what this file can and cannot do", "",
       "- [ ] **Deny in the egress proxy / firewall ACL:** RFC1918 (`10/8`, `172.16/12`, `192.168/16`), your cloud metadata address (`169.254.169.254`), and your management subnet. **Owner: network security.** Attach the ACL diff to the review packet. None of these is expressible in `managed-settings.json` — the sandbox fields are hostname patterns with no IP or CIDR primitive, and on native Windows there is no sandbox at all, so this ACL is your *only* egress control there.",
@@ -1256,7 +1303,7 @@ function renderCov(o){
     (gaps ? `<b style="color:var(--bad)">${gaps} gap cell(s)</b>` : `<b style="color:var(--good)">No gap cells</b>`) +
     (partial ? ` · <b style="color:var(--warn)">${partial} partial</b>` : "") + "." + osNote +
     ` Two columns are never a clean pass by construction: <em>recognized Bash file cmds</em> covers a named subset (<code>cat</code>, <code>head</code>, <code>tail</code>, <code>sed</code>) and not <code>awk</code>, <code>perl</code>, <code>xxd</code>, or <code>python -c open()</code>; and the columns are enforcement <em>surfaces</em>, not a completeness proof — an asset you didn't tick is simply absent here. Traced to <a href="claude-code-enterprise-config.html">config §2</a>.` +
-    `<div style="margin-top:8px;padding-top:7px;border-top:1px dashed var(--line)"><b>What the egress column is not.</b> It is a <b>hostname</b> allowlist — there is no IP or CIDR primitive, so internal <em>ranges</em> (RFC1918, a link-local metadata address, a management subnet) cannot be expressed in managed settings at all and belong to your proxy or firewall (<a href="claude-code-enterprise-config.html">config §5.3</a>). It also never reads <code>y</code> without a proxy you control in the path, because the built-in one allows on the client-supplied hostname <em>without inspecting TLS</em> — the docs' own warning is that a broad allow entry is then a documented exfiltration path via domain fronting. ${
+    `<div style="margin-top:8px;padding-top:7px;border-top:1px dashed var(--line)"><b>One column is named for a shell, and there are two.</b> <em>Recognized Bash file cmds</em> is literal: the docs say <code>Read</code>/<code>Edit</code> deny rules reach "file commands Claude Code recognizes in <b>Bash</b>". Whether PowerShell file cmdlets (<code>Get-Content</code>, <code>Set-Content</code>) are recognized is <b>not stated</b> — so this column neither claims that coverage nor claims a gap. The shell-command columns above are Bash-scoped by construction; the <code>PowerShell</code> tool is a separate namespace, which is what the mirror toggle under Advanced and blocker 14 are about.</div>` + `<div style="margin-top:8px;padding-top:7px;border-top:1px dashed var(--line)"><b>What the egress column is not.</b> It is a <b>hostname</b> allowlist — there is no IP or CIDR primitive, so internal <em>ranges</em> (RFC1918, a link-local metadata address, a management subnet) cannot be expressed in managed settings at all and belong to your proxy or firewall (<a href="claude-code-enterprise-config.html">config §5.3</a>). It also never reads <code>y</code> without a proxy you control in the path, because the built-in one allows on the client-supplied hostname <em>without inspecting TLS</em> — the docs' own warning is that a broad allow entry is then a documented exfiltration path via domain fronting. ${
       ((sb && sb.network && (sb.network.deniedDomains||[]).length))
         ? `Your <code>deniedDomains</code> entries hold on every tier and outrank the allowlist, so they are the sturdiest cells you have here.`
         : `<b>No <code>deniedDomains</code> set</b> — that is the one egress entry that merges from every settings scope regardless of the managed lock flag, so a developer's own settings file cannot append its way around it. Named internal hosts belong there.`}</div>`;
