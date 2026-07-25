@@ -102,9 +102,24 @@
   .gate li .rw { display:block; font-size:11px; color:var(--muted); margin-top:2px; }
   .gate li code { background:#f6f1ea; padding:1px 4px; border-radius:3px; font-size:11px; }
   .gate li.warnrow { border-left-color:var(--warn); }
+  /* Severity as a heading, so both sides are labelled. Not an <li> — anything reading .gate li
+     (the drawer blocking counts, the Go handler) must not see a subhead as a finding. */
+  .gate .gsub { font-size:10.5px; font-weight:700; text-transform:uppercase; letter-spacing:.04em; margin:9px 0 4px; }
+  .gate .gsub.blk { color:var(--bad); }
+  .gate .gsub.wrn { color:var(--warn); }
+  .ships { background:white; border:1px solid var(--line); border-radius:8px; padding:10px 13px; margin:10px 0 14px; font-size:12px; }
+  .ships .c { display:inline-block; margin-left:7px; padding:1px 8px; border-radius:10px; font-weight:700; font-size:11px; background:var(--soft); }
+  .ships .c.d { color:var(--bad); } .ships .c.a { color:var(--warn); } .ships .c.w { color:var(--c2); }
+  .ships .sn { margin-top:7px; font-size:11px; color:var(--muted); line-height:1.55; }
+  .ships .sn code { background:var(--soft); padding:1px 4px; border-radius:3px; font-size:10.5px; }
+  .ships .goto { margin-left:4px; font-size:10px; font-weight:700; padding:1px 7px; border-radius:9px;
+    border:1px solid var(--c2); background:transparent; color:var(--c2); cursor:pointer; }
+  .ships .goto:hover { background:var(--c2); color:white; }
   .tabs { display:flex; gap:4px; flex-wrap:wrap; margin-bottom:0; }
   .tabs button { padding:8px 13px; background:#f2ece3; border:1px solid var(--line); border-bottom:none; border-radius:7px 7px 0 0; font-size:12.5px; cursor:pointer; font-family:inherit; color:var(--c2); font-weight:600; }
   .tabs button.active { background:white; color:var(--c1d); }
+  .tabs button .dot { display:inline-block; width:6px; height:6px; border-radius:50%; background:var(--warn); margin-left:6px; vertical-align:1px; }
+  .tabnote { font-size:11px; color:var(--muted); margin:6px 0 -4px; }
   .pane { background:white; border:1px solid var(--line); border-radius:0 8px 8px 8px; padding:16px; }
   .pane .ph { display:flex; align-items:center; gap:8px; margin-bottom:10px; flex-wrap:wrap; }
   .pane .ph .pt { font-size:13px; font-weight:700; }
@@ -134,7 +149,14 @@
   .trace { font-size:11px; color:var(--muted); margin-top:8px; padding-top:8px; border-top:1px dashed var(--line); }
   footer { margin-top:34px; padding-top:15px; border-top:1px solid var(--line); font-size:12px; color:var(--muted); }
   footer a { color:var(--c1d); }
-  @media print { body { padding:0; } .opts, .tabs, .btn, details.adv, .gate li .goto { display:none; } pre.out { max-height:none; }
+  @media print { body { padding:0; } .tabs, .tabnote, .btn, details.adv, .gate li .goto, .ships .goto { display:none; } pre.out { max-height:none; }
+    /* Posture answers live only as .active button state, so hiding .opts wholesale printed a bundle
+       that could not say which of the six postures produced it — while every typed value survived.
+       Keep the selected option, drop the alternatives. */
+    .opts button:not(.active) { display:none; }
+    .opts button.active { border:1px solid #999 !important; background:transparent !important; color:#000 !important; }
+    /* Two columns on paper leaves every page after the first with a dead right half. */
+    .grid { display:block; }
     /* Paper has no toggles: every collapsed hint prints in full, or a printed bundle silently loses
        the caveats it was collapsed to make skimmable. */
     .fld .hint .more { display:block !important; } .fld .hint .why { display:none; }
@@ -155,6 +177,8 @@
     pre.out.md { background:#1d1813; color:var(--ink); }
     table.cov th, .pane .ph .path, .chip, .note code, .gate li code, .trace code { background:#2a231c; }
     .fm { background:#2a2213; }
+    .ships { background:#201a15; }
+    .tabs button .dot { background:#3a3228; }
     /* Both marker fills carry a class, so they outrank the blanket input background above and
        would paint a near-white field in dark mode. .bad already had this gap; fixing both here
        rather than adding a second instance of it. */
@@ -231,8 +255,8 @@
       </div>
 
       <div class="card">
-        <h2><span class="n">2</span>Required values</h2>
-        <div class="lede">Left blank, each key is <b>omitted entirely</b> — never written as a placeholder. Blank required values block export.</div>
+        <h2><span class="n">2</span>Required for export</h2>
+        <div class="lede">Every field here can block export at some posture, and several are hidden until yours calls for them. Left blank, each key is <b>omitted entirely</b> — never written as a placeholder.</div>
         <div class="fld">
           <label>Organization name <span style="color:var(--muted);font-weight:400">(templates + announcements)</span></label>
           <input type="text" id="f-org" placeholder="e.g. Karekal">
@@ -266,6 +290,35 @@
           <div class="hint">Comma-separated <b>hostnames only</b> — no scheme, no path (<code>github.com</code>, not <code>https://github.com/</code>). A leading <code>*.</code> is allowed. This governs what <b>sandboxed Bash commands</b> can reach; too tight blocks package installs, so stage on a canary.</div>
           <input type="text" id="f-egress" placeholder="github.com, *.npmjs.org, registry.yarnpkg.com">
         </div>
+        <div class="fld" id="fld-mcp" hidden>
+          <label>Allowed MCP servers <span style="color:var(--bad)">— required once MCP lockdown is on</span></label>
+          <div class="hint">Comma-separated server names. <b>This is the allowlist that <code>allowManagedMcpServersOnly</code> governs</b>, and leaving it unset is <em>not</em> the same as empty: unset means <b>all servers allowed</b>, so the lock flag alone restricts nothing. Enter <code>none</code> to emit an empty allowlist (admit zero servers).</div>
+          <input type="text" id="f-mcp" placeholder="github, sentry, internal-docs">
+        </div>
+        <div class="fld" id="fld-models" hidden>
+          <label>Allowed models <span style="color:var(--bad)">— required at Maximum</span></label>
+          <div class="hint">Comma-separated model IDs. <code>enforceAvailableModels</code> only extends the allowlist to the Default option <b>when <code>availableModels</code> is a non-empty array</b> — on its own it does nothing. Pin IDs from <a href="../docs/feature-inventory.html">feature-inventory.md</a> rather than aliases.</div>
+          <input type="text" id="f-models" placeholder="claude-opus-5, claude-sonnet-5, claude-haiku-4-5-20251001">
+        </div>
+        <div class="fld" id="fld-gateway" hidden>
+          <label>Gateway URL <span style="color:var(--bad)">— required for gateway login</span></label>
+          <div class="hint">Gateway sign-in is <em>selected</em> by <code>forceLoginMethod: "gateway"</code>, not restricted by it, and it does not authenticate against an Anthropic org — so <b><code>forceLoginOrgUUID</code> does not apply</b>. Restrict access at your gateway's identity provider, and set <code>forceLoginGatewayUrl</code> so the URL is filled in and locked.</div>
+          <input type="text" id="f-gateway" placeholder="https://claude-gateway.karekal.internal">
+        </div>
+        <div class="fld" id="fld-awsworkspace" hidden>
+          <label><code>ANTHROPIC_AWS_WORKSPACE_ID</code> <span style="color:var(--bad)">— required for Claude Platform on AWS</span></label>
+          <div class="hint">Not a secret, so it ships in the bundle. The credential half — <code>ANTHROPIC_AWS_API_KEY</code> <b>or</b> resolvable AWS credentials — is never emitted here and lands in the checklist instead. Remember the routing race: <b>unset <code>CLAUDE_CODE_USE_BEDROCK</code> and <code>CLAUDE_CODE_USE_FOUNDRY</code></b> on any machine that used them, or they keep winning silently.</div>
+          <input type="text" id="f-awsworkspace" placeholder="your Claude Platform on AWS workspace id">
+        </div>
+      </div>
+
+      <!-- Card 2 ends here. Everything below is optional at every posture, and it was the 1,000px of
+           it interleaved with the required fields that made card 2 read as "nineteen things you must
+           do". Split rather than renumbered: the two later cards keep their numbers, so no §N
+           cross-reference moves. -->
+      <div class="card">
+        <h2><span class="n">3</span>Optional hardening</h2>
+        <div class="lede">None of these block export. Each closes a specific gap the required set leaves open — reach for one when the matrix below shows a cell you care about, not as a checklist.</div>
         <div class="fld" id="fld-denied" hidden>
           <label>Sandbox <code>deniedDomains</code> <span style="color:var(--muted);font-weight:400">(optional — the sturdiest entry in this form)</span></label>
           <div class="hint"><b>Hostnames only — there is no IP or CIDR primitive.</b> <button type="button" class="why">why ▸</button><span class="more" hidden>A range (<code>10.0.0.0/8</code>) is not expressible here; ranges belong to your proxy or firewall (config §5.3). What this <em>is</em> good for: named internal hosts. <code>deniedDomains</code> <b>outranks <code>allowedDomains</code></b> when both match and <b>merges from every settings scope regardless of <code>allowManagedDomainsOnly</code></b> — so unlike your allowlist (which appears at the Hardened tier), a developer's own settings file cannot append its way around it. Named hosts only, and note this generalizes poorly across clouds: GCP exposes <code>metadata.google.internal</code>, but AWS and Azure instance metadata is reached at the link-local address <code>169.254.169.254</code> — and whether a bare IP literal matches a domain pattern is <b>not documented</b>, so on those clouds the metadata endpoint is a proxy or firewall rule, not an entry here. If your cloud publishes a hostname alias, verify it before relying on it. Good candidates for this field: an internal admin domain, <code>*.corp.example.com</code>, a management console host.</span></div>
@@ -286,30 +339,10 @@
           <div class="hint">Pre-approves Claude's own <code>WebFetch</code> tool for these domains; everything else still prompts. <b>Deliberately not derived from the egress list above</b> — subprocess network reach and "Claude may fetch this without asking" are two different trust decisions, and one field feeding both would grant a permission you didn't choose. Leave blank to emit no allow rules.</div>
           <input type="text" id="f-webfetch" placeholder="docs.karekal.internal, *.github.com">
         </div>
-        <div class="fld" id="fld-mcp" hidden>
-          <label>Allowed MCP servers <span style="color:var(--bad)">— required once MCP lockdown is on</span></label>
-          <div class="hint">Comma-separated server names. <b>This is the allowlist that <code>allowManagedMcpServersOnly</code> governs</b>, and leaving it unset is <em>not</em> the same as empty: unset means <b>all servers allowed</b>, so the lock flag alone restricts nothing. Enter <code>none</code> to emit an empty allowlist (admit zero servers).</div>
-          <input type="text" id="f-mcp" placeholder="github, sentry, internal-docs">
-        </div>
-        <div class="fld" id="fld-models" hidden>
-          <label>Allowed models <span style="color:var(--bad)">— required at Maximum</span></label>
-          <div class="hint">Comma-separated model IDs. <code>enforceAvailableModels</code> only extends the allowlist to the Default option <b>when <code>availableModels</code> is a non-empty array</b> — on its own it does nothing. Pin IDs from <a href="../docs/feature-inventory.html">feature-inventory.md</a> rather than aliases.</div>
-          <input type="text" id="f-models" placeholder="claude-opus-5, claude-sonnet-5, claude-haiku-4-5-20251001">
-        </div>
-        <div class="fld" id="fld-gateway" hidden>
-          <label>Gateway URL <span style="color:var(--bad)">— required for gateway login</span></label>
-          <div class="hint">Gateway sign-in is <em>selected</em> by <code>forceLoginMethod: "gateway"</code>, not restricted by it, and it does not authenticate against an Anthropic org — so <b><code>forceLoginOrgUUID</code> does not apply</b>. Restrict access at your gateway's identity provider, and set <code>forceLoginGatewayUrl</code> so the URL is filled in and locked.</div>
-          <input type="text" id="f-gateway" placeholder="https://claude-gateway.karekal.internal">
-        </div>
         <div class="fld" id="fld-excluded" hidden>
           <label>Sandbox <code>excludedCommands</code> <span style="color:var(--muted);font-weight:400">(empty by default — each entry runs UNSANDBOXED)</span></label>
           <div class="hint">Comma-separated. Previously this shipped <code>docker *</code> silently; it no longer does. Be aware <code>docker run -v /:/host</code> reaches the host filesystem just as <code>/var/run/docker.sock</code> does — an exemption here is the same class of hole as the socket the linter blocks.</div>
           <input type="text" id="f-excluded" placeholder="(leave empty unless a tool genuinely breaks)">
-        </div>
-        <div class="fld" id="fld-awsworkspace" hidden>
-          <label><code>ANTHROPIC_AWS_WORKSPACE_ID</code> <span style="color:var(--bad)">— required for Claude Platform on AWS</span></label>
-          <div class="hint">Not a secret, so it ships in the bundle. The credential half — <code>ANTHROPIC_AWS_API_KEY</code> <b>or</b> resolvable AWS credentials — is never emitted here and lands in the checklist instead. Remember the routing race: <b>unset <code>CLAUDE_CODE_USE_BEDROCK</code> and <code>CLAUDE_CODE_USE_FOUNDRY</code></b> on any machine that used them, or they keep winning silently.</div>
-          <input type="text" id="f-awsworkspace" placeholder="your Claude Platform on AWS workspace id">
         </div>
         <div class="fld" id="fld-awsregion" hidden>
           <label><code>AWS_REGION</code> <span style="color:var(--muted);font-weight:400">(optional here — but load-bearing)</span></label>
@@ -342,28 +375,30 @@
       </div>
 
       <div class="card">
-        <h2><span class="n">3</span>Assets to protect</h2>
+        <h2><span class="n">4</span>Assets to protect</h2>
         <div class="lede">Deny rules are generated from <b>what you actually run</b>, not a generic list. Each ticked asset becomes a row in the coverage matrix — with its gaps visible.</div>
         <div id="assets"></div>
         <div class="note"><b>Anchors matter.</b> These emit the <code>//</code> filesystem-root form, so the rule holds wherever a session starts. The narrower <code>Read(.env)</code> covers only at-or-under the launch directory — not a parent, not another checkout. The global form also covers scratch dirs and <code>node_modules</code> fixtures; if that friction is what gets your policy disabled, narrow it deliberately and record the gap.</div>
       </div>
 
       <div class="card">
-        <h2><span class="n">4</span>Actions to gate</h2>
+        <h2><span class="n">5</span>Actions to gate</h2>
         <div class="lede">These go in <code>ask</code>, not <code>deny</code> — a deny on <code>git push</code> breaks legitimate work and gets the whole policy switched off. Tiered by <em>can it be undone quietly?</em></div>
         <div id="actions"></div>
         <div class="note" style="margin-top:10px"><b>Also emitted, always, so you can review it here rather than discover it in the JSON:</b> <code>Bash(curl *)</code>, <code>Bash(wget *)</code>, <code>Bash(nc *)</code>, <code>Bash(ssh *)</code> are added to <code>deny</code>. That is the docs' own remedy for argument-constrained network rules being fragile — but an org-wide <code>ssh</code> deny surprises people, so it is stated up front. If your engineers need <code>ssh</code> from a Claude session, move it to the ask list by hand after export and record why.</div>
-        <details class="adv" id="adv-drawer">
-          <summary>Advanced — additional managed-settings fields (not the full set)<span class="badge" id="adv-badge"></span></summary>
-          <div class="body" id="advanced"></div>
-        </details>
-
-        <details class="adv" id="merge-drawer" style="margin-top:10px">
+        <!-- Merge sits ABOVE Advanced deliberately. Its badge is the one that reports the linter
+             running at two-thirds strength, and behind Advanced it was the last thing on the page. -->
+        <details class="adv" id="merge-drawer">
           <summary>Merge your existing rules — and lint them<span class="badge" id="merge-badge"></span></summary>
           <div class="body">
             <div class="hint" style="font-size:11.5px;color:var(--muted);margin-bottom:8px">Paste rules you already run, one per line, prefixed <code>deny:</code>, <code>ask:</code>, or <code>allow:</code>. They are merged into the output <b>and</b> put through the full linter — which is the only way checks 1–5 (deny-shadows-allow, bare-name removal, word boundary, unanchored allow globs, display-label tool names) can fire, since the generated rules are correct by construction. If you have an existing policy, this is where the collisions surface.</div>
             <textarea id="f-extrarules" rows="5" placeholder="deny: Bash(aws *)&#10;allow: Bash(aws s3 ls)&#10;ask: Bash(gcloud * delete *)" style="width:100%;padding:8px 10px;border:1px solid var(--line);border-radius:6px;font-family:ui-monospace,SFMono-Regular,Menlo,monospace;font-size:11.5px;background:white;color:var(--ink)"></textarea>
           </div>
+        </details>
+
+        <details class="adv" id="adv-drawer" style="margin-top:10px">
+          <summary>Advanced — additional managed-settings fields (not the full set)<span class="badge" id="adv-badge"></span></summary>
+          <div class="body" id="advanced"></div>
         </details>
       </div>
     </div>
@@ -371,6 +406,7 @@
     <!-- ============ RIGHT: OUTPUT ============ -->
     <div class="railcol">
       <div id="gate" class="gate"></div>
+      <div id="ships" class="ships"></div>
 
       <div class="card" style="padding:16px">
         <h2 style="margin-bottom:10px">Coverage matrix</h2>
@@ -380,6 +416,7 @@
       </div>
 
       <div class="tabs" id="tabs"></div>
+      <div class="tabnote" id="tabnote"></div>
       <div class="pane">
         <div class="ph">
           <span class="pt" id="pane-title"></span>
@@ -624,7 +661,9 @@ const S = {
   // legitimate choice on a native-Windows estate (there is no sandbox there), so it must be
   // clearable rather than hard-blocked — a gate with no exit forces the wrong answer.
   ackNoOsLayer:false,
-  assets:{}, actions:{}, adv:{}, tab:"json"
+  // seen starts with json only, because json is the tab the page opens on — marking the rest seen
+  // at init would defeat the dot entirely.
+  assets:{}, actions:{}, adv:{}, tab:"json", seen:{ json:true }
 };
 ASSETS.forEach(a => S.assets[a.id] = a.on);
 ACTIONS.forEach(a => S.actions[a.id] = a.on);
@@ -1841,31 +1880,74 @@ function render(){
      <div style="font-size:12.5px;color:var(--muted)">${blocked.length
        ? "Each blocker is a rule that cannot work, or a value whose absence fails closed. Copy and download stay disabled until they're clear."
        : "JSON parses, no dead rules, every required value supplied. Still validate against the schema and stage on a canary."}</div>` +
-    (F.length ? "<ul>" + F.map(f =>
-      // Reason text renders as HTML, like the headline above it. It was escaped, which printed
-      // every <code> and <b> in a reason as literal markup — the field names in the advice were
-      // the least readable part of the most important sentence. INVARIANT that makes this safe:
-      // reason strings are STATIC literals. Anything interpolated from operator input belongs in
-      // the headline (f.msg), where every value already goes through esc().
-      // data-goto carries a SELECTOR authored in lint(), never operator input, so it needs no
-      // escaping pass — and it must stay that way. Interpolating a typed value into an attribute
-      // here would route user text around the esc() convention the invariant above depends on.
-      `<li class="${f.sev==="warn"?"warnrow":""}">${f.sev==="warn"?"<b>Warning — </b>":""}${f.msg}` +
-      (gotoLive(f.to) ? `<button class="goto" data-goto="${f.to}">Go</button>` : "") +
-      `<span class="rw">${f.rw}</span></li>`).join("") + "</ul>" : "");
+    // Reason text renders as HTML, like the headline above it. It was escaped, which printed
+    // every <code> and <b> in a reason as literal markup — the field names in the advice were
+    // the least readable part of the most important sentence. INVARIANT that makes this safe:
+    // reason strings are STATIC literals. Anything interpolated from operator input belongs in
+    // the headline (f.msg), where every value already goes through esc().
+    // data-goto carries a SELECTOR authored in lint(), never operator input, so it needs no
+    // escaping pass — and it must stay that way. Interpolating a typed value into an attribute
+    // here would route user text around the esc() convention the invariant above depends on.
+    (() => {
+      const row = f =>
+        `<li class="${f.sev==="warn"?"warnrow":""}">${f.msg}` +
+        (gotoLive(f.to) ? `<button class="goto" data-goto="${f.to}">Go</button>` : "") +
+        `<span class="rw">${f.rw}</span></li>`;
+      // Grouped, not interleaved. Findings used to render in insertion order with blockers landing
+      // mid-list, and the ONLY labelled severity was the warning — blocking rows carried no prefix
+      // at all, so the row you were allowed to ignore was the one that announced itself. The headline
+      // said "4 blockers" over five rows with nothing saying which was which.
+      const warns = F.filter(f => f.sev !== "block");
+      return (blocked.length ? `<div class="gsub blk">Must fix to export</div><ul>${blocked.map(row).join("")}</ul>` : "")
+           + (warns.length ? `<div class="gsub wrn">Carried into your checklist</div><ul>${warns.map(row).join("")}</ul>` : "");
+    })();
+
+  /* What this bundle actually ships, stated where the operator already is. An operator who stops at
+     the export button has never scrolled to cards 4 and 5, so the ticked defaults there go out
+     unreviewed — including ask rules on git push and terraform apply that prompt every engineer on
+     day one, and the always-on network denies, which are disclosed honestly but BELOW the button.
+     Every number is derived at render time. A literal here would be exactly the counted-prose
+     staleness check-counts.mjs exists to catch, in the one file that guard cannot see. */
+  const P = o.permissions || {};
+  const unreviewed = ASSETS.filter(a => S.assets[a.id]).length + ACTIONS.filter(a => S.actions[a.id]).length;
+  document.getElementById("ships").innerHTML =
+    `<b>This bundle ships</b> <span class="c d">${(P.deny||[]).length} deny</span>` +
+    `<span class="c a">${(P.ask||[]).length} ask</span>` +
+    `<span class="c w">${(P.allow||[]).length} allow</span>` +
+    `<span class="c">${Object.keys(o).length} top-level keys</span>` +
+    `<div class="sn">Always included: <code>Bash(curl *)</code> <code>Bash(wget *)</code> <code>Bash(nc *)</code> <code>Bash(ssh *)</code> in <code>deny</code> — an org-wide <code>ssh</code> deny surprises people, so it is named here rather than found in the JSON. ` +
+    `<b>${unreviewed}</b> asset and action selection${unreviewed===1?"":"s"} are on by default; they are yours whether or not you scroll to them. ` +
+    `<button class="goto" data-goto="#assets">Review</button></div>`;
 
   renderCov(o);
 
   // tabs
   // The json tab's LABEL follows the delivery choice for the same reason its filename does — a tab
   // reading "managed-settings.json" on a fragment deployment names the wrong file.
+  /* An unvisited dot on each tab. Copy and Download act on the ACTIVE tab only, and nothing said
+     there were four deliverables — so a first-run operator took managed-settings.json and left,
+     while the operator checklist (tab 4) carries the rollback plan, the canary step, the credential
+     walk, and every warning the linter raised. The dot is the cheapest honest signal: it makes the
+     three they haven't opened countable at a glance. */
   document.getElementById("tabs").innerHTML = TABS.map(([k,l]) =>
-    `<button data-tab="${k}" class="${S.tab===k?"active":""}">${k === "json" ? esc(jsonName()) : l}</button>`).join("");
+    `<button data-tab="${k}" class="${S.tab===k?"active":""}">${k === "json" ? esc(jsonName()) : l}` +
+    (S.seen[k] ? "" : `<span class="dot" title="not opened yet"></span>`) + `</button>`).join("");
+  const unseen = TABS.filter(([k]) => !S.seen[k]).length;
+  document.getElementById("tabnote").innerHTML = unseen
+    ? `<b>${TABS.length} deliverables</b> — ${unseen} not opened yet. Download acts on the tab you are on.`
+    : `<b>${TABS.length} deliverables</b>, all reviewed. Download acts on the tab you are on.`;
 
   const body = { json: JSON.stringify(o, null, 2), wrap: wrap(o), md: claudeMd(),
                  check: orgInstructions() + "\n---\n\n" + checklist(o, F) }[S.tab];
   const out = document.getElementById("pane-out");
+  // Assigning textContent replaces the child node, which resets scrollTop to 0. render() runs on
+  // every keystroke, so scrolling into a 200-line JSON to check a key and then typing anywhere on
+  // the page snapped the pane back to the top. Preserve the position across the rebuild — but not
+  // across a tab change, where the top is the right place to land.
+  const keepScroll = out.dataset.tab === S.tab ? out.scrollTop : 0;
   out.textContent = body;
+  out.dataset.tab = S.tab;
+  out.scrollTop = keepScroll;
   out.className = "out" + (S.tab === "json" || S.tab === "wrap" ? "" : " md");
 
   const MD_PATHS = "macOS /Library/Application Support/ClaudeCode/CLAUDE.md · Linux+WSL /etc/claude-code/CLAUDE.md · Windows C:\\Program Files\\ClaudeCode\\CLAUDE.md";
@@ -1904,8 +1986,16 @@ function render(){
     check:"Template C + <a href='claude-code-enterprise-config.html'>config §7</a>. Operator actions belong in a file in your repo, not a PR description — a PR description is buried after merge and a fresh operator never sees it."
   }[S.tab];
 
-  document.getElementById("btn-copy").disabled = blocked.length > 0;
-  document.getElementById("btn-dl").disabled = blocked.length > 0;
+  // A disabled button with no explanation is a dead end for anyone who didn't connect it to the
+  // gate above. The tooltip names the first blocker rather than just asserting "blocked".
+  const why = blocked.length
+    ? `Blocked: ${blocked[0].msg.replace(/<[^>]+>/g, "")}${blocked.length>1 ? ` (+${blocked.length-1} more)` : ""}`
+    : "";
+  ["btn-copy","btn-dl"].forEach(id => {
+    const b = document.getElementById(id);
+    b.disabled = blocked.length > 0;
+    b.title = why;
+  });
 }
 
 /* ---------------- checkbox lists ---------------- */
@@ -1962,7 +2052,7 @@ document.addEventListener("click", e => {
   const b = e.target.closest("button[data-k]");
   if (b) { S[b.dataset.k] = b.dataset.v; render(); return; }
   const t = e.target.closest("button[data-tab]");
-  if (t) { S.tab = t.dataset.tab; render(); return; }
+  if (t) { S.tab = t.dataset.tab; S.seen[S.tab] = true; render(); return; }
 });
 document.addEventListener("change", e => {
   const el = e.target;
