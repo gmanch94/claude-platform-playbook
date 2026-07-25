@@ -8,7 +8,7 @@ Ideas surfaced during work but explicitly deferred. Each entry: what · why defe
 
 ## Opus 5 System Card — second-order propagation (opened 2026-07-24)
 
-The system-card sweep landed the findings that **change a decision** in five files (`feature-inventory` rows first, then `agentic-threat-model`, `governance-overlay`, `claude-security-layers`, `user-mindset-cheatsheet` + `-color`). These five are real but second-order — each would add a paragraph, not change a recommendation. Deferred deliberately to keep one PR reviewable rather than re-touching ten files per review round.
+The system-card sweep landed the findings that **change a decision** in five files (`feature-inventory` rows first, then `agentic-threat-model`, `governance-overlay`, `claude-security-layers`, `user-mindset-cheatsheet` + `-color`). The six items below are real but second-order — each would add a paragraph, not change a recommendation. Deferred deliberately to keep one PR reviewable rather than re-touching ten files per review round.
 
 | # | Item | Why deferred | Trigger to revisit | Effort |
 |---|---|---|---|---|

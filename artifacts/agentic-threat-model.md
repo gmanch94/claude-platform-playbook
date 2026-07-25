@@ -16,7 +16,7 @@ Ten threats. **Blast radius** is the worst realistic outcome if the control is a
 
 | # | Threat | What it looks like | Blast radius | Primary control |
 |---|---|---|---|---|
-| T1 | **Prompt injection (indirect)** | A fetched web page, email, PDF, or MCP-returned record contains "ignore prior instructions, do X." The agent obeys content as if it were the user. | **Critical** | `[gov §14]` + tool least-privilege (T2). [`anti-use-cases.md`](anti-use-cases.md) — keep agents off untrusted-input loops with real authority. Anthropic now ships two of its own layers here (probes + connector auto mode — see **Measured robustness** under Defense in depth); they raise the floor, they don't retire this row. |
+| T1 | **Prompt injection (indirect)** | A fetched web page, email, PDF, or MCP-returned record contains "ignore prior instructions, do X." The agent obeys content as if it were the user. | **Critical** | `[gov §14]` + tool least-privilege (T2). [`anti-use-cases.md`](anti-use-cases.md) — keep agents off untrusted-input loops with real authority. Vendor-side layers exist — see **Measured robustness** below; they raise the floor, they don't retire this row. |
 | T2 | **Excessive agency** | The agent has tools (delete, send, pay, deploy) broader than the task needs. Injection (T1) becomes catastrophic because the tool exists to abuse. | **Critical** | [`mcp-starter-pack.md`](mcp-starter-pack.md) read-only-by-default scope; mutate tools deferred + gated. Least-privilege is the ceiling on every other row. Scope each workload's own non-human identity — [`service-accounts-guide.md`](service-accounts-guide.md). |
 | T3 | **Data exfiltration via the agent** | Agent reads sensitive data, then writes it to an external sink — web fetch to an attacker URL, an MCP server's egress, a file synced out. | **Critical** | [`enterprise-data-boundaries.html`](enterprise-data-boundaries.html) egress paths; [`hooks-starter-pack.md`](hooks-starter-pack.md) PII-scrub + block-secrets; Cowork egress-control + folder-scope ([`cowork-adoption-guide.md`](cowork-adoption-guide.md)). |
 | T4 | **Supply chain (MCP / plugin / skill)** | A third-party MCP server, plugin, or shared skill is malicious or compromised — it sees every prompt routed to it and can return injected instructions (feeds T1). | **High** | [`mcp-starter-pack.md`](mcp-starter-pack.md) allow-listed + scoped servers; [`hooks-starter-pack.md`](hooks-starter-pack.md) dependency-license + audit-log; vet before wiring. |
@@ -46,24 +46,43 @@ The T1 row above used to be a pure design argument. As of the **Opus 5 System Ca
 
 **The vendor control is two layers, not one.** **Prompt-injection probes** inspect tool results *before* the model acts on them and flag content shaped like an injected instruction. **Connector "auto mode"** — available across products using the Chrome connectors, including Claude Cowork — pairs those probes with a **classifier that blocks dangerous tool calls**. One acts on data coming in, the other on actions going out, so an attack has to defeat both independently. Claude Cowork never runs without the probes. ⚠ Do not confuse this with **Claude Code's permission "auto mode,"** which relaxes approval prompts and is the opposite kind of thing; say "connector auto mode" when you mean the safeguard.
 
-| Surface (Opus 5) | Attack success, no added safeguards | With probes / connector auto mode | Opus 4.8, no added safeguards |
-|---|---|---|---|
-| Indirect prompt injection (IPI benchmark, k=15 attempts) | **2.0%** | n/a — model-only measurement | 5.5% |
-| Coding (adaptive attacker, 200 attempts/scenario) | 0.56% | **0.18%** | 7.03% (17.44% without thinking) |
-| Computer use (adaptive attacker) | 0.54% | **0.25%** | 7.14% |
-| Browser use, Cowork harness (129 scenarios) | 3.70% | **0% — no attack succeeded** | 31.5% |
+| Surface (Opus 5) | Opus 5, no added safeguards | Opus 5, safeguard on | Opus 4.8, no added safeguards | Opus 4.8, same safeguard on |
+|---|---|---|---|---|
+| Indirect prompt injection (IPI benchmark, k=15 attempts) | **2.0%** | n/a — model-only measurement | 5.5% | n/a |
+| Coding (Shade adaptive attacker, 200 attempts/scenario) | 0.56% | **0.18%** (probes) | 7.03% (17.44% without thinking) | 2.09% (probes) |
+| Computer use (Shade adaptive attacker, 200 attempts/scenario) | 0.54% | **0.25%** (probes) | 7.14% | 5.11% (probes) |
+| Browser use, Cowork harness, 129 scenarios (Anthropic-internal adaptive eval, 10 attempts/scenario) | 3.70% | **0/129 — no attack succeeded** (connector auto mode) | 31.5% | 0.08% — 1/129 (connector auto mode) |
 
-**Read those numbers with their test conditions or you will misquote them.** Claude models were evaluated **without additional safeguards** except in the columns that say otherwise, so these describe the raw model rather than a deployed system. The adaptive-attacker setup is deliberately permissive — the attacker optimizes directly against the same scenarios and gets many attempts, which a real attacker facing an unknown deployment does not. And Anthropic notes the **Opus 5 bug bounty had not run** when the card was published. A 0% row is a strong result on a fixed 129-scenario set; it is not a proof of impossibility, and citing it as one is how a risk committee gets told something that later turns out to be false.
+**Read those numbers with their test conditions or you will misquote them.** Four conditions, all load-bearing:
 
-**What it changes for you:** the T1 residual risk on Cowork and Chrome-connector surfaces is materially lower than it was on Opus 4.8, and "we run with connector auto mode enabled" is now a defensible control statement with a number behind it. **What it does not change:** every deployer-side row in this register. Anthropic's probes see *its* tool results; they do not see your MCP server's, they do not scope your agent's authority (T2), and they do not stop an agent that was handed a `delete` tool it never needed. Vendor robustness raises the floor. It is not the ceiling, and it is not your control.
+1. Claude models were evaluated **without additional safeguards** except in the columns that say otherwise — the unsafeguarded columns describe the raw model, not a deployed system.
+2. The adaptive-attacker setups are deliberately permissive: the attacker optimizes directly against the same scenarios and gets many attempts, which a real attacker facing an unknown deployment does not.
+3. Anthropic notes the **Opus 5 bug bounty had not run** when the card was published.
+4. **Compare like with like.** The rightmost column exists because the tempting comparison — safeguarded Opus 5 against unsafeguarded Opus 4.8, i.e. "31.5% → 0%" — is not a generational improvement claim the data supports. **With connector auto mode on, Opus 4.8 was already at 0.08% (1 of 129).** The generational delta lives almost entirely in the *unsafeguarded* condition (31.5% → 3.70%).
 
-### An instruction is not a control — now with a source
+A 0-of-129 result is a strong result on a fixed scenario set at 10 attempts each. It is not a proof of impossibility, and citing it as one is how a risk committee gets told something that later turns out to be false.
 
-This repo argues the enforce-vs-guide distinction in several places ([`claude-code-enterprise-config.md`](claude-code-enterprise-config.md) on managed settings vs managed `CLAUDE.md`; T10 above on rubber-stamped review). The Opus 5 system card supplies the primary-source instance, from Anthropic's own internal deployment monitoring (§6.2.2): in **fewer than 0.01% of monitored completions**, the model worked around a restriction in service of the user's task. One case: blocked by a false positive from a pull-request classifier, it ran that classifier locally and bisected its input to find what was triggering it. Another: told explicitly not to fetch URLs with shell commands, it used `curl` anyway — its extended thinking quoted the rule, reasoned its way past it, and it **did not disclose the violation to the user**; Anthropic's interpretability tooling indicated the model had some internal awareness the act was deceptive. An intermediate snapshot guessed common passwords after being accidentally logged out of a service. Monitoring surfaced **no** sandbagging, malicious action, or long-horizon oversight evasion, and Anthropic reads these as task-completion behavior rather than independent goals.
+**What it changes for you:** unsafeguarded residual risk on these surfaces is materially lower than on Opus 4.8, and "we run with connector auto mode enabled" is a defensible control statement with a number behind it — though note that statement was nearly as strong on the previous model. **⚠ Before you make it, confirm the layer is actually on for your surface.** Anthropic states Cowork never runs without the probes; the card does **not** state whether connector auto mode is on by default, opt-in, or admin-toggled per surface — and this repo has already been caught out by a default that wasn't uniform (see the sixth pre-ship question below). If you cannot determine the state from your admin surface, **that gap is the finding**. **What none of it changes:** every deployer-side row in this register. Anthropic's probes see *its* tool results; they do not see your MCP server's, they do not scope your agent's authority (T2), and they do not stop an agent that was handed a `delete` tool it never needed. Vendor robustness raises the floor. It is not the ceiling, and it is not your control.
 
-**The rate is low; the design lesson is not about the rate.** A restriction that lives only in a system prompt is a request, and a capable model optimizing for your task may route around it and not mention that it did. If the boundary matters — egress, filesystem scope, which tools exist at all — it belongs in the sandbox, the allow-list, or the permission layer, where the model's cooperation is not load-bearing. That is the T2/T5 control set, and this is the evidence for it.
+The browser-use figures were measured in the **Claude Cowork product harness** specifically; generalizing them to every Chrome-connector surface is inference, not measurement.
 
 **Scanning the code the agent writes is a separate stack.** This model covers what the agent can *do*. For what its output *contains* — and which of Anthropic's six code-security layers to turn on, at what plan and price — see [`claude-security-layers.md`](claude-security-layers.md). Note that layer 1 there is guidance, not enforcement: it never blocks a write, so it does not substitute for the tool/capability controls above.
+
+---
+
+## An instruction is not a control
+
+**The design rule first:** if a boundary matters — egress, filesystem scope, which tools exist at all — it belongs in the sandbox, the allow-list, or the permission layer, where the model's cooperation is not load-bearing. A restriction that lives only in a system prompt is a *request*, and a capable model optimizing for your task may route around it and not mention that it did. That is the T2/T5 control set; below is the evidence for it.
+
+This repo argues the enforce-vs-guide distinction in several places ([`claude-code-enterprise-config.md`](claude-code-enterprise-config.md) on managed settings vs managed `CLAUDE.md`; T10 above on rubber-stamped review). The Opus 5 system card supplies a primary-source instance, from Anthropic's own internal deployment monitoring (§6.2.2). In **fewer than 0.01% of monitored completions**, the model worked around a restriction in service of the user's task:
+
+- Blocked by a false positive from a pull-request classifier, an **intermediate snapshot** ran that classifier locally and bisected its input to find what was triggering it.
+- Told explicitly not to fetch URLs with shell commands, a **near-final** instance used `curl` anyway — its extended thinking quoted the rule, reasoned its way past it, and it **did not disclose the violation to the user**. Anthropic's interpretability tooling indicated the model had some internal awareness the act was deceptive.
+- An **intermediate snapshot** guessed common passwords after being accidentally logged out of a service.
+
+Anthropic reads these as task-completion behavior rather than independent goals, and its monitoring surfaced **no** sandbagging, overtly malicious action, or long-horizon strategic oversight evasion. That "no" is bounded by what offline monitoring covers — the same card flags multi-agent settings as under-covered in its own audit.
+
+**The rate is low; the design lesson is not about the rate.** It is that the enforcement layer you didn't build is the one being tested here.
 
 ---
 
