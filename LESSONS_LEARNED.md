@@ -20,6 +20,22 @@ Running log of process lessons for working in this repo. Append, don't overwrite
 
 ## Universal process lessons
 
+### "We don't support X, correct?" is a negative claim about your OWN artifact — grep for it, don't recall it
+
+2026-07-25. Asked whether the config builder supported `managed-settings.d` fragment delivery, the honest-feeling answer was "correct, we don't." Both halves needed checking, and the second half was wrong in a way re-reading could not surface: the parent artifact **did** carry `managed-settings.d` — as five words inside a parenthetical on one line — and carried **none** of its semantics. A full-text fetch of the live settings doc then produced a whole governance mechanism: the base file merges *first* (so it is the weakest input), fragments merge alphabetically with **later scalars winning**, arrays are **concatenated and de-duplicated** so another team can widen `permissions.allow` without touching your file, and a fragment renamed to start with `.` is **ignored silently**.
+
+**Why it survives care:** the existing artifact rule (`~/.claude/rules/artifact-quality.md`) fires the negative-claim tripwire on claims about *external sources*. A claim about your own repo feels verifiable by memory, and a parenthetical is exactly what memory drops. **The tripwire is grammatical, not directional** — `no` / `don't` / `we lack` / `not supported` triggers a grep whether the subject is a vendor's docs or your own file.
+
+**And a coverage claim needs the same treatment.** Three sibling questions (Cloudflare/Akamai/Zscaler, Oracle Cloud, Cloudinary/OpenAI/Vercel/Supabase) all landed on one structural fact: **every curated list reports nothing about what it omits**, and a "gaps visible" matrix built from that list shows no gap for a row that never existed. The fix is a *bar* for inclusion plus a *free-text escape hatch*, never a longer list — and a deliberately-excluded item (OpenAI: a credential with no destructive control plane, so env-var entry and no `ask` rule) is worth shipping visibly, because it shows the bar working instead of leaving a reader to wonder.
+
+### A comment can kill a whole page, and only one of the repo's gates could ever see it
+
+2026-07-25. A new code comment in `claude-code-config-builder.html` contained a glob with `*/` inside it. That closed the block comment early, and the entire 110 KB inline script failed to parse: every generated checkbox list empty, no output at all. **The page still looked plausible** — all the static markup renders regardless — and it was found only because a browser probe counted zero checkboxes.
+
+No existing gate covered it: `check-counts.mjs` read Markdown, the pipe scanner read Markdown, `/stale-check` reads metadata. Fixed at the class level rather than the instance: `check-counts.mjs` gained a section that extracts every `<script>` from `artifacts/*.html` and runs `new vm.Script(body)`, failing with the file and the opening line number. Negative-controlled with a planted `const x = = 1` before trusting it — **a guard you have not watched fail is not a guard.**
+
+Corollary from the same commit: guards interact, and a defect can hide *between* them. A backlog table row separated from its table by a blank line was a phantom-table bug the pipe scanner caught — and closing the blank line is what let the table-structure guard see the row's real defect (unescaped `||` making 7 cells in a 5-column table). The blank line had made the block too short for the structure check to examine. **Fixing one guard's finding is how you surface the other's.**
+
 ### Never rewrite tracked text files with PowerShell `Set-Content -Encoding utf8` (Windows)
 
 Windows PowerShell 5.1 writes UTF-8 **with a byte-order mark**. A bulk regex-swap pass over `index.html` and `docs/feature-inventory.md` (2026-07-23, during the `claude-security-layers` rename) prepended BOMs that merged in [#57](https://github.com/gmanch94/claude-platform-playbook/pull/57) and needed a follow-up [#58](https://github.com/gmanch94/claude-platform-playbook/pull/58) to strip.
