@@ -30,7 +30,7 @@ Do you need a **BAA** (HIPAA/PHI), **SCIM** provisioning, **audit logs**, **ZDR*
 
 | Team size | Plan | Notes |
 |---|---|---|
-| **1** | Free → Pro → Max | **Free** ($0) for light use *without* Claude Code; **Pro** ($17 annual / $20 monthly) once you want Claude Code, Projects, Research, more models; **Max** (from $100/mo, 5× or 20× Pro usage) for headroom + peak priority. None unlock API quota. [H] |
+| **1** | Free → Pro → Max | **Free** ($0) for light use *without* Claude Code; **Pro** ($17 annual / $20 monthly) once you want Claude Code, Projects, Research, more models; **Max** (from $100/mo, 5× or 20× Pro usage) for headroom + peak priority. None unlock API quota. [H] **Since 2026-07-24 the Pro/Max split is also a model-default decision, not only a usage-headroom one: Opus 5 is the default model on Max and the strongest model available on Pro** — so a Pro user reaches Opus 5 but doesn't get it by default. Weigh that alongside usage if model quality per-session matters more than volume. |
 | **2–4** | Individual Pro/Max seats, one per person | Below the Team floor (5). Each person gets Claude Code, but you get **no SSO, no central admin, and no no-train-by-default** — the consumer policy surface applies. Move to Team at 5. |
 | **5–150** | **Team** — $20 standard / $100 premium per seat/mo annual ($25 / $125 monthly) | SSO, central billing, enterprise search, **no model training by default**. Premium seat = 5× standard usage; put heavy users there, mix-and-match the rest. [H] |
 | **151+** | **Enterprise** (custom) | The 150/151 seam is exact — 150-and-under is Team, 151+ is Enterprise. No gap, no overlap. |
@@ -60,7 +60,7 @@ Seat prices [H] anthropic.com/pricing, as-of 2026-06; monthly figures run higher
 | You are… | Buy | Why | Failure mode if wrong |
 |---|---|---|---|
 | Individual kicking the tires | Free | Full chat surface at $0 | Expecting Claude Code — Free doesn't include it; move to Pro |
-| Solo dev / professional | Pro | Claude Code + Projects + more models, $17–20 | Buying Max first — you rarely saturate Pro on day 1; upgrade when you actually hit limits |
+| Solo dev / professional | Pro | Claude Code + Projects + more models, $17–20 | Buying Max first — you rarely saturate Pro on day 1; upgrade when you actually hit limits. Counter-consideration since 2026-07-24: Max makes **Opus 5 the default** rather than an opt-in, so if nearly every session is hard reasoning work, the upgrade case is model-default + headroom, not headroom alone |
 | Power user hitting limits | Max 5× or 20× | Headroom + priority at peak | Buying Max expecting API quota — it has none; you need API credits |
 | Startup of 2–4 | Individual Pro/Max seats, one per person | Below Team's 5-seat floor; each still gets Claude Code | Expecting SSO / central admin / no-train-default — those start at Team (5+); the consumer policy surface applies until then |
 | Team of 5–150 | Team (mix std/premium seats) | SSO, central billing, no-train default, seat tiers to fit usage | Putting heavy users on standard seats — premium is 5× usage; the mismatch throttles them |

@@ -123,7 +123,7 @@
         <span class="pct" id="mix-s-val">35%</span>
       </div>
       <div class="mix-row">
-        <span class="name">Opus 4.8</span>
+        <span class="name">Opus 5</span>
         <input type="range" id="mix-o" min="0" max="100" value="5">
         <span class="pct" id="mix-o-val">5%</span>
       </div>
@@ -133,7 +133,8 @@
         <span class="pct" id="mix-f-val">0%</span>
       </div>
       <div class="mix-warn" id="mix-warn"></div>
-      <div class="hint" style="margin-top:-2px;">Fable 5 (GA, restored 2026-07-01) is the frontier tier at ~2× Opus — route only the hardest-task subset here, and validate the quality delta vs Opus 4.8 in eval before you do. Defaults to 0%.</div>
+      <div class="hint" style="margin-top:-2px;">One output-token figure feeds all four lanes. Since <strong>Opus 5 runs thinking on by default</strong>, its real output per request runs higher than the Haiku/Sonnet lanes — so a single blended figure <em>understates the Opus lane</em>. For an Opus-heavy mix, re-run with a higher output value to see the range, or lower <code>effort</code> in production.</div>
+      <div class="hint" style="margin-top:-2px;">Fable 5 (GA) is the frontier tier at ~2× Opus. <strong>Its case narrowed when Opus 5 launched (2026-07-24):</strong> Opus 5 leads Anthropic's reported coding + knowledge-work evals at half Fable's price (vendor-reported — run your own), and carries no data-retention requirement for general access — which removes Fable's ZDR disqualifier but does <em>not</em> by itself establish ZDR coverage for Opus 5 (see governance-overlay). Fable requires 30-day retention and is not ZDR-eligible. Route here only the hardest frontier-reasoning subset where your own eval shows a real delta over Opus 5. Defaults to 0%.</div>
 
       <h2 style="margin-top:18px;">Optimization levers</h2>
       <div class="field">
@@ -195,7 +196,7 @@
             <tbody>
               <tr><td>Haiku 4.5</td><td class="num">$1.00</td><td class="num">$5.00</td><td class="num">$0.10</td><td class="num">$1.25</td></tr>
               <tr><td>Sonnet 5</td><td class="num">$3.00</td><td class="num">$15.00</td><td class="num">$0.30</td><td class="num">$3.75</td></tr>
-              <tr><td>Opus 4.8</td><td class="num">$5.00</td><td class="num">$25.00</td><td class="num">$0.50</td><td class="num">$6.25</td></tr>
+              <tr><td>Opus 5</td><td class="num">$5.00</td><td class="num">$25.00</td><td class="num">$0.50</td><td class="num">$6.25</td></tr>
               <tr><td>Fable 5</td><td class="num">$10.00</td><td class="num">$50.00</td><td class="num">$1.00</td><td class="num">$12.50</td></tr>
             </tbody>
           </table>
@@ -204,7 +205,7 @@
       </details>
 
       <div class="pricing-note">
-        Pricing approximate as of <strong>2026-07</strong>. Sonnet 5 launched 2026-06-30 at introductory pricing of $2/$10 per MTok (in/out) through 2026-08-31; the table above shows its standard post-intro rate ($3/$15, identical to Sonnet 4.6's price), which is the safer planning number for steady-state budgets. Sonnet 5 also uses an updated tokenizer — the same input can map to ~1.0–1.35× more tokens than under 4.6, so effective per-task cost may run higher than the sticker price alone implies. <strong>Fable 5</strong> (GA, access restored 2026-07-01) at $10/$50 per MTok is ~2× Opus 4.8 — it defaults to 0% of the mix; route only the hardest-task subset to it and validate the quality delta in eval first. It requires 30-day retention and is <em>not</em> ZDR-eligible. Verify current rates at <a href="https://www.anthropic.com/pricing" target="_blank">anthropic.com/pricing</a> before final budgeting.
+        Pricing approximate as of <strong>2026-07</strong>. Sonnet 5 launched 2026-06-30 at introductory pricing of $2/$10 per MTok (in/out) through 2026-08-31; the table above shows its standard post-intro rate ($3/$15, identical to Sonnet 4.6's price), which is the safer planning number for steady-state budgets. Sonnet 5 also uses an updated tokenizer — the same input can map to ~1.0–1.35× more tokens than under 4.6, so effective per-task cost may run higher than the sticker price alone implies. <strong>Fable 5</strong> (GA, access restored 2026-07-01) at $10/$50 per MTok is ~2× Opus 5 — it defaults to 0% of the mix; route only the hardest-task subset to it and validate the quality delta in eval first. That bar rose on 2026-07-24: <strong>Opus 5</strong> launched at the same $5/$25 as Opus 4.8, leads Anthropic's reported coding and knowledge-work evals (vendor-reported), and carries no data-retention requirement for general access — while Fable 5 requires 30-day retention and is <em>not</em> ZDR-eligible. That removes Fable's ZDR disqualifier; it does not by itself establish ZDR coverage for Opus 5. Verify current rates at <a href="https://www.anthropic.com/pricing" target="_blank">anthropic.com/pricing</a> before final budgeting.
       </div>
     </div>
   </div>
@@ -229,7 +230,7 @@
           <li class="mistake"><strong>Forgetting agent fan-out</strong> — a single user request can become 5–20 model calls with tool use. Use the turns slider above.</li>
           <li class="mistake"><strong>Treating cache hit rate as a constant</strong> — real workloads vary 30–80% depending on conversation reset frequency.</li>
           <li class="mistake"><strong>Pricing all output at the highest tier</strong> — if you're routing 80% of traffic to Haiku, output blends accordingly.</li>
-          <li class="mistake"><strong>Ignoring extended thinking budget</strong> — when enabled, thinking tokens count as output. Budget separately.</li>
+          <li class="mistake"><strong>Modelling thinking tokens as optional</strong> — on <strong>Opus 5 thinking is ON by default</strong> (since 2026-07-24), so its thinking tokens bill as output whether or not you asked for them. Model the Opus lane's output higher than the Haiku/Sonnet lanes. <code>effort</code> (low → max) is the tuning dial for how much the model thinks, but re-measure rather than assuming a lower setting shrinks the bill proportionally — thinking volume and visible answer length are not the same thing. On Opus 4.7/4.8 thinking stayed off unless requested.</li>
         </ul>
       </div>
     </details>
@@ -427,7 +428,7 @@ function recompute() {
   const rows = [
     ['Haiku 4.5',  h.tokens, h.total],
     ['Sonnet 5',   s.tokens, s.total],
-    ['Opus 4.8',   o.tokens, o.total],
+    ['Opus 5',     o.tokens, o.total],
     ['Fable 5',    f.tokens, f.total],
   ];
   tb.innerHTML = rows.map(r =>
@@ -455,7 +456,7 @@ function recompute() {
         datasets: [
           { label: 'Haiku 4.5',  data: haikuData,  backgroundColor: '#f3c5a8' },
           { label: 'Sonnet 5',   data: sonnetData, backgroundColor: '#D97757' },
-          { label: 'Opus 4.8',   data: opusData,   backgroundColor: '#7C5E48' },
+          { label: 'Opus 5',     data: opusData,   backgroundColor: '#7C5E48' },
           { label: 'Fable 5',    data: fableData,  backgroundColor: '#5e3a52' }
         ]
       },

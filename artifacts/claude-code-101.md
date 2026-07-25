@@ -60,7 +60,7 @@ Drop this posture into your own `CLAUDE.md` so every session runs it; the org-wi
   │  │     └ a stray ANTHROPIC_API_KEY overrides your subscription silently
   │  └─ hyperscaler env vars ────────────▶ parallel path (below)
   ├─ Messages / inference API
-  │     └─▶ models: Opus 4.8 · Sonnet 5 · Haiku 4.5 · Fable 5
+  │     └─▶ models: Opus 5 · Sonnet 5 · Haiku 4.5 · Fable 5
   ├─ Server-side prompt cache — steady-state cost drops on a stable context
   └─ Console + auth: usage · billing · workspaces + spend caps [E]
                      · managed-settings delivery [E]       [E] = Enterprise
@@ -119,7 +119,7 @@ Pick a model by **alias**, not version number, so you never chase model IDs:
 
 Independently, `/effort` sets *how hard the model thinks* (`low` → `medium` → `high` → `xhigh` → `max`; `high` is the default on today's models and the available rungs are model-dependent). More effort = more tokens + latency. Reach for `max` only on genuinely hard problems — it can overthink routine work.
 
-**Thinking:** modern models (Fable 5, Sonnet 5, Opus 4.7+) use *adaptive* reasoning — thinking happens automatically where it helps. Nudge it in plain language ("think carefully about edge cases") or toggle with **Option+T** (macOS) / **Alt+T** (Win/Linux). The `ultrathink` keyword forces deep reasoning for one turn.
+**Thinking:** modern models (Fable 5, Opus 5, Sonnet 5, Opus 4.7+) use *adaptive* reasoning — thinking happens automatically where it helps, and on Opus 5 it's on by default. Nudge it in plain language ("think carefully about edge cases") or toggle with **Option+T** (macOS) / **Alt+T** (Win/Linux). The `ultrathink` keyword forces deep reasoning for one turn.
 
 Don't reflexively run Opus for everything — it costs materially more than Sonnet for cases Sonnet handles fine (exact rates: [`../docs/feature-inventory.md`](../docs/feature-inventory.md)). `opusplan` is usually the better default for a substantial change.
 

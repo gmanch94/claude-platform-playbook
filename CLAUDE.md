@@ -6,7 +6,7 @@ Guidance for Claude Code (and any other AI agent) working in this repo.
 
 **`claude-platform-playbook`** — executive-grade decision tools for AI transformation **on the Claude platform**. Audience: CIOs, CDOs, CTOs, CHROs sizing Claude adoption + architects defending the choice to leadership.
 
-Public, CC-BY-4.0, vendor-explicit, decision-oriented. **Not** Anthropic marketing recap. Pin to current Claude model surface (Opus 4.8 / Sonnet 5 / Haiku 4.5 as of 2026-07) — refresh monthly.
+Public, CC-BY-4.0, vendor-explicit, decision-oriented. **Not** Anthropic marketing recap. Pin to current Claude model surface (Opus 5 / Sonnet 5 / Haiku 4.5 as of 2026-07) — refresh monthly.
 
 There is no build system or test suite. This is a content repo of static HTML + Markdown.
 
@@ -107,7 +107,7 @@ claude-platform-playbook/
 
 1. **Check `docs/feature-inventory.md` first.** If the change touches a Claude feature/model/pricing, edit the inventory row first.
 2. **Cite primary sources.** All technical claims link to `docs.claude.com` or `anthropic.com/pricing` with the as-of date stamped. Never paraphrase Anthropic marketing copy verbatim.
-3. **Pin specific versions** in current-state references (Opus 4.8, Sonnet 5, Haiku 4.5) but **structurally pin to family** ("current Sonnet tier") in the few places that document long-term posture (governance overlay, adoption playbook). Specific versions = current; family pins = stable interface.
+3. **Pin specific versions** in current-state references (Opus 5, Sonnet 5, Haiku 4.5) but **structurally pin to family** ("current Sonnet tier") in the few places that document long-term posture (governance overlay, adoption playbook). Specific versions = current; family pins = stable interface.
 4. **Bump as-of stamps** on every file you touch. Use the `/bump-as-of` slash command for sweeps.
 5. **Cross-link** between artifacts using relative paths (`adoption-playbook.md` → `governance-overlay.md`). Don't break the audience map in `README.md`.
 
@@ -117,12 +117,14 @@ Don't, without updating `docs/scope.md` first. The original scope agreed 8 artif
 
 ### When the model surface changes
 
-A new model release (e.g., Opus 4.9) is **not** a routine inventory edit — it's a breaking change to every artifact's "current model" reference. Process:
-1. Update `feature-inventory.md` model table
-2. Search-replace old version → new in every artifact (use `Grep -l` to enumerate)
-3. Update README footer
-4. Run `/bump-as-of` for the as-of stamps
-5. PR with diff list — sponsor reviews
+A new model release (e.g., Opus 5.1) is **not** a routine inventory edit — it's a breaking change to every artifact's "current model" reference. **The Models table has no `Used in artifacts` column**, so unlike every other inventory row there's no grep that finds its dependents — they must be swept deliberately (see [`LESSONS_LEARNED.md`](LESSONS_LEARNED.md) 2026-07-24). Process:
+1. Update `feature-inventory.md` model table — and read the **full** launch docs (`curl <url>.md`), not a section search. **Never write "not stated in launch materials" from a failed search**; a negative claim needs the same evidence as a positive one (2026-07-24: five such claims were false, one hid an HTTP-400 breaking change).
+2. Diff the **behavioral contract**, not just the name: thinking/effort defaults, rejected params + newly-invalid *combinations*, cache floor, context/output ceilings, tokenizer, and **capability or tier regressions** (Opus 5 dropped web fetch and Priority Tier support). These break lift-and-shift silently.
+3. Search-replace old version → new in every artifact (`Grep -l` to enumerate) — but **preserve version-history, price-comparison, and "(prev)" references**; only current-state pins flip.
+4. **Re-read for advice that assumed the old defaults.** The label swap is the easy half; guidance that is stale-but-not-obviously-wrong is what ships broken (2026-07-24: a guide's "default off" rule survived a clean label sweep and contradicted its own new header).
+5. Update the guards too — `/stale-check`'s model-pin rules encode the *old* pin and will report green on the drift they exist to catch.
+6. Update README footer; run `/bump-as-of` for the as-of stamps
+7. Blind-review (2 reviewers, factual + decision-utility lenses), then PR — sponsor reviews
 
 ### When pricing changes
 

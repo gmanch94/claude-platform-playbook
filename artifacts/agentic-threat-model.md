@@ -1,6 +1,6 @@
 # Agentic Threat Model — Claude Deployments
 
-**As of 2026-07.** Pin to current surface (Opus 4.8 / Sonnet 5 / Haiku 4.5, MCP, Claude Code, Cowork, Claude Tag) — refresh monthly.
+**As of 2026-07.** Pin to current surface (Opus 5 / Sonnet 5 / Haiku 4.5, MCP, Claude Code, Cowork, Claude Tag) — refresh monthly.
 
 [`governance-overlay.md`](governance-overlay.md) and [`enterprise-data-boundaries.html`](enterprise-data-boundaries.html) answer *where does the data go* — the **compliance** surface. [`incident-response-runbook.md`](incident-response-runbook.md) answers *what do we do when it breaks* — the **reactive** layer. Neither answers the question a security architect is asked when defending an agentic deployment to a risk committee: **how does an attacker turn this agent against us, and what stops them?** This is that register — the **preventive** attack surface, framed on the OWASP LLM / agentic risk taxonomy and mapped, threat by threat, to a control that already exists in this repo.
 
@@ -55,6 +55,8 @@ The think-first gate, specialized for the agentic surface. If any answer is hand
 5. **What stops a runaway?** Name the turn limit, the $/day gate, and the kill switch (T7). "We'll watch the bill" is not an answer — see [`governance-overlay.md`](governance-overlay.md#15-cost-as-a-governance-constraint) §15.3.
 
 Each answer should name the control *and* its failure mode — a control whose failure mode you can't state isn't load-bearing yet.
+
+**A sixth question, new as of 2026-07-24: do you know which model actually served the request?** Anthropic shipped **automatic fallbacks** (beta) alongside Opus 5: a request the safety classifiers flag on Opus 5 / Fable 5 routes to another model instead of returning blocked ([`../docs/feature-inventory.md`](../docs/feature-inventory.md)). **Check the default before you assume you have a choice — it is ON by default in claude.ai, Claude Code, and Claude Cowork (falling back to Opus 4.8), and opt-in only on the API.** So on the product surfaces, this is already happening. It raises effective availability, a real operational win. It also means **the model that answered may not be the model you pinned**. Treat it as a per-workload decision, not an inherited default: agents whose behavior was eval-certified on one model, whose output is audited, or whose cost is attributed per-model need the routing decision recorded — and the served model logged per request (see [`agent-observability-guide.md`](agent-observability-guide.md)). *Failure mode if ignored:* an eval-certified agent silently answers from an uncertified model, and the eval evidence you'd show an auditor no longer describes production.
 
 ---
 
