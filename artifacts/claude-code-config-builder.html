@@ -61,6 +61,12 @@
   .gate li.warnrow .goto { border-color:var(--warn); color:#8a5b0b; }
   .gate li.warnrow .goto:hover { background:var(--warn); color:white; }
   .fld { margin-bottom: 12px; }
+  /* Two related fields under one heading, WITHOUT sharing a .fld — they hide independently and the
+     val() guard keys off .fld[hidden]. Visual grouping only. */
+  .grp { border:1px solid var(--line); border-left:3px solid var(--c2); border-radius:7px; padding:10px 12px 2px; margin-bottom:12px; background:#fdfcfa; }
+  .grp-h { font-weight:700; font-size:12.5px; margin-bottom:3px; }
+  .grp-n { font-size:11px; color:var(--muted); margin-bottom:9px; line-height:1.55; }
+  .grp-n code { background:var(--soft); padding:1px 4px; border-radius:3px; font-size:10.5px; }
   .fld label { display:block; font-weight:600; font-size:12.5px; margin-bottom:2px; }
   .fld .hint { font-size:11px; color:var(--muted); margin-bottom:5px; }
   /* Long hints collapse after their first sentence. The prose is the artifact's value, so none of
@@ -93,9 +99,13 @@
   details.adv summary .badge .idle { color:var(--warn); }
   .gate { border-radius:10px; padding:14px 16px; margin-bottom:16px; border:2px solid var(--good); background:linear-gradient(135deg,#ecfdf5,#fff); }
   .gate.blocked { border-color:var(--bad); background:linear-gradient(135deg,#fef2f2,#fff); }
+  /* Pre-engagement: neutral, not alarmed. Same findings underneath, and the moment the operator
+     touches anything it becomes .blocked and reads as it always did. */
+  .gate.untouched { border-color:var(--c2); background:linear-gradient(135deg,#f7f4ef,#fff); }
   .gate .gh { display:flex; align-items:baseline; gap:10px; margin-bottom:4px; }
   .gate .gl { font-size:11px; font-weight:700; padding:3px 9px; border-radius:10px; color:white; background:var(--good); text-transform:uppercase; letter-spacing:.04em; }
   .gate.blocked .gl { background:var(--bad); }
+  .gate.untouched .gl { background:var(--c2); }
   .gate .gt { font-size:15px; font-weight:700; }
   .gate ul { margin:8px 0 0 0; padding-left:0; list-style:none; }
   .gate li { font-size:12.5px; padding:6px 9px; background:white; border-left:3px solid var(--bad); border-radius:3px; margin-bottom:5px; }
@@ -170,6 +180,7 @@
        the badge and the individual rows stayed legible, but the summary line did not. */
     .gate { background:linear-gradient(135deg,#14241c,#201a15); border-color:#1f6b45; }
     .gate.blocked { background:linear-gradient(135deg,#2a1614,#201a15); border-color:#a8342c; }
+    .gate.untouched { background:linear-gradient(135deg,#241f19,#201a15); border-color:#5a4c3a; }
     .thesis { background:#201a15; }
     details.adv { background:#1d1813; }
     .tabs button { background:#2a231c; }
@@ -177,7 +188,7 @@
     pre.out.md { background:#1d1813; color:var(--ink); }
     table.cov th, .pane .ph .path, .chip, .note code, .gate li code, .trace code { background:#2a231c; }
     .fm { background:#2a2213; }
-    .ships { background:#201a15; }
+    .ships, .grp { background:#201a15; }
     .tabs button .dot { background:#3a3228; }
     /* Both marker fills carry a class, so they outrank the blanket input background above and
        would paint a near-white field in dark mode. .bad already had this gap; fixing both here
@@ -258,7 +269,9 @@
         <h2><span class="n">2</span>Required for export</h2>
         <div class="lede">Every field here can block export at some posture, and several are hidden until yours calls for them. Left blank, each key is <b>omitted entirely</b> — never written as a placeholder.</div>
         <div class="fld">
-          <label>Organization name <span style="color:var(--muted);font-weight:400">(templates + announcements)</span></label>
+          <!-- "(templates + announcements)" read as cosmetic for something printed into four
+               emitted deliverables — which is how it shipped prefilled with the example company. -->
+          <label>Organization name <span style="color:var(--muted);font-weight:400">(printed into all four deliverables)</span></label>
           <input type="text" id="f-org" placeholder="e.g. Karekal">
         </div>
         <div class="fld">
@@ -292,8 +305,14 @@
         </div>
         <div class="fld" id="fld-mcp" hidden>
           <label>Allowed MCP servers <span style="color:var(--bad)">— required once MCP lockdown is on</span></label>
-          <div class="hint">Comma-separated server names. <b>This is the allowlist that <code>allowManagedMcpServersOnly</code> governs</b>, and leaving it unset is <em>not</em> the same as empty: unset means <b>all servers allowed</b>, so the lock flag alone restricts nothing. Enter <code>none</code> to emit an empty allowlist (admit zero servers).</div>
+          <div class="hint">Comma-separated server names. <b>This is the allowlist that <code>allowManagedMcpServersOnly</code> governs</b>, and leaving it unset is <em>not</em> the same as empty: unset means <b>all servers allowed</b>, so the lock flag alone restricts nothing.</div>
           <input type="text" id="f-mcp" placeholder="github, sentry, internal-docs">
+          <!-- The zero-server case used to be reachable only by typing the literal word "none", taught
+               in muted reason-text inside a blocker. A magic string in a free-text field is a contract
+               the operator has to find; this is the same emitted value with a control on it. Per the
+               config guide, an empty allowlist admits zero servers — not all. -->
+          <div class="chk" style="margin-top:5px"><input type="checkbox" id="f-mcp-none">
+            <label class="cl" for="f-mcp-none">Allow <b>no</b> MCP servers — emit an empty allowlist<span class="cp" style="text-transform:none">Admits zero. Not the same as leaving the field blank, which admits all.</span></label></div>
         </div>
         <div class="fld" id="fld-models" hidden>
           <label>Allowed models <span style="color:var(--bad)">— required at Maximum</span></label>
@@ -326,7 +345,7 @@
         </div>
         <div class="fld" id="fld-proxyports" hidden>
           <label>Bring-your-own sandbox proxy <span style="color:var(--muted);font-weight:400">(optional — HTTP / SOCKS5 ports)</span></label>
-          <div class="hint">Unset means Claude runs its own proxy, which allows on the <b>client-supplied hostname without inspecting TLS</b> — the docs' own warning is that a broad allow entry is then an exfiltration path (domain fronting). <button type="button" class="why">why ▸</button><span class="more" hidden>If containment is the requirement, point the sandbox at a proxy you control, terminate TLS there, and install its CA inside the sandbox. Note this is the <b>sandbox's own</b> proxy, which does take SOCKS5 — not the client-level <code>HTTPS_PROXY</code> path, where SOCKS is <b>not</b> supported (config §5.3). Two different proxies. On macOS that breaks TLS verification for Go-based tools (<code>gh</code>, <code>gcloud</code>, <code>terraform</code>) until you also tick <code>enableWeakerNetworkIsolation</code> below — which itself opens an exfiltration path. Both costs are real; pick knowingly.</span></div>
+          <div class="hint">Port numbers only, and only if you run your own proxy — leave both blank and Claude runs its own, which allows on the <b>client-supplied hostname without inspecting TLS</b>. <button type="button" class="why">why ▸</button><span class="more" hidden>The docs' own warning is that a broad allow entry is then an exfiltration path (domain fronting). If containment is the requirement, point the sandbox at a proxy you control, terminate TLS there, and install its CA inside the sandbox. Note this is the <b>sandbox's own</b> proxy, which does take SOCKS5 — not the client-level <code>HTTPS_PROXY</code> path, where SOCKS is <b>not</b> supported (config §5.3). Two different proxies. On macOS that breaks TLS verification for Go-based tools (<code>gh</code>, <code>gcloud</code>, <code>terraform</code>) until you also tick <code>enableWeakerNetworkIsolation</code> below — which itself opens an exfiltration path. Both costs are real; pick knowingly.</span></div>
           <div style="display:flex;gap:6px">
             <span style="flex:0 0 auto;align-self:center;font-size:11px;color:var(--muted);font-weight:600">HTTP</span>
             <input type="text" id="f-httpproxy" placeholder="httpProxyPort e.g. 8080" style="flex:1">
@@ -351,7 +370,7 @@
         </div>
         <div class="fld">
           <label>Corporate proxy <span style="color:var(--muted);font-weight:400">(optional — any TLS-intercepting SWG / ZTNA)</span></label>
-          <div class="hint"><b>Vendor-agnostic by design.</b> Zscaler, Netskope, Prisma Access, Cloudflare Gateway, Forcepoint, Cato, Akamai SIA — a gateway that terminates TLS presents the same two requirements whoever sells it, so this asks <em>do you intercept TLS</em>, not <em>which vendor</em>. <button type="button" class="why">why ▸</button><span class="more" hidden>One value fills both <code>HTTPS_PROXY</code> and <code>HTTP_PROXY</code>. <b>SOCKS is not supported on this client-level path</b> (the sandbox's own proxy above is a different proxy and does take SOCKS5). For NTLM / Kerberos, front Claude Code with a gateway that speaks your auth. Two things your gateway does <b>not</b> do: it is not part of this emitted config, so it cannot fill a cell in the coverage matrix below; and whether <b>sandboxed</b> subprocess traffic reaches it is <b>undocumented</b> — confirm in the gateway's own logs (config §5.3).</span></div>
+          <div class="hint">Fill this if your gateway <b>terminates TLS</b> — whichever vendor sells it. <button type="button" class="why">why ▸</button><span class="more" hidden><b>Vendor-agnostic by design:</b> Zscaler, Netskope, Prisma Access, Cloudflare Gateway, Forcepoint, Cato, Akamai SIA — a gateway that terminates TLS presents the same two requirements whoever sells it, so this asks <em>do you intercept TLS</em>, not <em>which vendor</em>. One value fills both <code>HTTPS_PROXY</code> and <code>HTTP_PROXY</code>. <b>SOCKS is not supported on this client-level path</b> (the sandbox's own proxy above is a different proxy and does take SOCKS5). For NTLM / Kerberos, front Claude Code with a gateway that speaks your auth. Two things your gateway does <b>not</b> do: it is not part of this emitted config, so it cannot fill a cell in the coverage matrix below; and whether <b>sandboxed</b> subprocess traffic reaches it is <b>undocumented</b> — confirm in the gateway's own logs (config §5.3).</span></div>
           <div style="display:flex;gap:6px">
             <input type="text" id="f-httpsproxy" placeholder="http://proxy.karekal.internal:8080" style="flex:2">
             <input type="text" id="f-noproxy" placeholder="NO_PROXY e.g. .karekal.internal,localhost" style="flex:2">
@@ -362,15 +381,28 @@
           <div class="hint">Claude Code trusts its bundled Mozilla roots <b>plus your OS certificate store</b>, so a root already deployed to the OS store needs nothing here. <button type="button" class="why">why ▸</button><span class="more" hidden>(npm installs need Node ≥ 22.15 to read that store; the native installer always can). Set this for a private root that is <em>not</em> in the OS store. If you intercept TLS and neither is in place, every call fails TLS verification — a fleet outage, not a warning.</span></div>
           <input type="text" id="f-cacert" placeholder="/etc/ssl/certs/corp-root.pem">
         </div>
+        <!-- Grouped, NOT merged into one field. The review suggested a single labelled group with two
+             inputs, like the marketplace src/repo pair. Two things forbid the merge. The config guide
+             §4 is emphatic that these are different SURFACES — credentials.envVars is "kept separate
+             from general filesystem rules", and "no path rule reaches" an env var — so one field
+             feeding both would blur exactly the distinction that doc works to hold. And they have
+             different visibility by design: env vars are emitted inside the sandbox block and vanish
+             with it, while extra PATHS also feed permissions.deny and stay visible with the sandbox
+             off. A shared .fld would hide both together and break the val() hidden-guard from #77.
+             So: one heading, two fields, labels that keep the surfaces apart. -->
+        <div class="grp">
+          <div class="grp-h">The vendors no curated list anticipated — <b>two different surfaces</b></div>
+          <div class="grp-n">Where a credential lives decides which field it goes in. A path rule never reaches an environment variable, and <code>CLAUDE_CODE_SUBPROCESS_ENV_SCRUB</code> covers only Anthropic and cloud-provider variables — not your vendors'.</div>
         <div class="fld">
-          <label>Extra credential <b>environment variables</b> <span style="color:var(--muted);font-weight:400">(optional — the vendors no list anticipated)</span></label>
+          <label>Extra credential <b>environment variables</b> <span style="color:var(--muted);font-weight:400">(optional — variable NAMES, not paths)</span></label>
           <div class="hint">Comma-separated variable names, emitted as <code>sandbox.credentials.envVars</code> with <code>mode: "deny"</code>. <button type="button" class="why">why ▸</button><span class="more" hidden><b>This field exists because the asset list is curated, and a curated list reports nothing about what it omits</b> — Alibaba Cloud, Tencent Cloud, IBM Cloud, Fastly, a regional CDN, an internal PKI. Walk your own vendor list with two questions each: where does the credential sit, and which CLI verb is externally visible. Paths go in the field below; env vars go here — <b>no path rule reaches an env var</b>, and <code>CLAUDE_CODE_SUBPROCESS_ENV_SCRUB</code> covers only Anthropic and cloud-provider credentials, not these.</span></div>
           <input type="text" id="f-extraenv" placeholder="ALIBABA_CLOUD_ACCESS_KEY_SECRET, FASTLY_API_TOKEN">
         </div>
         <div class="fld" id="fld-extradeny" hidden>
-          <label>Extra sandbox <code>filesystem.denyRead</code> paths <span style="color:var(--muted);font-weight:400">(optional)</span></label>
-          <div class="hint">The matrix's permanent gaps are project-relative globs (<code>.env</code>, <code>*.pem</code>, terraform state): the sandbox takes concrete paths, so a repo-relative pattern has nowhere to bind. If you know the absolute roots your repos live under, add them here and those gaps close.</div>
+          <label>Extra credential <b>file paths</b> <span style="color:var(--muted);font-weight:400">(optional — absolute PATHS, not variable names)</span></label>
+          <div class="hint">Emitted as <code>filesystem.denyRead</code> plus <code>permissions.deny</code>. <button type="button" class="why">why ▸</button><span class="more" hidden>The matrix's permanent gaps are project-relative globs (<code>.env</code>, <code>*.pem</code>, terraform state): the sandbox takes concrete paths, so a repo-relative pattern has nowhere to bind. If you know the absolute roots your repos live under, add them here and those gaps close. This field stays visible with the sandbox off, because the paths also feed the decision layer — the env-var field above does not, since it has no surface to be emitted into.</span></div>
           <input type="text" id="f-extradeny" placeholder="~/src, /opt/build">
+        </div>
         </div>
       </div>
 
@@ -663,7 +695,8 @@ const S = {
   ackNoOsLayer:false,
   // seen starts with json only, because json is the tab the page opens on — marking the rest seen
   // at init would defeat the dot entirely.
-  assets:{}, actions:{}, adv:{}, tab:"json", seen:{ json:true }
+  // touched flips on the first real interaction — see the gate framing in render().
+  assets:{}, actions:{}, adv:{}, tab:"json", seen:{ json:true }, touched:false
 };
 ASSETS.forEach(a => S.assets[a.id] = a.on);
 ACTIONS.forEach(a => S.actions[a.id] = a.on);
@@ -955,6 +988,12 @@ function listOf(id){ return val(id).split(",").map(s => s.trim()).filter(Boolean
 /* null = operator hasn't supplied a list, so no lock flag may be emitted.
    [] = deliberate empty allowlist (admit zero), which is NOT the same as unset. */
 function mcpList(){
+  // The checkbox and the literal "none" produce the SAME value — an empty allowlist. The string is
+  // kept working because it was the documented contract and someone may have a bookmarked posture;
+  // the checkbox is the discoverable way in. Checkbox wins, so a stale "none" in the box can't
+  // contradict an explicit untick. Only meaningful when the field is live, hence val() not raw DOM.
+  const box = document.getElementById("f-mcp-none");
+  if (box && box.checked && !fldHidden("f-mcp")) return [];
   const raw = val("f-mcp");
   if (!raw) return null;
   if (/^none$/i.test(raw)) return [];
@@ -1871,14 +1910,25 @@ function render(){
     if (el && el.offsetParent !== null) el.classList.add("needed");
   });
 
-  // gate
+  /* gate
+     Untouched, the page opened on a red EXPORT BLOCKED verdict over work nobody had started yet —
+     a failure state as the first thing an operator sees, before they have done anything to fail at.
+     Same findings, same gating, different frame until they engage: "Not ready" and a progress count.
+     S.touched flips on the first real interaction, so the stern wording arrives once it is earned
+     rather than being spent on the empty form. */
+  const needCount = F.filter(f => f.need && f.sev === "block").length;
   const g = document.getElementById("gate");
-  g.className = "gate" + (blocked.length ? " blocked" : "");
+  g.className = "gate" + (blocked.length ? (S.touched ? " blocked" : " untouched") : "");
   g.innerHTML =
-    `<div class="gh"><span class="gl">${blocked.length ? "Export blocked" : "Ready"}</span>
-      <span class="gt">${blocked.length ? blocked.length + " blocker" + (blocked.length>1?"s":"") : "No blockers"}</span></div>
+    `<div class="gh"><span class="gl">${blocked.length ? (S.touched ? "Export blocked" : "Not ready") : "Ready"}</span>
+      <span class="gt">${blocked.length
+        ? (S.touched ? blocked.length + " blocker" + (blocked.length>1?"s":"")
+                     : needCount + " required value" + (needCount===1?"":"s") + " to supply")
+        : "No blockers"}</span></div>
      <div style="font-size:12.5px;color:var(--muted)">${blocked.length
-       ? "Each blocker is a rule that cannot work, or a value whose absence fails closed. Copy and download stay disabled until they're clear."
+       ? (S.touched
+           ? "Each blocker is a rule that cannot work, or a value whose absence fails closed. Copy and download stay disabled until they're clear."
+           : "Answer the six posture questions, then fill the required values they call for. Nothing here is wrong yet — this is the work list.")
        : "JSON parses, no dead rules, every required value supplied. Still validate against the schema and stage on a canary."}</div>` +
     // Reason text renders as HTML, like the headline above it. It was escaped, which printed
     // every <code> and <b> in a reason as literal markup — the field names in the advice were
@@ -1899,7 +1949,10 @@ function render(){
       // said "4 blockers" over five rows with nothing saying which was which.
       const warns = F.filter(f => f.sev !== "block");
       return (blocked.length ? `<div class="gsub blk">Must fix to export</div><ul>${blocked.map(row).join("")}</ul>` : "")
-           + (warns.length ? `<div class="gsub wrn">Carried into your checklist</div><ul>${warns.map(row).join("")}</ul>` : "");
+           // "Advisory" by name. The code and the config guide both call checks 12 and 15 advisory —
+           // the page never used the word, so the reader had to infer which rows they were allowed
+           // to proceed past.
+           + (warns.length ? `<div class="gsub wrn">Advisory — carried into your checklist</div><ul>${warns.map(row).join("")}</ul>` : "");
     })();
 
   /* What this bundle actually ships, stated where the operator already is. An operator who stops at
@@ -2050,19 +2103,26 @@ document.addEventListener("click", e => {
     return;
   }
   const b = e.target.closest("button[data-k]");
-  if (b) { S[b.dataset.k] = b.dataset.v; render(); return; }
+  // A posture answer counts as engaging; opening a tab or a hint does not, since neither changes
+  // the config and neither is the operator starting work.
+  if (b) { S[b.dataset.k] = b.dataset.v; S.touched = true; render(); return; }
   const t = e.target.closest("button[data-tab]");
   if (t) { S.tab = t.dataset.tab; S.seen[S.tab] = true; render(); return; }
 });
 document.addEventListener("change", e => {
   const el = e.target;
+  S.touched = true;
   if (el.dataset.asset)  { S.assets[el.dataset.asset] = el.checked; render(); }
   if (el.dataset.action) { S.actions[el.dataset.action] = el.checked; render(); }
   if (el.dataset.adv)    { S.adv[el.dataset.adv] = el.checked; render(); }
   if (el.id === "f-ack") { S.ackNoOsLayer = el.checked; render(); }
+  // Ticking "allow no MCP servers" disables the name field rather than silently ignoring it — an
+  // enabled input whose value has no effect is the same does-nothing-and-says-nothing shape the
+  // linter exists to catch, and here it would be ours.
+  if (el.id === "f-mcp-none") { document.getElementById("f-mcp").disabled = el.checked; render(); }
 });
 document.addEventListener("input", e => {
-  if (e.target.matches("input[type=text], textarea")) render();
+  if (e.target.matches("input[type=text], textarea")) { S.touched = true; render(); }
 });
 
 // json is the DEFAULT tab, so its filename is the one most downloads get. Hard-coding
