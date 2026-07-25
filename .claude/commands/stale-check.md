@@ -76,7 +76,11 @@ FEATURE INVENTORY
 
 ### 5. Product surface audit
 
-Read the `## Product surfaces (Claude.ai apps)` table in `docs/feature-inventory.md` (currently: Cowork, Claude Design, Projects). **Product surfaces drift faster than the API feature set** — a beta→GA graduation or a BAA-coverage change can land between monthly refreshes. Precedent (2026-06-29): Cowork had silently graduated beta→GA on all paid plans and Claude Design had appeared as a new Team/Enterprise surface — neither was catchable by the stamp / pin / URL checks above, because none of them look at product-surface **status**, **plan gate**, or **BAA coverage**.
+Read the `## Product surfaces (Claude.ai apps)` table in `docs/feature-inventory.md` — **read the rows that are actually there, don't work from a list in this file** (it drifted once: it named three surfaces when the table held five, having missed Claude Tag and Claude Science). **Product surfaces drift faster than the API feature set** — a beta→GA graduation or a BAA-coverage change can land between monthly refreshes. Precedent (2026-06-29): Cowork had silently graduated beta→GA on all paid plans and Claude Design had appeared as a new Team/Enterprise surface — neither was catchable by the stamp / pin / URL checks above, because none of them look at product-surface **status**, **plan gate**, or **BAA coverage**.
+
+**⚠ Compare each row's own as-of, never the file-level "Last verified" — this is the check's known blind spot.** A refresh that verifies *some* rows still bumps the file-level stamp, which then makes the skipped rows look covered. Precedent (2026-07-25): the file read Last-verified 2026-07-24 while Claude Design, Projects, and Claude Tag all sat at as-of **2026-06** — and the Design row's plan gate was wrong in the permissive direction (logged Team/Enterprise; actually **Pro / Max / Team / Enterprise**, default off on Enterprise only). The 14-day window below did not catch it because the *file* looked one day old.
+
+**Second lesson from that run: a doc's title is not an availability statement.** The wrong gate came from reading "admin guide for Team and Enterprise plans" as the plan gate. Read the sentence that says *available to*, in the body.
 
 Use a **14-day** window here — tighter than the 35-day inventory window in step 4, because these move fast. For each row read its **Status** (GA / beta / preview), **plan gate**, **BAA** note (the Governance-flag column), **As-of**, and **Doc anchor**. Then:
 
@@ -87,15 +91,15 @@ Use a **14-day** window here — tighter than the 35-day inventory window in ste
 Report:
 
 ```
-PRODUCT SURFACES (3 rows · 14-day window)
+PRODUCT SURFACES (N rows as found in the table · 14-day window · per-row as-of)
   OK    Cowork          GA · paid-only · BAA-excluded       As-of 2026-06
   OK    Projects        GA · all-plans · BAA on Enterprise  As-of 2026-06
-  DUE   (all 3 rows)    Last verified 19 days ago ← re-check status/gate/BAA at support.claude.com + privacy.claude.com
+  DUE   (all rows)      Last verified 19 days ago ← re-check status/gate/BAA at support.claude.com + privacy.claude.com
   STALE Claude Design   beta · Team/Ent · BAA-excluded      As-of 2026-05 ← skipped last refresh
   DRIFT Cowork          GA here but listed "beta" in BAA row 130 ← reconcile
 ```
 
-If all rows are within the window and consistent: `Product surfaces: 3 rows OK, 0 due, 0 drift.`
+If all rows are within the window and consistent: `Product surfaces: N rows OK, 0 due, 0 drift.` State N as counted from the table, and confirm you compared **per-row** as-of values.
 
 ### 6. URL spot-check
 
