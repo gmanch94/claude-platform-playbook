@@ -74,6 +74,8 @@ For a real fleet, **server-managed settings via the claude.ai admin console** is
 
 This is the wall. Deploy it at the path matching your delivery mechanism (§1). Real `managed-settings.json` must be **strict JSON** — the `//` notes below are explanatory only; strip them. Add the `$schema` line for editor validation.
 
+> **Would rather not hand-assemble this?** [`claude-code-config-builder.html`](claude-code-config-builder.html) composes all three templates from five posture answers, wraps the output for your delivery mechanism (plist / `.reg` / per-OS file / admin-console steps), and **refuses to emit rule sets that can't work** — starting with the deny-shadows-allow collision in *How permission rules actually resolve* below. It omits unsupplied keys rather than writing placeholders, because these fields fail closed.
+
 ```json
 {
   "$schema": "https://json.schemastore.org/claude-code-settings.json",
@@ -239,7 +241,7 @@ Bare filenames follow gitignore semantics, so `Read(.env)` ≡ `Read(**/.env)` �
 | Setting | What it costs you |
 |---|---|
 | `excludedCommands` | the listed commands run unsandboxed, by design |
-| `allowUnixSockets` | allowing `/var/run/docker.sock` **effectively grants host access** through the Docker socket |
+| `network.allowUnixSockets` (**macOS only** — nests under `network`, not `sandbox`; on Linux/WSL2 it is ignored because the seccomp filter can't inspect socket paths, and `network.allowAllUnixSockets` is the blunt equivalent) | allowing `/var/run/docker.sock` **effectively grants host access** through the Docker socket |
 | `allowAppleEvents` (macOS) | removes code-execution isolation — sandboxed commands can launch other applications unsandboxed |
 | `enableWeakerNestedSandbox` (Linux) | lets the sandbox work inside Docker or where unprivileged user namespaces are disabled; **considerably weaker** — only with other isolation enforced |
 | `filesystem.disabled` (v2.1.216+) | network isolation only; `denyRead` and `credentials.files` stop applying |
