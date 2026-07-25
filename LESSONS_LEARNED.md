@@ -28,6 +28,17 @@ Running log of process lessons for working in this repo. Append, don't overwrite
 
 **And a coverage claim needs the same treatment.** Three sibling questions (Cloudflare/Akamai/Zscaler, Oracle Cloud, Cloudinary/OpenAI/Vercel/Supabase) all landed on one structural fact: **every curated list reports nothing about what it omits**, and a "gaps visible" matrix built from that list shows no gap for a row that never existed. The fix is a *bar* for inclusion plus a *free-text escape hatch*, never a longer list — and a deliberately-excluded item (OpenAI: a credential with no destructive control plane, so env-var entry and no `ask` rule) is worth shipping visibly, because it shows the bar working instead of leaving a reader to wonder.
 
+### The negative-claim miss recurred TWICE in one day — and the second time the source was one link away
+
+2026-07-25. Two separate false negatives in a single session, both from the same mechanism: a **page-scoped** search standing in for a full one.
+
+1. "We could not find a telemetry statement on the Claude Platform on AWS page." True of that page, false of the docs — the page links the feature-availability matrix, which states plainly that on Bedrock, Vertex, Foundry, and Claude Platform on AWS "error reporting and telemetry to Anthropic are off by default," and lists OpenTelemetry metrics among features that work on every provider.
+2. "We don't support `managed-settings.d`, correct?" — the parent artifact did mention it, in a parenthetical.
+
+**The rule needs a second clause.** The existing one says a negative claim needs the full source. Add: **when the source you searched links another source on the same question, you have not finished searching.** Writing the search terms into the artifact (which we did) is not a substitute for following the link — it documents the diligence without performing it. The tell is that both claims *read* as careful sourcing, which is why self-review passes them.
+
+Same session, same class, one more shape: a long-standing `[H]`-shaped claim ("the cloud sends no usage metrics on Bedrock/Vertex/Foundry") was simply **wrong**, and it had been sitting next to the builder's own contradicting text ("OTel metrics still flow — what's missing is Claude-account identity") in a sibling file for weeks. **Two files disagreeing is a finding available for free at any time, and nothing in the repo looks for it.**
+
 ### A comment can kill a whole page, and only one of the repo's gates could ever see it
 
 2026-07-25. A new code comment in `claude-code-config-builder.html` contained a glob with `*/` inside it. That closed the block comment early, and the entire 110 KB inline script failed to parse: every generated checkbox list empty, no output at all. **The page still looked plausible** — all the static markup renders regardless — and it was found only because a browser probe counted zero checkboxes.

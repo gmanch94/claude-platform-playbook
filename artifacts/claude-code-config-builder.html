@@ -251,6 +251,11 @@
           <div class="hint">Not a secret, so it ships in the bundle. The credential half — <code>ANTHROPIC_AWS_API_KEY</code> <b>or</b> resolvable AWS credentials — is never emitted here and lands in the checklist instead. Remember the routing race: <b>unset <code>CLAUDE_CODE_USE_BEDROCK</code> and <code>CLAUDE_CODE_USE_FOUNDRY</code></b> on any machine that used them, or they keep winning silently.</div>
           <input type="text" id="f-awsworkspace" placeholder="your Claude Platform on AWS workspace id">
         </div>
+        <div class="fld" id="fld-awsregion" hidden>
+          <label><code>AWS_REGION</code> <span style="color:var(--muted);font-weight:400">(optional here — but load-bearing)</span></label>
+          <div class="hint"><b>The base URL is computed from this value</b> as <code>https://aws-external-anthropic.{region}.api.aws</code>, so it is not a nicety — it decides where the client talks. Optional in this bundle only because the AWS credential chain often already supplies it from the machine's own AWS config, and pinning a region your fleet doesn't use is worse than inheriting the right one. Set it here if your fleet has no ambient value (CI runners typically don't). Override the URL directly with <code>ANTHROPIC_AWS_BASE_URL</code> if you must.</div>
+          <input type="text" id="f-awsregion" placeholder="us-east-1">
+        </div>
         <div class="fld">
           <label>Corporate proxy <span style="color:var(--muted);font-weight:400">(optional — any TLS-intercepting SWG / ZTNA)</span></label>
           <div class="hint"><b>Vendor-agnostic by design.</b> Zscaler, Netskope, Prisma Access, Cloudflare Gateway, Forcepoint, Cato, Akamai SIA — a gateway that terminates TLS presents the same two requirements whoever sells it, so this asks <em>do you intercept TLS</em>, not <em>which vendor</em>. One value fills both <code>HTTPS_PROXY</code> and <code>HTTP_PROXY</code>. <b>SOCKS is not supported on this client-level path</b> (the sandbox's own proxy above is a different proxy and does take SOCKS5). For NTLM / Kerberos, front Claude Code with a gateway that speaks your auth. Two things your gateway does <b>not</b> do: it is not part of this emitted config, so it cannot fill a cell in the coverage matrix below; and whether <b>sandboxed</b> subprocess traffic reaches it is <b>undocumented</b> — confirm in the gateway's own logs (config §5.3).</div>
@@ -356,7 +361,7 @@ const OPTS = {
     { v:"bedrock",  l:"AWS Bedrock",         fm:"OTel metrics still flow — what's missing is <b>Claude-account identity</b>: with no Claude account in the session only <code>user.id</code> and <code>session.id</code> are populated, so attach identity yourself via <code>OTEL_RESOURCE_ATTRIBUTES</code> (per user, through managed settings or a launch wrapper). Console spend controls don't cover hyperscaler usage, so <b>per-user spend limits</b> are the real gateway rationale." },
     { v:"vertex",   l:"GCP Vertex",          fm:"Same identity gap — set <code>OTEL_RESOURCE_ATTRIBUTES</code> yourself. Also pin model versions: the <code>sonnet</code>/<code>opus</code> aliases follow a built-in default and fall back silently at startup." },
     { v:"foundry",  l:"Azure AI Foundry",    fm:"Same identity gap, and unpinned aliases drift model-to-model under you." },
-    { v:"platformaws", l:"Claude Platform on AWS", fm:"Not a hyperscaler-hosted model — the <b>Anthropic-operated</b> API with AWS auth and marketplace billing, so it carries the direct-API feature set. Two traps: <b>Bedrock and Foundry take precedence in provider routing</b>, so a machine that ever ran Bedrock keeps winning silently until you <em>unset</em> <code>CLAUDE_CODE_USE_BEDROCK</code> / <code>CLAUDE_CODE_USE_FOUNDRY</code> — this is a cleanup step, not just an add step — and <code>awsAuthRefresh</code> needs <b>v2.1.198+</b> on this path or an expired SSO credential stops with a <code>/login</code> prompt that cannot refresh AWS creds. We could not find a telemetry statement on its doc page (searched 2026-07-25), so verify attribution here rather than assuming it behaves like Bedrock." }
+    { v:"platformaws", l:"Claude Platform on AWS", fm:"Not a hyperscaler-hosted model — the <b>Anthropic-operated</b> API with AWS auth and marketplace billing, so it carries the direct-API feature set. Three traps: <b>Bedrock and Foundry take precedence in provider routing</b>, so a machine that ever ran Bedrock keeps winning silently until you <em>unset</em> <code>CLAUDE_CODE_USE_BEDROCK</code> / <code>CLAUDE_CODE_USE_FOUNDRY</code> — a cleanup step, not just an add step; the <b>base URL is computed from <code>AWS_REGION</code></b>, so a machine with no ambient region has nowhere to talk to; and <code>awsAuthRefresh</code> needs <b>v2.1.198+</b> here or an expired SSO credential stops with a <code>/login</code> prompt that cannot refresh AWS creds. Same identity gap as the hyperscalers: OTel metrics flow, but with no Claude account in the session only <code>user.id</code> and <code>session.id</code> populate — attach identity via <code>OTEL_RESOURCE_ATTRIBUTES</code>. Note error reporting and telemetry <em>to Anthropic</em> are off by default on this path." }
   ],
   sandbox: [
     { v:"off",      l:"Off",                 fm:"<code>permissions.deny</code> is a <em>decision-layer</em> gate. With no sandbox, an <code>npm install</code> post-install script or a Python file handle reaches paths your deny rules never see." },
@@ -409,27 +414,64 @@ const ASSETS = [
      table that file may hold `pass_phrase` and points at `security_token_file`. Both paths, or the
      cell lies. (Do not write that glob literally in a block comment: it contains the comment
      terminator, which is exactly how this file's script silently stopped executing once.) */
-  { id:"oci",    l:"Oracle Cloud credentials (config + signing key)", on:false,
-    paths:["~/.oci/config","~/.oci/oci_api_key.pem"], sandboxPaths:["~/.oci"] },
+  /* Deny the DIRECTORY at both layers, not two named files. The config file points at a
+     `security_token_file` for session-token auth whose default path we could not find on Oracle's
+     sdkconfig page, and naming two files left that third one readable at the decision layer — the
+     only layer that exists on native Windows. A directory glob covers what we could not name. */
+  { id:"oci",    l:"Oracle Cloud credentials (whole ~/.oci)", on:false,
+    paths:["~/.oci/**"], sandboxPaths:["~/.oci"] },
   /* Edge / CDN control-plane credentials. Severity ranks with cloud creds, not with build tooling:
      these re-point PUBLIC production traffic. ~/.edgerc is [H] (Akamai's setup doc: the download
      "places an .edgerc file in your root or home directory"); the Cloudflare token lives in the
-     ENVIRONMENT [M] and no path rule reaches it. Wrangler's token-cache path is [?] — deliberately
-     NOT emitted: a denyRead path that doesn't exist fills a matrix cell and enforces nothing. */
-  { id:"edge",   l:"Edge / CDN credentials (Akamai .edgerc, Cloudflare token)", on:false,
-    paths:["~/.edgerc"], sandboxPaths:["~/.edgerc"], envVars:["CLOUDFLARE_API_TOKEN","CF_API_TOKEN"] },
+     ENVIRONMENT [H] and no path rule reaches it — CLOUDFLARE_API_TOKEN is current and CF_API_TOKEN
+     is DEPRECATED per Cloudflare, kept here because a legacy machine may still set it and a
+     deprecated variable holding a live token is still a live token. Wrangler's token-cache path is
+     [?] — deliberately NOT emitted: a denyRead path that doesn't exist fills a matrix cell and
+     enforces nothing. */
+  /* Split by SURFACE, not by vendor theme. A row bundling a file-backed vendor with an env-only one
+     makes the matrix lie: the Read-deny cell greens on "this row has at least one path", so
+     Cloudflare rode in on Akamai's ~/.edgerc and read as covered at the decision layer — the only
+     layer that exists on native Windows. Homogeneous rows keep the matrix honest by construction
+     instead of by patching the cell. */
+  { id:"akedge",  l:"Akamai EdgeGrid (~/.edgerc)", on:false,
+    paths:["~/.edgerc"], sandboxPaths:["~/.edgerc"] },
+  { id:"cfedge",  l:"Cloudflare API token (env only)", on:false,
+    envVars:["CLOUDFLARE_API_TOKEN","CF_API_TOKEN"] },
   /* SaaS / PaaS tier — the half a path-only deny set misses entirely, because the credential is an
      env var. Supabase is the one with BOTH surfaces: the CLI uses native credential storage and
      falls back to a PLAINTEXT file at ~/.supabase/access-token when the keyring is unavailable [H].
      CLOUDINARY_URL carries cloud_name + api_key + api_secret inline in one string [H]. */
-  { id:"paas",   l:"Vercel / Supabase / Cloudinary tokens", on:false,
+  { id:"sbtoken", l:"Supabase token (file + env)", on:false,
     paths:["~/.supabase/access-token"], sandboxPaths:["~/.supabase"],
-    envVars:["VERCEL_TOKEN","SUPABASE_ACCESS_TOKEN","CLOUDINARY_URL"] },
+    envVars:["SUPABASE_ACCESS_TOKEN"] },
+  { id:"paas",   l:"Vercel / Cloudinary tokens (env only)", on:false,
+    envVars:["VERCEL_TOKEN","CLOUDINARY_URL"] },
   /* Clears the credential bar and NOT the control-plane bar (bearer key, no destructive CLI), so it
      is env-vars-only by design — the bar working, not a gap. A credential class your engineers
      hold; this repo takes no position on model vendors. */
   { id:"openai", l:"OPENAI_API_KEY in the environment", on:false, envVars:["OPENAI_API_KEY"] }
 ];
+
+/* Runners that are NOT stripped before a Bash rule matches. The docs name the built-in wrapper list
+   (timeout, time, nice, nohup, stdbuf, command, builtin, noglob, plus bare flagless xargs) and then
+   say plainly: "Development environment runners such as `direnv exec`, `devbox run`, `mise exec`,
+   `npx`, and `docker exec` are not in the list… To approve work inside an environment runner, write
+   a specific rule that includes both the runner and the inner command." [H]
+
+   So an ask rule on `Bash(supabase db *)` does not match `npx supabase db reset --linked`. Read the
+   consequence precisely rather than dramatically: Bash commands require approval by default, so the
+   npx form still prompts on a stock machine. What the ask rule buys you is a prompt that survives a
+   developer having clicked "don't ask again" for a prefix, or a project/user `allow` covering the
+   runner. Those are exactly the fleets where a destructive deploy stops asking — which is why the
+   npm-ecosystem CLIs get runner-prefixed variants and the others don't need them.
+
+   Grading the list itself: `npx` is the one the docs name. `pnpm dlx` / `yarn dlx` / `bunx` are
+   added BY ANALOGY, not read off the doc — they are the same package-runner shape, and an extra ask
+   rule costs a prompt rather than a hole. Stated so nobody reads all four as documented. The wider
+   runner family the docs do name (`direnv exec`, `devbox run`, `mise exec`, `docker exec`) is a
+   checklist row rather than a combinatorial rule set: runner × command is unbounded, and pretending
+   otherwise is the enumeration trap this file keeps catching itself in. */
+const NPX_RUNNERS = ["npx", "pnpm dlx", "yarn dlx", "bunx"];
 
 /* ---------------- destructive / externally-visible actions → ask ---------------- */
 const ACTIONS = [
@@ -447,19 +489,33 @@ const ACTIONS = [
      activation rolls back and a Worker redeploys. The reason they need a prompt is that the blast
      radius is your public site, which is why that reason ships in the emitted comment. */
   { id:"akamai",  l:"akamai CLI (any subcommand)", rule:"Bash(akamai *)", on:false, tier:"irreversible" },
-  { id:"wrangler",l:"wrangler deploy", rule:"Bash(wrangler deploy *)", on:false, tier:"irreversible" },
+  { id:"wrangler",l:"wrangler deploy", rule:"Bash(wrangler deploy *)",
+    rules:["Bash(wrangler deploy *)", ...NPX_RUNNERS.map(r => `Bash(${r} wrangler deploy *)`)],
+    on:false, tier:"irreversible" },
   /* Both spellings: the flag form is the one people actually type, and a rule matching only the
      subcommand would leave `vercel --prod` unprompted. */
-  { id:"vercel",  l:"vercel deploy / --prod", rule:"Bash(vercel deploy *)",
-    rules:["Bash(vercel deploy *)","Bash(vercel --prod *)"], on:false, tier:"irreversible" },
+  /* The whole CLI, for the same reason as akamai above — and this one is sharper than it looks.
+     Vercel's docs: the "first deployment of a new project is always a production deployment, even
+     when you omit --prod" [H]. So `vercel`, `vercel --yes`, and `vercel --skip-domain --prod` all
+     deploy, and none of them matches a rule anchored on the `deploy` subcommand or on `--prod`
+     (a Bash specifier is a literal prefix). Enumerating spellings here was the exact defect the
+     akamai row exists to avoid, two rows up. */
+  { id:"vercel",  l:"vercel CLI (any subcommand)", rule:"Bash(vercel *)",
+    rules:["Bash(vercel *)", ...NPX_RUNNERS.map(r => `Bash(${r} vercel *)`)],
+    on:false, tier:"irreversible" },
   /* db reset is the sharpest rule in this list: local it recreates a container, but with --linked
      or --db-url "a SQL script is executed to identify and drop all user created entities in the
      REMOTE database" [H]. Same verb, two blast radii, separated only by a flag — so ask on the
      verb and let the prompt show the flag. Splitting it with an argument-constrained rule is the
      documented-fragile pattern, and being wrong here drops production tables. */
-  { id:"supabase",l:"supabase db push / db reset", rule:"Bash(supabase db *)", on:false, tier:"irreversible" },
-  { id:"ocidel",  l:"oci delete / terminate", rule:"Bash(oci * delete *)",
-    rules:["Bash(oci * delete *)","Bash(oci * terminate *)"], on:false, tier:"irreversible" }
+  { id:"supabase",l:"supabase db (push / reset / dump)", rule:"Bash(supabase db *)",
+    rules:["Bash(supabase db *)", ...NPX_RUNNERS.map(r => `Bash(${r} supabase db *)`)],
+    on:false, tier:"irreversible" },
+  /* Also the whole CLI. `Bash(oci * delete *)` needs a space-delimited "delete", so it misses
+     Oracle's HYPHENATED bulk verbs — `oci os object bulk-delete` and `bulk-delete-versions` are
+     real commands, and they are the highest-blast-radius object-store operations there are. Once a
+     verb set has forms you cannot enumerate confidently, the honest rule is the whole CLI. */
+  { id:"ocidel",  l:"oci CLI (any subcommand)", rule:"Bash(oci *)", on:false, tier:"irreversible" }
 ];
 /* An action may need more than one rule to cover the way people actually type the command. `rule`
    stays the single canonical form shown on the checkbox; `rules` is what gets emitted. Keeping both
@@ -537,6 +593,10 @@ const esc = s => String(s).replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>
 
 /* ---------------- build the settings object ---------------- */
 function activeAssets(){ return ASSETS.filter(a => S.assets[a.id]); }
+/* Operator-supplied credential paths. Read once, used by every surface — the decision-layer denies,
+   the sandbox denyRead, sandbox.credentials.files, and its own coverage-matrix row. Kept as one
+   helper so a future surface can't be added for built-in rows and forgotten for these. */
+function extraPaths(){ return listOf("f-extradeny"); }
 
 function buildSettings(){
   const o = { "$schema":"https://json.schemastore.org/claude-code-settings.json" };
@@ -546,6 +606,12 @@ function buildSettings(){
   // Read-only denies therefore left Write able to create/overwrite ~/.ssh/**, .env, and *.pem.
   // An explicit Edit deny is what covers every file-editing tool.
   activeAssets().forEach(a => (a.paths||[]).forEach(p => { deny.push(`Read(${p})`); deny.push(`Edit(${p})`); }));
+  // Operator-supplied paths get the SAME four surfaces a built-in row gets. They used to reach only
+  // sandbox.filesystem.denyRead — one weaker surface — while the emitted checklist called this field
+  // "the escape hatch" for vendors the list omits. That made the escape hatch a second-class control
+  // and said otherwise: permissions.deny is the bounded, deterministic layer, and the ONLY one that
+  // exists with the sandbox off or on native Windows. Equivalence is now true, not claimed.
+  extraPaths().forEach(p => { deny.push(`Read(${p})`); deny.push(`Edit(${p})`); });
   NET_BINS.forEach(b => deny.push(`Bash(${b} *)`));
   ACTIONS.filter(a => S.actions[a.id]).forEach(a => ruleList(a).forEach(r => ask.push(r)));
   // Mirror into the OTHER shell. Bash(...) rules cover one of two shell tools, and the PowerShell
@@ -615,13 +681,18 @@ function buildSettings(){
     // internal PKI. Without a free-text env-var field the answer for those vendors is silently
     // "uncovered", and the coverage matrix shows no gap because they were never rows.
     listOf("f-extraenv").forEach(v => { if (!envVars.some(e => e.name === v)) envVars.push({ name:v, mode:"deny" }); });
+    // Operator-supplied paths join `files` BEFORE the credentials block is built. Order matters and
+    // the first cut got it wrong: the `files.length` guard below ran first, so a config with ONLY
+    // free-text paths created no `credentials` object and the pushes landed in an orphan array —
+    // green output, silently missing surface. Build the full list, then decide what to emit.
+    const extraDeny = extraPaths();
+    extraDeny.forEach(p => { if (!files.some(f => f.path === p)) files.push({ path:p, mode:"deny" }); });
     if (files.length || envVars.length) {
       sb.credentials = {};
       if (files.length) sb.credentials.files = files;
       if (envVars.length) sb.credentials.envVars = envVars;
     }
-    const extraDeny = listOf("f-extradeny");
-    if (files.length || extraDeny.length) sb.filesystem = { denyRead: [...files.map(f => f.path), ...extraDeny] };
+    if (files.length) sb.filesystem = { denyRead: files.map(f => f.path) };
     // Array sandbox keys MERGE across scopes, so a developer's own settings.json can append
     // allowRead / allowedDomains entries and re-open what you just closed. These two managed-only
     // keys are what make the hardened values actually authoritative.
@@ -679,7 +750,9 @@ function buildSettings(){
   // form asks "do you intercept TLS?", never "which vendor?". These are the client's own path, NOT
   // the sandbox proxy in the sandbox card: SOCKS is unsupported here and supported there.
   if (val("f-httpsproxy")) { env.HTTPS_PROXY = val("f-httpsproxy"); env.HTTP_PROXY = val("f-httpsproxy"); }
-  if (val("f-noproxy")) env.NO_PROXY = val("f-noproxy");
+  // NO_PROXY alone does nothing — there is no proxy for it to carve exceptions out of. Omitted
+  // rather than emitted-and-inert, which is this file's convention everywhere else.
+  if (val("f-noproxy") && val("f-httpsproxy")) env.NO_PROXY = val("f-noproxy");
   if (val("f-cacert")) env.NODE_EXTRA_CA_CERTS = val("f-cacert");
   if (Object.keys(env).length) o.env = env;
 
@@ -721,6 +794,10 @@ function buildSettings(){
       // secret and is never emitted — the alternative is resolvable AWS credentials, and either way
       // it belongs in the checklist, not in a file that ships to every machine.
       if (val("f-awsworkspace")) o.env.ANTHROPIC_AWS_WORKSPACE_ID = val("f-awsworkspace");
+      // Not decoration: the base URL is computed from the region, so an absent value on a machine
+      // with no ambient AWS_REGION leaves the client with nowhere to talk to. Emitted only when
+      // supplied — pinning a region the fleet doesn't use is worse than inheriting the right one.
+      if (val("f-awsregion")) o.env.AWS_REGION = val("f-awsregion");
     }
   }
 
@@ -1004,11 +1081,43 @@ function lint(o){
   else if (!UUID_RE.test(val("f-uuid"))) req.push(["Organization UUID is not a valid UUID", "Expected 8-4-4-4-12 hex (e.g. 3f2c1a8e-5b7d-4e9f-8a10-2c4d6e8f0a12). A malformed value fails closed and blocks EVERY login on the fleet — a truncated paste is the usual cause."]);
   if (S.lockdown !== "baseline" && mcpList() === null) req.push(["Allowed MCP servers", "Without it the MCP lock flag is omitted entirely — because emitting the flag with no allowlist would mean 'all servers allowed', the opposite of the lockdown you selected. Enter 'none' for a zero-server allowlist."]);
   if (S.lockdown === "maximum" && !listOf("f-models").length) req.push(["Allowed models", "enforceAvailableModels has no effect without a non-empty availableModels array, so model restriction would be silently absent at your strictest tier."]);
+  // The OTLP pair is one either/or check. An earlier revision inserted an unrelated provider
+  // blocker BETWEEN this `if` and its `else if`, which silently rewired both branches: an empty
+  // endpoint reported twice, and the URL-shape check was skipped whenever the provider blocker
+  // fired. Validation must never branch on an unrelated field — keep the pair adjacent.
   if (S.telemetry !== "off" && !val("f-otlp")) req.push(["OTLP endpoint", "Telemetry is enabled with nowhere to send it — the exporter is configured and silently drops."]);
+  else if (S.telemetry !== "off" && !/^https?:\/\/[^\s]+$/i.test(val("f-otlp"))) req.push(["OTLP endpoint is not a URL", "Expected http(s)://host:port. An unparseable endpoint drops telemetry silently."]);
   // Documented as required on this path, so an omitted value is a non-starting client, not a
   // weaker one. Gated rather than placeholdered, like every other required value here.
   if (S.provider === "platformaws" && !val("f-awsworkspace")) req.push(["Claude Platform on AWS workspace ID", "ANTHROPIC_AWS_WORKSPACE_ID is documented as required on this routing path. Emitting CLAUDE_CODE_USE_ANTHROPIC_AWS without it ships a fleet that routes nowhere."]);
-  else if (S.telemetry !== "off" && !/^https?:\/\/[^\s]+$/i.test(val("f-otlp"))) req.push(["OTLP endpoint is not a URL", "Expected http(s)://host:port. An unparseable endpoint drops telemetry silently."]);
+  // The one combination where the delivery mechanism and the routing choice cancel each other out.
+  // Documented plainly and easy to miss: "User configures a third-party model provider | Server-
+  // managed settings are bypassed. This includes setting CLAUDE_CODE_USE_BEDROCK,
+  // CLAUDE_CODE_USE_MANTLE, CLAUDE_CODE_USE_VERTEX, CLAUDE_CODE_USE_FOUNDRY,
+  // CLAUDE_CODE_USE_ANTHROPIC_AWS, or a non-default ANTHROPIC_BASE_URL" — and the availability
+  // matrix marks server-managed settings unavailable on every provider column.
+  // So this bundle would carry a provider flag that disables the channel carrying it: the whole
+  // floor silently absent, which is the exact failure this file exists to prevent. Blocked, not
+  // warned — there is a correct configuration available (deliver by MDM, file, or fragment), so the
+  // block doesn't force a wrong answer.
+  if (S.delivery === "server" && ["bedrock","vertex","foundry","platformaws"].includes(S.provider))
+    req.push(["Delivery mechanism vs model routing — these cancel out",
+      "Configuring a third-party model provider BYPASSES server-managed settings entirely, and this bundle sets the provider flag that triggers it. Nothing in it would reach the fleet. Deliver by MDM plist, registry, file, or drop-in fragment instead — or route through the Anthropic API / a claude.ai subscription if server-managed delivery is the requirement."]);
+  // The proxy URL was the one new free-text field with no shape check, and the field's own hint says
+  // SOCKS is unsupported on this path — so it would happily export socks5://… , a value the page had
+  // just told the operator cannot work. Every other fleet-breaking field here is validated; this one
+  // now matches the convention.
+  const px = val("f-httpsproxy");
+  if (px && !/^https?:\/\/[^\s]+$/i.test(px))
+    req.push(["Corporate proxy URL", "Expected http:// or https://. " + (/^socks/i.test(px)
+      ? "SOCKS is NOT supported on the client-level proxy path — only the sandbox's own proxy takes SOCKS5, and that is the separate field in the sandbox card."
+      : "A value without an http(s) scheme is exported verbatim into HTTPS_PROXY and HTTP_PROXY, where it silently fails to route.")]);
+  // Env-var NAMES only. This field sits directly under the extra-paths field, so pasting a path here
+  // is the likely slip — and the result is an inert credentials.envVars entry, which is the
+  // does-not-exist-so-enforces-nothing trap in env-var form, committed by the field added to avoid it.
+  const badEnvNames = listOf("f-extraenv").filter(v => !/^[A-Za-z_][A-Za-z0-9_]*$/.test(v));
+  if (badEnvNames.length)
+    req.push([`Extra credential env vars — ${badEnvNames.length} invalid name(s)`, "These are variable NAMES, not paths or assignments: " + badEnvNames.map(v => `"${v}"`).join(", ") + ". An entry that isn't a real variable name matches nothing and enforces nothing. Paths belong in the extra denyRead field below."]);
   if (S.sandbox === "hardened" && sandboxRunsHere() && !egressList().length) req.push(["Sandbox egress allowlist", "A hardened sandbox with an empty allowedDomains admits nothing — every package install breaks."]);
   if (S.lockdown !== "baseline" && !(val("f-mkt-src") && val("f-mkt-repo"))) req.push(["Plugin marketplace source + repo", "strictKnownMarketplaces is omitted, so the marketplace allowlist you selected is not actually enforced."]);
   // Per-entry host validation. A malformed entry has the same blast radius as an empty list
@@ -1240,7 +1349,12 @@ function checklist(o, findings){
     "strict JSON cannot carry a comment, so they live here.", "",
     "## Before the push", "",
     "- [ ] Validate the JSON against https://json.schemastore.org/claude-code-settings.json",
-    `- [ ] Deploy via **${d.path}** — and via that mechanism ONLY. Within the managed tier exactly one source wins; a second is silently ignored, not merged.`,
+    (S.delivery === "fragment"
+      // The generic line is true at SOURCE granularity and reads as false here, three lines above
+      // six rows explaining that files in this directory do merge. This is the artifact an admin
+      // hands to a colleague who never saw the UI, so the distinction has to survive on its own.
+      ? `- [ ] Deploy into **${d.path}** — and pick ONE managed source: if MDM or server-managed delivery is also configured on these machines, this directory is ignored entirely. Note the two senses of "merge": the file-based *source* still wins-or-loses as a single unit against MDM and remote, but *within* it your base file and every fragment DO merge (see the rows below).`
+      : `- [ ] Deploy via **${d.path}** — and via that mechanism ONLY. Within the managed tier exactly one source wins; a second is silently ignored, not merged.`),
     "- [ ] Stage on a **canary** before a fleet-wide push. Managed security fields fail closed: a malformed value over-restricts by design and can wedge every machine.",
     "- [ ] Verify on a real target machine with `/status` — Setting sources should name the active managed source, and managed values must be un-editable.");
   if (S.delivery === "registry")
@@ -1280,14 +1394,15 @@ function checklist(o, findings){
     L.push("", "## Cloud routing", "",
       "- [ ] **Pin model versions.** On a cloud provider the `sonnet`/`opus` aliases follow a built-in default and fall back silently at startup — the fleet drifts model-to-model.",
       "- [ ] Set a credential-refresh command (`awsAuthRefresh` fires only on detected expiry; `awsCredentialExport` fires at session start and each reload). Treat that command as part of your trusted managed image — **this tool omits it rather than emitting a placeholder**.",
-      "- [ ] **Budget an LLM gateway.** Claude Code emits no telemetry from your cloud, so per-user attribution and per-user spend limits come from a gateway or nowhere.");
+      "- [ ] **Budget an LLM gateway for per-user *spend*, and fix attribution in OTel.** Two separate things that used to be conflated here: OpenTelemetry metrics **do** work on every provider — what's missing is Claude-account identity, since with no Claude account in the session only `user.id` and `session.id` are populated, so set `OTEL_RESOURCE_ATTRIBUTES` per user. Console spend controls, however, do not cover hyperscaler usage, so per-user **spend limits** are the real gateway rationale.");
 
   if (S.provider === "platformaws")
     L.push("", "## Claude Platform on AWS", "",
       "- [ ] Supply the credential half **outside this bundle**: `ANTHROPIC_AWS_API_KEY` **or** resolvable AWS credentials. The workspace ID ships here because it isn't a secret; the key never does.",
       "- [ ] **Unset `CLAUDE_CODE_USE_BEDROCK` and `CLAUDE_CODE_USE_FOUNDRY`** on every machine that ever used them — both **take precedence in provider routing**, so a leftover flag silently keeps winning and your new routing looks like it did nothing. This is a cleanup step; adding the new vars is not sufficient.",
       "- [ ] Require **v2.1.198+** if you rely on `awsAuthRefresh` here. Below that gate an expired SSO credential stops with a prompt to run `/login`, which cannot refresh AWS credentials.",
-      "- [ ] **Verify telemetry on this path rather than assuming it.** We could not find a telemetry statement on its doc page (searched 2026-07-25), so treat both 'it behaves like Bedrock' and 'it behaves like the direct API' as unverified until you see metrics arrive.");
+      "- [ ] **Set `AWS_REGION`** (here or from the machine's own AWS config) — the base URL is *computed* from it as `https://aws-external-anthropic.{region}.api.aws`. Override with `ANTHROPIC_AWS_BASE_URL` only if you must.",
+      "- [ ] **Attach user identity to your telemetry yourself.** OTel metrics do flow, but with no Claude account in the session only `user.id` and `session.id` are populated — set `OTEL_RESOURCE_ATTRIBUTES` per user via managed settings or a launch wrapper. Separately: error reporting and telemetry *to Anthropic* are off by default on this path.");
 
   L.push("", "## Network", "",
     "- [ ] Allowlist `api.anthropic.com`, `claude.ai`, `platform.claude.com`, and **`downloads.claude.ai`** (plugins + the auto-updater; miss it and the fleet silently drifts to a stale, unpatched client).",
@@ -1317,6 +1432,8 @@ function checklist(o, findings){
     "- [ ] **Understand why this checklist row exists rather than a longer built-in list.** The asset checkboxes are a curated list, so they report nothing about what they omit — and the coverage matrix shows no gap for a vendor that was never a row. **A vendor nobody listed is a vendor nobody covered, and nothing in this tool will tell you so.** The free-text path and env-var fields are the escape hatch; use them.",
     "- [ ] **Watch the two traps this tool's own list was built around.** (1) A `*.pem` glob catches `~/.oci/oci_api_key.pem` but **not** `~/.oci/config`, which can itself hold a passphrase and points at a session-token file — partial coverage reads as coverage. (2) An env-var credential is unreachable by **any** path rule, and `CLAUDE_CODE_SUBPROCESS_ENV_SCRUB` strips only Anthropic and cloud-provider credentials, not a vendor token.",
     "- [ ] **Rank edge and CDN credentials with cloud credentials, not with build tooling.** A leaked registry token publishes a bad package; a leaked edge credential re-points your **public production traffic**.",
+    "- [ ] **Know that a *runner* prefix defeats a command rule.** The built-in wrapper list (`timeout`, `time`, `nice`, `nohup`, `stdbuf`, `command`, `builtin`, `noglob`, and flagless `xargs`) is stripped before a Bash rule matches — but `npx`, `direnv exec`, `devbox run`, `mise exec`, and `docker exec` are **not**, and the list is not configurable. This bundle adds runner-prefixed variants for the npm-ecosystem CLIs; the others are yours to add per the docs' own remedy: \"write a specific rule that includes both the runner and the inner command.\" Read the risk precisely — Bash commands prompt by default, so the runner form still asks on a stock machine; what an `ask` rule buys is a prompt that survives a developer's earlier \"don't ask again\" or a project-level `allow`.",
+    ...(S.osScope !== "unix" ? ["- [ ] **Confirm the `~/` path form resolves on native Windows.** Every path this tool emits uses `~/`, while vendors document the Windows spelling differently (Oracle gives `$Env:UserProfile\\.oci\\config`). We do not assert that the two are equivalent — check one on a Windows canary, because that fleet has no sandbox behind the path rule to catch a miss."] : []),
     "- [ ] **Verify each path on your actual machine images before trusting it.** A `denyRead` entry for a path that doesn't exist on your fleet produces a matrix cell that looks filled and enforces nothing — worse than an honestly empty one.");
 
   L.push("", "## Shells — your policy covers one of two", "",
@@ -1403,8 +1520,11 @@ function renderCov(o){
     return ["p", "allowlist + proxy port set — green only once that proxy terminates TLS and its CA is installed" + suffix];
   }
 
+  const xp = extraPaths(), xe = listOf("f-extraenv");
   let h = "<tr><th>Asset</th>" + COLS.map(c => `<th>${c[0]}<br><span style="font-weight:400;text-transform:none;letter-spacing:0">${c[1]}</span></th>`).join("") + "</tr>";
-  if (!act.length) h += `<tr><td colspan="6" class="na">No assets selected — nothing is protected.</td></tr>`;
+  // "Nothing is protected" has to account for the free-text rows too, or it contradicts the rows
+  // printed directly beneath it.
+  if (!act.length && !xp.length && !xe.length) h += `<tr><td colspan="6" class="na">No assets selected — nothing is protected.</td></tr>`;
 
   act.forEach(a => {
     const hasPath = (a.paths||[]).length, hasEnv = (a.envVars||[]).length;
@@ -1435,6 +1555,35 @@ function renderCov(o){
     else c.push(["n","GAP — inherited by subprocesses"]);
     h += `<tr><td><b>${esc(a.l)}</b></td>` + c.map(([k,t]) => `<td class="${k}">${esc(t)}</td>`).join("") + "</tr>";
   });
+
+  /* Operator-supplied entries get their own rows. Without them the matrix silently exempted the very
+     mechanism that exists to make the curated list honest: an admin added a vendor through the
+     free-text fields and the "gaps visible" table showed nothing at all about it — not covered, not
+     a gap, absent. A matrix that can't see the escape hatch doesn't keep its promise. */
+  if (xp.length) {
+    const cells = [
+      ["y","Read deny"],
+      ["p","Read deny — recognized cmds only"],
+      S.sandbox === "off" ? ["n","GAP — sandbox off"]
+        : fsOff ? ["n","GAP — filesystem layer disabled"]
+        : S.osScope === "windows" ? ["n","GAP — no sandbox on Windows"]
+        : sandboxPartial() ? ["p","denyRead + credentials.files (Unix only)"]
+        : ["y","denyRead + credentials.files"],
+      egressCell(),
+      ["na","n/a"]
+    ];
+    h += `<tr><td><b>Your paths (${xp.length})</b><br><span style="font-weight:400;color:var(--muted)">${esc(xp.join(", "))}</span></td>`
+      + cells.map(([k,t]) => `<td class="${k}">${esc(t)}</td>`).join("") + "</tr>";
+  }
+  if (xe.length) {
+    const envCell = S.sandbox === "off" ? ["n","GAP — sandbox off"]
+      : S.osScope === "windows" ? ["n","GAP — no sandbox on Windows"]
+      : sandboxPartial() ? ["p","credentials.envVars (Unix only)"]
+      : ["y","credentials.envVars"];
+    const cells = [["na","n/a"],["na","n/a"],["na","n/a"],egressCell(),envCell];
+    h += `<tr><td><b>Your env vars (${xe.length})</b><br><span style="font-weight:400;color:var(--muted)">${esc(xe.join(", "))}</span></td>`
+      + cells.map(([k,t]) => `<td class="${k}">${esc(t)}</td>`).join("") + "</tr>";
+  }
   document.getElementById("cov").innerHTML = h;
 
   const gaps = document.querySelectorAll("#cov td.n").length;
@@ -1487,8 +1636,12 @@ function render(){
   document.getElementById("fld-models").hidden = (S.lockdown !== "maximum");
   document.getElementById("fld-gateway").hidden = (S.loginMethod !== "gateway");
   document.getElementById("f-uuid").closest(".fld").hidden = (S.loginMethod === "gateway");
-  document.getElementById("fld-extradeny").hidden = (S.sandbox === "off" || !sandboxRunsHere());
+  // Extra PATHS now feed permissions.deny as well as the sandbox, so the field stays visible with
+  // the sandbox off and on native Windows — those are precisely the fleets where the decision layer
+  // is the only layer, and hiding it there told an admin to use a control that wasn't on screen.
+  document.getElementById("fld-extradeny").hidden = false;
   document.getElementById("fld-awsworkspace").hidden = (S.provider !== "platformaws");
+  document.getElementById("fld-awsregion").hidden = (S.provider !== "platformaws");
   // Extra credential env vars are emitted inside the sandbox block, so the field has to disappear
   // wherever that block doesn't exist. A visible input whose value goes nowhere is the silent-no-op
   // class this whole file exists to prevent — and it would be OUR no-op, not the platform's.
@@ -1533,8 +1686,10 @@ function render(){
   renderCov(o);
 
   // tabs
+  // The json tab's LABEL follows the delivery choice for the same reason its filename does — a tab
+  // reading "managed-settings.json" on a fragment deployment names the wrong file.
   document.getElementById("tabs").innerHTML = TABS.map(([k,l]) =>
-    `<button data-tab="${k}" class="${S.tab===k?"active":""}">${l}</button>`).join("");
+    `<button data-tab="${k}" class="${S.tab===k?"active":""}">${k === "json" ? esc(jsonName()) : l}</button>`).join("");
 
   const body = { json: JSON.stringify(o, null, 2), wrap: wrap(o), md: claudeMd(),
                  check: orgInstructions() + "\n---\n\n" + checklist(o, F) }[S.tab];
@@ -1617,6 +1772,11 @@ document.addEventListener("input", e => {
   if (e.target.matches("input[type=text], textarea")) render();
 });
 
+// json is the DEFAULT tab, so its filename is the one most downloads get. Hard-coding
+// managed-settings.json handed a fragment admin the base file's name on the default path — which
+// discards the ordering prefix the fragment option depends on, and invites dropping the file at the
+// base path with whole-file semantics instead. The name has to follow the delivery choice here too.
+const jsonName = () => (S.delivery === "fragment" ? FNAME.wrap.fragment : "managed-settings.json");
 const FNAME = { json:"managed-settings.json", md:"CLAUDE.md",
   check:"claude-code-policy-and-checklist.md",
   // file delivery emits clean JSON, so managed-settings.json is an honest name for it now.
@@ -1638,7 +1798,9 @@ document.getElementById("btn-copy").addEventListener("click", () => {
   b.textContent = "Copied"; setTimeout(() => b.textContent = o, 1200);
 });
 document.getElementById("btn-dl").addEventListener("click", () => {
-  const name = S.tab === "wrap" ? FNAME.wrap[OS_PATHS[S.delivery].fmt] : FNAME[S.tab];
+  const name = S.tab === "wrap" ? FNAME.wrap[OS_PATHS[S.delivery].fmt]
+             : S.tab === "json" ? jsonName()
+             : FNAME[S.tab];
   const blob = new Blob([document.getElementById("pane-out").textContent], { type:"text/plain" });
   const a = document.createElement("a");
   a.href = URL.createObjectURL(blob); a.download = name;
