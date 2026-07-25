@@ -6,7 +6,7 @@ Guidance for Claude Code (and any other AI agent) working in this repo.
 
 **`claude-platform-playbook`** — executive-grade decision tools for AI transformation **on the Claude platform**. Audience: CIOs, CDOs, CTOs, CHROs sizing Claude adoption + architects defending the choice to leadership.
 
-Public, CC-BY-4.0, vendor-explicit, decision-oriented. **Not** Anthropic marketing recap. Pin to current Claude model surface (Opus 4.8 / Sonnet 5 / Haiku 4.5 as of 2026-07) — refresh monthly.
+Public, CC-BY-4.0, vendor-explicit, decision-oriented. **Not** Anthropic marketing recap. Pin to current Claude model surface (Opus 5 / Sonnet 5 / Haiku 4.5 as of 2026-07) — refresh monthly.
 
 There is no build system or test suite. This is a content repo of static HTML + Markdown.
 
@@ -107,7 +107,7 @@ claude-platform-playbook/
 
 1. **Check `docs/feature-inventory.md` first.** If the change touches a Claude feature/model/pricing, edit the inventory row first.
 2. **Cite primary sources.** All technical claims link to `docs.claude.com` or `anthropic.com/pricing` with the as-of date stamped. Never paraphrase Anthropic marketing copy verbatim.
-3. **Pin specific versions** in current-state references (Opus 4.8, Sonnet 5, Haiku 4.5) but **structurally pin to family** ("current Sonnet tier") in the few places that document long-term posture (governance overlay, adoption playbook). Specific versions = current; family pins = stable interface.
+3. **Pin specific versions** in current-state references (Opus 5, Sonnet 5, Haiku 4.5) but **structurally pin to family** ("current Sonnet tier") in the few places that document long-term posture (governance overlay, adoption playbook). Specific versions = current; family pins = stable interface.
 4. **Bump as-of stamps** on every file you touch. Use the `/bump-as-of` slash command for sweeps.
 5. **Cross-link** between artifacts using relative paths (`adoption-playbook.md` → `governance-overlay.md`). Don't break the audience map in `README.md`.
 

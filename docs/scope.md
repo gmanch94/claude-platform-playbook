@@ -4,7 +4,7 @@
 **Tagline:** Executive-grade decision tools for AI transformation on the Claude platform.
 **Audience:** CIOs/CDOs/CTOs/CHROs sizing Claude adoption + architects defending the choice to leadership.
 **License:** CC-BY-4.0
-**Posture:** Vendor-explicit, but decision-oriented (not Anthropic marketing recap). Pin to the current Claude model surface (Opus 4.8 / Sonnet 5 / Haiku 4.5); date-stamp everything.
+**Posture:** Vendor-explicit, but decision-oriented (not Anthropic marketing recap). Pin to the current Claude model surface (Opus 5 / Sonnet 5 / Haiku 4.5); date-stamp everything.
 
 ---
 
@@ -124,7 +124,7 @@ Tactical companion to `adoption-playbook.md` for the engineering surface: pilot 
 
 - All technical claims cite Anthropic docs (`docs.claude.com` / `docs.anthropic.com`) by URL + as-of date
 - Pricing claims dated and link to pricing page
-- Model versions pinned (Opus 4.8 / Sonnet 5 / Haiku 4.5 etc.) — never "latest"
+- Model versions pinned (Opus 5 / Sonnet 5 / Haiku 4.5 etc.) — never "latest"
 - No reproducing Anthropic marketing copy verbatim — paraphrase + cite
 - Footer pattern: `© gmanch94 · CC-BY-4.0 · As of YYYY-MM. Verify pricing/models at anthropic.com.`
 - Cross-link to `ai-architect-showcase` (vendor-neutral strategy) and `ai-enablement-ws` (operational reference)

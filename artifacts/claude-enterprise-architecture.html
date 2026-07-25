@@ -183,7 +183,7 @@
         <div class="gl">Inference features</div>
         <div class="subchips">
           <div class="subchip" title="Cache stable prompt prefixes; cache reads cost about 10% of input price — the dominant steady-state cost lever.">Prompt caching <span class="tag ga">GA</span></div>
-          <div class="subchip" title="Model reasons before answering. Opus 4.7/4.8 are adaptive-only — control depth with the effort parameter.">Extended / adaptive thinking <span class="tag ga">GA</span></div>
+          <div class="subchip" title="Model reasons before answering. Opus 4.7/4.8 are adaptive-only and run thinking-less unless requested; Opus 5 runs thinking ON by default. Control depth with the effort parameter (low/medium/high/xhigh/max) — and note max_tokens caps thinking plus response text.">Extended / adaptive thinking <span class="tag ga">GA</span></div>
           <div class="subchip" title="Asynchronous processing at about 50% off. For anything that tolerates delayed turnaround.">Batch API (~50% off) <span class="tag ga">GA</span></div>
           <div class="subchip" title="Priority (committed capacity), standard, or batch — trade latency against cost.">Service tiers (priority / standard / batch) <span class="tag ga">GA</span></div>
         </div>
@@ -193,10 +193,10 @@
 
     <!-- Models -->
     <div class="tier" style="--tc:var(--t-model)">
-      <div class="th"><span class="tn">5 · Models</span><span class="td">up to 1M context (Fable 5 / Opus 4.8) · adaptive thinking · route by task difficulty</span></div>
+      <div class="th"><span class="tn">5 · Models</span><span class="td">up to 1M context (Fable 5 / Opus 5) · thinking on by default on Opus 5 · route by task difficulty</span></div>
       <div class="chips">
         <div class="chip" title="Frontier reasoning and long-horizon agentic work. $10 in / $50 out per MTok (about 2x Opus) — validate the quality delta in eval first. Not ZDR-eligible (30-day retention)."><div class="cn">Fable 5 <span class="tag ga">GA</span></div><div class="cd">frontier reasoning · $10/$50 · <strong>not ZDR-eligible</strong> (30-day retention)</div></div>
-        <div class="chip" title="Top deployable model. $5 in / $25 out. Adaptive thinking only; rejects non-default temperature, top_p, top_k (HTTP 400)."><div class="cn">Opus 4.8 <span class="tag ga">GA</span></div><div class="cd">top deployable · $5/$25 · rejects temperature/top_p/top_k</div></div>
+        <div class="chip" title="Top deployable model (launched 2026-07-24). $5 in / $25 out — same price as Opus 4.8. Thinking ON by default; effort is the depth control (low/medium/high/xhigh/max). Rejects non-default temperature, top_p, top_k (HTTP 400)."><div class="cn">Opus 5 <span class="tag ga">GA</span></div><div class="cd">top deployable · $5/$25 · thinking on by default · effort-controlled</div></div>
         <div class="chip" title="Workhorse — near-Opus quality at lower price. $2/$10 intro through 2026-08-31, then $3/$15. Updated tokenizer maps the same input to about 1.0 to 1.35x more tokens."><div class="cn">Sonnet 5 <span class="tag ga">GA</span></div><div class="cd">workhorse · $2/$10 intro → $3/$15 · updated tokenizer</div></div>
         <div class="chip" title="Fast and cheap ($1 in / $5 out). Triage, batch, high-volume. About 3x cheaper than Sonnet."><div class="cn">Haiku 4.5 <span class="tag ga">GA</span></div><div class="cd">fast · $1/$5 · triage + batch</div></div>
         <div class="chip dot" title="Invite-only (Project Glasswing). Not generally usable — informational."><div class="cn">Mythos 5 <span class="tag prev">invite-only</span></div><div class="cd">Project Glasswing — not generally usable</div></div>
