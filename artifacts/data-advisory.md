@@ -20,7 +20,7 @@ Rows marked **(rule of thumb)** reflect field practice, not primary Anthropic do
 
 ## 1. Context window: what fits in a single call
 
-The context window depends on the model. **Opus 5 and Opus 4.8 default to a 1M-token window** on the Claude API; Opus 4.7, Opus 4.6, and Sonnet 4.6 also support 1M (200K standard tier, 1M long-context tier — same per-token rate, no surcharge). Haiku 4.5 and legacy models are 200K. **Sonnet 5 succeeds Sonnet 4.6 as the workhorse tier — its context window isn't stated in Anthropic's launch materials; verify before assuming 1M carries over, and size against the 200K baseline until confirmed.** The table below sizes the **200K baseline**; multiply by ~5 for the 1M window where confirmed.
+The context window depends on the model. **Opus 5 and Opus 4.8 default to a 1M-token window** on the Claude API; Opus 4.7, Opus 4.6, and Sonnet 4.6 also support 1M (200K standard tier, 1M long-context tier — same per-token rate, no surcharge). Haiku 4.5 and legacy models are 200K. **Sonnet 5 serves a 1M window by default too** (verified 2026-07-24) — so the workhorse tier is no longer the constraint it was; size against 1M rather than the 200K baseline on Sonnet 5. The table below sizes the **200K baseline**; multiply by ~5 for a 1M window.
 
 | Material type | Approximate fit in 200K tokens |
 |---|---|
@@ -29,7 +29,7 @@ The context window depends on the model. **Opus 5 and Opus 4.8 default to a 1M-t
 | JSON records | ~15,000 mid-size records (~300 tokens each) |
 | Conversation turns | ~400–800 turns (length-dependent) |
 
-**Decision trigger.** If your working reference material fits in the model's window (200K baseline, up to 1M on Opus 5 / Opus 4.8 / Opus 4.7 / Sonnet 4.6 — Sonnet 5's ceiling is unconfirmed, verify) *and* is stable across calls, a long-context call may be enough — no RAG pipeline needed. RAG adds retrieval latency, chunking complexity, and an additional failure mode (retrieval misses). Don't build RAG to solve a problem the context window already solves.
+**Decision trigger.** If your working reference material fits in the model's window (200K baseline; 1M on Opus 5, Sonnet 5, Opus 4.8, Opus 4.7 and Sonnet 4.6) *and* is stable across calls, a long-context call may be enough — no RAG pipeline needed. RAG adds retrieval latency, chunking complexity, and an additional failure mode (retrieval misses). Don't build RAG to solve a problem the context window already solves.
 
 **Cite.** [docs.claude.com — models overview](https://docs.claude.com/en/docs/about-claude/models/overview). Token-to-word conversions are rule of thumb (English prose ≈ 0.75 tokens/word).
 
@@ -112,7 +112,7 @@ From [`governance-overlay.md §15.1`](governance-overlay.html#15-cost-as-a-gover
 | Requirement | Detail |
 |---|---|
 | Stable prefix | System prompt is consistent across requests — no per-request variation in the cached portion |
-| Minimum length | System prompt exceeds the cache-eligibility minimum. **Model-dependent:** 1,024 tokens on Opus 4.8, Sonnet 4.6, Haiku 4.5; 4,096 tokens on Opus 4.7 / 4.6. **Neither Sonnet 5's nor Opus 5's cache-eligibility floor is stated in launch materials — verify rather than assuming the 1,024-token floor carries over**, especially given the tokenizer change (same input now maps to more tokens). Below the floor, the prompt is processed uncached (no error) and caching overhead doesn't pay back |
+| Minimum length | System prompt exceeds the cache-eligibility minimum. **Model-dependent** (verified 2026-07-24): **512 tokens on Opus 5** / Fable 5; **1,024 on Opus 4.8, Sonnet 5, Sonnet 4.6**; **4,096 on Opus 4.6 and Haiku 4.5**. Opus 5 halving the floor to 512 makes short system prompts cache-eligible that weren't on 4.8 — re-audit after migrating. Size in *tokens under the model's own tokenizer* (the 4.7+ tokenizer maps the same text to more tokens). Below the floor, the prompt is processed uncached (no error) and caching overhead doesn't pay back |
 | Variable tail only | Only the per-request portion (user message + dynamic context) varies |
 
 **What kills cache hit rate:**

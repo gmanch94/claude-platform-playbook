@@ -10,7 +10,7 @@
 >
 > **Migration note (Opus 4.8 → Opus 5).** On Opus 4.8 a request ran *without* thinking unless you set `thinking: {"type":"adaptive"}`. On **Opus 5 the same request runs WITH thinking on**, and `max_tokens` caps thinking **plus** response text — so **revisit `max_tokens` on any workload that ran thinking-less on 4.8**, or responses can truncate. `adaptive` remains valid and equals the default. Effort ladder: `low` / `medium` / `high` (default) / `xhigh` / `max`.
 
-> **A note on the next-gen line.** Anthropic has a tier above the 4.x/5.x family — **Claude Fable 5** (most capable widely released) and **Claude Mythos 5** (Project Glasswing). **Fable 5 is now GA** (access restored 2026-07-01). Mythos 5 remains **invite-only**. At ~2× Opus pricing ($10/$50 per MTok), validate the quality delta against Opus 5 in eval before re-tiering your hardest tasks — a higher bar since 2026-07-24, because Opus 5 leads Anthropic's reported coding + knowledge-work evals at half Fable's price [M — vendor-reported; run your own] and carries no data-retention requirement (Fable requires 30-day retention, not ZDR-eligible) — the guide's decision framework still applies; use Fable 5 only where that delta justifies the cost premium. Track status in [`../docs/feature-inventory.md`](../docs/feature-inventory.md).
+> **A note on the next-gen line.** Anthropic has a tier above the 4.x/5.x family — **Claude Fable 5** (most capable widely released) and **Claude Mythos 5** (Project Glasswing). **Fable 5 is now GA** (access restored 2026-07-01). Mythos 5 remains **invite-only**. At ~2× Opus pricing ($10/$50 per MTok), validate the quality delta against Opus 5 in eval before re-tiering your hardest tasks — a higher bar since 2026-07-24, because Opus 5 leads Anthropic's reported coding + knowledge-work evals at half Fable's price [M — vendor-reported; run your own] and carries no data-retention requirement for general access (Fable requires 30-day retention, not ZDR-eligible) — which removes Fable's disqualifier without itself establishing ZDR coverage; see [`governance-overlay.md`](governance-overlay.md) — the guide's decision framework still applies; use Fable 5 only where that delta justifies the cost premium. Track status in [`../docs/feature-inventory.md`](../docs/feature-inventory.md).
 
 ---
 
@@ -124,8 +124,11 @@ Thinking is not a model tier — it's a per-model behavior, and **the default fl
 | Model | Thinking default | Your control |
 |---|---|---|
 | **Opus 5** | **ON** — model decides when and how much to think per turn | `effort`: `low` / `medium` / `high` (default) / `xhigh` / `max` |
+| **Sonnet 5** | **ON** (adaptive thinking on by default; manual `budget_tokens` removed — returns 400) | `effort` |
 | Opus 4.7 / 4.8 | OFF unless `thinking: {"type":"adaptive"}` | `effort` once adaptive is set |
 | Opus 4.6 and earlier | OFF; manual `budget_tokens` still accepted | `budget_tokens` (adaptive recommended) |
+
+Thinking-on-by-default is **the 5-series behavior, not an Opus 5 quirk** — Sonnet 5 shares it. What's specific to the 4.8 → 5 hop is that it's a *change* from the default you were running.
 
 **When deeper thinking helps:** multi-step math, complex code analysis, strategic planning with many constraints, ambiguous legal/policy interpretation.
 
@@ -133,7 +136,7 @@ Thinking is not a model tier — it's a per-model behavior, and **the default fl
 
 **Rule — restated for Opus 5.** "Default off" is no longer available as a starting posture on Opus 5, so the lever is **`effort`, not on/off**: start at the default `high`, then **step down to `low`/`medium` where an eval shows quality holds** — Opus 5 is specifically efficient at the low end, so this is where the savings are. Step up to `xhigh`/`max` only for the most demanding work, and set a large `max_tokens` when you do.
 
-> **Open item — carry this into your migration plan.** The API keeps an option to **disable** thinking on Opus 5, but it is *subject to an effort restriction* whose exact terms Anthropic's launch materials don't spell out. **Verify against [platform.claude.com/docs/en/about-claude/models/whats-new-opus-5](https://platform.claude.com/docs/en/about-claude/models/whats-new-opus-5) before designing a workload that depends on thinking being off** — don't assume it can be switched off at any effort level. [?]
+> **Disabling thinking requires effort `high` or below — this is a hard 400, not a soft default.** You *can* still send `thinking: {"type": "disabled"}` on Opus 5, but only at effort `high`, `medium`, or `low`. Combining it with `xhigh` or `max` **returns a 400 error**, and the check is enforced **per request** — so a later request that raises effort while thinking is disabled is rejected even though earlier ones in the same conversation succeeded. Fix either way: re-enable thinking, or lower effort to `high`. [H — verified 2026-07-24 against [whats-new-opus-5](https://platform.claude.com/docs/en/about-claude/models/whats-new-opus-5)]
 
 **Budget consequence.** Thinking tokens bill as output, and on Opus 5 they are no longer optional-by-default — so the Opus lane's output-per-request runs higher than a thinking-less baseline at the same list price. `max_tokens` caps thinking **plus** response text: under-set it and the answer truncates rather than erroring. See [`feature-decision-matrix.html`](feature-decision-matrix.html) extended-thinking row and [`cost-calculator.html`](cost-calculator.html).
 

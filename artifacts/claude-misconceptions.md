@@ -9,7 +9,7 @@
 ## 1. Model + capability misreads
 
 ### "Claude's context window is still 200K tokens."
-- **Reality.** Opus 5, Opus 4.8, Opus 4.7, Opus 4.6, and Sonnet 4.6 ship 1M tokens (GA) — Opus 5 and Opus 4.8 default to the 1M window on the API. Sonnet 4.5 and Haiku 4.5 remain at 200K. **Sonnet 5 (launched 2026-06-30) succeeds Sonnet 4.6 as the workhorse tier — its context window isn't stated in Anthropic's launch materials; verify before assuming 1M carries over.**
+- **Reality.** Opus 5, Opus 4.8, Opus 4.7, Opus 4.6, and Sonnet 4.6 ship 1M tokens (GA) — Opus 5 and Opus 4.8 default to the 1M window on the API. Sonnet 4.5 and Haiku 4.5 remain at 200K. **Sonnet 5 also serves a 1M window by default** and supports up to 128k output tokens (verified 2026-07-24 against the platform migration guide; an earlier edition of this file called this unverified — it is documented).
 - **Mis-decide.** Architecting RAG chunking + retrieval ceilings against 200K when the workhorse model already supports 1M — over-engineered retrieval, under-used cache.
 - **Cite.** [docs.claude.com — context windows](https://docs.claude.com/en/docs/build-with-claude/context-windows); [`docs/feature-inventory.md`](../docs/feature-inventory.md) Models table.
 
@@ -57,7 +57,7 @@
 - **Cite.** [docs.claude.com — pricing](https://docs.claude.com/en/about-claude/pricing).
 
 ### "Prompt caching is too complex / not worth it."
-- **Reality.** Cache reads bill at ~10% of the input rate; 5-min writes 1.25×, 1-hr writes 2×. For chat copilots and RAG patterns with stable system prompts or shared retrieved context, steady-state cost drops 60–80%. Opus 4.8 lowered the minimum cacheable prompt to 1,024 tokens (was 4,096 on Opus 4.7 / 4.6), so smaller system prompts now qualify — verify your prefix clears the floor. **Opus 5's floor isn't stated in launch materials; verify rather than assuming 1,024 carries over.**
+- **Reality.** Cache reads bill at ~10% of the input rate; 5-min writes 1.25×, 1-hr writes 2×. For chat copilots and RAG patterns with stable system prompts or shared retrieved context, steady-state cost drops 60–80%. The floor keeps dropping: 4,096 on Opus 4.6 → 1,024 on Opus 4.8 → **512 on Opus 5**, so prompts too short to cache a generation ago now qualify with no code change. (Sonnet 5 is 1,024; Haiku 4.5 is 4,096.) Verify your prefix clears *your* model's floor.
 - **Mis-decide.** Skipping the dominant cost lever; the cost-calculator numbers in [`executive-briefing.html`](executive-briefing.html) cease to apply, and unit economics quietly fail at scale.
 - **Cite.** [docs.claude.com — prompt caching](https://docs.claude.com/en/docs/build-with-claude/prompt-caching); [`cost-calculator.html`](cost-calculator.html).
 

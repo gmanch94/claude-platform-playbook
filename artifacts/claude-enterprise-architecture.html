@@ -185,7 +185,7 @@
           <div class="subchip" title="Cache stable prompt prefixes; cache reads cost about 10% of input price — the dominant steady-state cost lever.">Prompt caching <span class="tag ga">GA</span></div>
           <div class="subchip" title="Model reasons before answering. Opus 4.7/4.8 are adaptive-only and run thinking-less unless requested; Opus 5 runs thinking ON by default. Control depth with the effort parameter (low/medium/high/xhigh/max) — and note max_tokens caps thinking plus response text.">Extended / adaptive thinking <span class="tag ga">GA</span></div>
           <div class="subchip" title="Asynchronous processing at about 50% off. For anything that tolerates delayed turnaround.">Batch API (~50% off) <span class="tag ga">GA</span></div>
-          <div class="subchip" title="Priority (committed capacity), standard, or batch — trade latency against cost.">Service tiers (priority / standard / batch) <span class="tag ga">GA</span></div>
+          <div class="subchip" title="Standard, batch (~50% off async), or Priority (committed capacity). Priority is CLOSED to new purchase (existing commitments only) and is NOT supported on Opus 5 or Sonnet 5 — migrating your top tier to Opus 5 drops that traffic to standard.">Service tiers (standard / batch / priority) <span class="tag ga">GA</span></div>
         </div>
       </div>
     </div>
