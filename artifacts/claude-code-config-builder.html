@@ -79,6 +79,7 @@
   table.cov th { background:#f6f1ea; font-size:10.5px; text-transform:uppercase; letter-spacing:.03em; color:var(--c2); }
   table.cov td.y { background:rgba(21,128,61,.07); color:var(--good); font-weight:600; }
   table.cov td.n { background:rgba(220,38,38,.06); color:var(--bad); font-weight:600; }
+  table.cov td.p { background:rgba(180,83,9,.07); color:var(--warn); font-weight:600; }
   table.cov td.na { color:var(--muted); }
   .scroll { overflow-x:auto; }
   .note { font-size:12px; color:var(--muted); margin-top:10px; line-height:1.55; }
@@ -89,7 +90,11 @@
   @media print { body { padding:0; } .opts, .tabs, .btn, details.adv { display:none; } pre.out { max-height:none; } }
   @media (prefers-color-scheme: dark) {
     :root { --bg:#17130f; --ink:#ece5db; --line:#3a3228; --muted:#a89a86; --soft:#2a201a; }
-    .card, .pane, .gate li, .opts button, input[type=text] { background:#201a15; }
+    .card, .pane, .gate li, .opts button, input[type=text], textarea { background:#201a15; }
+    /* .gate had no dark override, so its light gradient sat under light ink at ~1.05:1 —
+       the badge and the individual rows stayed legible, but the summary line did not. */
+    .gate { background:linear-gradient(135deg,#14241c,#201a15); border-color:#1f6b45; }
+    .gate.blocked { background:linear-gradient(135deg,#2a1614,#201a15); border-color:#a8342c; }
     .thesis { background:#201a15; }
     details.adv { background:#1d1813; }
     .tabs button { background:#2a231c; }
@@ -133,11 +138,23 @@
           <div class="fm" data-fm="provider"></div>
         </div>
 
+        <div class="q" id="q-osScope">
+          <label>Fleet OS scope</label>
+          <div class="desc">Asked because <b>the sandbox does not exist on native Windows</b> (macOS / Linux / WSL2 only). Answer this honestly or the coverage matrix below will show enforcement that never runs on some of your machines.</div>
+          <div class="opts" data-key="osScope"></div>
+          <div class="fm" data-fm="osScope"></div>
+        </div>
+
         <div class="q" id="q-sandbox">
           <label>Sandbox posture</label>
-          <div class="desc">OS-level enforcement on the Bash tool and its children — the only layer that covers arbitrary subprocess I/O. <b>macOS / Linux / WSL2 only.</b></div>
+          <div class="desc">OS-level enforcement on the Bash tool and its children — the only layer that covers arbitrary subprocess I/O.</div>
           <div class="opts" data-key="sandbox"></div>
           <div class="fm" data-fm="sandbox"></div>
+          <div class="chk" id="ack-row" hidden style="margin-top:9px;background:#fffbeb;border-left:3px solid var(--warn);padding:8px 10px;border-radius:3px">
+            <input type="checkbox" id="f-ack">
+            <label class="cl" for="f-ack"><b>I accept decision-layer-only coverage on this fleet.</b>
+            <span class="cp" style="text-transform:none">No OS-level layer will run, so <code>Read</code>/<code>Edit</code> deny rules are the only protection and any subprocess — an <code>npm</code> post-install script, a Python file handle — can still reach the paths below. Tick this to acknowledge and export anyway. It is a real posture, not a mistake; it just must not be silent.</span></label>
+          </div>
         </div>
 
         <div class="q" id="q-telemetry">
@@ -186,8 +203,23 @@
         </div>
         <div class="fld" id="fld-egress" hidden>
           <label>Sandbox egress allowlist <span style="color:var(--bad)">— required when the sandbox is hardened</span></label>
-          <div class="hint">Comma-separated. This is the real egress control — a <code>deny</code> on <code>curl</code> can't close it. Too tight blocks package installs; stage on a canary.</div>
+          <div class="hint">Comma-separated <b>hostnames only</b> — no scheme, no path (<code>github.com</code>, not <code>https://github.com/</code>). A leading <code>*.</code> is allowed. This governs what <b>sandboxed Bash commands</b> can reach; too tight blocks package installs, so stage on a canary.</div>
           <input type="text" id="f-egress" value="github.com, *.npmjs.org, registry.yarnpkg.com">
+        </div>
+        <div class="fld">
+          <label>WebFetch domain allowlist <span style="color:var(--muted);font-weight:400">(optional — a separate decision)</span></label>
+          <div class="hint">Pre-approves Claude's own <code>WebFetch</code> tool for these domains; everything else still prompts. <b>Deliberately not derived from the egress list above</b> — subprocess network reach and "Claude may fetch this without asking" are two different trust decisions, and one field feeding both would grant a permission you didn't choose. Leave blank to emit no allow rules.</div>
+          <input type="text" id="f-webfetch" placeholder="docs.karekal.internal, *.github.com">
+        </div>
+        <div class="fld" id="fld-excluded" hidden>
+          <label>Sandbox <code>excludedCommands</code> <span style="color:var(--muted);font-weight:400">(empty by default — each entry runs UNSANDBOXED)</span></label>
+          <div class="hint">Comma-separated. Previously this shipped <code>docker *</code> silently; it no longer does. Be aware <code>docker run -v /:/host</code> reaches the host filesystem just as <code>/var/run/docker.sock</code> does — an exemption here is the same class of hole as the socket the linter blocks.</div>
+          <input type="text" id="f-excluded" placeholder="(leave empty unless a tool genuinely breaks)">
+        </div>
+        <div class="fld" id="fld-extradeny" hidden>
+          <label>Extra sandbox <code>filesystem.denyRead</code> paths <span style="color:var(--muted);font-weight:400">(optional)</span></label>
+          <div class="hint">The matrix's permanent gaps are project-relative globs (<code>.env</code>, <code>*.pem</code>, terraform state): the sandbox takes concrete paths, so a repo-relative pattern has nowhere to bind. If you know the absolute roots your repos live under, add them here and those gaps close.</div>
+          <input type="text" id="f-extradeny" placeholder="~/src, /opt/build">
         </div>
       </div>
 
@@ -202,9 +234,18 @@
         <h2><span class="n">4</span>Actions to gate</h2>
         <div class="lede">These go in <code>ask</code>, not <code>deny</code> — a deny on <code>git push</code> breaks legitimate work and gets the whole policy switched off. Tiered by <em>can it be undone quietly?</em></div>
         <div id="actions"></div>
+        <div class="note" style="margin-top:10px"><b>Also emitted, always, so you can review it here rather than discover it in the JSON:</b> <code>Bash(curl *)</code>, <code>Bash(wget *)</code>, <code>Bash(nc *)</code>, <code>Bash(ssh *)</code> are added to <code>deny</code>. That is the docs' own remedy for argument-constrained network rules being fragile — but an org-wide <code>ssh</code> deny surprises people, so it is stated up front. If your engineers need <code>ssh</code> from a Claude session, move it to the ask list by hand after export and record why.</div>
         <details class="adv">
           <summary>Advanced — every remaining managed-settings field</summary>
           <div class="body" id="advanced"></div>
+        </details>
+
+        <details class="adv" style="margin-top:10px">
+          <summary>Merge your existing rules — and lint them</summary>
+          <div class="body">
+            <div class="hint" style="font-size:11.5px;color:var(--muted);margin-bottom:8px">Paste rules you already run, one per line, prefixed <code>deny:</code>, <code>ask:</code>, or <code>allow:</code>. They are merged into the output <b>and</b> put through the full linter — which is the only way checks 1–5 (deny-shadows-allow, bare-name removal, word boundary, unanchored allow globs, display-label tool names) can fire, since the generated rules are correct by construction. If you have an existing policy, this is where the collisions surface.</div>
+            <textarea id="f-extrarules" rows="5" placeholder="deny: Bash(aws *)&#10;allow: Bash(aws s3 ls)&#10;ask: Bash(gcloud * delete *)" style="width:100%;padding:8px 10px;border:1px solid var(--line);border-radius:6px;font-family:ui-monospace,SFMono-Regular,Menlo,monospace;font-size:11.5px;background:white;color:var(--ink)"></textarea>
+          </div>
         </details>
       </div>
     </div>
@@ -275,12 +316,20 @@ const OPTS = {
   lockdown: [
     { v:"baseline", l:"Baseline",            fm:"Users and projects can still add their own permission rules, MCP servers, hooks, and plugin marketplaces." },
     { v:"hardened", l:"Hardened",            fm:"Plugin/MCP supply chain is allowlisted, but user and project hooks still run — a malicious repo's <code>PreToolUse</code> hook fires on clone." },
-    { v:"maximum",  l:"Maximum",             fm:"Highest control, highest friction. Every legitimate MCP server, hook, and marketplace must be centrally allowlisted, or work stops." }
+    { v:"maximum",  l:"Maximum",             fm:"Highest control, highest friction. <b>User and project <code>allow</code>/<code>ask</code>/<code>deny</code> rules are ignored entirely</b> — only managed rules apply, and that is the part which breaks day-1 developer workflows. Every legitimate MCP server, hook, and marketplace must also be centrally allowlisted, or work stops." }
   ],
   loginMethod: [
     { v:"claudeai", l:"claudeai" },
     { v:"console",  l:"console" },
     { v:"gateway",  l:"gateway" }
+  ],
+  // Fleet OS scope. Load-bearing: the sandbox covers macOS / Linux / WSL2 and NOT native
+  // Windows, so on a Windows-inclusive fleet every sandbox-dependent cell is inert. Keying
+  // that off the delivery mechanism (as an earlier cut did) misses it for 3 of 4 mechanisms.
+  osScope: [
+    { v:"unix",   l:"macOS / Linux / WSL2 only" },
+    { v:"mixed",  l:"Mixed — includes native Windows" },
+    { v:"windows",l:"Native Windows only" }
   ]
 };
 
@@ -334,7 +383,11 @@ const OS_PATHS = {
 /* ---------------- state ---------------- */
 const S = {
   delivery:"server", provider:"api", sandbox:"hardened", telemetry:"team",
-  lockdown:"hardened", loginMethod:"claudeai",
+  lockdown:"hardened", loginMethod:"claudeai", osScope:"unix",
+  // Acknowledgment for a deliberately degraded posture. Decision-layer-only coverage is a
+  // legitimate choice on a native-Windows estate (there is no sandbox there), so it must be
+  // clearable rather than hard-blocked — a gate with no exit forces the wrong answer.
+  ackNoOsLayer:false,
   assets:{}, actions:{}, adv:{}, tab:"json"
 };
 ASSETS.forEach(a => S.assets[a.id] = a.on);
@@ -368,10 +421,17 @@ function buildSettings(){
   NET_BINS.forEach(b => deny.push(`Bash(${b} *)`));
   ACTIONS.filter(a => S.actions[a.id]).forEach(a => ask.push(a.rule));
 
-  // WebFetch domain allowlist, derived from the egress list. Never paired with a bare WebFetch deny.
-  if (S.sandbox === "hardened") {
-    egressList().filter(d => d).forEach(d => allow.push(`WebFetch(domain:${d})`));
-  }
+  // WebFetch allow rules come from their OWN field, never from the sandbox egress list.
+  // Deriving them from egress silently converted one input into two unrelated trust
+  // decisions — subprocess network reach, and "Claude may fetch this without asking".
+  webfetchList().filter(d => d).forEach(d => allow.push(`WebFetch(domain:${d})`));
+
+  // Rules the operator pasted, merged so the linter sees them alongside the generated set.
+  extraRules().forEach(({ kind, rule }) => {
+    if (kind === "deny") deny.push(rule);
+    else if (kind === "ask") ask.push(rule);
+    else if (kind === "allow") allow.push(rule);
+  });
 
   const perms = {};
   if (deny.length)  perms.deny = deny;
@@ -395,7 +455,12 @@ function buildSettings(){
     if (S.sandbox === "hardened") {
       sb.failIfUnavailable = true;
       sb.allowUnsandboxedCommands = false;
-      sb.excludedCommands = ["docker *"];
+      // excludedCommands is now operator-supplied and EMPTY by default. It used to ship
+      // `docker *` silently, which quietly exempted a binary that reaches the host
+      // filesystem (docker run -v /:/host) — the same hole the linter hard-blocks when it
+      // appears as network.allowUnixSockets: ["/var/run/docker.sock"].
+      const ex = listOf("f-excluded");
+      if (ex.length) sb.excludedCommands = ex;
     }
     const files = [], envVars = [];
     activeAssets().forEach(a => {
@@ -407,7 +472,8 @@ function buildSettings(){
       if (files.length) sb.credentials.files = files;
       if (envVars.length) sb.credentials.envVars = envVars;
     }
-    if (files.length) sb.filesystem = { denyRead: files.map(f => f.path) };
+    const extraDeny = listOf("f-extradeny");
+    if (files.length || extraDeny.length) sb.filesystem = { denyRead: [...files.map(f => f.path), ...extraDeny] };
     if (S.adv.fsDisabled) sb.filesystem = Object.assign(sb.filesystem||{}, { disabled:true });
     if (S.sandbox === "hardened") {
       const dom = egressList().filter(d => d);
@@ -451,13 +517,11 @@ function buildSettings(){
   // Cloud routing
   if (["bedrock","vertex","foundry"].includes(S.provider)) {
     o.env = o.env || {};
-    if (S.provider === "bedrock") {
-      o.env.CLAUDE_CODE_USE_BEDROCK = "1";
-      o.awsAuthRefresh = "<your credential-refresh command>";
-    }
+    // awsAuthRefresh runs a command that must come from your trusted managed image, so it is
+    // deliberately NOT emitted with a placeholder value — it lands as a checklist row instead.
+    if (S.provider === "bedrock") o.env.CLAUDE_CODE_USE_BEDROCK = "1";
     if (S.provider === "vertex")  o.env.CLAUDE_CODE_USE_VERTEX = "1";
     if (S.provider === "foundry") o.env.CLAUDE_CODE_USE_FOUNDRY = "1";
-    delete o.awsAuthRefresh; // never emit a placeholder — surfaced as a checklist row instead
   }
 
   if (S.adv.cleanup) o.cleanupPeriodDays = 30;
@@ -471,7 +535,29 @@ function buildSettings(){
   return o;
 }
 
-function egressList(){ return val("f-egress").split(",").map(s => s.trim()); }
+function listOf(id){ return val(id).split(",").map(s => s.trim()).filter(Boolean); }
+function egressList(){ return listOf("f-egress"); }
+function webfetchList(){ return listOf("f-webfetch"); }
+
+/* A hostname, optionally with a leading "*." wildcard. No scheme, no path, no whitespace. */
+const HOST_RE = /^(\*\.)?[a-z0-9]([a-z0-9-]*[a-z0-9])?(\.[a-z0-9]([a-z0-9-]*[a-z0-9])?)+$/i;
+function badHosts(list){ return list.filter(h => !HOST_RE.test(h)); }
+
+/* Pasted rules: "deny: Bash(x *)" per line. Unparseable lines are surfaced, not dropped. */
+function extraRules(){
+  const el = document.getElementById("f-extrarules");
+  if (!el) return [];
+  return el.value.split("\n").map(l => l.trim()).filter(Boolean).map(l => {
+    const m = /^(deny|ask|allow)\s*:\s*(.+)$/i.exec(l);
+    return m ? { kind:m[1].toLowerCase(), rule:m[2].trim() } : { kind:"bad", rule:l };
+  }).filter(r => r.kind !== "bad" || true);
+}
+
+/* Does an OS-level sandbox actually run anywhere on this fleet? */
+function sandboxRunsHere(){ return S.osScope !== "windows"; }
+function sandboxPartial(){ return S.osScope === "mixed"; }
+/* Is the fleet left with decision-layer protection only? */
+function decisionLayerOnly(){ return S.sandbox === "off" || S.osScope === "windows"; }
 
 /* ---------------- the linter: 9 blocking checks ---------------- */
 function toolOf(rule){ const m = /^([A-Za-z ]+)(\(|$)/.exec(rule); return m ? m[1].trim() : rule; }
@@ -544,9 +630,16 @@ function lint(o){
     return /http|:\/\//.test(s) || NET_BINS.some(b => new RegExp("^" + b + "\\b").test(s));
   });
   const hasEgress = !!(o.sandbox && o.sandbox.network && (o.sandbox.network.allowedDomains||[]).length);
-  if (netShaped.length && !hasEgress) add("block",
-    `${netShaped.length} Bash rule(s) are acting as your network control, with no sandbox <code>allowedDomains</code> behind them.`,
-    "Argument-constrained Bash rules are documented-fragile (options before the URL, https, redirects, variable indirection, extra spaces). The enforcing layer must be sandbox egress or a URL-validating hook.");
+  if (netShaped.length && !hasEgress) {
+    // Acknowledgment-gated, NOT a hard block. On a native-Windows estate there is no sandbox
+    // to put behind these rules, so hard-blocking left the operator no exit but to select a
+    // hardened sandbox that would be inert — a gate that forces the wrong answer.
+    const sev = S.ackNoOsLayer ? "warn" : "block";
+    add(sev, `${netShaped.length} Bash rule(s) are acting as your network control, with no sandbox <code>allowedDomains</code> behind them.`,
+      S.ackNoOsLayer
+        ? "Acknowledged as decision-layer-only. These rules are a speed bump, not a boundary — argument-constrained Bash rules miss options-before-URL, https, redirects, variable indirection, and extra spaces. Put a URL-validating PreToolUse hook or a network egress control outside Claude Code behind them."
+        : "Argument-constrained Bash rules are documented-fragile. Either enable a hardened sandbox with an egress allowlist, or tick the decision-layer-only acknowledgment under Sandbox posture to proceed deliberately.");
+  }
 
   // 7. a widening on one side undoing the restriction on the other
   if (o.sandbox) {
@@ -572,12 +665,17 @@ function lint(o){
     add("block", "<code>allowUnixSockets</code> is at the wrong nesting level — it belongs under <code>sandbox.network</code>.",
       "At sandbox.allowUnixSockets it deploys as a silent no-op: the setting is read from sandbox.network.allowUnixSockets.");
 
-  // 9. a ticked credential asset the sandbox does not cover
-  if (S.sandbox === "off") {
+  // 9. a ticked credential asset the sandbox does not cover — acknowledgment-gated, see check 6
+  if (decisionLayerOnly()) {
     const n = activeAssets().filter(a => (a.sandboxPaths||[]).length || (a.envVars||[]).length).length;
-    if (n) add("block",
-      `${n} credential asset(s) are protected only at the decision layer — the sandbox is off, so any subprocess can still read them.`,
-      "Read/Edit deny rules cover Claude's file tools and recognized Bash file commands, never arbitrary subprocess I/O.");
+    const why = S.osScope === "windows"
+      ? "This fleet is native Windows, where the sandbox does not exist at all"
+      : "The sandbox is off";
+    if (n) add(S.ackNoOsLayer ? "warn" : "block",
+      `${n} credential asset(s) are protected only at the decision layer. ${why}, so any subprocess can still read them.`,
+      S.ackNoOsLayer
+        ? "Acknowledged. Read/Edit deny rules cover Claude's file tools and the recognized Bash file commands only — never arbitrary subprocess I/O. Compensate outside Claude Code (endpoint DLP, credential-store permissions, short-lived credentials)."
+        : "Read/Edit deny rules never reach arbitrary subprocess I/O. Enable the sandbox, or tick the decision-layer-only acknowledgment under Sandbox posture to proceed deliberately.");
   } else {
     const envAssets = activeAssets().filter(a => (a.envVars||[]).length);
     const covered = !!(o.sandbox && o.sandbox.credentials && o.sandbox.credentials.envVars) || !!S.adv.envScrub;
@@ -588,17 +686,35 @@ function lint(o){
 
   /* ------- required-value blockers (fail-closed export gate) ------- */
   const req = [];
+  // Strict UUID shape. The old /^[0-9a-fA-F-]{8,}$/ accepted "deadbeef" and "--------" while
+  // the page promises a malformed value blocks every login — so the operator inferred a check
+  // that wasn't happening. Validating PRESENCE is not validating VALIDITY.
+  const UUID_RE = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
   if (!val("f-uuid")) req.push(["Organization UUID", "forceLoginOrgUUID is omitted, so nothing stops an engineer signing into a personal account and taking work with them."]);
-  else if (!/^[0-9a-fA-F-]{8,}$/.test(val("f-uuid"))) req.push(["Organization UUID looks malformed", "A malformed value fails closed and blocks EVERY login on the fleet."]);
+  else if (!UUID_RE.test(val("f-uuid"))) req.push(["Organization UUID is not a valid UUID", "Expected 8-4-4-4-12 hex (e.g. 3f2c1a8e-5b7d-4e9f-8a10-2c4d6e8f0a12). A malformed value fails closed and blocks EVERY login on the fleet — a truncated paste is the usual cause."]);
   if (S.telemetry !== "off" && !val("f-otlp")) req.push(["OTLP endpoint", "Telemetry is enabled with nowhere to send it — the exporter is configured and silently drops."]);
-  if (S.sandbox === "hardened" && !egressList().filter(d=>d).length) req.push(["Sandbox egress allowlist", "A hardened sandbox with an empty allowedDomains admits nothing — every package install breaks."]);
+  else if (S.telemetry !== "off" && !/^https?:\/\/[^\s]+$/i.test(val("f-otlp"))) req.push(["OTLP endpoint is not a URL", "Expected http(s)://host:port. An unparseable endpoint drops telemetry silently."]);
+  if (S.sandbox === "hardened" && sandboxRunsHere() && !egressList().length) req.push(["Sandbox egress allowlist", "A hardened sandbox with an empty allowedDomains admits nothing — every package install breaks."]);
   if (S.lockdown !== "baseline" && !(val("f-mkt-src") && val("f-mkt-repo"))) req.push(["Plugin marketplace source + repo", "strictKnownMarketplaces is omitted, so the marketplace allowlist you selected is not actually enforced."]);
-  req.forEach(([k, why]) => add("block", `Missing required value: <b>${esc(k)}</b>`, why));
+  // Per-entry host validation. A malformed entry has the same blast radius as an empty list
+  // (every install breaks), so it gets the same treatment rather than sailing through.
+  const badE = badHosts(egressList()), badW = badHosts(webfetchList());
+  if (badE.length) req.push([`Sandbox egress entr${badE.length>1?"ies":"y"} not a hostname: ${esc(badE.join(", "))}`, "Hostnames only — no scheme, no path, no semicolons (github.com, not https://github.com/). Only commas separate entries, so a stray semicolon becomes part of the hostname and silently matches nothing."]);
+  if (badW.length) req.push([`WebFetch domain entr${badW.length>1?"ies":"y"} not a hostname: ${esc(badW.join(", "))}`, "Same rule — a bare hostname, optionally with a leading *. wildcard."]);
+  const badRules = extraRules().filter(r => r.kind === "bad");
+  if (badRules.length) req.push([`${badRules.length} pasted rule line(s) unparseable`, "Each line needs a deny: / ask: / allow: prefix. Unprefixed lines are NOT silently dropped — they block, so a typo can't quietly omit a rule you meant to enforce."]);
+  req.forEach(([k, why]) => add("block", `Missing or invalid: <b>${k}</b>`, why));
 
   /* ------- contradiction strip ------- */
-  if (S.delivery === "registry" && S.sandbox !== "off") add("warn",
-    "Windows delivery with the sandbox enabled — <b>the sandbox does not cover native Windows</b> (macOS / Linux / WSL2 only).",
-    "The sandbox block will deploy and do nothing on those machines. Pair with permissions.deny, or scope this policy to WSL2.");
+  // OS scope, not delivery mechanism, is what determines whether the sandbox runs. Keying this
+  // off delivery missed it for server-managed, file, and plist — 3 of the 4 mechanisms, and the
+  // common ones. A Windows-inclusive fleet must never see a green sandbox column.
+  if (S.sandbox !== "off" && S.osScope === "mixed") add("warn",
+    "Mixed fleet with the sandbox enabled — <b>the sandbox does not exist on native Windows</b> (macOS / Linux / WSL2 only), so it is inert on the Windows share of these machines.",
+    "The sandbox block deploys and does nothing there. The coverage matrix marks those cells partial for this reason. Either split the policy by platform, standardise developers onto WSL2, or compensate outside Claude Code on the Windows machines.");
+  if (S.sandbox !== "off" && S.osScope === "windows") add("warn",
+    "Sandbox settings are selected for a <b>native-Windows-only</b> fleet — none of them will run.",
+    "Not an error you can fix in this file: the sandbox simply does not exist on native Windows. The emitted sandbox block is inert; your enforcement is the permission rules plus whatever runs outside Claude Code.");
   if (S.telemetry !== "off" && ["bedrock","vertex","foundry"].includes(S.provider)) add("warn",
     "Telemetry is on, but on a hyperscaler Claude Code emits <b>no</b> usage metrics from your cloud.",
     "Per-user attribution and spend limits require a self-hosted gateway. Budget it before rollout.");
@@ -613,6 +729,9 @@ function lint(o){
 function wrap(o){
   const json = JSON.stringify(o, null, 2);
   const fmt = OS_PATHS[S.delivery].fmt;
+  // $schema is an editor-validation hint for the JSON file only — it is noise in a plist or
+  // a registry payload, so strip it from those targets.
+  if (fmt === "plist" || fmt === "reg") { o = Object.assign({}, o); delete o["$schema"]; }
   if (fmt === "plist") {
     return '<?xml version="1.0" encoding="UTF-8"?>\n' +
       '<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">\n' +
@@ -623,7 +742,7 @@ function wrap(o){
       "\n</dict>\n</plist>\n";
   }
   if (fmt === "reg") {
-    const escaped = json.replace(/\\/g,"\\\\").replace(/"/g,'\\"').replace(/\r?\n/g,"");
+    const escaped = JSON.stringify(o).replace(/\\/g,"\\\\").replace(/"/g,'\\"');
     return "Windows Registry Editor Version 5.00\n\n" +
       "; Group Policy / Intune. The whole settings document goes in one REG_SZ value.\n" +
       "; NOTE: the value type and escaping below are this tool's reading of a doc that names the\n" +
@@ -647,11 +766,10 @@ function wrap(o){
       "# source wins, and a stray file is silently ignored rather than merged.\n\n" +
       json + "\n";
   }
-  return "// managed-settings.json — place at the path for each OS:\n" +
-    "//   macOS        /Library/Application Support/ClaudeCode/managed-settings.json\n" +
-    "//   Linux / WSL  /etc/claude-code/managed-settings.json\n" +
-    "//   Windows      C:\\Program Files\\ClaudeCode\\managed-settings.json   (NOT ProgramData — removed v2.1.75)\n" +
-    "// Strip these comment lines: real managed settings must be strict JSON.\n\n" + json + "\n";
+  // File delivery emits CLEAN JSON, deliberately. It used to prepend // path comments, which
+  // made a download named managed-settings.json fail JSON.parse — and managed settings fail
+  // closed, so dropping that file on a machine wedges it. The paths live in the checklist.
+  return json + "\n";
 }
 function plistVal(v, ind){
   if (typeof v === "boolean") return `<${v}/>`;
@@ -716,6 +834,55 @@ function claudeMd(){
 `;
 }
 
+/* ---------------- Template C — the human policy both machine files derive from ---------------- */
+function orgInstructions(){
+  const org = val("f-org") || "Your org";
+  const gate = { unix:"macOS / Linux / WSL2", mixed:"macOS, Linux, WSL2, and Windows", windows:"Windows" }[S.osScope];
+  return `# Using Claude Code at ${org} — engineering policy
+
+> Stub. This is the doc your engineers read — distinct from the machine-loaded CLAUDE.md.
+> The managed settings and the managed CLAUDE.md are *derived from this*. Fill the angle-bracket
+> sections in your handbook; they are intentionally blank here because only you know the answers.
+
+## 1. Approved surfaces & access
+- Claude Code is approved for: <repos / teams / environments>.
+- Supported platforms in our estate: ${gate}.
+- Auth: sign in with your ${org} claude.ai account only (**enforced** — \`forceLoginMethod\` is
+  \`${S.loginMethod}\` and the org is locked). Personal accounts are blocked.
+- Not approved for: <regulated workloads / PHI repos / …>.
+
+## 2. Data handling
+- What may go in a prompt, by data classification. What may never.
+- ${S.telemetry === "off" ? "No client telemetry is collected." :
+     S.telemetry === "team" ? "Telemetry is collected at **team level** — per-user attribution is switched off deliberately." :
+     "Telemetry includes **per-user attribution**. Record the privacy/works-council sign-off that authorised this."}
+- Prompt *text* is never exported (\`OTEL_LOG_USER_PROMPTS\` stays off).
+
+## 3. Model & cost expectations
+- Default model, when to escalate, and the team budget / showback owner.
+- Billing path: ${{api:"Anthropic API", claudeai:"claude.ai subscription seats", bedrock:"AWS Bedrock", vertex:"GCP Vertex", foundry:"Azure AI Foundry"}[S.provider]}.
+
+## 4. Review & accountability
+- **Operate it like a distinguished engineer.** Plan → solve → verify: get the approach before
+  the edit on anything non-trivial, and hold it to "show me it works" — no "done" without evidence.
+- Claude drafts; you own what ships. Human review before merge is mandatory, including an
+  **adversarial pass** on non-trivial changes.
+- Security-sensitive diffs (auth, money, migrations, infra) get an extra gate.
+
+## 5. Guardrails you'll hit, and why
+- Blocked paths: credential and secret files are unreadable by Claude's file tools.
+- Blocked commands: ${NET_BINS.join(", ")} are denied in Bash — use the approved fetch path instead.
+- Confirmation required on: ${ACTIONS.filter(a=>S.actions[a.id]).map(a=>a.l).join(", ") || "(none selected)"}.
+- ${S.lockdown === "baseline" ? "You may add your own permission rules, MCP servers, hooks, and plugins." :
+     S.lockdown === "hardened" ? "MCP servers and plugin marketplaces are centrally allowlisted." :
+     "**Your own permission rules, MCP servers, and hooks are ignored** — only centrally managed ones apply."}
+- How to request an exception: <go/claude-exception>.
+
+## 6. Getting help / escalation
+- Who owns the platform, where to report a problem, how incidents are handled.
+`;
+}
+
 /* ---------------- operator checklist ---------------- */
 function checklist(o, findings){
   const L = [], org = val("f-org") || "Your org";
@@ -731,8 +898,19 @@ function checklist(o, findings){
   if (S.delivery === "registry")
     L.push("- [ ] **Confirm the `.reg` value type and JSON escaping against the settings doc.** The doc names the key path but not the encoding; this tool's wrapper is a reading, not a quotation.",
            "- [ ] Migrate any legacy `C:\\ProgramData\\ClaudeCode\\` deployment (removed v2.1.75 — deploying there is a silent no-op).");
+  if (S.delivery === "file")
+    L.push("- [ ] Place `managed-settings.json` at the correct per-OS path — **macOS** `/Library/Application Support/ClaudeCode/` · **Linux / WSL** `/etc/claude-code/` · **Windows** `C:\\Program Files\\ClaudeCode\\`. The JSON tab's output is deploy-ready as-is; it carries no comments, because a managed file must be strict JSON.");
   if (S.delivery === "server")
-    L.push("- [ ] Enable the **fail-closed startup mode** so a machine that can't fetch policy refuses to run unmanaged.");
+    L.push("- [ ] Enable the **fail-closed startup mode** so a machine that can't fetch policy refuses to run unmanaged. It is an option in the claude.ai admin console's Claude Code settings alongside the managed-settings field — **confirm the exact control name there**; this tool does not have a settings key for it.");
+
+  L.push("", "## Rollback — decide this BEFORE you push, not during", "",
+    "- [ ] Write down how to **remove or replace the managed file on a machine that can no longer start Claude Code**, for your mechanism specifically. Managed security fields fail closed, so the failure mode you are planning for is *the tool won't launch*, which means you cannot fix it from inside the tool.",
+    `- [ ] Confirm **who holds the rights** to do that on a developer's machine (${
+      S.delivery === "server" ? "revert the policy in the claude.ai admin console — fastest path, no per-machine access needed" :
+      S.delivery === "plist"  ? "push a corrected or empty profile from Jamf/Kandji/Intune; know whether you can reach a machine whose user is blocked" :
+      S.delivery === "registry" ? "push a corrected value via Group Policy/Intune, or delete the HKLM key with local admin" :
+      "delete or replace the file — requires local admin/root on each machine, the slowest of the four mechanisms"}).`,
+    "- [ ] Keep the **previous known-good settings document** somewhere you can retrieve without Claude Code (a repo, a ticket, your MDM's version history).");
 
   L.push("", "## Identity", "",
     "- [ ] Confirm the org UUID against your Claude Console / Enterprise admin settings.",
@@ -763,8 +941,12 @@ function checklist(o, findings){
       "- [ ] Budget a tuning pass: an over-tight `allowedDomains` blocks legitimate package installs, and some tools need an `excludedCommands` entry.",
       "- [ ] Confirm `sandbox.credentials` requires **v2.1.187+** and `filesystem.disabled` requires **v2.1.216+**. Below the gate they are silent no-ops — pin a minimum client version in your fleet tooling.");
 
+  L.push("", "## Guidance layer (the managed CLAUDE.md)", "",
+    "- [ ] Place the managed `CLAUDE.md` at the **managed policy path** — **macOS** `/Library/Application Support/ClaudeCode/CLAUDE.md` · **Linux / WSL** `/etc/claude-code/CLAUDE.md` · **Windows** `C:\\Program Files\\ClaudeCode\\CLAUDE.md` — or inline it via the `claudeMd` key in managed settings.",
+    "- [ ] Remember what it is: it loads for **every session on the machine, in every repo**, and a user cannot exclude it — but it **guides, it does not gate**. Anything that must hold against a careless or adversarial user belongs in the JSON.");
+
   L.push("", "## Policy + people", "",
-    "- [ ] Publish the organization-instructions doc and link it from `companyAnnouncements`.",
+    "- [ ] Publish the organization-instructions doc (the stub in the last tab) and link it from `companyAnnouncements`.",
     "- [ ] Decide the Remote Control / web-sessions posture at `claude.ai/admin-settings/claude-code`.",
     "- [ ] Set a **workspace rate limit** on the auto-created \"Claude Code\" Console workspace — its traffic counts against your org's API limits, so an agent burst can brown out production.",
     "- [ ] Verify BAA / ZDR / residency **per contract** — this bundle asserts none of them.");
@@ -780,7 +962,7 @@ function checklist(o, findings){
 /* ---------------- coverage matrix ---------------- */
 const COLS = [
   ["Built-in Read / Edit / Write", "permission rules (bounded, deterministic)"],
-  ["Recognized Bash file cmds", "cat, head, tail, sed — same deny rules"],
+  ["Recognized Bash file cmds", "cat, head, tail, sed — a named subset, not all shell tools"],
   ["Arbitrary subprocess I/O", "sandbox filesystem layer only"],
   ["Network egress", "sandbox allowedDomains (allowlist)"],
   ["Environment variables", "sandbox.credentials.envVars / env scrub"]
@@ -801,25 +983,41 @@ function renderCov(o){
     const hasPath = (a.paths||[]).length, hasEnv = (a.envVars||[]).length;
     const sbCovered = !fsOff && (a.sandboxPaths||[]).some(p => denyRead.includes(p) || credFiles.includes(p));
     const envCovered = (a.envVars||[]).length ? ((a.envVars||[]).every(v => credEnv.includes(v)) || !!S.adv.envScrub) : null;
+    // A sandbox-dependent cell can NEVER read as fully covered on a fleet where the sandbox
+    // doesn't run. On native Windows it is a gap; on a mixed fleet it is partial.
+    const sbCell = (verdict, label) => {
+      if (S.osScope === "windows") return ["n", "GAP — no sandbox on Windows"];
+      if (verdict === "y" && sandboxPartial()) return ["p", label + " (Unix only)"];
+      return verdict === "y" ? ["y", label] : ["n", label];
+    };
     const c = [];
     c.push(hasPath ? ["y", "Read deny"] : ["na", "n/a"]);
-    c.push(hasPath ? ["y", "Read deny"] : ["na", "n/a"]);
+    // Deliberately "partial", not "y": the coverage is a NAMED subset (cat, head, tail, sed).
+    // awk, perl, xxd, and `python -c open()` are not covered, so a flat y read as enforcement.
+    c.push(hasPath ? ["p", "Read deny — recognized cmds only"] : ["na", "n/a"]);
     if (!hasPath) c.push(["na","n/a"]);
     else if (S.sandbox === "off") c.push(["n","GAP — sandbox off"]);
     else if (fsOff) c.push(["n","GAP — filesystem layer disabled"]);
-    else if (sbCovered) c.push(["y","denyRead + credentials.files"]);
-    else c.push(["n","GAP — no sandbox path"]);
-    c.push(egress ? ["y","allowedDomains"] : (S.sandbox === "off" ? ["n","GAP — no egress control"] : ["n","GAP — no allowlist"]));
+    else c.push(sbCell(sbCovered ? "y" : "n", sbCovered ? "denyRead + credentials.files" : "GAP — no sandbox path"));
+    if (S.sandbox === "off") c.push(["n","GAP — no egress control"]);
+    else c.push(sbCell(egress ? "y" : "n", egress ? "allowedDomains" : "GAP — no allowlist"));
     if (envCovered === null) c.push(["na","n/a"]);
-    else c.push(envCovered ? ["y", credEnv.length ? "credentials.envVars" : "env scrub"] : ["n","GAP — inherited by subprocesses"]);
+    else if (envCovered && S.adv.envScrub) c.push(["y", credEnv.length ? "credentials.envVars + env scrub" : "env scrub"]);
+    else if (envCovered) c.push(sbCell("y","credentials.envVars"));
+    else c.push(["n","GAP — inherited by subprocesses"]);
     h += `<tr><td><b>${esc(a.l)}</b></td>` + c.map(([k,t]) => `<td class="${k}">${esc(t)}</td>`).join("") + "</tr>";
   });
   document.getElementById("cov").innerHTML = h;
 
   const gaps = document.querySelectorAll("#cov td.n").length;
-  document.getElementById("cov-note").innerHTML = gaps
-    ? `<b style="color:var(--bad)">${gaps} gap cell(s).</b> Each is a path an attacker or a careless subprocess can still take. Traced to <a href="claude-code-enterprise-config.html">config §2</a> — <em>How permission rules actually resolve</em> and <em>The sandbox</em>.`
-    : `<b style="color:var(--good)">No gap cells</b> for the assets you selected. Note the columns are enforcement <em>surfaces</em>, not a completeness proof — an asset you didn't tick is simply absent from this matrix.`;
+  const partial = document.querySelectorAll("#cov td.p").length;
+  const osNote = S.osScope === "windows"
+    ? ` <b>This fleet is native-Windows-only, so every sandbox-dependent cell is a gap</b> — the sandbox does not exist there.`
+    : sandboxPartial() ? ` <b>Partial cells are the Windows share of your mixed fleet</b>, where the sandbox does not run.` : "";
+  document.getElementById("cov-note").innerHTML =
+    (gaps ? `<b style="color:var(--bad)">${gaps} gap cell(s)</b>` : `<b style="color:var(--good)">No gap cells</b>`) +
+    (partial ? ` · <b style="color:var(--warn)">${partial} partial</b>` : "") + "." + osNote +
+    ` Two columns are never a clean pass by construction: <em>recognized Bash file cmds</em> covers a named subset (<code>cat</code>, <code>head</code>, <code>tail</code>, <code>sed</code>) and not <code>awk</code>, <code>perl</code>, <code>xxd</code>, or <code>python -c open()</code>; and the columns are enforcement <em>surfaces</em>, not a completeness proof — an asset you didn't tick is simply absent here. Traced to <a href="claude-code-enterprise-config.html">config §2</a>.`;
 }
 
 /* ---------------- render ---------------- */
@@ -827,7 +1025,7 @@ const TABS = [
   ["json","managed-settings.json"],
   ["wrap","Delivery wrapper"],
   ["md","Managed CLAUDE.md"],
-  ["check","Org instructions + checklist"]
+  ["check","Org policy + operator checklist"]
 ];
 
 function render(){
@@ -846,11 +1044,25 @@ function render(){
   });
 
   document.getElementById("fld-otlp").hidden = (S.telemetry === "off");
-  document.getElementById("fld-egress").hidden = (S.sandbox !== "hardened");
+  document.getElementById("fld-egress").hidden = (S.sandbox !== "hardened" || !sandboxRunsHere());
+  document.getElementById("fld-excluded").hidden = (S.sandbox !== "hardened" || !sandboxRunsHere());
+  document.getElementById("fld-extradeny").hidden = (S.sandbox === "off" || !sandboxRunsHere());
+  // The acknowledgment only appears when a decision-layer-only posture is actually in play.
+  const ackRow = document.getElementById("ack-row");
+  ackRow.hidden = !decisionLayerOnly();
+  if (ackRow.hidden && S.ackNoOsLayer) { S.ackNoOsLayer = false; document.getElementById("f-ack").checked = false; }
 
   const o = buildSettings();
   const F = lint(o);
   const blocked = F.filter(f => f.sev === "block");
+
+  // Field-level invalid marking, so the operator sees WHICH input is wrong, not just a list.
+  const UUID_RE = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
+  const mark = (id, bad) => document.getElementById(id).classList.toggle("bad", bad);
+  mark("f-uuid", !!val("f-uuid") && !UUID_RE.test(val("f-uuid")));
+  mark("f-egress", badHosts(egressList()).length > 0);
+  mark("f-webfetch", badHosts(webfetchList()).length > 0);
+  mark("f-otlp", S.telemetry !== "off" && !!val("f-otlp") && !/^https?:\/\/[^\s]+$/i.test(val("f-otlp")));
 
   // gate
   const g = document.getElementById("gate");
@@ -870,16 +1082,18 @@ function render(){
   document.getElementById("tabs").innerHTML = TABS.map(([k,l]) =>
     `<button data-tab="${k}" class="${S.tab===k?"active":""}">${l}</button>`).join("");
 
-  const body = { json: JSON.stringify(o, null, 2), wrap: wrap(o), md: claudeMd(), check: checklist(o, F) }[S.tab];
+  const body = { json: JSON.stringify(o, null, 2), wrap: wrap(o), md: claudeMd(),
+                 check: orgInstructions() + "\n---\n\n" + checklist(o, F) }[S.tab];
   const out = document.getElementById("pane-out");
   out.textContent = body;
   out.className = "out" + (S.tab === "json" || S.tab === "wrap" ? "" : " md");
 
+  const MD_PATHS = "macOS /Library/Application Support/ClaudeCode/CLAUDE.md · Linux+WSL /etc/claude-code/CLAUDE.md · Windows C:\\Program Files\\ClaudeCode\\CLAUDE.md";
   const meta = {
     json:  ["Strict JSON — no comments, no placeholders", "strict JSON"],
     wrap:  ["Wrapped for your delivery mechanism", OS_PATHS[S.delivery].path],
-    md:    ["Behavioral guidance — not a gate", "managed CLAUDE.md path"],
-    check: ["The steps the settings file can't carry", "commit to your repo"]
+    md:    ["Behavioral guidance — not a gate", MD_PATHS],
+    check: ["Org policy stub + the steps the settings file can't carry", "commit both to your repo"]
   }[S.tab];
   document.getElementById("pane-title").textContent = meta[0];
   document.getElementById("pane-path").textContent = meta[1];
@@ -943,11 +1157,15 @@ document.addEventListener("change", e => {
   if (el.dataset.asset)  { S.assets[el.dataset.asset] = el.checked; render(); }
   if (el.dataset.action) { S.actions[el.dataset.action] = el.checked; render(); }
   if (el.dataset.adv)    { S.adv[el.dataset.adv] = el.checked; render(); }
+  if (el.id === "f-ack") { S.ackNoOsLayer = el.checked; render(); }
 });
-document.addEventListener("input", e => { if (e.target.matches("input[type=text]")) render(); });
+document.addEventListener("input", e => {
+  if (e.target.matches("input[type=text], textarea")) render();
+});
 
 const FNAME = { json:"managed-settings.json", md:"CLAUDE.md",
-  check:"claude-code-deployment-checklist.md",
+  check:"claude-code-policy-and-checklist.md",
+  // file delivery emits clean JSON, so managed-settings.json is an honest name for it now.
   wrap:{ plist:"com.anthropic.claudecode.plist", reg:"claude-code-policy.reg",
          console:"server-managed-instructions.txt", file:"managed-settings.json" } };
 
