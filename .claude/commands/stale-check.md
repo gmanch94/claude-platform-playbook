@@ -121,7 +121,18 @@ Run `node scripts/check-counts.mjs` — a deterministic guard (no deps). It asse
 
 Exit 0 = PASS, exit 1 = a mismatch (or a `??` = a count sentence was reworded and the regex needs re-pointing). This retires the recurring "bumped an artifact, forgot the count" drift (precedent 2026-07-19: the docs said 46 while the repo held 51). Report the script's output verbatim under a `COUNTS` heading. If `node` is unavailable, say so and fall back to comparing `ls artifacts | wc -l` against the README catalog rows by hand.
 
-### 8. Summary report
+### 8. System-card readout freshness
+
+`artifacts/system-card-readout.md` §4 is a **worked instance of a specific card**, and it is the one section in the repo that a model-name sweep can silently falsify — flip `Opus 5` → the successor and last release's numbers sit under the new model's name with every other check in this file passing.
+
+Two reads, both cheap:
+
+- **Card date vs pinned model.** `grep -n "CARD-STAMP" artifacts/system-card-readout.md` returns `model=… card-date=…`; compare against the top-GA model in `docs/feature-inventory.md`. If the pinned model released *after* that card date, §4 describes a model the repo no longer treats as current → flag **§4 STALE**.
+- **Name/stamp mismatch.** If §4's body names a current-state model that isn't the one in `CARD-STAMP`, someone search-and-replaced into it. (Prior-model comparisons inside the rows are expected and fine — it's the subject of the findings that must match.) Flag **§4 CONTAMINATED** — this is the failure the wholesale-replace rule exists to prevent, and it is worse than staleness because the numbers now read as current.
+
+Read-only, like the rest of this command. The fix path is `/card-sweep`, which replaces §4 wholesale from the new card. Never patch §4 in place from here.
+
+### 9. Summary report
 
 Print a single consolidated block:
 
@@ -134,6 +145,7 @@ INVENTORY     last verified N days ago  X missing refs
 PRODUCT SURF  X ok  Y due/stale  Z drift
 URLS          X ok  Y broken  (sampled Z of N)
 COUNTS        N artifacts · all refs agree  (or: K mismatched)
+CARD READOUT  §4 card YYYY-MM-DD vs pinned <model>  ok | STALE | CONTAMINATED
 
 Action needed:
   [ ] /bump-as-of              — Y files have stale stamps
@@ -142,6 +154,7 @@ Action needed:
   [ ] Re-verify product surfaces — Y rows past 14-day window, Z status-drift
   [ ] Fix broken URLs          — Y links returning non-200
   [ ] Fix artifact count       — a stated count ≠ artifacts/ (node scripts/check-counts.mjs)
+  [ ] /card-sweep              — system-card-readout §4 is stale or contaminated
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━
 ```
 
