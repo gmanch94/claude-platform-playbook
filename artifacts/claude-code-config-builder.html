@@ -75,6 +75,12 @@
   details.adv { border:1px solid var(--line); border-radius:8px; padding:10px 14px; margin-top:6px; background:#fdfcfa; }
   details.adv summary { cursor:pointer; font-weight:700; font-size:13px; color:var(--c2); }
   details.adv .body { margin-top:12px; padding-top:10px; border-top:1px solid var(--line); }
+  /* State on the summary line. A closed drawer that ships settings and can block export was
+     reporting nothing about itself — the operator had to open it to learn it mattered. */
+  details.adv summary .badge { float:right; font-weight:600; font-size:11px; color:var(--muted); }
+  details.adv summary .badge .on { color:var(--c2); }
+  details.adv summary .badge .blk { color:var(--bad); font-weight:700; }
+  details.adv summary .badge .idle { color:var(--warn); }
   .gate { border-radius:10px; padding:14px 16px; margin-bottom:16px; border:2px solid var(--good); background:linear-gradient(135deg,#ecfdf5,#fff); }
   .gate.blocked { border-color:var(--bad); background:linear-gradient(135deg,#fef2f2,#fff); }
   .gate .gh { display:flex; align-items:baseline; gap:10px; margin-bottom:4px; }
@@ -334,13 +340,13 @@
         <div class="lede">These go in <code>ask</code>, not <code>deny</code> — a deny on <code>git push</code> breaks legitimate work and gets the whole policy switched off. Tiered by <em>can it be undone quietly?</em></div>
         <div id="actions"></div>
         <div class="note" style="margin-top:10px"><b>Also emitted, always, so you can review it here rather than discover it in the JSON:</b> <code>Bash(curl *)</code>, <code>Bash(wget *)</code>, <code>Bash(nc *)</code>, <code>Bash(ssh *)</code> are added to <code>deny</code>. That is the docs' own remedy for argument-constrained network rules being fragile — but an org-wide <code>ssh</code> deny surprises people, so it is stated up front. If your engineers need <code>ssh</code> from a Claude session, move it to the ask list by hand after export and record why.</div>
-        <details class="adv">
-          <summary>Advanced — additional managed-settings fields (not the full set)</summary>
+        <details class="adv" id="adv-drawer">
+          <summary>Advanced — additional managed-settings fields (not the full set)<span class="badge" id="adv-badge"></span></summary>
           <div class="body" id="advanced"></div>
         </details>
 
-        <details class="adv" style="margin-top:10px">
-          <summary>Merge your existing rules — and lint them</summary>
+        <details class="adv" id="merge-drawer" style="margin-top:10px">
+          <summary>Merge your existing rules — and lint them<span class="badge" id="merge-badge"></span></summary>
           <div class="body">
             <div class="hint" style="font-size:11.5px;color:var(--muted);margin-bottom:8px">Paste rules you already run, one per line, prefixed <code>deny:</code>, <code>ask:</code>, or <code>allow:</code>. They are merged into the output <b>and</b> put through the full linter — which is the only way checks 1–5 (deny-shadows-allow, bare-name removal, word boundary, unanchored allow globs, display-label tool names) can fire, since the generated rules are correct by construction. If you have an existing policy, this is where the collisions surface.</div>
             <textarea id="f-extrarules" rows="5" placeholder="deny: Bash(aws *)&#10;allow: Bash(aws s3 ls)&#10;ask: Bash(gcloud * delete *)" style="width:100%;padding:8px 10px;border:1px solid var(--line);border-radius:6px;font-family:ui-monospace,SFMono-Regular,Menlo,monospace;font-size:11.5px;background:white;color:var(--ink)"></textarea>
@@ -1760,6 +1766,31 @@ function render(){
   const o = buildSettings();
   const F = lint(o);
   const blocked = F.filter(f => f.sev === "block");
+
+  /* Drawer state on the summary line. Both drawers are shut at load and both were silent about
+     themselves: Advanced ships four settings ON — two of which shape the output the operator never
+     sees, and one of which (psMirror) is what SUPPRESSES check 14, so its own effect is invisible —
+     while the merge drawer holds the textarea that is the only way checks 1–5 can fire at all. The
+     page advertises a 15-check linter and runs 10 until something is pasted there.
+     The blocking count is DERIVED from the findings' own `to` selectors rather than a hand-kept
+     list of which keys can block, so a new blocker inside a drawer counts itself. */
+  const drawerBlocks = sel => {
+    const host = document.querySelector(sel);
+    return blocked.filter(f => {
+      if (!f.to) return false;
+      const el = document.querySelector(f.to);
+      return !!(el && host.contains(el));
+    }).length;
+  };
+  const advOn = ADV.filter(a => S.adv[a.k]).length;
+  const advBlk = drawerBlocks("#adv-drawer");
+  document.getElementById("adv-badge").innerHTML =
+    `<span class="on">${advOn} of ${ADV.length} on</span>` + (advBlk ? ` · <span class="blk">${advBlk} blocking</span>` : "");
+  const pasted = extraRules().length;
+  const mergeBlk = drawerBlocks("#merge-drawer");
+  document.getElementById("merge-badge").innerHTML = pasted
+    ? `<span class="on">${pasted} rule${pasted>1?"s":""} pasted</span>` + (mergeBlk ? ` · <span class="blk">${mergeBlk} blocking</span>` : "")
+    : `<span class="idle">5 of 15 checks only fire here</span>`;
 
   // Field-level marking, in TWO states, so the operator sees WHICH input is wrong rather than only
   // a list. `.bad` (red) = a value is present and malformed. `.needed` (amber) = a required value
