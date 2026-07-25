@@ -78,6 +78,9 @@ const prose = [
 // This is the same class as the in-prose guard, one file-boundary further out.
 // To extend: [statedFile, statedRe (capture group 1 = the number or number-word),
 //             countedFile, rowRe (global), label].
+// KNOWN LIMIT: the linter rows are counted by their `// N. ` comment marker, so a check
+// added WITHOUT that comment convention leaves this green. The convention is therefore
+// load-bearing — number every new check's comment, or this guard silently under-counts.
 const crossFile = [
   ['CLAUDE.md',     /(\w+)-check rule linter/,        'artifacts/claude-code-config-builder.html', /^\s*\/\/ \d+\. /gm,        'builder linter checks (CLAUDE.md)'],
   ['README.md',     /A \*\*(\w+)-check rule linter/,  'artifacts/claude-code-config-builder.html', /^\s*\/\/ \d+\. /gm,        'builder linter checks (README)'],

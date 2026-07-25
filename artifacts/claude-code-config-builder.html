@@ -208,14 +208,16 @@
         </div>
         <div class="fld" id="fld-denied" hidden>
           <label>Sandbox <code>deniedDomains</code> <span style="color:var(--muted);font-weight:400">(optional — the sturdiest entry in this form)</span></label>
-          <div class="hint"><b>Hostnames only — there is no IP or CIDR primitive.</b> A range (<code>10.0.0.0/8</code>) is not expressible here; ranges belong to your proxy or firewall (config §5.3). What this <em>is</em> good for: named internal hosts. <code>deniedDomains</code> <b>outranks <code>allowedDomains</code></b> when both match and <b>merges from every settings scope regardless of <code>allowManagedDomainsOnly</code></b> — so unlike your allowlist, a developer's own settings file cannot append its way around it. Suggestions to consider: <code>metadata.google.internal</code>, an internal admin domain, <code>*.corp.example.com</code>. Whether a bare IP literal matches a domain pattern is <b>not documented</b> — don't rely on one.</div>
+          <div class="hint"><b>Hostnames only — there is no IP or CIDR primitive.</b> A range (<code>10.0.0.0/8</code>) is not expressible here; ranges belong to your proxy or firewall (config §5.3). What this <em>is</em> good for: named internal hosts. <code>deniedDomains</code> <b>outranks <code>allowedDomains</code></b> when both match and <b>merges from every settings scope regardless of <code>allowManagedDomainsOnly</code></b> — so unlike your allowlist (which appears at the Hardened tier), a developer's own settings file cannot append its way around it. Named hosts only, and note this generalizes poorly across clouds: GCP exposes <code>metadata.google.internal</code>, but AWS and Azure instance metadata is reached at the link-local address <code>169.254.169.254</code> — and whether a bare IP literal matches a domain pattern is <b>not documented</b>, so on those clouds the metadata endpoint is a proxy or firewall rule, not an entry here. If your cloud publishes a hostname alias, verify it before relying on it. Good candidates for this field: an internal admin domain, <code>*.corp.example.com</code>, a management console host.</div>
           <input type="text" id="f-denied" placeholder="metadata.google.internal, *.corp.karekal.internal">
         </div>
         <div class="fld" id="fld-proxyports" hidden>
           <label>Bring-your-own sandbox proxy <span style="color:var(--muted);font-weight:400">(optional — HTTP / SOCKS5 ports)</span></label>
-          <div class="hint">Unset means Claude runs its own proxy, which allows on the <b>client-supplied hostname without inspecting TLS</b> — the docs' own warning is that a broad allow entry is then an exfiltration path (domain fronting). If containment is the requirement, point the sandbox at a proxy you control, terminate TLS there, and install its CA inside the sandbox. On macOS that breaks TLS verification for Go-based tools (<code>gh</code>, <code>gcloud</code>, <code>terraform</code>) until you also tick <code>enableWeakerNetworkIsolation</code> below — which itself opens an exfiltration path. Both costs are real; pick knowingly.</div>
+          <div class="hint">Unset means Claude runs its own proxy, which allows on the <b>client-supplied hostname without inspecting TLS</b> — the docs' own warning is that a broad allow entry is then an exfiltration path (domain fronting). If containment is the requirement, point the sandbox at a proxy you control, terminate TLS there, and install its CA inside the sandbox. Note this is the <b>sandbox's own</b> proxy, which does take SOCKS5 — not the client-level <code>HTTPS_PROXY</code> path, where SOCKS is <b>not</b> supported (config §5.3). Two different proxies. On macOS that breaks TLS verification for Go-based tools (<code>gh</code>, <code>gcloud</code>, <code>terraform</code>) until you also tick <code>enableWeakerNetworkIsolation</code> below — which itself opens an exfiltration path. Both costs are real; pick knowingly.</div>
           <div style="display:flex;gap:6px">
+            <span style="flex:0 0 auto;align-self:center;font-size:11px;color:var(--muted);font-weight:600">HTTP</span>
             <input type="text" id="f-httpproxy" placeholder="httpProxyPort e.g. 8080" style="flex:1">
+            <span style="flex:0 0 auto;align-self:center;font-size:11px;color:var(--muted);font-weight:600">SOCKS5</span>
             <input type="text" id="f-socksproxy" placeholder="socksProxyPort e.g. 8081" style="flex:1">
           </div>
         </div>
@@ -429,8 +431,8 @@ const ADV = [
   { k:"skipWebFetchPreflight", l:"skipWebFetchPreflight", on:false, why:"Skips the domain-safety preflight. Sometimes required on locked-down networks; you lose the check." },
   { k:"envScrub", l:"CLAUDE_CODE_SUBPROCESS_ENV_SCRUB", on:true, why:"Strips Anthropic + cloud-provider credentials from <b>all</b> subprocesses. Sandboxed Bash otherwise inherits the parent environment." },
   { k:"allowAppleEvents", l:"sandbox.allowAppleEvents (macOS)", on:false, why:"⚠ Removes code-execution isolation — sandboxed commands can launch other apps <b>unsandboxed</b>." },
-  { k:"allowUnixSockets", l:"sandbox.network.allowUnixSockets incl. docker.sock", on:false, why:"⚠ Allowing <code>/var/run/docker.sock</code> effectively grants <b>host access</b>. Nests under <code>network</code>, and is <b>macOS only</b> — on Linux/WSL2 it is ignored (the seccomp filter can't inspect socket paths; <code>allowAllUnixSockets</code> is the blunt equivalent)." },
-  { k:"allowAllUnixSockets", l:"sandbox.network.allowAllUnixSockets", on:false, why:"⚠ The blunt form of the key above: <b>it cannot be scoped to a path</b>, so it admits <code>docker.sock</code> along with every other socket. On Linux/WSL2 it is the <em>only</em> way to permit Unix sockets, because it skips the seccomp filter that blocks them — but its row carries <b>no platform qualifier</b>, unlike the keys either side of it, so do <b>not</b> assume it is inert on macOS the way <code>allowUnixSockets</code> is documented inert on Linux." },
+  { k:"allowUnixSockets", l:"sandbox.network.allowUnixSockets incl. docker.sock", on:false, why:"⚠ <b>Blocks export</b> (check 8). Allowing <code>/var/run/docker.sock</code> effectively grants <b>host access</b>. Nests under <code>network</code>, and is <b>macOS only</b> — on Linux/WSL2 it is ignored (the seccomp filter can't inspect socket paths; <code>allowAllUnixSockets</code> is the blunt equivalent)." },
+  { k:"allowAllUnixSockets", l:"sandbox.network.allowAllUnixSockets", on:false, why:"⚠ <b>Blocks export</b> (check 11) — the narrower alternative is an <code>excludedCommands</code> entry for the one binary that needs a socket. The blunt form of the key above: <b>it cannot be scoped to a path</b>, so it admits <code>docker.sock</code> along with every other socket. On Linux/WSL2 it is the <em>only</em> way to permit Unix sockets, because it skips the seccomp filter that blocks them — but its row carries <b>no platform qualifier</b>, unlike the keys either side of it, so do <b>not</b> assume it is inert on macOS the way <code>allowUnixSockets</code> is documented inert on Linux." },
   { k:"allowLocalBinding", l:"sandbox.network.allowLocalBinding (macOS)", on:false, why:"Lets sandboxed commands bind localhost ports — needed for local dev servers and test harnesses. Default false. Lower-risk than the sockets keys, but it is still a listener on the machine." },
   { k:"weakNetIso", l:"sandbox.enableWeakerNetworkIsolation (macOS)", on:false, why:"⚠ Opens the system TLS trust service so Go-based tools (<code>gh</code>, <code>gcloud</code>, <code>terraform</code>) can verify certificates behind a MITM proxy with a custom CA. The settings table's own words: <b>reduces security by opening a potential data exfiltration path</b>. Only tick it alongside a proxy port." },
   { k:"weakNested", l:"sandbox.enableWeakerNestedSandbox (Linux + WSL2)", on:false, why:"⚠ For unprivileged Docker environments. <b>Reduces security</b> — only where other isolation is enforced. Default false." },
@@ -622,8 +624,10 @@ function mcpList(){
   if (/^none$/i.test(raw)) return [];
   return listOf("f-mcp");
 }
-function egressList(){ return listOf("f-egress"); }
-function deniedList(){ return listOf("f-denied"); }
+/* Lowercased on emit: DNS is case-insensitive, but nothing documents that the proxy pattern
+   match is, so "Metadata.Google.Internal" was a coin-flip dressed as a denial. */
+function egressList(){ return listOf("f-egress").map(h => h.toLowerCase()); }
+function deniedList(){ return listOf("f-denied").map(h => h.toLowerCase()); }
 /* A port is 1–65535. Anything else returns null so the key is OMITTED rather than emitted
    as a string or a 0 — a proxy port that doesn't parse silently sends traffic nowhere. */
 function portOf(id){ const v = val(id); return /^\d{1,5}$/.test(v) && +v >= 1 && +v <= 65535 ? +v : null; }
@@ -632,7 +636,21 @@ function webfetchList(){ return listOf("f-webfetch"); }
 
 /* A hostname, optionally with a leading "*." wildcard. No scheme, no path, no whitespace. */
 const HOST_RE = /^(\*\.)?[a-z0-9]([a-z0-9-]*[a-z0-9])?(\.[a-z0-9]([a-z0-9-]*[a-z0-9])?)+$/i;
-function badHosts(list){ return list.filter(h => !HOST_RE.test(h)); }
+/* IP-SHAPED input has to be caught separately, because HOST_RE ACCEPTS it: hostname labels may
+   be all-digit, so "169.254.169.254" and "127.0.0.1" are valid hostname patterns as far as the
+   shape check is concerned. That was the worst defect in this form — the field hint says the docs
+   don't state whether a bare IP matches a domain pattern, and the validator shipped one anyway,
+   after which the checklist certified it as the entry nothing can override. An entry that MIGHT
+   be inert must never read as a denial. Covers dotted-quad, ranges, and octet globs. */
+// The second alternative needs only ONE leading octet: "10.*" is the shortest form of this
+// mistake and used to fall through to the generic "not a hostname" text. Requiring a digit or
+// glob right after the dot keeps a legal digit-first hostname (123.example.com) out of it.
+const IPISH = /^(\d{1,3}\.){3}\d{1,3}($|[-\/:])|^\d{1,3}\.[\d*]/;
+const ipShaped = (list) => list.filter(h => IPISH.test(h));
+function badHosts(list){ return list.filter(h => !HOST_RE.test(h) || IPISH.test(h)); }
+/* One message for every range-or-address-shaped entry, in either list — the mistake is the same
+   and the remedy is the same, so the CIDR-only branch that used to gate this was too narrow. */
+const RANGE_WHY = "These are <b>hostname patterns</b>. There is no IP or CIDR primitive in sandbox settings, and the docs do <b>not</b> state whether a bare IP literal matches a domain pattern — so a range like <code>10.0.0.0/8</code> cannot be expressed at all, and a bare address like <code>169.254.169.254</code> may deploy as an <b>inert entry that reads as a denial</b>, which is worse than no entry. Put addresses and ranges in your proxy or firewall ACL (config §5.3) and keep these fields for named hosts.";
 
 /* Pasted rules: "deny: Bash(x *)" per line. Unparseable lines are surfaced, not dropped. */
 function extraRules(){
@@ -801,7 +819,7 @@ function lint(o){
   // have been a gate that only catches the operator who was being specific about it.
   if (net.allowAllUnixSockets)
     add("block", "<code>network.allowAllUnixSockets</code> admits <b>every</b> Unix socket, including <code>/var/run/docker.sock</code> — the same host access check 8 blocks, without the path scope.",
-      "It cannot be narrowed to a path. If a tool genuinely needs one socket on Linux/WSL2, that is the tradeoff to document in the checklist — this gate exists so it is a decision, not a default.");
+      "It cannot be narrowed to a path, which is why this one blocks outright rather than offering an acknowledgment the way the decision-layer gates do: unlike those, there IS a narrower configuration available, so the block doesn't force a wrong answer. If a single tool needs a socket, put that binary in <code>excludedCommands</code> instead — it runs unsandboxed, which is a documented and far narrower hole than admitting every socket on the machine — and record it in the checklist.");
 
   // 12. the prompt-vs-block finding: an allowlist without the lock flag is advisory, because the
   // developer is still the gate at the approval prompt. Not a block — it is the documented
@@ -820,7 +838,11 @@ function lint(o){
   if (weakNet && !proxyOwn)
     add("block", "<code>enableWeakerNetworkIsolation</code> is set with no <code>httpProxyPort</code> / <code>socksProxyPort</code> — you are taking its cost with none of its benefit.",
       "Its documented purpose is letting Go-based tools verify TLS behind a MITM proxy with a custom CA. The settings table's own words: it reduces security by opening a potential data exfiltration path. Untick it, or set the proxy port it exists to support.");
-  else if (proxyOwn && !weakNet && S.osScope !== "unix")
+  // Fire wherever macOS can be present — which is BOTH "unix" (labelled "macOS / Linux / WSL2
+  // only", the default) and "mixed". The old `!== "unix"` test suppressed this exactly where
+  // macOS lives and fired it on native Windows, where the sandbox doesn't exist at all: the same
+  // permanently-silent shape as check 13's first branch, in the very check that fixed it.
+  else if (proxyOwn && !weakNet && S.osScope !== "windows")
     add("warn", "A custom sandbox proxy is set on a fleet that may include macOS — Go-based tools (<code>gh</code>, <code>gcloud</code>, <code>terraform</code>) will fail TLS verification there until <code>enableWeakerNetworkIsolation</code> is set.",
       "Friction, not a hole — but it looks like a broken tool to the developer. The alternative is listing those tools in excludedCommands, which runs them unsandboxed instead. Stage on a canary either way.");
 
@@ -843,16 +865,18 @@ function lint(o){
   if (S.lockdown !== "baseline" && !(val("f-mkt-src") && val("f-mkt-repo"))) req.push(["Plugin marketplace source + repo", "strictKnownMarketplaces is omitted, so the marketplace allowlist you selected is not actually enforced."]);
   // Per-entry host validation. A malformed entry has the same blast radius as an empty list
   // (every install breaks), so it gets the same treatment rather than sailing through.
-  const badE = badHosts(egressList()), badW = badHosts(webfetchList());
-  if (badE.length) req.push([`Sandbox egress entr${badE.length>1?"ies":"y"} not a hostname: ${esc(badE.join(", "))}`, "Hostnames only — no scheme, no path, no semicolons (github.com, not https://github.com/). Only commas separate entries, so a stray semicolon becomes part of the hostname and silently matches nothing."]);
-  if (badW.length) req.push([`WebFetch domain entr${badW.length>1?"ies":"y"} not a hostname: ${esc(badW.join(", "))}`, "Same rule — a bare hostname, optionally with a leading *. wildcard."]);
-  // A CIDR block in deniedDomains is the single most likely wrong input on this form, because a
-  // firewall-shaped mental model expects it to work. Name the reason, don't just reject the shape.
-  const badD = badHosts(deniedList());
-  if (badD.length) req.push([`Denied-domain entr${badD.length>1?"ies":"y"} not a hostname: ${esc(badD.join(", "))}`,
-    badD.some(d => d.includes("/"))
-      ? "These are HOSTNAME patterns — there is no IP or CIDR primitive in sandbox settings, so a range like 10.0.0.0/8 cannot be expressed here at all. Put range rules in your proxy or firewall (config §5.3) and keep this field for named internal hosts."
-      : "Hostnames only — no scheme, no path. A leading *. wildcard is allowed."]);
+  // An address-or-range-shaped entry is reported FIRST and with its own reason, in every list.
+  // Gating that message on a "/" was too narrow: the likeliest wrong input is a bare metadata
+  // address, which has no slash, and it used to fall through to the generic "no scheme, no path"
+  // text — a message that reads as a typo complaint about an entry that may silently do nothing.
+  [["f-egress", egressList(), "Sandbox egress"], ["f-denied", deniedList(), "Denied-domain"],
+   ["f-webfetch", webfetchList(), "WebFetch domain"]].forEach(([, list, label]) => {
+    const ips = ipShaped(list);
+    const bad = badHosts(list).filter(h => !IPISH.test(h));
+    if (ips.length) req.push([`${label} entr${ips.length>1?"ies":"y"} ${ips.length>1?"are":"is"} an IP address or range: ${esc(ips.join(", "))}`, RANGE_WHY]);
+    if (bad.length) req.push([`${label} entr${bad.length>1?"ies":"y"} not a hostname: ${esc(bad.join(", "))}`,
+      "Hostnames only — no scheme, no path, no semicolons (github.com, not https://github.com/). A leading *. wildcard is allowed. Only commas separate entries, so a stray semicolon becomes part of the hostname and silently matches nothing."]);
+  });
   ["f-httpproxy","f-socksproxy"].forEach(id => { if (badPort(id)) req.push([`${id === "f-httpproxy" ? "httpProxyPort" : "socksProxyPort"} is not a port`, "Expected 1–65535. An unparseable port is omitted rather than emitted, which would leave the sandbox on its built-in proxy while your checklist says otherwise."]); });
   const badRules = extraRules().filter(r => r.kind === "bad");
   if (badRules.length) req.push([`${badRules.length} pasted rule line(s) unparseable`, "Each line needs a deny: / ask: / allow: prefix. Unprefixed lines are NOT silently dropped — they block, so a typo can't quietly omit a rule you meant to enforce."]);
@@ -1116,13 +1140,20 @@ function checklist(o, findings){
 
   if (S.sandbox !== "off" && sandboxRunsHere())
     L.push("", "## Network egress — what this file can and cannot do", "",
-      "- [ ] **Own your IP / CIDR ranges at the proxy or firewall.** `allowedDomains` / `deniedDomains` are **hostname** patterns; there is no IP or CIDR primitive, so RFC1918 blocks, a link-local metadata address, and management subnets are not expressible in managed settings. On native Windows the sandbox doesn't exist at all, so the proxy is your *only* egress control there.",
+      "- [ ] **Deny in the egress proxy / firewall ACL:** RFC1918 (`10/8`, `172.16/12`, `192.168/16`), your cloud metadata address (`169.254.169.254`), and your management subnet. **Owner: network security.** Attach the ACL diff to the review packet. None of these is expressible in `managed-settings.json` — the sandbox fields are hostname patterns with no IP or CIDR primitive, and on native Windows there is no sandbox at all, so this ACL is your *only* egress control there.",
+      "- [ ] **Prove it on a canary, don't argue it.** From inside a sandboxed Bash session: `curl` one denied host and one host absent from the allowlist, and record both outcomes. **Owner: platform.** A gate nobody exercised is theatre, and this is the evidence a review board actually asks for.",
+      "- [ ] **Resolve the documented gap yourself.** From inside the sandbox, `curl` a bare IP address (your metadata endpoint is the one that matters) and record whether it is blocked or reaches. The docs do not state whether a bare IP literal matches a domain pattern — **fail-open and fail-closed have opposite security meanings here**, and two minutes on a canary settles it. If it reaches, the proxy ACL above is the only control. **Owner: platform.**",
       "- [ ] **Decide who the gate is.** Without `network.allowManagedDomainsOnly` a non-allowed host **prompts** and a developer approves it for the session (v2.1.191+). Nothing is pre-allowed, so it fails closed until someone clicks Yes — fine as a developer default, weak as fleet policy." +
         ((((o.sandbox||{}).network||{}).allowManagedDomainsOnly) ? " *This bundle sets the flag.*" : " **This bundle does not set the flag** — the Hardened tier does."),
       "- [ ] **Put named internal hosts in `deniedDomains`.** It outranks `allowedDomains` when both match and merges from every settings scope *regardless* of the lock flag — the one egress entry a project or user settings file cannot append its way around.",
       "- [ ] **Tell your security reviewer what the allowlist doesn't do.** The built-in proxy allows on the client-supplied hostname without inspecting TLS, so a broad entry is a documented exfiltration path (domain fronting); Anthropic calls stronger TLS-aware isolation an active area of development. If containment is the requirement, front the sandbox with your own proxy (`httpProxyPort` / `socksProxyPort`), terminate TLS there, and install that CA inside the sandbox.",
       "- [ ] **Know the two costs of that proxy** before you commit: on macOS, Go-based tools (`gh`, `gcloud`, `terraform`) fail TLS verification until `enableWeakerNetworkIsolation` is set, which the docs say opens a potential data-exfiltration path; and the built-in `network.tlsTerminate` (v2.1.199+, experimental) explicitly adds no content filtering.",
-      "- [ ] **If a `deny` on a token breaks a tool, consider `mask` instead of widening the policy.** `credentials.envVars` `mode: \"mask\"` (v2.1.199+) hands the sandboxed command a sentinel and has the proxy substitute the real value on that entry's `injectHosts`. It requires `network.tlsTerminate` and **fails closed** without it. This bundle emits `deny` (version-independent, no CA plumbing) — `mask` is a deliberate follow-up, not a checkbox.");
+      ...(((o.sandbox||{}).network||{}).httpProxyPort || ((o.sandbox||{}).network||{}).socksProxyPort ? [
+      "- [ ] **Stand up the proxy this bundle points at.** A port number in the JSON is a claim, not a control: run the listener, terminate TLS on it, install its CA inside the sandbox, and attach the config to the review. **Owner: network security.** Until that exists, the sandbox is pointed at a port with nothing on it — and on macOS, Go-based tools (`gh`, `gcloud`, `terraform`) will fail TLS verification until `enableWeakerNetworkIsolation` is set, which itself opens an exfiltration path."] : []),
+      ...(((o.sandbox||{}).network||{}).allowLocalBinding ? [
+      "- [ ] **`allowLocalBinding` is on** — sandboxed commands may bind localhost ports. Needed for local dev servers and test harnesses; it is also a listener inside a sandboxed session, so record why it is enabled and who approved it. **Owner: platform.**"] : []),
+      "",
+      "*If a `deny` on a token breaks the tool that needs it, the alternative to widening the policy is `credentials.envVars` `mode: \"mask\"` (v2.1.199+): the sandboxed command sees a sentinel and the proxy substitutes the real value on that entry's `injectHosts`. It requires `network.tlsTerminate` and **fails closed** without it. This bundle emits `deny` — version-independent and no CA plumbing — so `mask` is a deliberate follow-up, not a checkbox.*");
 
   L.push("", "## Guidance layer (the managed CLAUDE.md)", "",
     "- [ ] Place the managed `CLAUDE.md` at the **managed policy path** — **macOS** `/Library/Application Support/ClaudeCode/CLAUDE.md` · **Linux / WSL** `/etc/claude-code/CLAUDE.md` · **Windows** `C:\\Program Files\\ClaudeCode\\CLAUDE.md` — or inline it via the `claudeMd` key in managed settings.",
@@ -1147,7 +1178,7 @@ const COLS = [
   ["Built-in Read / Edit / Write", "permission rules (bounded, deterministic)"],
   ["Recognized Bash file cmds", "cat, head, tail, sed — a named subset, not all shell tools"],
   ["Arbitrary subprocess I/O", "sandbox filesystem layer only"],
-  ["Network egress", "sandbox hostname allowlist — blocked, prompted, or absent"],
+  ["Network egress", "sandbox hostname allowlist — is it blocked, merely prompted, or absent?"],
   ["Environment variables", "sandbox.credentials.envVars / env scrub"]
 ];
 
@@ -1174,7 +1205,12 @@ function renderCov(o){
     if (!egress) return ["n", "GAP — managed lockdown with an empty allowlist" + suffix];
     if (!(net.httpProxyPort || net.socksProxyPort))
       return ["p", "blocked by allowlist — hostname-only, no TLS inspection" + suffix];
-    return sandboxPartial() ? ["p", "allowlist + your proxy" + suffix] : ["y", "allowlist + your proxy"];
+    // NEVER green. A port number is a CLAIM, not a control: this page cannot know that a proxy is
+    // listening there, that it terminates TLS, or that its CA is installed in the sandbox. Handing
+    // out a green cell for typing an integer is the same overstatement as the allowlist-implies-
+    // coverage bug this column was rewritten to fix, one level down. The checklist row that a port
+    // now forces is where the claim gets discharged.
+    return ["p", "allowlist + proxy port set — green only once that proxy terminates TLS and its CA is installed" + suffix];
   }
 
   let h = "<tr><th>Asset</th>" + COLS.map(c => `<th>${c[0]}<br><span style="font-weight:400;text-transform:none;letter-spacing:0">${c[1]}</span></th>`).join("") + "</tr>";
@@ -1292,7 +1328,12 @@ function render(){
        ? "Each blocker is a rule that cannot work, or a value whose absence fails closed. Copy and download stay disabled until they're clear."
        : "JSON parses, no dead rules, every required value supplied. Still validate against the schema and stage on a canary."}</div>` +
     (F.length ? "<ul>" + F.map(f =>
-      `<li class="${f.sev==="warn"?"warnrow":""}">${f.sev==="warn"?"<b>Warning — </b>":""}${f.msg}<span class="rw">${esc(f.rw)}</span></li>`).join("") + "</ul>" : "");
+      // Reason text renders as HTML, like the headline above it. It was escaped, which printed
+      // every <code> and <b> in a reason as literal markup — the field names in the advice were
+      // the least readable part of the most important sentence. INVARIANT that makes this safe:
+      // reason strings are STATIC literals. Anything interpolated from operator input belongs in
+      // the headline (f.msg), where every value already goes through esc().
+      `<li class="${f.sev==="warn"?"warnrow":""}">${f.sev==="warn"?"<b>Warning — </b>":""}${f.msg}<span class="rw">${f.rw}</span></li>`).join("") + "</ul>" : "");
 
   renderCov(o);
 
