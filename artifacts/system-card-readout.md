@@ -104,8 +104,6 @@ The current readout in the shape above. **This section expires; replace it whole
 
 A readout that ends in "noted" was not worth writing. Each row below is a decision the card should trigger within two weeks of a release. **A1 is the gating one** — it is the action nobody is usually assigned, and without it none of the rest fire.
 
-| Action | Owner | Trigger to act | Failure mode if skipped |
-|---|---|---|---|
 | # | Action | Owner | Trigger to act | Failure mode if skipped |
 |---|---|---|---|---|
 | **A1** | **Read the card and produce this readout.** Someone has to, or none of the rows below ever fire. | Whoever owns the model-version pin — AI platform / architecture | Within two weeks of adopting a model | The release passes as a docs-only change and every action below silently doesn't happen. |

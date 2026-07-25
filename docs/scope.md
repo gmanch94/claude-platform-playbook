@@ -46,7 +46,7 @@ Mirror `ai-architect-showcase/artifacts/executive-briefing.html` pattern (full-s
 | 7 | Governance fit | No-train, data residency options, BAA paths, prompt versioning, audit trail |
 | 8 | 90-day rollout | Weeks 1-4 pilot → 5-8 guardrails → 9-13 scale |
 | 9 | Risks + mitigations | Vendor concentration, model deprecation, prompt drift, cost surprises |
-| 10 | Decision frame + companion artifact links |
+| 10 | Decision frame | Where each decision lands + links to the companion artifacts |
 
 ### 2. `cost-calculator.html` — interactive $/month estimator
 

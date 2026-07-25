@@ -114,7 +114,7 @@ If >10 unique URLs exist, note "sampled 10 of N — run full audit manually."
 
 ### 7. Artifact count consistency
 
-Run `node scripts/check-counts.mjs` — a deterministic guard (no deps). It asserts the artifact count agrees everywhere:
+Run `node scripts/check-counts.mjs` — a deterministic guard (no deps). Three sections: artifact counts, **in-prose counted lists** (a heading's number word vs the rows beneath it), and **markdown table structure** (one header, separator on row 2, consistent column count, repo-wide). Any of the three fails the run. On the counts:
 
 - `artifacts/` file count (ground truth) **==** README `## Artifacts` catalog rows **==** every stated count in `docs/scope.md` (`now ships N`, `full N-row catalog`, `All N mapped`) and `CLAUDE.md` (`currently ships N`).
 - Reports `index.html` card count as **info** (visual companions are reached via a parent card's sub-links, so `cards <= artifacts` is expected — not a mismatch).

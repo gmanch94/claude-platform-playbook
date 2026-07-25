@@ -70,6 +70,58 @@ const prose = [
   ['artifacts/system-card-readout.md', /—\s*(\w+) actions, \w+ owners/,           /^\|\s*\*\*A\d+\*\*\s*\|/gm, '§5 actions'],
 ];
 
+// --- malformed markdown tables (structure, not counts) ---
+// Precedent 2026-07-25: an edit inserted a new 5-column header above the rows but
+// left the original 4-column header in place. GitHub/kramdown renders the second
+// header and its separator as ordinary data rows — two header rows, visible on the
+// published page. Neither the artifact-count guard nor the in-prose guard sees it:
+// the row count was right and the numbers agreed. Structure is its own class.
+//
+// Asserts per table block: exactly one separator, on row 2, and every row the same
+// width as the separator. Fenced code is blanked first — pipes in a bash pipeline
+// are not table cells (a `| sed -E …` block false-positived on the first run).
+const isSep = (l) => /^\|(\s*:?-{2,}:?\s*\|)+\s*$/.test(l.trim());
+const cellCount = (l) => l.trim().replace(/^\|/, '').replace(/\|$/, '').split(/(?<!\\)\|/).length;
+
+function malformedTables(rel) {
+  const raw = read(rel).split(/\r?\n/);
+  const lines = [];
+  let inFence = false;
+  for (const l of raw) {
+    if (/^\s*(```|~~~)/.test(l)) inFence = !inFence;
+    lines.push(inFence ? '' : l);
+  }
+  const issues = [];
+  let i = 0;
+  while (i < lines.length) {
+    if (!/^\s*\|/.test(lines[i])) { i++; continue; }
+    const start = i;
+    const block = [];
+    while (i < lines.length && /^\s*\|/.test(lines[i])) { block.push(lines[i]); i++; }
+    if (block.length < 2) continue;
+    const seps = block.map((l, j) => (isSep(l) ? j : -1)).filter((j) => j >= 0);
+    if (seps.length === 0) { issues.push(`line ${start + 1}: table with no separator row`); continue; }
+    if (seps.length > 1) {
+      issues.push(`line ${start + 1}: ${seps.length} header blocks in one table (separators at lines ${seps.map((j) => start + j + 1).join(', ')}) — the extra header renders as a data row`);
+    }
+    if (seps[0] !== 1) issues.push(`line ${start + 1}: separator on row ${seps[0] + 1}, expected row 2`);
+    const width = cellCount(block[seps[0]]);
+    for (const [j, l] of block.entries()) {
+      const c = cellCount(l);
+      if (c !== width) issues.push(`line ${start + j + 1}: ${c} cells in a ${width}-column table`);
+    }
+  }
+  return issues;
+}
+
+const mdFiles = [
+  ...['artifacts', 'docs'].flatMap((d) =>
+    readdirSync(join(ROOT, d)).filter((f) => f.endsWith('.md')).map((f) => `${d}/${f}`),
+  ),
+  'README.md', 'CLAUDE.md', 'LESSONS_LEARNED.md',
+];
+const tableIssues = mdFiles.flatMap((f) => malformedTables(f).map((m) => `${f} ${m}`));
+
 const proseResults = prose.map(([file, statedRe, rowRe, label]) => {
   const src = read(file);
   const m = src.match(statedRe);
@@ -116,12 +168,23 @@ for (const r of proseResults) {
   );
 }
 
+console.log(`\nMarkdown table structure (${mdFiles.length} files):`);
+if (tableIssues.length === 0) {
+  console.log('  OK       every table has one header, a separator on row 2, and a consistent column count');
+} else {
+  for (const t of tableIssues) console.log(`  MALFORMED ${t}`);
+}
+
 if (failed) {
   console.log(`\nFAIL — artifact count is inconsistent. Make every count equal ${N} (ground truth = artifacts/ file count).`);
+  process.exit(1);
+}
+if (tableIssues.length) {
+  console.log('\nFAIL — malformed table(s). A stray second header or a ragged row renders as garbage on the published page.');
   process.exit(1);
 }
 if (proseFailed) {
   console.log('\nFAIL — a counted list disagrees with the sentence describing it. The rows are ground truth; fix the prose.');
   process.exit(1);
 }
-console.log(`\nPASS — all counts agree at ${N}; in-prose lists match their rows.`);
+console.log(`\nPASS — all counts agree at ${N}; in-prose lists match their rows; tables well-formed.`);
