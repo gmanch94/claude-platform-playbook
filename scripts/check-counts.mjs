@@ -54,6 +54,30 @@ const checks = [
 // --- index.html cards (informational — companions are reached via parent sub-links) ---
 const indexCards = (read('index.html').match(/class="card"/g) || []).length;
 
+// --- in-prose counted lists (the class the artifact count guard does NOT cover) ---
+// Precedent 2026-07-25: system-card-readout §5 gained two rows; the heading was
+// bumped by one and shipped saying "six actions" over seven rows, while every
+// check above passed. Counted PROSE is unguarded by construction — a sentence
+// saying "six" sits happily next to seven table rows. This section closes it for
+// the artifacts whose lists are rewritten on a cadence (per-model-release).
+// To extend: add a row — [file, stated-count regex, row-matching regex, label].
+const WORDS = { two: 2, three: 3, four: 4, five: 5, six: 6, seven: 7, eight: 8, nine: 9, ten: 10 };
+const toNum = (w) => WORDS[w.toLowerCase()] ?? Number(w);
+
+const prose = [
+  ['artifacts/system-card-readout.md', /##\s*2\.\s*The (\w+) questions/,          /^\|\s*Q\d+\s*\|/gm,        '§2 questions'],
+  ['artifacts/system-card-readout.md', /##\s*3\.\s*(\w+) rules for quoting/,      /^\d+\.\s+\*\*/gm,          '§3 quoting rules'],
+  ['artifacts/system-card-readout.md', /—\s*(\w+) actions, \w+ owners/,           /^\|\s*\*\*A\d+\*\*\s*\|/gm, '§5 actions'],
+];
+
+const proseResults = prose.map(([file, statedRe, rowRe, label]) => {
+  const src = read(file);
+  const m = src.match(statedRe);
+  const stated = m ? toNum(m[1]) : null;
+  const actual = (src.match(rowRe) || []).length;
+  return { file, label, stated, actual };
+});
+
 // --- report ---
 console.log(`Ground truth: artifacts/ holds ${N} files (.md + .html)\n`);
 let failed = false;
@@ -76,8 +100,28 @@ if (indexCards > N) {
   failed = true;
 }
 
+console.log('\nIn-prose counted lists (stated wording vs actual rows):');
+let proseFailed = false;
+for (const r of proseResults) {
+  if (r.stated === null) {
+    console.log(`  ??       ${r.label}: PATTERN NOT FOUND — the heading was reworded; re-point this regex`);
+    proseFailed = true;
+    continue;
+  }
+  const ok = r.stated === r.actual;
+  if (!ok) proseFailed = true;
+  console.log(
+    `  ${ok ? 'OK      ' : 'MISMATCH'} ${r.label}: says ${r.stated}, has ${r.actual} row(s)` +
+    `${ok ? '' : `  → fix ${r.file}`}`,
+  );
+}
+
 if (failed) {
   console.log(`\nFAIL — artifact count is inconsistent. Make every count equal ${N} (ground truth = artifacts/ file count).`);
   process.exit(1);
 }
-console.log(`\nPASS — all counts agree at ${N}.`);
+if (proseFailed) {
+  console.log('\nFAIL — a counted list disagrees with the sentence describing it. The rows are ground truth; fix the prose.');
+  process.exit(1);
+}
+console.log(`\nPASS — all counts agree at ${N}; in-prose lists match their rows.`);
