@@ -63,6 +63,16 @@
   .fld { margin-bottom: 12px; }
   .fld label { display:block; font-weight:600; font-size:12.5px; margin-bottom:2px; }
   .fld .hint { font-size:11px; color:var(--muted); margin-bottom:5px; }
+  /* Long hints collapse after their first sentence. The prose is the artifact's value, so none of
+     it is cut — it was all expanded at once, which put ~1,000 words of caveat between the operator
+     and the fields they had to fill, and flattened "what to type" against "this may deploy inert"
+     into one undifferentiated grey. Collapsed, the ⚠ markers are visible by scarcity. */
+  .fld .hint .why { font:inherit; font-size:10px; font-weight:700; color:var(--c2); background:transparent;
+    border:1px solid var(--line); border-radius:8px; padding:0 6px; margin-left:3px; cursor:pointer; white-space:nowrap; }
+  .fld .hint .why:hover { border-color:var(--c2); }
+  /* :not([hidden]) rather than a bare `display:block`, which is the trap #79 fixed on .chk — an
+     author display rule outranks the UA `[hidden] { display:none }` and the attribute stops working. */
+  .fld .hint .more:not([hidden]) { display:block; margin-top:4px; }
   .chk { display:flex; align-items:flex-start; gap:7px; margin-bottom:6px; font-size:12.5px; }
   /* An author `display` beats the UA `[hidden] { display:none }` rule, so `.chk` silently defeated
      the hidden attribute — #ack-row set hidden and rendered anyway. The acknowledgment was on
@@ -125,6 +135,9 @@
   footer { margin-top:34px; padding-top:15px; border-top:1px solid var(--line); font-size:12px; color:var(--muted); }
   footer a { color:var(--c1d); }
   @media print { body { padding:0; } .opts, .tabs, .btn, details.adv, .gate li .goto { display:none; } pre.out { max-height:none; }
+    /* Paper has no toggles: every collapsed hint prints in full, or a printed bundle silently loses
+       the caveats it was collapsed to make skimmable. */
+    .fld .hint .more { display:block !important; } .fld .hint .why { display:none; }
     /* A sticky, internally-scrolling rail would print as one clipped viewport-height box, and the
        capped gate would print a truncated blocker list — the one thing a printed bundle must carry. */
     .grid > .railcol, .grid > .railcol > .gate { position:static; max-height:none; overflow-y:visible; } }
@@ -255,12 +268,12 @@
         </div>
         <div class="fld" id="fld-denied" hidden>
           <label>Sandbox <code>deniedDomains</code> <span style="color:var(--muted);font-weight:400">(optional — the sturdiest entry in this form)</span></label>
-          <div class="hint"><b>Hostnames only — there is no IP or CIDR primitive.</b> A range (<code>10.0.0.0/8</code>) is not expressible here; ranges belong to your proxy or firewall (config §5.3). What this <em>is</em> good for: named internal hosts. <code>deniedDomains</code> <b>outranks <code>allowedDomains</code></b> when both match and <b>merges from every settings scope regardless of <code>allowManagedDomainsOnly</code></b> — so unlike your allowlist (which appears at the Hardened tier), a developer's own settings file cannot append its way around it. Named hosts only, and note this generalizes poorly across clouds: GCP exposes <code>metadata.google.internal</code>, but AWS and Azure instance metadata is reached at the link-local address <code>169.254.169.254</code> — and whether a bare IP literal matches a domain pattern is <b>not documented</b>, so on those clouds the metadata endpoint is a proxy or firewall rule, not an entry here. If your cloud publishes a hostname alias, verify it before relying on it. Good candidates for this field: an internal admin domain, <code>*.corp.example.com</code>, a management console host.</div>
+          <div class="hint"><b>Hostnames only — there is no IP or CIDR primitive.</b> <button type="button" class="why">why ▸</button><span class="more" hidden>A range (<code>10.0.0.0/8</code>) is not expressible here; ranges belong to your proxy or firewall (config §5.3). What this <em>is</em> good for: named internal hosts. <code>deniedDomains</code> <b>outranks <code>allowedDomains</code></b> when both match and <b>merges from every settings scope regardless of <code>allowManagedDomainsOnly</code></b> — so unlike your allowlist (which appears at the Hardened tier), a developer's own settings file cannot append its way around it. Named hosts only, and note this generalizes poorly across clouds: GCP exposes <code>metadata.google.internal</code>, but AWS and Azure instance metadata is reached at the link-local address <code>169.254.169.254</code> — and whether a bare IP literal matches a domain pattern is <b>not documented</b>, so on those clouds the metadata endpoint is a proxy or firewall rule, not an entry here. If your cloud publishes a hostname alias, verify it before relying on it. Good candidates for this field: an internal admin domain, <code>*.corp.example.com</code>, a management console host.</span></div>
           <input type="text" id="f-denied" placeholder="metadata.google.internal, *.corp.karekal.internal">
         </div>
         <div class="fld" id="fld-proxyports" hidden>
           <label>Bring-your-own sandbox proxy <span style="color:var(--muted);font-weight:400">(optional — HTTP / SOCKS5 ports)</span></label>
-          <div class="hint">Unset means Claude runs its own proxy, which allows on the <b>client-supplied hostname without inspecting TLS</b> — the docs' own warning is that a broad allow entry is then an exfiltration path (domain fronting). If containment is the requirement, point the sandbox at a proxy you control, terminate TLS there, and install its CA inside the sandbox. Note this is the <b>sandbox's own</b> proxy, which does take SOCKS5 — not the client-level <code>HTTPS_PROXY</code> path, where SOCKS is <b>not</b> supported (config §5.3). Two different proxies. On macOS that breaks TLS verification for Go-based tools (<code>gh</code>, <code>gcloud</code>, <code>terraform</code>) until you also tick <code>enableWeakerNetworkIsolation</code> below — which itself opens an exfiltration path. Both costs are real; pick knowingly.</div>
+          <div class="hint">Unset means Claude runs its own proxy, which allows on the <b>client-supplied hostname without inspecting TLS</b> — the docs' own warning is that a broad allow entry is then an exfiltration path (domain fronting). <button type="button" class="why">why ▸</button><span class="more" hidden>If containment is the requirement, point the sandbox at a proxy you control, terminate TLS there, and install its CA inside the sandbox. Note this is the <b>sandbox's own</b> proxy, which does take SOCKS5 — not the client-level <code>HTTPS_PROXY</code> path, where SOCKS is <b>not</b> supported (config §5.3). Two different proxies. On macOS that breaks TLS verification for Go-based tools (<code>gh</code>, <code>gcloud</code>, <code>terraform</code>) until you also tick <code>enableWeakerNetworkIsolation</code> below — which itself opens an exfiltration path. Both costs are real; pick knowingly.</span></div>
           <div style="display:flex;gap:6px">
             <span style="flex:0 0 auto;align-self:center;font-size:11px;color:var(--muted);font-weight:600">HTTP</span>
             <input type="text" id="f-httpproxy" placeholder="httpProxyPort e.g. 8080" style="flex:1">
@@ -300,12 +313,12 @@
         </div>
         <div class="fld" id="fld-awsregion" hidden>
           <label><code>AWS_REGION</code> <span style="color:var(--muted);font-weight:400">(optional here — but load-bearing)</span></label>
-          <div class="hint"><b>The base URL is computed from this value</b> as <code>https://aws-external-anthropic.{region}.api.aws</code>, so it is not a nicety — it decides where the client talks. Optional in this bundle only because the AWS credential chain often already supplies it from the machine's own AWS config, and pinning a region your fleet doesn't use is worse than inheriting the right one. Set it here if your fleet has no ambient value (CI runners typically don't). Override the URL directly with <code>ANTHROPIC_AWS_BASE_URL</code> if you must.</div>
+          <div class="hint"><b>The base URL is computed from this value</b> as <code>https://aws-external-anthropic.{region}.api.aws</code>, so it is not a nicety — it decides where the client talks. <button type="button" class="why">why ▸</button><span class="more" hidden>Optional in this bundle only because the AWS credential chain often already supplies it from the machine's own AWS config, and pinning a region your fleet doesn't use is worse than inheriting the right one. Set it here if your fleet has no ambient value (CI runners typically don't). Override the URL directly with <code>ANTHROPIC_AWS_BASE_URL</code> if you must.</span></div>
           <input type="text" id="f-awsregion" placeholder="us-east-1">
         </div>
         <div class="fld">
           <label>Corporate proxy <span style="color:var(--muted);font-weight:400">(optional — any TLS-intercepting SWG / ZTNA)</span></label>
-          <div class="hint"><b>Vendor-agnostic by design.</b> Zscaler, Netskope, Prisma Access, Cloudflare Gateway, Forcepoint, Cato, Akamai SIA — a gateway that terminates TLS presents the same two requirements whoever sells it, so this asks <em>do you intercept TLS</em>, not <em>which vendor</em>. One value fills both <code>HTTPS_PROXY</code> and <code>HTTP_PROXY</code>. <b>SOCKS is not supported on this client-level path</b> (the sandbox's own proxy above is a different proxy and does take SOCKS5). For NTLM / Kerberos, front Claude Code with a gateway that speaks your auth. Two things your gateway does <b>not</b> do: it is not part of this emitted config, so it cannot fill a cell in the coverage matrix below; and whether <b>sandboxed</b> subprocess traffic reaches it is <b>undocumented</b> — confirm in the gateway's own logs (config §5.3).</div>
+          <div class="hint"><b>Vendor-agnostic by design.</b> Zscaler, Netskope, Prisma Access, Cloudflare Gateway, Forcepoint, Cato, Akamai SIA — a gateway that terminates TLS presents the same two requirements whoever sells it, so this asks <em>do you intercept TLS</em>, not <em>which vendor</em>. <button type="button" class="why">why ▸</button><span class="more" hidden>One value fills both <code>HTTPS_PROXY</code> and <code>HTTP_PROXY</code>. <b>SOCKS is not supported on this client-level path</b> (the sandbox's own proxy above is a different proxy and does take SOCKS5). For NTLM / Kerberos, front Claude Code with a gateway that speaks your auth. Two things your gateway does <b>not</b> do: it is not part of this emitted config, so it cannot fill a cell in the coverage matrix below; and whether <b>sandboxed</b> subprocess traffic reaches it is <b>undocumented</b> — confirm in the gateway's own logs (config §5.3).</span></div>
           <div style="display:flex;gap:6px">
             <input type="text" id="f-httpsproxy" placeholder="http://proxy.karekal.internal:8080" style="flex:2">
             <input type="text" id="f-noproxy" placeholder="NO_PROXY e.g. .karekal.internal,localhost" style="flex:2">
@@ -313,12 +326,12 @@
         </div>
         <div class="fld">
           <label><code>NODE_EXTRA_CA_CERTS</code> <span style="color:var(--muted);font-weight:400">(optional — private root for the proxy above)</span></label>
-          <div class="hint">Claude Code trusts its bundled Mozilla roots <b>plus your OS certificate store</b>, so a root already deployed to the OS store needs nothing here (npm installs need Node ≥ 22.15 to read that store; the native installer always can). Set this for a private root that is <em>not</em> in the OS store. If you intercept TLS and neither is in place, every call fails TLS verification — a fleet outage, not a warning.</div>
+          <div class="hint">Claude Code trusts its bundled Mozilla roots <b>plus your OS certificate store</b>, so a root already deployed to the OS store needs nothing here. <button type="button" class="why">why ▸</button><span class="more" hidden>(npm installs need Node ≥ 22.15 to read that store; the native installer always can). Set this for a private root that is <em>not</em> in the OS store. If you intercept TLS and neither is in place, every call fails TLS verification — a fleet outage, not a warning.</span></div>
           <input type="text" id="f-cacert" placeholder="/etc/ssl/certs/corp-root.pem">
         </div>
         <div class="fld">
           <label>Extra credential <b>environment variables</b> <span style="color:var(--muted);font-weight:400">(optional — the vendors no list anticipated)</span></label>
-          <div class="hint">Comma-separated variable names, emitted as <code>sandbox.credentials.envVars</code> with <code>mode: "deny"</code>. <b>This field exists because the asset list is curated, and a curated list reports nothing about what it omits</b> — Alibaba Cloud, Tencent Cloud, IBM Cloud, Fastly, a regional CDN, an internal PKI. Walk your own vendor list with two questions each: where does the credential sit, and which CLI verb is externally visible. Paths go in the field below; env vars go here — <b>no path rule reaches an env var</b>, and <code>CLAUDE_CODE_SUBPROCESS_ENV_SCRUB</code> covers only Anthropic and cloud-provider credentials, not these.</div>
+          <div class="hint">Comma-separated variable names, emitted as <code>sandbox.credentials.envVars</code> with <code>mode: "deny"</code>. <button type="button" class="why">why ▸</button><span class="more" hidden><b>This field exists because the asset list is curated, and a curated list reports nothing about what it omits</b> — Alibaba Cloud, Tencent Cloud, IBM Cloud, Fastly, a regional CDN, an internal PKI. Walk your own vendor list with two questions each: where does the credential sit, and which CLI verb is externally visible. Paths go in the field below; env vars go here — <b>no path rule reaches an env var</b>, and <code>CLAUDE_CODE_SUBPROCESS_ENV_SCRUB</code> covers only Anthropic and cloud-provider credentials, not these.</span></div>
           <input type="text" id="f-extraenv" placeholder="ALIBABA_CLOUD_ACCESS_KEY_SECRET, FASTLY_API_TOKEN">
         </div>
         <div class="fld" id="fld-extradeny" hidden>
@@ -1914,6 +1927,17 @@ function renderLists(){
 
 /* ---------------- events ---------------- */
 document.addEventListener("click", e => {
+  // Hint expander. Pure display state — deliberately NOT in S and not routed through render(),
+  // which rebuilds the gate and the lists on every keystroke and would snap an open hint shut
+  // mid-read. The markup is static, so the DOM is the only place this needs to live.
+  const wy = e.target.closest(".hint .why");
+  if (wy) {
+    const more = wy.parentElement.querySelector(".more");
+    const open = more.hasAttribute("hidden");
+    more.hidden = !open;
+    wy.textContent = open ? "why ▾" : "why ▸";
+    return;
+  }
   // Blocker → control. Checked BEFORE the posture handler: a Go button lives inside the gate and
   // carries no data-k, but ordering this first keeps the two from ever competing for a click.
   const gt = e.target.closest("button[data-goto]");
