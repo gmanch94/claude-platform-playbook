@@ -74,6 +74,24 @@ The as-of stamp is **load-bearing** on `cost-calculator.html` — readers commit
 
 ## Repo-specific lessons
 
+### 2026-07-24 — "not stated in the docs" is a claim, and a failed search is not evidence for it
+
+**The Opus 5 sweep asserted five times that a fact "isn't stated in launch materials" when the docs state it plainly** — in one case under a section *heading* ("Lower prompt cache minimum: … 512 tokens, down from 1,024"). The commit message simultaneously claimed `[H] live-verified` against that same doc. Caught by a blind factual reviewer, then re-verified first-hand before fixing.
+
+- **Root cause: partial retrieval read as absence.** I queried the docs through a search tool that returns *matched sections*, got no hit for the cache floor, and wrote "unstated — verify." The section existed; my query didn't reach it. A retrieval miss and a documentary silence are indistinguishable from inside the search, and I treated one as the other.
+- **The hedge felt like discipline, which is why it slipped.** "Verify rather than assume" reads as careful sourcing, so it passes self-review — but an unverified *absence* claim is as wrong as an unverified presence claim, and worse here: it **deleted a real decision lever** (the floor halved to 512, making short prompts cache-eligible) and, in another instance, **hid a hard HTTP-400 breaking change behind a fabricated unknown** (disabling thinking requires effort `high` or below).
+- **Rule going forward — before writing "the docs don't say X":** fetch the **full** doc (`curl <url>.md`) and grep it, don't rely on a section-level search; say **"I could not find X in <named doc>, searched <terms>"**, never bare "unstated"; and treat a *negative* claim as needing the same `[H]` evidence as a positive one. Cheapest tell: if you're about to write "not stated," you haven't finished verifying.
+- **Same class, found while fixing:** Sonnet 5's 1M context window was also flagged "unverified" repo-wide since its launch — it is documented. And a **pre-existing** wrong value (Haiku 4.5 cache floor listed 1,024; it is 4,096) survived because nobody re-read the canonical per-model list. `/doc-verify` exists for exactly this; run it on model rows after a launch.
+
+### 2026-07-24 — the Models table has no propagation path, so model facts don't fan out
+
+Every other section of `feature-inventory.md` carries a **`Used in artifacts`** column, and the refresh ritual is "edit the inventory, then grep `Used in artifacts` to find every file that must follow." **The Models table has no such column** — so a model-surface change has *no mechanical way* to reach its dependents, and the Opus 5 sweep found them by hand.
+
+That's why the first pass shipped a `model-selection-guide.md` that contradicted itself: the header said thinking is on by default while §Extended-thinking three screens below still said *"Rule: default off."* A reader following the rule walks into the truncation failure the header warns about.
+
+- **Fix to make:** add a `Used in artifacts` column to the Models table (or a per-model dependents list), so "new model" becomes a grep, not an archaeology dig. Until then, a model change **must** be swept against the full `Opus|Sonnet|Haiku` grep *and* re-read for **advice that assumed the old default** — label-swap is the easy half; the stale-but-not-obviously-wrong guidance is the half that ships broken.
+- **Model launches also change guard rules.** `/stale-check`'s pin guard read `Opus 4\.\d — flag if not 4.8`. Bumping the canonical pin to Opus 5 without rewriting that line left a guard that reports **green** on every lingering 4.8 pin — the exact drift it exists to catch. Half-updated automation is worse than none, because it certifies.
+
 ### 2026-07-23 — surface drift is its own class; the refresh routine now audits for it
 
 **The monthly feature-surface refresh missed that Cowork moved from desktop-only local execution to remote execution on Anthropic's servers + web/mobile beta.** The routine checked status / pricing / doc-URL health — none of which changed — so a status/pricing-only diff read "no drift" while the inventory row and 8 dependent artifacts (`cowork-101`, `cowork-101-workflow`, `cowork-adoption-guide`, `claude-product-101`, `surface-rollout-matrix`, `claude-enterprise-architecture`, `agentic-threat-model`, `README`) stayed stale. Caught only by an independent blind reviewer who fetched the live `support.claude.com` get-started article.
