@@ -56,6 +56,8 @@ The think-first gate, specialized for the agentic surface. If any answer is hand
 
 Each answer should name the control *and* its failure mode — a control whose failure mode you can't state isn't load-bearing yet.
 
+**A sixth question, new as of 2026-07-24: do you know which model actually served the request?** Anthropic shipped **automatic fallbacks** (beta) alongside Opus 5 — an opt-in setting where a request the safety classifiers flag on Opus 5 / Fable 5 routes to another model instead of returning blocked ([`../docs/feature-inventory.md`](../docs/feature-inventory.md)). It raises effective availability, and that is a real operational win. It also means **the model that answered may not be the model you pinned**. Decide deliberately per workload rather than inheriting the default: agents whose behavior was eval-certified on one model, whose output is audited, or whose cost is attributed per-model need the routing decision recorded — and the served model logged per request (see [`agent-observability-guide.md`](agent-observability-guide.md)). *Failure mode if ignored:* an eval-certified agent silently answers from an uncertified model, and the eval evidence you'd show an auditor no longer describes production.
+
 ---
 
 ## How this differs from the runbook

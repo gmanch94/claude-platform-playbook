@@ -183,6 +183,8 @@ For Claude Code workloads using the `Task` tool to spawn sub-agents:
 
 See [`../docs/feature-inventory.md`](../docs/feature-inventory.md) sub-agents row for current GA status and doc anchor. The config key names + schema above are illustrative — verify the exact shape against docs.claude.com/en/docs/claude-code/sub-agents before relying on it.
 
+**Phase-scoped tool sets got cheaper (2026-07-24).** Narrowing tools per phase — research phase read-only, write tools only in the execution phase — is the right least-privilege shape, but it used to carry a cost penalty: changing the tool set mid-conversation invalidated the prompt cache and forced a re-write of the cached prefix. **Mid-conversation tool changes** (beta) removes that penalty, so the tool list can follow the phase without paying for a cache rebuild each time ([`../docs/feature-inventory.md`](../docs/feature-inventory.md)). If you flattened to one broad always-on tool set purely to protect cache hit rate, that trade-off is worth re-opening — it was buying cost savings with blast radius. *Failure mode:* it's beta, so don't design a pattern that breaks if the behavior changes; and a tool set that varies per phase still needs the authorization check at the data layer, not just at the tool-list layer.
+
 ---
 
 ## Choosing a pattern: decision table
