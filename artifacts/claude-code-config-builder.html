@@ -18,7 +18,20 @@
   .thesis { background:#fffefb; border:1px solid var(--line); border-left:4px solid var(--c1); border-radius:8px; padding:13px 17px; margin-bottom:18px; font-size:14px; }
   .thesis strong { color: var(--c1d); }
   .grid { display: grid; grid-template-columns: 1fr 1fr; gap: 22px; align-items:start; }
-  @media (max-width: 1080px) { .grid { grid-template-columns: 1fr; } }
+  /* The right column is a sticky rail. Everything in it — the blocker list, the coverage matrix,
+     the export buttons — is FEEDBACK on work done in the left column, which runs about 4,000px
+     past the bottom of this one. Unstuck, "am I done yet?" cost a scroll round trip every time,
+     and the coverage matrix was guaranteed off-screen for the whole of the card whose choices it
+     documents. Sticky on #gate alone does NOT work: it stops at this column's own bottom edge.
+     align-items:start above is load-bearing — a stretched grid item makes sticky a no-op. */
+  /* overscroll chaining is left ON deliberately: once the rail bottoms out the wheel should carry
+     on down the page, not dead-stop under the cursor. */
+  .grid > .railcol { position: sticky; top: 16px; max-height: calc(100vh - 32px); overflow-y: auto; }
+  /* The gate grows with the blocker count — at 5 blockers it was 597px of a 768px rail, which left
+     the export buttons technically present and practically unreachable. Cap it and let it scroll
+     inside itself, so the rail always holds verdict + matrix + export rather than verdict alone. */
+  .grid > .railcol > .gate { max-height: 40vh; overflow-y: auto; }
+  @media (max-width: 1080px) { .grid { grid-template-columns: 1fr; } .grid > .railcol { position: static; max-height: none; overflow-y: visible; } }
   .card { background: white; border: 1px solid var(--line); border-radius: 10px; padding: 20px; margin-bottom: 18px; }
   .card h2 { font-size: 18px; margin-bottom: 6px; color: var(--c1d); }
   .card h2 .n { display:inline-block; width:22px; height:22px; line-height:22px; text-align:center; background:var(--c1); color:#fff; border-radius:50%; font-size:12px; margin-right:8px; vertical-align:1px; }
@@ -87,7 +100,10 @@
   .trace { font-size:11px; color:var(--muted); margin-top:8px; padding-top:8px; border-top:1px dashed var(--line); }
   footer { margin-top:34px; padding-top:15px; border-top:1px solid var(--line); font-size:12px; color:var(--muted); }
   footer a { color:var(--c1d); }
-  @media print { body { padding:0; } .opts, .tabs, .btn, details.adv { display:none; } pre.out { max-height:none; } }
+  @media print { body { padding:0; } .opts, .tabs, .btn, details.adv { display:none; } pre.out { max-height:none; }
+    /* A sticky, internally-scrolling rail would print as one clipped viewport-height box, and the
+       capped gate would print a truncated blocker list — the one thing a printed bundle must carry. */
+    .grid > .railcol, .grid > .railcol > .gate { position:static; max-height:none; overflow-y:visible; } }
   @media (prefers-color-scheme: dark) {
     :root { --bg:#17130f; --ink:#ece5db; --line:#3a3228; --muted:#a89a86; --soft:#2a201a; }
     .card, .pane, .gate li, .opts button, input[type=text], textarea { background:#201a15; }
@@ -177,7 +193,7 @@
         <div class="lede">Left blank, each key is <b>omitted entirely</b> — never written as a placeholder. Blank required values block export.</div>
         <div class="fld">
           <label>Organization name <span style="color:var(--muted);font-weight:400">(templates + announcements)</span></label>
-          <input type="text" id="f-org" placeholder="Karekal" value="Karekal">
+          <input type="text" id="f-org" placeholder="e.g. Karekal">
         </div>
         <div class="fld">
           <label>Organization UUID <span style="color:var(--bad)">— required</span></label>
@@ -204,7 +220,7 @@
         <div class="fld" id="fld-egress" hidden>
           <label>Sandbox egress allowlist <span style="color:var(--bad)">— required when the sandbox is hardened</span></label>
           <div class="hint">Comma-separated <b>hostnames only</b> — no scheme, no path (<code>github.com</code>, not <code>https://github.com/</code>). A leading <code>*.</code> is allowed. This governs what <b>sandboxed Bash commands</b> can reach; too tight blocks package installs, so stage on a canary.</div>
-          <input type="text" id="f-egress" value="github.com, *.npmjs.org, registry.yarnpkg.com">
+          <input type="text" id="f-egress" placeholder="github.com, *.npmjs.org, registry.yarnpkg.com">
         </div>
         <div class="fld" id="fld-denied" hidden>
           <label>Sandbox <code>deniedDomains</code> <span style="color:var(--muted);font-weight:400">(optional — the sturdiest entry in this form)</span></label>
@@ -309,7 +325,7 @@
     </div>
 
     <!-- ============ RIGHT: OUTPUT ============ -->
-    <div>
+    <div class="railcol">
       <div id="gate" class="gate"></div>
 
       <div class="card" style="padding:16px">
@@ -588,7 +604,33 @@ const ADV = [
 ];
 ADV.forEach(a => S.adv[a.k] = a.on);
 
-const val = id => (document.getElementById(id).value || "").trim();
+/* A hidden field's value is not emitted, so it must not be READ either. Reading it anyway produced
+   both halves of one bug: a blocker naming a field that is no longer on the page (unfixable except
+   by guessing which posture answer to revert), and a typed value that vanished from the output with
+   no notice — the silent-no-op class this whole file exists to prevent, committed by the file.
+   Every list helper (listOf / egressList / deniedList / portOf / mcpList) routes through here, so
+   one guard closes every instance. render() sets every `hidden` flag BEFORE buildSettings() and
+   lint() run, so this is always in step with what the operator can see. hiddenFilled() below turns
+   the drop back into a visible warning rather than a silent one. */
+function fldOf(id){ const el = document.getElementById(id); return el ? el.closest(".fld") : null; }
+function fldHidden(id){ const f = fldOf(id); return !!(f && f.hidden); }
+const val = id => fldHidden(id) ? "" : (document.getElementById(id).value || "").trim();
+/* Every field val() can silently zero out, with the label the operator typed it under. The typed
+   text is deliberately KEPT in the DOM (revert the posture and it comes back), so the only thing
+   missing was the telling — which is what this list restores. */
+const CONDITIONAL = [
+  ["f-uuid","Organization UUID"], ["f-otlp","OTLP endpoint"], ["f-egress","Sandbox egress allowlist"],
+  ["f-denied","Sandbox deniedDomains"], ["f-httpproxy","httpProxyPort"], ["f-socksproxy","socksProxyPort"],
+  ["f-excluded","Sandbox excludedCommands"], ["f-mcp","Allowed MCP servers"], ["f-models","Allowed models"],
+  ["f-gateway","Gateway URL"], ["f-extraenv","Extra credential environment variables"],
+  ["f-awsworkspace","ANTHROPIC_AWS_WORKSPACE_ID"], ["f-awsregion","AWS_REGION"]
+];
+function hiddenFilled(){
+  return CONDITIONAL.filter(([id]) => {
+    const el = document.getElementById(id);
+    return el && fldHidden(id) && (el.value || "").trim() !== "";
+  }).map(([, label]) => label);
+}
 const esc = s => String(s).replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;");
 
 /* ---------------- build the settings object ---------------- */
@@ -721,7 +763,11 @@ function buildSettings(){
     if (sp) sb.network = Object.assign(sb.network||{}, { socksProxyPort: sp });
     if (S.adv.allowAllUnixSockets) sb.network = Object.assign(sb.network||{}, { allowAllUnixSockets:true });
     if (S.adv.allowLocalBinding)   sb.network = Object.assign(sb.network||{}, { allowLocalBinding:true });
-    if (S.adv.weakNetIso) sb.enableWeakerNetworkIsolation = true;
+    // macOS-only, per its own label — so it is gated on the sandbox actually running on this fleet.
+    // Ungated it emitted on a native-Windows-only scope and tripped check 13, while BOTH remedies
+    // were off-screen: the proxy-port field is hidden there, and the untick target sits inside a
+    // collapsed drawer the blocker never mentions. A block with no reachable exit.
+    if (S.adv.weakNetIso && sandboxRunsHere()) sb.enableWeakerNetworkIsolation = true;
     if (S.adv.allowAppleEvents) sb.allowAppleEvents = true;
     // network.allowUnixSockets — nested under network, NOT a direct sandbox child, and macOS only.
     // On Linux/WSL2 it is ignored (the seccomp filter can't inspect socket paths); allowAllUnixSockets
@@ -1069,6 +1115,10 @@ function lint(o){
       "Claude Code trusts its bundled Mozilla roots plus the OS store, so a root deployed by your MDM needs nothing here. This page cannot see that store, which is why this warns rather than blocks. Confirm on a canary before the fleet: an npm-installed client needs Node 22.15+ to read the OS store at all, so the same machine can work with the native installer and fail with the npm one.");
 
   const req = [];
+  // The org name reaches four emitted deliverables — announcements, the managed CLAUDE.md, the
+  // org-policy stub and the checklist. It used to ship prefilled with the companion doc's example
+  // company, so a bundle could read Ready with someone else's name printed through all four.
+  if (!val("f-org")) req.push(["Organization name", "It is printed into the company announcement, the managed CLAUDE.md, the org-policy stub and the operator checklist. Left blank those read as a template rather than your policy — and a placeholder would have been worse, since it exports looking finished."]);
   // Strict UUID shape. The old /^[0-9a-fA-F-]{8,}$/ accepted "deadbeef" and "--------" while
   // the page promises a malformed value blocks every login — so the operator inferred a check
   // that wasn't happening. Validating PRESENCE is not validating VALIDITY.
@@ -1162,6 +1212,13 @@ function lint(o){
   if (S.telemetry === "peruser") add("warn",
     "Per-user attribution is selected — <code>OTEL_METRICS_INCLUDE_ACCOUNT_UUID</code> is emitted as <code>true</code>.",
     "This ships per-person metrics. Requires explicit privacy / works-council sign-off before deployment.");
+  // Values typed under a posture the operator has since changed away from. They are no longer read
+  // and no longer emitted — correct, but it used to happen in silence, which is the same
+  // does-not-exist-so-enforces-nothing trap the rest of this linter is built to surface.
+  const stranded = hiddenFilled();
+  if (stranded.length) add("warn",
+    `${stranded.length} value${stranded.length>1?"s":""} you entered ${stranded.length>1?"are":"is"} <b>not emitted at this posture</b>: ${stranded.map(l => `<code>${esc(l)}</code>`).join(", ")}.`,
+    "The field is hidden because your current posture has no place for the key, so the value is neither read nor written — it is not silently in the bundle. The text is kept: switch the posture back and it returns. Clear it if you meant to drop it.");
 
   return F;
 }
