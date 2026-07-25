@@ -79,6 +79,9 @@ The fastest way to lose credibility with a risk committee is to quote a system-c
 
 ## 4. Worked instance — Claude Opus 5, card dated 2026-07-24
 
+<!-- CARD-STAMP: model=Claude Opus 5 card-date=2026-07-24 — /stale-check reads this line; /card-sweep replaces this whole section. Never search-and-replace a model name into §4. -->
+
+
 The current readout in the shape above. **This section expires; replace it wholesale from the next card — never search-and-replace a model name into it.** Source: [anthropic.com/claude-opus-5-system-card](https://www.anthropic.com/claude-opus-5-system-card). Determinations are recorded as Compliance rows in [`../docs/feature-inventory.md`](../docs/feature-inventory.md), with the full numbers and their test conditions in the note block beneath that table; the per-surface robustness detail is in [`agentic-threat-model.md`](agentic-threat-model.md).
 
 **Grades, applying rule 5:** Q1, Q3 and Q6 are `[H]` — the vendor disclosing its own policy, determination, and monitoring results. Q2, Q4 and Q5 are `[M]` — benchmarked by the vendor on its own harness, **with production safeguards disabled unless a cell says otherwise**.
