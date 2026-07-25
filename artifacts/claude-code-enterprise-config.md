@@ -4,7 +4,7 @@
 
 Audience: the platform/security/DevOps owner rolling Claude Code out to many engineers. Companion to the practitioner guide ([`claude-code-101.md`](claude-code-101.md)) and the rollout plan ([`claude-code-adoption-guide.md`](claude-code-adoption-guide.md)). For *who owns this* and compliance posture, see [`operating-model-guide.md`](operating-model-guide.md) and [`governance-overlay.md`](governance-overlay.md).
 
-**Sourcing:** all mechanics verified against the Claude Code docs — [settings](https://docs.claude.com/en/docs/claude-code/settings), [permissions](https://docs.claude.com/en/docs/claude-code/permissions), [memory](https://docs.claude.com/en/docs/claude-code/memory), [security](https://docs.claude.com/en/docs/claude-code/security), [iam](https://docs.claude.com/en/docs/claude-code/iam), [monitoring](https://docs.claude.com/en/docs/claude-code/monitoring-usage), [corporate-proxy](https://docs.claude.com/en/docs/claude-code/corporate-proxy), [amazon-bedrock](https://docs.claude.com/en/docs/claude-code/amazon-bedrock), [costs](https://docs.claude.com/en/docs/claude-code/costs), and [analytics](https://docs.claude.com/en/docs/claude-code/analytics) — as of 2026-07-11 `[H]`. The `[M]`-graded items — §2's Okta connector-provisioning pointer and §5.1's Enterprise identity/compliance layers — are secondary-sourced (blog / product pages), not the CC docs; verify current scope, and treat their compliance coverage per [`governance-overlay.md`](governance-overlay.md). Field-level specifics and version gates change fast — the linked docs are canonical. This guide is org-neutral reference; swap the `karekal` placeholders for your values. It does **not** assert BAA/ZDR/residency coverage — verify those per contract via [`governance-overlay.md`](governance-overlay.md).
+**Sourcing:** all mechanics verified against the Claude Code docs — [settings](https://docs.claude.com/en/docs/claude-code/settings), [permissions](https://docs.claude.com/en/docs/claude-code/permissions), [memory](https://docs.claude.com/en/docs/claude-code/memory), [security](https://docs.claude.com/en/docs/claude-code/security), [iam](https://docs.claude.com/en/docs/claude-code/iam), [monitoring](https://docs.claude.com/en/docs/claude-code/monitoring-usage), [corporate-proxy](https://docs.claude.com/en/docs/claude-code/corporate-proxy), [amazon-bedrock](https://docs.claude.com/en/docs/claude-code/amazon-bedrock), [costs](https://docs.claude.com/en/docs/claude-code/costs), and [analytics](https://docs.claude.com/en/docs/claude-code/analytics) — as of 2026-07-11 `[H]`. **The permission-rule and sandbox mechanics were re-verified 2026-07-25** against [permissions](https://docs.claude.com/en/docs/claude-code/permissions) and [sandboxing](https://docs.claude.com/en/docs/claude-code/sandboxing), which **corrected two rules in Template A** — its deny paths were anchored to the launch directory rather than the filesystem, and its blanket `WebFetch` deny both removed the tool from context and bought nothing while Bash could reach `curl`. See *How permission rules actually resolve* in §2 for the mechanics and §8 for the failure modes; the underlying facts are rows in [`../docs/feature-inventory.md`](../docs/feature-inventory.md). The `[M]`-graded items — §2's Okta connector-provisioning pointer and §5.1's Enterprise identity/compliance layers — are secondary-sourced (blog / product pages), not the CC docs; verify current scope, and treat their compliance coverage per [`governance-overlay.md`](governance-overlay.md). Field-level specifics and version gates change fast — the linked docs are canonical. This guide is org-neutral reference; swap the `karekal` placeholders for your values. It does **not** assert BAA/ZDR/residency coverage — verify those per contract via [`governance-overlay.md`](governance-overlay.md).
 
 ---
 
@@ -66,7 +66,9 @@ Managed settings can arrive from five sources. **Within the managed tier they ar
 
 ### Which source to prefer
 
-For a real fleet, **server-managed settings via the claude.ai admin console** is usually the lowest-friction path on Team/Enterprise: central, no per-machine deployment, and it supports a **fail-closed startup mode** (a machine that can't fetch policy refuses to run unmanaged rather than falling back to no policy). Reach for **MDM plist/registry** when you already run Jamf / Kandji / Intune and want policy to ride your existing device management. Keep **file-based** for a pilot, a CI image, or an air-gapped estate. Whichever you pick, it's *one* source — don't layer them expecting a merge (Gotcha 1).
+For a real fleet, **server-managed settings via the claude.ai admin console** is usually the lowest-friction path on Team/Enterprise: central, no per-machine deployment, and it supports a **fail-closed startup mode** — `forceRemoteSettingsRefresh: true` (managed settings only) blocks CLI startup until remote policy is freshly fetched and **exits** rather than continuing on cached or no settings.
+
+**But server-managed delivery cannot gate a first login, and this is the one exception to one-source-wins.** Server-managed settings reach only accounts *already authenticated into your organization*, so they can't redirect a developer's initial sign-in — which is precisely what `forceLoginMethod` / `forceLoginOrgUUID` exist to do. Deploy those two keys through **device management as well** (MDM plist / HKLM registry / file). Setting them in both places is the documented instruction; note that cached server-managed settings replace the device-managed file entirely, so this is "set both," not "rely on a merge." Everything *else* still follows Gotcha 1 — one source wins. Reach for **MDM plist/registry** when you already run Jamf / Kandji / Intune and want policy to ride your existing device management. Keep **file-based** for a pilot, a CI image, or an air-gapped estate. Whichever you pick, it's *one* source — don't layer them expecting a merge (Gotcha 1).
 
 ---
 
@@ -74,23 +76,34 @@ For a real fleet, **server-managed settings via the claude.ai admin console** is
 
 This is the wall. Deploy it at the path matching your delivery mechanism (§1). Real `managed-settings.json` must be **strict JSON** — the `//` notes below are explanatory only; strip them. Add the `$schema` line for editor validation.
 
+> **Would rather not hand-assemble this?** [`claude-code-config-builder.html`](claude-code-config-builder.html) composes all three templates from five posture answers, wraps the output for your delivery mechanism (plist / `.reg` / per-OS file / admin-console steps), and **refuses to emit rule sets that can't work** — starting with the deny-shadows-allow collision in *How permission rules actually resolve* below. It omits unsupplied keys rather than writing placeholders, because these fields fail closed.
+
 ```json
 {
   "$schema": "https://json.schemastore.org/claude-code-settings.json",
 
   "permissions": {
     "deny": [
-      "Read(./.env)",
-      "Read(./.env.*)",
-      "Read(./secrets/**)",
+      "Read(//**/.env)",
+      "Read(//**/.env.*)",
+      "Read(//**/secrets/**)",
+      "Read(//**/*.pem)",
       "Read(~/.ssh/**)",
       "Read(~/.aws/credentials)",
+      "Read(~/.config/gcloud/**)",
       "Bash(curl *)",
-      "WebFetch"
+      "Bash(wget *)",
+      "Bash(nc *)"
+    ],
+    "allow": [
+      "WebFetch(domain:*.github.com)",
+      "WebFetch(domain:docs.karekal.internal)"
     ],
     "ask": [
       "Bash(git push *)",
-      "Bash(gh pr merge *)"
+      "Bash(gh pr merge *)",
+      "Bash(npm publish *)",
+      "Bash(terraform apply *)"
     ]
   },
 
@@ -126,8 +139,9 @@ What each block buys you, and the failure mode if you omit it:
 
 | Field | Enforces | Failure mode if omitted |
 |---|---|---|
-| `permissions.deny` | secrets/creds unreadable; `curl`/`WebFetch` blocked (exfil + SSRF surface) | a prompt-injected or careless session reads `.env` and pastes it into a request |
-| `permissions.ask` | pause-and-confirm on push/merge | Claude force-pushes or merges unreviewed |
+| `permissions.deny` | secrets/creds unreadable **filesystem-wide** (note the `//` anchor — see *How permission rules actually resolve* below); Bash network binaries blocked | a prompt-injected or careless session reads `.env` and pastes it into a request |
+| `permissions.allow` (WebFetch domains) | your doc hosts pre-approved; every other domain still prompts | either a blanket `WebFetch` deny (which removes the tool entirely) or an unrestricted fetch surface |
+| `permissions.ask` | pause-and-confirm on the irreversible or externally-visible actions (push, merge, publish, apply) | Claude force-pushes, merges unreviewed, or publishes a package |
 | `forceLoginMethod` + `forceLoginOrgUUID` | users can only sign into the corporate org (fill in your org UUID and the exact `forceLoginMethod` token — verify accepted values in the settings docs before deploying) | engineer signs into a personal account; work + data leave your tenant |
 | `disableBypassPermissionsMode` | nobody can flip to "skip all prompts" | one `--dangerously-skip-permissions` alias removes every guardrail |
 | `sandbox.enabled` | OS-level isolation of Claude-run commands | a shell command touches paths your `deny` rules (which only cover Claude's own file tools) don't reach |
@@ -145,11 +159,46 @@ Managed-only lockdown knobs to reach for when you need a hard perimeter (each ha
 
 **Console roles matter too:** when inviting via the Claude Console, the **Claude Code** role lets a user create only Claude Code API keys; **Developer** lets them create any key. Grant the narrower role by default.
 
+### How permission rules actually resolve — five mechanics that change what your policy enforces
+
+Template A is only as strong as the rule semantics underneath it. These five are counter-intuitive enough that a hand-assembled deny list routinely enforces less than its author thinks. All `[H]` against [permissions](https://docs.claude.com/en/docs/claude-code/permissions), verified 2026-07-25.
+
+**1. A deny rule cannot carry allowlist exceptions.** Rules are evaluated **deny → ask → allow, first match wins, and specificity does not reorder them.** A deny `Bash(aws *)` blocks every matching call *including* one that also matches a narrower allow `Bash(aws s3 ls)` — the allow is dead on arrival, silently. The same applies between ask and allow: a matching ask prompts even when a more specific allow exists.
+
+For allow-broadly-except-these, the documented pattern is a hook, not a rule pair: allow the tool and register a `PreToolUse` hook that **exits 2** on the specific commands. A code-2 hook is evaluated *before* permission rules, so it beats an allow. Note the asymmetry — deny and ask rules still fire regardless of what a hook returns, so a hook can tighten but never loosen them. Templates for this shape are in [`hooks-starter-pack.md`](hooks-starter-pack.md).
+
+**2. A bare tool name removes the tool from Claude's context.** Deny `WebFetch` (or `Bash(*)`, which is equivalent to bare `Bash`) and Claude never sees the tool at all. A *scoped* rule like `Bash(rm *)` leaves the tool available and blocks matching calls when Claude reaches for them. This is why Template A no longer denies `WebFetch` outright: pairing a blanket removal with a domain allowlist is incoherent, and the docs are blunt about the real gap — **restricting `WebFetch` prevents nothing while Bash can reach `curl`**. Block the Bash network binaries, then allow the domains you want on `WebFetch`. (`EndConversation` is the one tool a deny can't remove while others remain.)
+
+**3. Path rules have four anchors, and in managed settings the third is a trap.**
+
+| Pattern | Resolves to |
+|---|---|
+| `//path` | absolute, from the filesystem root |
+| `~/path` | the user's home directory |
+| `/path` | **relative to the settings source** — for a managed file, *not* the project root |
+| `path` or `./path` | relative to the current directory |
+
+Bare filenames follow gitignore semantics, so `Read(.env)` ≡ `Read(**/.env)` — any `.env` at or under the cwd, **but not one in a parent directory or another checkout**. That is why Template A previously under-delivered: `Read(./.env)` protects the repo Claude happens to be started in and nothing else.
+
+**Choose the anchor deliberately; both are defensible.** `Read(//**/.env)` blocks any `.env` anywhere on the filesystem — the right floor for a managed fleet, and also a rule that covers scratch directories, unrelated checkouts, and `node_modules` fixtures. If that friction is what gets your policy disabled, the narrower `Read(.env)` is the honest fallback, with the gap stated. Template A ships the global form because a managed floor should not depend on which directory an engineer launched from. One more asymmetry: a single-segment relative directory pattern like `secrets/**` matches at **any depth** as a deny or ask rule, but only at the cwd as an allow rule.
+
+**4. The Bash wildcard's word boundary is load-bearing.** `Bash(ls *)` — space before the wildcard — matches `ls -la` but not `lsof`. `Bash(ls*)` matches both. Write the space form unless you intend the prefix match. (`Bash(ls:*)` is a documented equivalent of the space form, so a `:*` suffix is correct, not a missing space.) Compound commands are handled for you: Claude Code parses shell operators, so `Bash(safe-cmd *)` does **not** authorize `safe-cmd && other-cmd`; each subcommand must match a rule independently. Recognized separators:
+
+```text
+&& || ; | |& &   and newlines
+```
+
+**5. Argument-constrained Bash rules are documented-fragile — don't use them as controls.** `Bash(curl http://github.com/ *)` intends to restrict curl to GitHub and misses options-before-URL, `https`, a redirect to the allowed host, variable indirection (`URL=… && curl $URL`), and extra spaces. Use it as a speed bump if you like, but the enforcing layer has to be the sandbox's `network.allowedDomains` or a URL-validating hook.
+
+**Two silent-failure shapes worth knowing before you deploy:** an unanchored *allow* glob (`*`, `B*`, `mcp__*`) is skipped with a warning and approves nothing — though `mcp__*` as a *deny* works fine. And a deny/ask rule naming an unknown tool warns at startup **except** when the name contains `_` or `*`, which is exempt from the check; rules match canonical tool names only (`TaskStop`, never the transcript label `Stop Task`).
+
 ### The sandbox — OS-level enforcement `permissions.deny` can't give you
 
 `permissions.deny` is a *decision-layer* gate: it stops **Claude** from choosing to run a blocked tool. It does not stop a subprocess Claude already launched — an `npm install` post-install script, a Python file handle, a shell one-liner opening a socket. That gap is the sandbox's job. Permissions and sandboxing are **complementary**: permissions apply to every tool (Bash, Read, Edit, WebFetch, MCP); the sandbox is **OS-level enforcement on the Bash tool and its child processes**, and it holds *even if a prompt injection bypasses Claude's judgment*.
 
-`sandbox.enabled` covers **macOS, Linux, and WSL2 only** (not native Windows). A hardened managed sandbox:
+`sandbox.enabled` covers **macOS, Linux, and WSL2 only** (not native Windows).
+
+**Turning it on does not protect your credentials.** Read this before you treat `sandbox.enabled: true` as a win: the sandbox's default *write* scope is the working directory plus the session temp dir, but its default *read* scope is **the entire computer** minus certain denied directories — and the docs say plainly that this default **still allows reading `~/.aws/credentials` and `~/.ssh/`**. Worse, sandboxed Bash commands **inherit the parent process environment by default, including any credentials set there**, and no permission rule reaches that at all. Both need explicit closing. A hardened managed sandbox:
 
 ```json
 {
@@ -158,6 +207,16 @@ Managed-only lockdown knobs to reach for when you need a hard perimeter (each ha
     "failIfUnavailable": true,
     "allowUnsandboxedCommands": false,
     "excludedCommands": ["docker *"],
+    "credentials": {
+      "files": [
+        { "path": "~/.aws/credentials", "mode": "deny" },
+        { "path": "~/.ssh", "mode": "deny" }
+      ],
+      "envVars": [
+        { "name": "GITHUB_TOKEN", "mode": "deny" },
+        { "name": "NPM_TOKEN", "mode": "deny" }
+      ]
+    },
     "filesystem": { "denyRead": ["~/.aws/credentials", "~/.ssh"] },
     "network": {
       "allowedDomains": ["github.com", "*.npmjs.org", "registry.yarnpkg.com"],
@@ -167,9 +226,30 @@ Managed-only lockdown knobs to reach for when you need a hard perimeter (each ha
 }
 ```
 
+`sandbox.credentials` (**requires v2.1.187+**) is the purpose-built control: two arrays, `files` (each entry a `path` + `mode`) and `envVars` (each a `name` + `mode`), kept separate from general filesystem rules. On an older client it is inert — a silent no-op — so keep the `filesystem.denyRead` entries as the version-independent floor and treat `credentials` as the addition that also closes the env-var path. For a blunter client-wide sweep there is `CLAUDE_CODE_SUBPROCESS_ENV_SCRUB`, which strips Anthropic and cloud-provider credentials from **all** subprocesses.
+
+**One interaction to know if you ever set `filesystem.disabled: true`** (v2.1.216+, network isolation only): `filesystem.denyRead` and `credentials.files` both stop applying, because the filesystem layer is what enforced them. `credentials.envVars` keeps working — env scrubbing is independent of the filesystem layer. So disabling the filesystem layer quietly reopens your credential *files* while leaving the env-var protection intact. Also note `autoAllowBashIfSandboxed` defaults to **`true`**: sandboxed commands run without prompting. That is the point of sandboxing, but if your posture wants a prompt anyway, set it `false` explicitly.
+
 - `failIfUnavailable: true` — the machine **exits at startup** if the sandbox can't start, instead of silently running unsandboxed. This is what makes the sandbox a *hard gate* on a managed fleet (default is warn-and-continue).
 - `allowUnsandboxedCommands: false` — closes the `dangerouslyDisableSandbox` escape hatch entirely; every command runs sandboxed or must be in `excludedCommands`.
-- `network.allowedDomains` / `deniedDomains` — the real **egress control**. A sandboxed command can reach only the domains you allow — this is where you stop a compromised dependency phoning home, which a `deny` on `curl`/`WebFetch` alone can't. Network rules **combine** with your `WebFetch(domain:…)` permission rules; sandbox filesystem paths **merge** with your `Read`/`Edit` deny rules. The sandbox is the floor under the whole permission set, not a separate silo.
+- `network.allowedDomains` / `deniedDomains` — the real **egress control**. A sandboxed command can reach only the domains you allow — this is where you stop a compromised dependency phoning home, which a `deny` on `curl`/`WebFetch` alone can't. `deniedDomains` wins over a broader `allowedDomains` wildcard. Network rules **combine** with your `WebFetch(domain:…)` permission rules; sandbox filesystem paths **merge** with your `Read`/`Edit` deny rules. The sandbox is the floor under the whole permission set, not a separate silo.
+
+**Both halves are load-bearing — and widening one can undo the other.** The docs are explicit: without network isolation a compromised agent exfiltrates files like SSH keys; without filesystem isolation it backdoors system resources to regain network access. So whenever you widen the defaults, check that an `allowWrite` path, a broad `allowedDomains` entry, or an `excludedCommands` exception hasn't quietly reopened the other side.
+
+**Scope note, so you don't over-claim it:** the sandbox governs the Bash tool and its children. Claude's built-in `Read` / `Edit` / `Write` go through the **permission system directly and do not run through the sandbox** — which is why the two layers are complementary rather than redundant, and why neither alone is a whole perimeter. **Subagents** run in the same process and inherit the parent session's sandbox config, so they need no separate policy.
+
+**The escape hatches, each with its real cost** — put any you enable in your operator checklist with the reason:
+
+| Setting | What it costs you |
+|---|---|
+| `excludedCommands` | the listed commands run unsandboxed, by design |
+| `network.allowUnixSockets` (**macOS only** — nests under `network`, not `sandbox`; on Linux/WSL2 it is ignored because the seccomp filter can't inspect socket paths, and `network.allowAllUnixSockets` is the blunt equivalent) | allowing `/var/run/docker.sock` **effectively grants host access** through the Docker socket |
+| `allowAppleEvents` (macOS) | removes code-execution isolation — sandboxed commands can launch other applications unsandboxed |
+| `enableWeakerNestedSandbox` (Linux) | lets the sandbox work inside Docker or where unprivileged user namespaces are disabled; **considerably weaker** — only with other isolation enforced |
+| `filesystem.disabled` (v2.1.216+) | network isolation only; `denyRead` and `credentials.files` stop applying |
+| broad `filesystem.allowWrite` | writes to `$PATH` dirs, system config, or `.bashrc` / `.zshrc` enable privilege escalation via code executed in another security context |
+
+On Linux, an optional seccomp filter (`npm install -g @anthropic-ai/sandbox-runtime`) adds Unix-domain-socket blocking; it ships with the native binary.
 
 Caveat: sandboxing has real friction — some tools need an `excludedCommands` entry or an extra `allowedDomains`. Roll it out behind a canary and budget a tuning pass; an over-tight `allowedDomains` blocks legitimate package installs.
 
@@ -325,10 +405,10 @@ Grounding: Claude Code ships a floor you build on — **read-only permissions by
 - **Where the login token sits on disk** — set your endpoint policy accordingly: macOS = encrypted Keychain; Linux = `~/.claude/.credentials.json` (mode `0600`); Windows = `%USERPROFILE%\.claude\.credentials.json` (inherits the profile's ACLs). **Failure mode:** if endpoint policy lets that file go group- or world-readable, a stolen token is full session + tenant access. `[H — iam]`
 - **Who can see usage** — the analytics dashboards are role-gated: `claude.ai/analytics/claude-code` (Team/Enterprise; Admins + Owners) and `platform.claude.com/claude-code` (Console; the `UsageView` permission — Developer / Billing / Admin / Owner / Primary Owner). Route managers there rather than standing up a parallel report. `[H — analytics]`
 - **A long-lived subscription token for CI / headless** — `claude setup-token` runs an OAuth flow against **your Claude subscription** (Pro / Max / Team / Enterprise) and prints a **~1-year, inference-only** token; it is **not stored anywhere** — you copy it into `CLAUDE_CODE_OAUTH_TOKEN` and custody it yourself. Self-service (no admin provisioning), bound to the subscriber, **no Console workspace**. **Failure mode:** it's a bearer secret with a year of life — keep it in a secrets manager and rotate on offboarding; a leak is a year of inference on your plan. `[H — iam]`
-- **Can you turn `setup-token` off centrally? Not directly — control the subscription instead.** No managed setting or Console toggle names `setup-token` or `CLAUDE_CODE_OAUTH_TOKEN`. `forceLoginMethod` (`claudeai` / `console` / `gateway` — a managed setting you can push **via the claude.ai admin console** as server-managed settings) blocks env-credential sessions at startup, but its documented block-list is `ANTHROPIC_API_KEY`, `ANTHROPIC_AUTH_TOKEN`, and `apiKeyHelper`, and **does not name `CLAUDE_CODE_OAUTH_TOKEN`** — so whether it stops a `setup-token` session is **undocumented (verify with Anthropic)**; the rationale it gives ("an environment credential cannot satisfy the required login method") *reads like* it should, but the list omits it. The control that actually bites is upstream on the **seat**: provision Team/Enterprise seats only to human users who need the product — via **SCIM group-mapping, which sets the seat tier** — so automation never gets a subscription; give CI a **non-human credential** (WIF service account, or a Console Claude Code key) so it authenticates as a service, not a person; and **`forceLoginOrgUUID`-lock** the org. If Claude Code runs on **Console / API billing** rather than subscription seats, there is no subscription for a runner to mint a `setup-token` against at all. `[H — settings, iam, sso-doc; the forceLoginMethod ↔ OAuth-token interaction is the lone verify item]`
+- **Can you turn `setup-token` off centrally? No — and the docs say why, so don't plan around a maybe.** `claude setup-token` (and `/install-github-app`) **enforce only `forceLoginMethod`, not `forceLoginOrgUUID`** — so a seat-holder can mint a one-year, inference-only CI token **in a different organization**. From **v2.1.212** every first-party login path enforces `forceLoginMethod` (terminal, VS Code extension, Agent SDK, `setup-token`, `/install-github-app`); before v2.1.212 only terminal logins did. No managed setting or Console toggle disables `setup-token` generation itself. **So the control that bites is upstream, on the seat:** provision Team/Enterprise seats via **SCIM group-mapping, which sets the seat tier**, only to humans who need the product, so automation never gets a subscription to mint against; give CI a **non-human credential** (WIF service account, or a Console Claude Code key) so it authenticates as a service; and if Claude Code runs on **Console/API billing** rather than subscription seats, there is no subscription for a runner to mint a `setup-token` against at all. `[H — settings (forceLoginMethod row, min-version 2.1.212), authentication (login paths), iam, sso-doc]`
 - **Keyless CI auth — Workload Identity Federation (preferred; no stored secret).** Three resources, created together by the Console **Connect workload** wizard (Settings → Workload identity) or via the Admin API — which **rejects an Admin API key on these endpoints; you use an `org:admin` OAuth token**: the **issuer** (`fdis_`, your OIDC IdP), the **service account** (`svac_`, the non-human identity a token acts as), and the **federation rule** (`fdrl_`). **Scope lives on the rule, not the service account:** `issuer_id` (which IdP), `match` (`subject_prefix` + `claims` — an *exact* match unless it ends `*`), `workspace_id` (which workspace), `oauth_scope` (e.g. `workspace:developer`, or `org:admin`), and `token_lifetime_seconds`. At runtime the workload's ambient IdP JWT (GitHub Actions OIDC, Kubernetes projected token, GCP metadata server, Azure IMDS) is exchanged at `POST /v1/oauth/token` (RFC 7523 `jwt-bearer`); Anthropic verifies it against the issuer's JWKS + the rule's `match` and returns a short-lived **`sk-ant-oat01-…`** token acting as the service account, which the SDK refreshes — nothing long-lived sits in the runner. **Failure mode:** a `subject_prefix` ending in `*` (e.g. `repo:org/repo:*`) also matches `pull_request` runs from forks, so anyone who can open a PR can mint a token at that rule's scope — pin to an exact ref like `repo:org/repo:ref:refs/heads/main`, especially for an `org:admin`-scoped rule. `[H — workload-identity-federation, wif-admin-api]`
 
-> **Verify with Anthropic — open question (managed `setup-token` control).** The `forceLoginMethod` ↔ `CLAUDE_CODE_OAUTH_TOKEN` interaction above is not documented; confirm it before you rely on it. Ask your Enterprise rep / CSM (or the in-Console support widget / `support@anthropic.com`): **(1)** Does `forceLoginMethod` set in managed settings block a `CLAUDE_CODE_OAUTH_TOKEN` session, or is an OAuth token treated as satisfying `claudeai` (its block-list names `ANTHROPIC_API_KEY` / `ANTHROPIC_AUTH_TOKEN` / `apiKeyHelper` but not the OAuth token)? **(2)** Is there any Console or managed-settings way to disable `claude setup-token` generation org-wide, so subscription seat-holders can't mint a 1-year CI token? **(3)** If not, is seat provisioning (SCIM group → seat tier), with WIF / Console keys as the sanctioned CI credential, the intended path to keep automation off the subscription-OAuth path? Record the answer here when you have it. `[verify — not [H]; the block-list omission is the open item]`
+> **Correction (2026-07-25).** An earlier revision of this section carried this as an *open question* — "whether `forceLoginMethod` stops a `setup-token` session is undocumented, verify with Anthropic." **It was documented, and the answer is above.** The failure was writing a negative claim ("not documented") from a search that had not read the full source: `authentication.md` states the enforcement split plainly, and `settings.md`'s `forceLoginMethod` row carries the v2.1.212 gate. Recorded rather than quietly deleted, because the *class* of error matters more than the instance — a hedge feels like diligence and therefore survives self-review. See [`../LESSONS_LEARNED.md`](../LESSONS_LEARNED.md).
 
 The deeper identity/compliance layers — **SSO, SCIM provisioning, custom admin roles, IP allowlisting, audit logs, a Compliance API, and customer-managed encryption keys** — are Enterprise-plan features that sit above the client config — verify their existence and scope at the Trust Center and your Enterprise admin console (not in this guide). [`governance-overlay.md`](governance-overlay.md) owns only how their data flows map to compliance (BAA / ZDR / residency), not the features themselves. `[M — claude.com / anthropic.com product + news pages, 2026-07]`
 
@@ -400,7 +480,10 @@ Sequenced against the broader surface plan in [`surface-rollout-matrix.md`](surf
 - [ ] Choose **one** delivery mechanism; deploy to the correct per-OS path.
 - [ ] Migrate any legacy `C:\ProgramData\ClaudeCode\` deployment (removed v2.1.75).
 - [ ] Verify enforcement on a real target machine via `/status` (Setting sources) — managed values win and are locked.
-- [ ] Confirm `permissions.deny` covers your secret/credential paths **and** `curl`/`WebFetch` egress.
+- [ ] Confirm `permissions.deny` covers your secret/credential paths with the **anchor you intended** (`//` for a fleet-wide floor, not `./`), and that Bash network binaries are denied rather than relying on a `WebFetch` restriction.
+- [ ] **Check no deny rule shadows an allow or ask rule** you meant to keep — precedence is deny → ask → allow, first match wins, and the shadowed rule fails silently.
+- [ ] **Close the credential paths the sandbox leaves open** — `sandbox.credentials` `files` + `envVars` (v2.1.187+) or `filesystem.denyRead`, plus `CLAUDE_CODE_SUBPROCESS_ENV_SCRUB` for subprocess env scrubbing.
+- [ ] **Pin a minimum Claude Code version** for any version-gated field you rely on (`sandbox.credentials` v2.1.187+, `filesystem.disabled` v2.1.216+) — below the gate they are silent no-ops.
 - [ ] Set the Console default role to **Claude Code** (not Developer) for new invites.
 - [ ] Point `env` OTel at your collector; confirm telemetry lands ([`agent-observability-guide.md`](agent-observability-guide.md)).
 - [ ] Publish Template C and link it from `companyAnnouncements`.
@@ -418,6 +501,11 @@ Sequenced against the broader surface plan in [`surface-rollout-matrix.md`](surf
 - **Mixed delivery expecting a merge.** Within the managed tier one source wins — a stray file is ignored on an MDM/server-managed fleet.
 - **Legacy Windows path.** `C:\ProgramData\ClaudeCode\` is dead (v2.1.75); silent no-op if you deploy there.
 - **`deny` gaps.** Read/Edit deny rules cover Claude's file tools and recognized shell file commands — not arbitrary subprocess I/O (a Python script opening a file). For process-wide enforcement, use `sandbox.enabled`.
+- **Deny used as an allowlist-with-exceptions.** Precedence is deny → ask → allow, first match wins, and specificity doesn't reorder it — so a broad `Bash(aws *)` deny kills a narrower `Bash(aws s3 ls)` allow *silently*. The allow looks present in the file and never fires. Use allow-plus-a-code-2-`PreToolUse`-hook for that shape.
+- **Bare-name deny mistaken for a scoped block.** Denying `WebFetch` or `Bash(*)` removes the tool from Claude's context entirely, not just the matching calls — which makes any domain allowlist for that tool dead weight. And restricting `WebFetch` buys nothing while Bash can still reach `curl`.
+- **Path rules anchored where you didn't mean.** `Read(./.env)` protects the launch directory only; `/path` in a *managed* file resolves relative to the settings source, not the project root. A fleet-wide floor needs the `//` anchor. Pick the anchor on purpose and state the residual gap.
+- **Credentials assumed safe because the sandbox is on.** Sandbox default read is the whole computer minus certain dirs, and **still reaches `~/.aws/credentials` and `~/.ssh/`**; sandboxed Bash **inherits the parent environment including credentials**. Close both with `sandbox.credentials` (v2.1.187+) plus `filesystem.denyRead`, or `CLAUDE_CODE_SUBPROCESS_ENV_SCRUB`.
+- **A version-gated field on an older client.** `sandbox.credentials` (v2.1.187+) and `filesystem.disabled` (v2.1.216+) are silent no-ops below their gate — the policy reads as enforced and isn't. Pin a minimum client version in your fleet tooling, or keep a version-independent fallback alongside.
 - **Bloated managed CLAUDE.md.** Over ~200 lines and adherence falls; the org rules you cared about get skimmed.
 - **Org lock assumed, not delivered.** `forceLoginOrgUUID` in a file that never reached the machine enforces nothing. Verify on-device.
 - **Fail-closed lockout.** A malformed managed security field over-restricts by design — a typo in `allowedMcpServers` admits zero servers, a bad `forceLoginOrgUUID` blocks every login, `sandbox.failIfUnavailable` refuses to start. The safe direction, but it can wedge a whole fleet. Validate against the `$schema` and stage on a canary before a broad push.

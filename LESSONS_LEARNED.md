@@ -74,6 +74,42 @@ The as-of stamp is **load-bearing** on `cost-calculator.html` — readers commit
 
 ## Repo-specific lessons
 
+### 2026-07-25 — ⚠⚠ THIRD RECURRENCE: "not documented" written from a search that didn't read the source
+
+The grammatical hard stop on `no` / `none` / `not stated` was added 2026-07-24 after two instances in 24 hours. It has now happened a **third** time, same week, and this time it shipped into a published artifact and a new tool. Three claims, all false, all mine:
+
+| Claim written | What the docs actually say |
+|---|---|
+| "Whether `forceLoginMethod` stops a `claude setup-token` session is **undocumented** — verify with Anthropic" | `authentication.md`: `setup-token` and `/install-github-app` "**enforce only `forceLoginMethod`**, so they can mint a token in a different organization." `settings.md` carries the v2.1.212 gate. Fully documented — and it names a real hole the hedge obscured. |
+| "the `.reg` value type and escaping are **this tool's reading of a doc that names the key path but not the encoding**" | `settings.md`: "a `Settings` value (**REG_SZ or REG_EXPAND_SZ**) containing JSON." |
+| "this tool **does not have a settings key** for [fail-closed startup]" | `settings.md`: **`forceRemoteSettingsRefresh`** — "Block CLI startup until remote managed settings are freshly fetched… the CLI exits rather than continuing with cached or no settings." |
+
+**Why the existing rule didn't catch it.** The rule says: on `no`/`not stated`, grep the full source. I *did* grep — and got a **false negative**, because `settings.md` writes the type as `REG\_SZ` with kramdown-escaped underscores, so `grep "REG_SZ"` returns nothing. A blind reviewer quoted it, I re-grepped, missed it again, and briefly concluded **the reviewer had fabricated the quote.** Only loosening to `grep -i "reg_sz\|reg.sz"` found it.
+
+- **New clause the rule needs: a failed grep is not a read.** Markdown escaping (`\_`), smart quotes, soft hyphens, and line-wrapped table cells all defeat a literal pattern. Grep **case-insensitively with punctuation loosened**, and on anything load-bearing, read the section.
+- **Corollary, and the more dangerous half:** I nearly used my own false negative to *dismiss a correct reviewer finding*. "Verify before fixing" protects against acting on a bad finding; it does **not** protect against discarding a good one on bad verification. When a reviewer supplies a verbatim quote and your grep disagrees, **assume your grep is wrong first** — they read the page, you pattern-matched it.
+- **Why hedges specifically:** an unverified negative *feels* like diligence, so it survives self-review in a way an unverified positive would not. Three recurrences in one week is a convention problem, not three slips.
+
+### 2026-07-25 — one convention error wearing four hats: the lock flag without its allowlist
+
+A blind review found four defects in the config builder that were one mistake made four times — **emit the lock flag, omit the allowlist the flag governs**:
+
+| Emitted | Missing | Consequence |
+|---|---|---|
+| `allowManagedMcpServersOnly: true` | `allowedMcpServers` | Unset means **all servers allowed**, not none — the gate is inert |
+| `enforceAvailableModels: true` | `availableModels` | Documented no-op when the list is unset or empty |
+| `filesystem.denyRead` | `filesystem.allowManagedReadPathsOnly` | Array keys **merge across scopes**, so a developer re-opens the paths |
+| `network.allowedDomains` | `network.allowManagedDomainsOnly` | Same merge — a developer widens egress |
+
+Each arrived as its own finding. Fixing them one at a time leaves the pattern live for the next field. **When several findings share a shape, fix the convention** — here, a linter check that blocks any lock flag emitted without the list it governs, so the fifth instance can't ship.
+
+Three related traps from the same pass:
+- **`Object.assign` vs bare assignment.** A later `sb.network = { allowedDomains }` silently dropped the `allowManagedDomainsOnly` set a few lines above — the lock was written, then overwritten. Merge, never replace, when building a config object in stages. Caught only because a probe asserted the key's presence.
+- **A guard that fires on valid input gets ignored.** The word-boundary check ran on *all* rules instead of Bash only, blocking export on correct `Read(~/.ssh/**)` gitignore globs.
+- **A guard that passes on invalid input is worse.** `CLAUDE_CODE_SUBPROCESS_ENV_SCRUB` was counted as covering `GITHUB_TOKEN`/`NPM_TOKEN`; it strips **Anthropic and cloud-provider credentials only**, so the coverage matrix printed green for an untouched variable.
+
+**Assert expected keys positively.** `JSON.parse` succeeding and "no placeholders present" both pass on `{}`. Every one of the above was caught by an assertion of the form *this key must exist with this value in this combination* — never by reading the code.
+
 ### 2026-07-25 — a freshness stamp on the container hides the staleness of its contents
 
 A `/stale-check` run reported `feature-inventory.md` Last-verified **2026-07-24** — one day old, comfortably inside the 14-day product-surface window. Three of the five product-surface rows were sitting at as-of **2026-06**, and one of them was factually wrong.
