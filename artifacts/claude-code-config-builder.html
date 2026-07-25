@@ -47,10 +47,28 @@
   .fm b { color:#8a5b0b; }
   input[type=text] { width:100%; padding:8px 10px; border:1px solid var(--line); border-radius:6px; font-size:13px; font-family:inherit; color:var(--ink); background:white; }
   input[type=text].bad { border-color: var(--bad); background:#fff6f6; }
+  /* Amber = a required value not supplied yet. Distinct from .bad red, which means a value IS
+     present and is wrong. Absent is unfinished work, not an operator error. */
+  input[type=text].needed { border-color: var(--warn); background:#fffbf2; }
+  input[type=text].bad.needed { border-color: var(--bad); background:#fff6f6; }
+  input[type=checkbox].needed { outline:2px solid var(--warn); outline-offset:2px; }
+  /* Confirms the jump landed on the right control — the target is often one input among nineteen. */
+  .flash { animation: flash 1.2s ease-out; }
+  @keyframes flash { from { box-shadow:0 0 0 3px var(--warn); } to { box-shadow:0 0 0 3px transparent; } }
+  .gate li .goto { margin-left:7px; font-size:10.5px; font-weight:700; padding:1px 7px; border-radius:9px;
+    border:1px solid var(--bad); background:transparent; color:var(--bad); cursor:pointer; vertical-align:1px; }
+  .gate li .goto:hover { background:var(--bad); color:white; }
+  .gate li.warnrow .goto { border-color:var(--warn); color:#8a5b0b; }
+  .gate li.warnrow .goto:hover { background:var(--warn); color:white; }
   .fld { margin-bottom: 12px; }
   .fld label { display:block; font-weight:600; font-size:12.5px; margin-bottom:2px; }
   .fld .hint { font-size:11px; color:var(--muted); margin-bottom:5px; }
   .chk { display:flex; align-items:flex-start; gap:7px; margin-bottom:6px; font-size:12.5px; }
+  /* An author `display` beats the UA `[hidden] { display:none }` rule, so `.chk` silently defeated
+     the hidden attribute — #ack-row set hidden and rendered anyway. The acknowledgment was on
+     screen in every posture, took a click, and then un-ticked itself, because render() resets the
+     state from the attribute it was told to trust. Any future .chk using hidden had the same trap. */
+  .chk[hidden] { display:none; }
   .chk input { margin-top:3px; flex:0 0 auto; }
   .chk .cl { flex:1; }
   .chk .cl .cp { font-family:ui-monospace,SFMono-Regular,Menlo,monospace; font-size:11px; color:var(--muted); display:block; }
@@ -100,7 +118,7 @@
   .trace { font-size:11px; color:var(--muted); margin-top:8px; padding-top:8px; border-top:1px dashed var(--line); }
   footer { margin-top:34px; padding-top:15px; border-top:1px solid var(--line); font-size:12px; color:var(--muted); }
   footer a { color:var(--c1d); }
-  @media print { body { padding:0; } .opts, .tabs, .btn, details.adv { display:none; } pre.out { max-height:none; }
+  @media print { body { padding:0; } .opts, .tabs, .btn, details.adv, .gate li .goto { display:none; } pre.out { max-height:none; }
     /* A sticky, internally-scrolling rail would print as one clipped viewport-height box, and the
        capped gate would print a truncated blocker list — the one thing a printed bundle must carry. */
     .grid > .railcol, .grid > .railcol > .gate { position:static; max-height:none; overflow-y:visible; } }
@@ -118,6 +136,11 @@
     pre.out.md { background:#1d1813; color:var(--ink); }
     table.cov th, .pane .ph .path, .chip, .note code, .gate li code, .trace code { background:#2a231c; }
     .fm { background:#2a2213; }
+    /* Both marker fills carry a class, so they outrank the blanket input background above and
+       would paint a near-white field in dark mode. .bad already had this gap; fixing both here
+       rather than adding a second instance of it. */
+    input[type=text].bad, input[type=text].bad.needed { background:#2a1614; }
+    input[type=text].needed { background:#2a2213; }
   }
 </style>
 </head>
@@ -201,7 +224,9 @@
           <input type="text" id="f-uuid" placeholder="e.g. 3f2c1a8e-5b7d-4e9f-8a10-2c4d6e8f0a12">
         </div>
         <div class="fld">
-          <label>Login method <span style="color:var(--bad)">— required</span></label>
+          <!-- Not marked required: it has a default and can never block, so a red marker here was
+               diluting the ones that can. -->
+          <label>Login method <span style="color:var(--muted);font-weight:400">(defaults to <code>claudeai</code>)</span></label>
           <div class="hint">Restricted to the three values the config guide names. Verify accepted values in the settings docs before deploying.</div>
           <div class="opts" data-key="loginMethod"></div>
         </div>
@@ -625,6 +650,16 @@ const CONDITIONAL = [
   ["f-gateway","Gateway URL"], ["f-extraenv","Extra credential environment variables"],
   ["f-awsworkspace","ANTHROPIC_AWS_WORKSPACE_ID"], ["f-awsregion","AWS_REGION"]
 ];
+/* A jump is only offered when it can actually land. A target inside a COLLAPSED <details> still
+   counts as live — the handler opens the drawer on the way — but one whose posture has hidden it
+   does not, and rendering a Go there would be a button that visibly does nothing. */
+function gotoLive(sel){
+  if (!sel) return false;
+  const el = document.querySelector(sel);
+  if (!el) return false;
+  if (el.offsetParent !== null) return true;
+  return !!el.closest("details:not([open])");
+}
 function hiddenFilled(){
   return CONDITIONAL.filter(([id]) => {
     const el = document.getElementById(id);
@@ -919,7 +954,14 @@ function lint(o){
   const F = [];
   const p = o.permissions || {};
   const deny = p.deny || [], ask = p.ask || [], allow = p.allow || [];
-  const add = (sev, msg, rw) => F.push({ sev, msg, rw });
+  /* `to` is a SELECTOR for the control this finding is about, and `need` marks it as a required
+     value that is absent rather than present-and-wrong. Both travel with the finding rather than
+     living in a second list keyed by label, because labels are dynamic — the same field produces
+     "Organization UUID", "Organization UUID is not a valid UUID", and "Denied-domain entry is an IP
+     address or range: 10.0.0.0/8". Anything that string-matches a label back to a field breaks the
+     first time a message gains a value. `to` may be null: posture contradictions and the pasted-rule
+     precedence checks are about a combination, not a control, and render a finding with no jump. */
+  const add = (sev, msg, rw, to, need) => F.push({ sev, msg, rw, to: to || null, need: !!need });
 
   // 1. deny shadows a narrower allow or ask (first-match precedence, specificity irrelevant)
   const shadows = (d, other) => {
@@ -990,7 +1032,11 @@ function lint(o){
     add(sev, `${netShaped.length} Bash rule(s) are acting as your network control, with no sandbox <code>allowedDomains</code> behind them.`,
       S.ackNoOsLayer
         ? "Acknowledged as decision-layer-only. These rules are a speed bump, not a boundary — argument-constrained Bash rules miss options-before-URL, https, redirects, variable indirection, and extra spaces. Put a URL-validating PreToolUse hook or a network egress control outside Claude Code behind them."
-        : "Argument-constrained Bash rules are documented-fragile. Either enable a hardened sandbox with an egress allowlist, or tick the decision-layer-only acknowledgment under Sandbox posture to proceed deliberately.");
+        : "Argument-constrained Bash rules are documented-fragile. Either enable a hardened sandbox with an egress allowlist, or tick the decision-layer-only acknowledgment under Sandbox posture to proceed deliberately.",
+      // Two remedies, and which one is reachable depends on the posture: the acknowledgment row
+      // only exists on a decision-layer-only fleet. Pointing unconditionally at #f-ack sent the
+      // operator to a control that isn't on the page whenever the sandbox does run here.
+      decisionLayerOnly() ? "#f-ack" : "#f-egress");
   }
 
   // 7. a widening on one side undoing the restriction on the other
@@ -1002,10 +1048,10 @@ function lint(o){
     else if (o.sandbox.filesystem && o.sandbox.filesystem.disabled &&
         ((o.sandbox.credentials && o.sandbox.credentials.files) || (o.sandbox.filesystem.denyRead||[]).length))
       add("block", "<code>filesystem.disabled</code> is set while credential <b>file</b> protections are configured — those stop applying.",
-        "The filesystem layer enforces denyRead and credentials.files. Only credentials.envVars survives, because env scrubbing is independent of the filesystem layer.");
+        "The filesystem layer enforces denyRead and credentials.files. Only credentials.envVars survives, because env scrubbing is independent of the filesystem layer.", "#v-fsDisabled");
     if ((o.sandbox.excludedCommands||[]).some(c => NET_BINS.some(b => c.startsWith(b))))
       add("block", "An <code>excludedCommands</code> entry runs a network binary unsandboxed, undoing your egress allowlist.",
-        "Effective sandboxing needs both filesystem and network isolation; check that a widening on one side hasn't reopened the other.");
+        "Effective sandboxing needs both filesystem and network isolation; check that a widening on one side hasn't reopened the other.", "#f-excluded");
     if (o.sandbox.allowAppleEvents && S.sandbox === "hardened")
       add("warn", "<code>allowAppleEvents</code> removes code-execution isolation while the rest of the sandbox is hardened.",
         "Sandboxed commands can launch other applications unsandboxed, with no prompt.");
@@ -1016,10 +1062,10 @@ function lint(o){
                   ...((o.sandbox||{}).allowUnixSockets || []) ];
   if (socks.some(s => s.includes("docker.sock")))
     add("block", "<code>network.allowUnixSockets</code> includes <code>/var/run/docker.sock</code> — that effectively grants host access.",
-      "The Docker socket is a documented sandbox-bypass path. Note it is macOS-only: on Linux/WSL2 it is ignored, because the seccomp filter cannot inspect socket paths.");
+      "The Docker socket is a documented sandbox-bypass path. Note it is macOS-only: on Linux/WSL2 it is ignored, because the seccomp filter cannot inspect socket paths.", "#v-allowUnixSockets");
   if (((o.sandbox||{}).allowUnixSockets||[]).length)
     add("block", "<code>allowUnixSockets</code> is at the wrong nesting level — it belongs under <code>sandbox.network</code>.",
-      "At sandbox.allowUnixSockets it deploys as a silent no-op: the setting is read from sandbox.network.allowUnixSockets.");
+      "At sandbox.allowUnixSockets it deploys as a silent no-op: the setting is read from sandbox.network.allowUnixSockets.", "#v-allowUnixSockets");
 
   // 9. a ticked credential asset the sandbox does not cover — acknowledgment-gated, see check 6
   if (decisionLayerOnly()) {
@@ -1031,7 +1077,8 @@ function lint(o){
       `${n} credential asset(s) are protected only at the decision layer. ${why}, so any subprocess can still read them.`,
       S.ackNoOsLayer
         ? "Acknowledged. Read/Edit deny rules cover Claude's file tools and the recognized Bash file commands only — never arbitrary subprocess I/O. Compensate outside Claude Code (endpoint DLP, credential-store permissions, short-lived credentials)."
-        : "Read/Edit deny rules never reach arbitrary subprocess I/O. Enable the sandbox, or tick the decision-layer-only acknowledgment under Sandbox posture to proceed deliberately.");
+        : "Read/Edit deny rules never reach arbitrary subprocess I/O. Enable the sandbox, or tick the decision-layer-only acknowledgment under Sandbox posture to proceed deliberately.",
+      "#f-ack");
   } else {
     const envAssets = activeAssets().filter(a => (a.envVars||[]).length);
     // The env scrub does NOT count here: it strips Anthropic and cloud-provider credentials
@@ -1039,18 +1086,18 @@ function lint(o){
     const covered = !!(o.sandbox && o.sandbox.credentials && (o.sandbox.credentials.envVars||[]).length);
     if (envAssets.length && !covered) add("block",
       "Environment-variable credentials are ticked but nothing unsets them for sandboxed commands.",
-      "Sandboxed Bash inherits the parent environment including credentials. Use sandbox.credentials.envVars — CLAUDE_CODE_SUBPROCESS_ENV_SCRUB does NOT cover these, it strips only Anthropic and cloud-provider credentials.");
+      "Sandboxed Bash inherits the parent environment including credentials. Use sandbox.credentials.envVars — CLAUDE_CODE_SUBPROCESS_ENV_SCRUB does NOT cover these, it strips only Anthropic and cloud-provider credentials.", "#f-extraenv");
   }
 
   /* ------- required-value blockers (fail-closed export gate) ------- */
   // 10. a lock flag with no allowlist behind it (the recurring convention error)
   const LOCKS = [
-    ["allowManagedMcpServersOnly","allowedMcpServers","Unset means <b>all servers allowed</b> — not none. The flag alone restricts nothing."],
-    ["enforceAvailableModels","availableModels","Documented as having no effect when <code>availableModels</code> is unset or empty."]
+    ["allowManagedMcpServersOnly","allowedMcpServers","Unset means <b>all servers allowed</b> — not none. The flag alone restricts nothing.","#f-mcp"],
+    ["enforceAvailableModels","availableModels","Documented as having no effect when <code>availableModels</code> is unset or empty.","#f-models"]
   ];
-  LOCKS.forEach(([flag, list, why]) => {
+  LOCKS.forEach(([flag, list, why, to]) => {
     if (o[flag] && !(Array.isArray(o[list]) ? true : o[list]))
-      add("block", `<code>${flag}</code> is set with no <code>${list}</code> — the gate is inert.`, why);
+      add("block", `<code>${flag}</code> is set with no <code>${list}</code> — the gate is inert.`, why, to);
   });
 
   /* ------- checks 11–13: the egress layer ------- */
@@ -1062,7 +1109,7 @@ function lint(o){
   // have been a gate that only catches the operator who was being specific about it.
   if (net.allowAllUnixSockets)
     add("block", "<code>network.allowAllUnixSockets</code> admits <b>every</b> Unix socket, including <code>/var/run/docker.sock</code> — the same host access check 8 blocks, without the path scope.",
-      "It cannot be narrowed to a path, which is why this one blocks outright rather than offering an acknowledgment the way the decision-layer gates do: unlike those, there IS a narrower configuration available, so the block doesn't force a wrong answer. If a single tool needs a socket, put that binary in <code>excludedCommands</code> instead — it runs unsandboxed, which is a documented and far narrower hole than admitting every socket on the machine — and record it in the checklist.");
+      "It cannot be narrowed to a path, which is why this one blocks outright rather than offering an acknowledgment the way the decision-layer gates do: unlike those, there IS a narrower configuration available, so the block doesn't force a wrong answer. If a single tool needs a socket, put that binary in <code>excludedCommands</code> instead — it runs unsandboxed, which is a documented and far narrower hole than admitting every socket on the machine — and record it in the checklist.", "#v-allowAllUnixSockets");
 
   // 12. the prompt-vs-block finding: an allowlist without the lock flag is advisory, because the
   // developer is still the gate at the approval prompt. Not a block — it is the documented
@@ -1080,7 +1127,7 @@ function lint(o){
   const weakNet = !!((o.sandbox||{}).enableWeakerNetworkIsolation);
   if (weakNet && !proxyOwn)
     add("block", "<code>enableWeakerNetworkIsolation</code> is set with no <code>httpProxyPort</code> / <code>socksProxyPort</code> — you are taking its cost with none of its benefit.",
-      "Its documented purpose is letting Go-based tools verify TLS behind a MITM proxy with a custom CA. The settings table's own words: it reduces security by opening a potential data exfiltration path. Untick it, or set the proxy port it exists to support.");
+      "Its documented purpose is letting Go-based tools verify TLS behind a MITM proxy with a custom CA. The settings table's own words: it reduces security by opening a potential data exfiltration path. Untick it, or set the proxy port it exists to support.", "#v-weakNetIso");
   // Fire wherever macOS can be present — which is BOTH "unix" (labelled "macOS / Linux / WSL2
   // only", the default) and "mixed". The old `!== "unix"` test suppressed this exactly where
   // macOS lives and fired it on native Windows, where the sandbox doesn't exist at all: the same
@@ -1102,7 +1149,8 @@ function lint(o){
       `Your network denies cover <b>Bash only</b>, and no <code>PowerShell(…)</code> rule is emitted${win ? " on a fleet that includes Windows" : ""}.`,
       win
         ? "The PowerShell tool is a second shell with its own rule namespace, AUTO-enabled on Windows without Git Bash — so an org that never opted in can have it. That is also the fleet with no sandbox, which makes permission rules the whole perimeter. Tick \"Mirror shell rules into PowerShell(…)\" under Advanced, or set CLAUDE_CODE_USE_POWERSHELL_TOOL to 0 — noting the flag's effect on an auto-enabled machine is undocumented, so mirroring is the posture that doesn't depend on it."
-        : "On macOS/Linux/WSL the PowerShell tool is opt-in, so this is a gap only if someone enables it (or a hook or skill sets shell: powershell, which works regardless of the tool flag). Mirroring the rules costs nothing and closes it.");
+        : "On macOS/Linux/WSL the PowerShell tool is opt-in, so this is a gap only if someone enables it (or a hook or skill sets shell: powershell, which works regardless of the tool flag). Mirroring the rules costs nothing and closes it.",
+      "#v-psMirror");
   }
 
   // 15. TLS interception declared with no root to trust it. Advisory, not blocking, and the reason
@@ -1118,7 +1166,7 @@ function lint(o){
   // The org name reaches four emitted deliverables — announcements, the managed CLAUDE.md, the
   // org-policy stub and the checklist. It used to ship prefilled with the companion doc's example
   // company, so a bundle could read Ready with someone else's name printed through all four.
-  if (!val("f-org")) req.push(["Organization name", "It is printed into the company announcement, the managed CLAUDE.md, the org-policy stub and the operator checklist. Left blank those read as a template rather than your policy — and a placeholder would have been worse, since it exports looking finished."]);
+  if (!val("f-org")) req.push(["Organization name", "It is printed into the company announcement, the managed CLAUDE.md, the org-policy stub and the operator checklist. Left blank those read as a template rather than your policy — and a placeholder would have been worse, since it exports looking finished.", "#f-org", true]);
   // Strict UUID shape. The old /^[0-9a-fA-F-]{8,}$/ accepted "deadbeef" and "--------" while
   // the page promises a malformed value blocks every login — so the operator inferred a check
   // that wasn't happening. Validating PRESENCE is not validating VALIDITY.
@@ -1126,20 +1174,20 @@ function lint(o){
   // Gateway sign-in doesn't authenticate against an Anthropic org, so the UUID is irrelevant
   // there — demanding it was a blocking gate asking for a documented-inert value.
   if (S.loginMethod === "gateway") {
-    if (!val("f-gateway")) req.push(["Gateway URL", "forceLoginGatewayUrl is omitted, so the gateway URL is neither pre-filled nor locked. Restrict who can reach it at your gateway's identity provider — forceLoginOrgUUID does not apply to gateway sign-in."]);
-  } else if (!val("f-uuid")) req.push(["Organization UUID", "forceLoginOrgUUID is omitted, so nothing stops an engineer signing into a personal account and taking work with them."]);
-  else if (!UUID_RE.test(val("f-uuid"))) req.push(["Organization UUID is not a valid UUID", "Expected 8-4-4-4-12 hex (e.g. 3f2c1a8e-5b7d-4e9f-8a10-2c4d6e8f0a12). A malformed value fails closed and blocks EVERY login on the fleet — a truncated paste is the usual cause."]);
-  if (S.lockdown !== "baseline" && mcpList() === null) req.push(["Allowed MCP servers", "Without it the MCP lock flag is omitted entirely — because emitting the flag with no allowlist would mean 'all servers allowed', the opposite of the lockdown you selected. Enter 'none' for a zero-server allowlist."]);
-  if (S.lockdown === "maximum" && !listOf("f-models").length) req.push(["Allowed models", "enforceAvailableModels has no effect without a non-empty availableModels array, so model restriction would be silently absent at your strictest tier."]);
+    if (!val("f-gateway")) req.push(["Gateway URL", "forceLoginGatewayUrl is omitted, so the gateway URL is neither pre-filled nor locked. Restrict who can reach it at your gateway's identity provider — forceLoginOrgUUID does not apply to gateway sign-in.", "#f-gateway", true]);
+  } else if (!val("f-uuid")) req.push(["Organization UUID", "forceLoginOrgUUID is omitted, so nothing stops an engineer signing into a personal account and taking work with them.", "#f-uuid", true]);
+  else if (!UUID_RE.test(val("f-uuid"))) req.push(["Organization UUID is not a valid UUID", "Expected 8-4-4-4-12 hex (e.g. 3f2c1a8e-5b7d-4e9f-8a10-2c4d6e8f0a12). A malformed value fails closed and blocks EVERY login on the fleet — a truncated paste is the usual cause.", "#f-uuid"]);
+  if (S.lockdown !== "baseline" && mcpList() === null) req.push(["Allowed MCP servers", "Without it the MCP lock flag is omitted entirely — because emitting the flag with no allowlist would mean 'all servers allowed', the opposite of the lockdown you selected. Enter 'none' for a zero-server allowlist.", "#f-mcp", true]);
+  if (S.lockdown === "maximum" && !listOf("f-models").length) req.push(["Allowed models", "enforceAvailableModels has no effect without a non-empty availableModels array, so model restriction would be silently absent at your strictest tier.", "#f-models", true]);
   // The OTLP pair is one either/or check. An earlier revision inserted an unrelated provider
   // blocker BETWEEN this `if` and its `else if`, which silently rewired both branches: an empty
   // endpoint reported twice, and the URL-shape check was skipped whenever the provider blocker
   // fired. Validation must never branch on an unrelated field — keep the pair adjacent.
-  if (S.telemetry !== "off" && !val("f-otlp")) req.push(["OTLP endpoint", "Telemetry is enabled with nowhere to send it — the exporter is configured and silently drops."]);
-  else if (S.telemetry !== "off" && !/^https?:\/\/[^\s]+$/i.test(val("f-otlp"))) req.push(["OTLP endpoint is not a URL", "Expected http(s)://host:port. An unparseable endpoint drops telemetry silently."]);
+  if (S.telemetry !== "off" && !val("f-otlp")) req.push(["OTLP endpoint", "Telemetry is enabled with nowhere to send it — the exporter is configured and silently drops.", "#f-otlp", true]);
+  else if (S.telemetry !== "off" && !/^https?:\/\/[^\s]+$/i.test(val("f-otlp"))) req.push(["OTLP endpoint is not a URL", "Expected http(s)://host:port. An unparseable endpoint drops telemetry silently.", "#f-otlp"]);
   // Documented as required on this path, so an omitted value is a non-starting client, not a
   // weaker one. Gated rather than placeholdered, like every other required value here.
-  if (S.provider === "platformaws" && !val("f-awsworkspace")) req.push(["Claude Platform on AWS workspace ID", "ANTHROPIC_AWS_WORKSPACE_ID is documented as required on this routing path. Emitting CLAUDE_CODE_USE_ANTHROPIC_AWS without it ships a fleet that routes nowhere."]);
+  if (S.provider === "platformaws" && !val("f-awsworkspace")) req.push(["Claude Platform on AWS workspace ID", "ANTHROPIC_AWS_WORKSPACE_ID is documented as required on this routing path. Emitting CLAUDE_CODE_USE_ANTHROPIC_AWS without it ships a fleet that routes nowhere.", "#f-awsworkspace", true]);
   // The one combination where the delivery mechanism and the routing choice cancel each other out.
   // Documented plainly and easy to miss: "User configures a third-party model provider | Server-
   // managed settings are bypassed. This includes setting CLAUDE_CODE_USE_BEDROCK,
@@ -1152,7 +1200,8 @@ function lint(o){
   // block doesn't force a wrong answer.
   if (S.delivery === "server" && ["bedrock","vertex","foundry","platformaws"].includes(S.provider))
     req.push(["Delivery mechanism vs model routing — these cancel out",
-      "Configuring a third-party model provider BYPASSES server-managed settings entirely, and this bundle sets the provider flag that triggers it. Nothing in it would reach the fleet. Deliver by MDM plist, registry, file, or drop-in fragment instead — or route through the Anthropic API / a claude.ai subscription if server-managed delivery is the requirement."]);
+      "Configuring a third-party model provider BYPASSES server-managed settings entirely, and this bundle sets the provider flag that triggers it. Nothing in it would reach the fleet. Deliver by MDM plist, registry, file, or drop-in fragment instead — or route through the Anthropic API / a claude.ai subscription if server-managed delivery is the requirement.",
+      "[data-key=delivery]"]);
   // The proxy URL was the one new free-text field with no shape check, and the field's own hint says
   // SOCKS is unsupported on this path — so it would happily export socks5://… , a value the page had
   // just told the operator cannot work. Every other fleet-breaking field here is validated; this one
@@ -1161,15 +1210,15 @@ function lint(o){
   if (px && !/^https?:\/\/[^\s]+$/i.test(px))
     req.push(["Corporate proxy URL", "Expected http:// or https://. " + (/^socks/i.test(px)
       ? "SOCKS is NOT supported on the client-level proxy path — only the sandbox's own proxy takes SOCKS5, and that is the separate field in the sandbox card."
-      : "A value without an http(s) scheme is exported verbatim into HTTPS_PROXY and HTTP_PROXY, where it silently fails to route.")]);
+      : "A value without an http(s) scheme is exported verbatim into HTTPS_PROXY and HTTP_PROXY, where it silently fails to route."), "#f-httpsproxy"]);
   // Env-var NAMES only. This field sits directly under the extra-paths field, so pasting a path here
   // is the likely slip — and the result is an inert credentials.envVars entry, which is the
   // does-not-exist-so-enforces-nothing trap in env-var form, committed by the field added to avoid it.
   const badEnvNames = listOf("f-extraenv").filter(v => !/^[A-Za-z_][A-Za-z0-9_]*$/.test(v));
   if (badEnvNames.length)
-    req.push([`Extra credential env vars — ${badEnvNames.length} invalid name(s)`, "These are variable NAMES, not paths or assignments: " + badEnvNames.map(v => `"${v}"`).join(", ") + ". An entry that isn't a real variable name matches nothing and enforces nothing. Paths belong in the extra denyRead field below."]);
-  if (S.sandbox === "hardened" && sandboxRunsHere() && !egressList().length) req.push(["Sandbox egress allowlist", "A hardened sandbox with an empty allowedDomains admits nothing — every package install breaks."]);
-  if (S.lockdown !== "baseline" && !(val("f-mkt-src") && val("f-mkt-repo"))) req.push(["Plugin marketplace source + repo", "strictKnownMarketplaces is omitted, so the marketplace allowlist you selected is not actually enforced."]);
+    req.push([`Extra credential env vars — ${badEnvNames.length} invalid name(s)`, "These are variable NAMES, not paths or assignments: " + badEnvNames.map(v => `"${v}"`).join(", ") + ". An entry that isn't a real variable name matches nothing and enforces nothing. Paths belong in the extra denyRead field below.", "#f-extraenv"]);
+  if (S.sandbox === "hardened" && sandboxRunsHere() && !egressList().length) req.push(["Sandbox egress allowlist", "A hardened sandbox with an empty allowedDomains admits nothing — every package install breaks.", "#f-egress", true]);
+  if (S.lockdown !== "baseline" && !(val("f-mkt-src") && val("f-mkt-repo"))) req.push(["Plugin marketplace source + repo", "strictKnownMarketplaces is omitted, so the marketplace allowlist you selected is not actually enforced.", val("f-mkt-src") ? "#f-mkt-repo" : "#f-mkt-src", true]);
   // Per-entry host validation. A malformed entry has the same blast radius as an empty list
   // (every install breaks), so it gets the same treatment rather than sailing through.
   // An address-or-range-shaped entry is reported FIRST and with its own reason, in every list.
@@ -1177,17 +1226,17 @@ function lint(o){
   // address, which has no slash, and it used to fall through to the generic "no scheme, no path"
   // text — a message that reads as a typo complaint about an entry that may silently do nothing.
   [["f-egress", egressList(), "Sandbox egress"], ["f-denied", deniedList(), "Denied-domain"],
-   ["f-webfetch", webfetchList(), "WebFetch domain"]].forEach(([, list, label]) => {
+   ["f-webfetch", webfetchList(), "WebFetch domain"]].forEach(([id, list, label]) => {
     const ips = ipShaped(list);
     const bad = badHosts(list).filter(h => !IPISH.test(h));
-    if (ips.length) req.push([`${label} entr${ips.length>1?"ies":"y"} ${ips.length>1?"are":"is"} an IP address or range: ${esc(ips.join(", "))}`, RANGE_WHY]);
+    if (ips.length) req.push([`${label} entr${ips.length>1?"ies":"y"} ${ips.length>1?"are":"is"} an IP address or range: ${esc(ips.join(", "))}`, RANGE_WHY, "#" + id]);
     if (bad.length) req.push([`${label} entr${bad.length>1?"ies":"y"} not a hostname: ${esc(bad.join(", "))}`,
-      "Hostnames only — no scheme, no path, no semicolons (github.com, not https://github.com/). A leading *. wildcard is allowed. Only commas separate entries, so a stray semicolon becomes part of the hostname and silently matches nothing."]);
+      "Hostnames only — no scheme, no path, no semicolons (github.com, not https://github.com/). A leading *. wildcard is allowed. Only commas separate entries, so a stray semicolon becomes part of the hostname and silently matches nothing.", "#" + id]);
   });
-  ["f-httpproxy","f-socksproxy"].forEach(id => { if (badPort(id)) req.push([`${id === "f-httpproxy" ? "httpProxyPort" : "socksProxyPort"} is not a port`, "Expected 1–65535. An unparseable port is omitted rather than emitted, which would leave the sandbox on its built-in proxy while your checklist says otherwise."]); });
+  ["f-httpproxy","f-socksproxy"].forEach(id => { if (badPort(id)) req.push([`${id === "f-httpproxy" ? "httpProxyPort" : "socksProxyPort"} is not a port`, "Expected 1–65535. An unparseable port is omitted rather than emitted, which would leave the sandbox on its built-in proxy while your checklist says otherwise.", "#" + id]); });
   const badRules = extraRules().filter(r => r.kind === "bad");
-  if (badRules.length) req.push([`${badRules.length} pasted rule line(s) unparseable`, "Each line needs a deny: / ask: / allow: prefix. Unprefixed lines are NOT silently dropped — they block, so a typo can't quietly omit a rule you meant to enforce."]);
-  req.forEach(([k, why]) => add("block", `Missing or invalid: <b>${k}</b>`, why));
+  if (badRules.length) req.push([`${badRules.length} pasted rule line(s) unparseable`, "Each line needs a deny: / ask: / allow: prefix. Unprefixed lines are NOT silently dropped — they block, so a typo can't quietly omit a rule you meant to enforce.", "#f-extrarules"]);
+  req.forEach(([k, why, to, need]) => add("block", `Missing or invalid: <b>${k}</b>`, why, to, need));
 
   /* ------- contradiction strip ------- */
   // OS scope, not delivery mechanism, is what determines whether the sandbox runs. Keying this
@@ -1712,7 +1761,11 @@ function render(){
   const F = lint(o);
   const blocked = F.filter(f => f.sev === "block");
 
-  // Field-level invalid marking, so the operator sees WHICH input is wrong, not just a list.
+  // Field-level marking, in TWO states, so the operator sees WHICH input is wrong rather than only
+  // a list. `.bad` (red) = a value is present and malformed. `.needed` (amber) = a required value
+  // is absent. They are deliberately different colours: red on seven fields at first paint would
+  // reprise the "page opens as a failure verdict" problem, and absent is not an error the operator
+  // has made yet — it is work they have not done.
   const UUID_RE = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
   const mark = (id, bad) => document.getElementById(id).classList.toggle("bad", bad);
   mark("f-uuid", !!val("f-uuid") && !UUID_RE.test(val("f-uuid")));
@@ -1722,6 +1775,18 @@ function render(){
   mark("f-socksproxy", badPort("f-socksproxy"));
   mark("f-webfetch", badHosts(webfetchList()).length > 0);
   mark("f-otlp", S.telemetry !== "off" && !!val("f-otlp") && !/^https?:\/\/[^\s]+$/i.test(val("f-otlp")));
+  // The amber pass is derived from the findings themselves rather than a second hand-written list.
+  // Every mark above is guarded by `!!val(id) &&`, i.e. present-and-wrong — which meant that in the
+  // state EVERY operator starts in, all values missing, not one field on the page carried a mark
+  // while the comment above claimed otherwise. Reading `F` means a blocker added later cannot ship
+  // without its mark: there is no second list to forget to update.
+  document.querySelectorAll(".needed").forEach(el => el.classList.remove("needed"));
+  F.filter(f => f.need && f.sev === "block" && f.to).forEach(f => {
+    const el = document.querySelector(f.to);
+    // A hidden field is not the operator's outstanding work — post-C2 val() reads it as empty, so
+    // without this every conditional field the posture has hidden would light up amber.
+    if (el && el.offsetParent !== null) el.classList.add("needed");
+  });
 
   // gate
   const g = document.getElementById("gate");
@@ -1738,7 +1803,12 @@ function render(){
       // the least readable part of the most important sentence. INVARIANT that makes this safe:
       // reason strings are STATIC literals. Anything interpolated from operator input belongs in
       // the headline (f.msg), where every value already goes through esc().
-      `<li class="${f.sev==="warn"?"warnrow":""}">${f.sev==="warn"?"<b>Warning — </b>":""}${f.msg}<span class="rw">${f.rw}</span></li>`).join("") + "</ul>" : "");
+      // data-goto carries a SELECTOR authored in lint(), never operator input, so it needs no
+      // escaping pass — and it must stay that way. Interpolating a typed value into an attribute
+      // here would route user text around the esc() convention the invariant above depends on.
+      `<li class="${f.sev==="warn"?"warnrow":""}">${f.sev==="warn"?"<b>Warning — </b>":""}${f.msg}` +
+      (gotoLive(f.to) ? `<button class="goto" data-goto="${f.to}">Go</button>` : "") +
+      `<span class="rw">${f.rw}</span></li>`).join("") + "</ul>" : "");
 
   renderCov(o);
 
@@ -1813,6 +1883,27 @@ function renderLists(){
 
 /* ---------------- events ---------------- */
 document.addEventListener("click", e => {
+  // Blocker → control. Checked BEFORE the posture handler: a Go button lives inside the gate and
+  // carries no data-k, but ordering this first keeps the two from ever competing for a click.
+  const gt = e.target.closest("button[data-goto]");
+  if (gt) {
+    const el = document.querySelector(gt.dataset.goto);
+    if (el) {
+      // Two blockers target checkboxes inside a COLLAPSED <details>, and the blocker text never
+      // says it is collapsed — scrolling to a shut drawer lands the operator on nothing. Walk up
+      // and open every ancestor drawer first. scrollIntoView on a display:none element is a no-op,
+      // so this has to happen before the scroll, not after.
+      let p = el.closest("details");
+      while (p) { p.open = true; p = p.parentElement ? p.parentElement.closest("details") : null; }
+      el.scrollIntoView({ behavior: "smooth", block: "center" });
+      // preventScroll because focus() would otherwise fight the smooth scroll and land instant.
+      // Only form controls take focus — some targets are a posture button-group div.
+      if (/^(INPUT|TEXTAREA|SELECT)$/.test(el.tagName)) el.focus({ preventScroll: true });
+      el.classList.add("flash");
+      setTimeout(() => el.classList.remove("flash"), 1200);
+    }
+    return;
+  }
   const b = e.target.closest("button[data-k]");
   if (b) { S[b.dataset.k] = b.dataset.v; render(); return; }
   const t = e.target.closest("button[data-tab]");
