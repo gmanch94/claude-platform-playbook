@@ -1,10 +1,10 @@
 # Claude security layers — which one do you actually turn on?
 
-Anthropic ships **five** distinct code-security layers; a sixth — your own CI scanners — sits under them and isn't going away. Two further controls get called "Claude security" in the same breath and are a different axis entirely. The five differ by plan, billing model, what they scan, which repo hosts they reach, and whether they work at all under Zero Data Retention. This artifact is the chooser.
+Anthropic ships **five** distinct code-security layers; a sixth — your own CI scanners — sits under them and isn't going away. **Three** further controls sit outside that stack — two get called "Claude security" in the same breath and are a different axis entirely, and one (the model-level cyber classifiers) sits *underneath* every layer and sets the ceiling on what any of them can do. The five differ by plan, billing model, what they scan, which repo hosts they reach, and whether they work at all under Zero Data Retention. This artifact is the chooser.
 
 Visual companion: [claude-security-workflows.html](claude-security-workflows.html) — the stack at a glance plus one workflow diagram per layer.
 
-**Sourcing:** every mechanic `[H]` against `code.claude.com` docs, live-fetched **2026-07-23**. Dates and press figures graded inline.
+**Sourcing:** every mechanic `[H]` against `code.claude.com` docs, live-fetched **2026-07-23** — plus the model-level cyber safeguards in §9, `[H]` against the [Claude Opus 5 System Card](https://www.anthropic.com/claude-opus-5-system-card), **2026-07-24**. Dates and press figures graded inline.
 
 ---
 
@@ -212,9 +212,9 @@ Keep them. Claude reasons about *your* code; it does not replace language-specif
 
 ---
 
-## 9. Adjacent — different axis, often confused
+## 9. Adjacent and underneath — different axes, often confused
 
-Two more things get filed under "Claude security" that are not code-scanning layers:
+Three things sit outside the six layers. Two get filed under "Claude security" without being code-scanning layers at all; the third sits *beneath* the whole stack and bounds what every layer can do:
 
 **Runtime containment (Claude Code).** The sandboxed Bash tool (`/sandbox`) gives filesystem and network isolation; the working-directory boundary limits writes to the start folder and its children; `denyRead` rules restrict read-only Bash reach when sandboxing is on; Accept Edits mode auto-approves a fixed set of filesystem commands `[H]`. This constrains *what the agent can do*, not *what the code contains* — a different question from every layer above. Full treatment: [agentic-threat-model.md](agentic-threat-model.md) and [claude-code-enterprise-config.md](claude-code-enterprise-config.md).
 
