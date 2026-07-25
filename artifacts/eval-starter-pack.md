@@ -18,6 +18,8 @@ If you ship even half of these in CI, you defuse the most common scaling failure
 4. **Block deploys on critical evals; advisory on everything else.** Trying to make every eval blocking creates eval-bypass culture. See "Blocking vs advisory" below.
 5. **Run cheaply.** Use [Batch API](https://docs.claude.com/en/docs/build-with-claude/batch-processing) (50% off) for nightly full runs and [Code execution tool](https://docs.claude.com/en/docs/agents-and-tools/code-execution) to host the runner if you don't want to maintain infrastructure. A full 500-example eval suite on Sonnet 5 with caching runs under $5 in batch mode (same $3/$15 standard pricing as 4.6).
 
+> **Pin the model — and check whether fallbacks are on (new 2026-07-24).** An eval result describes *the model that served the request*. Anthropic's **automatic fallbacks** (beta) let a request the safety classifiers flag on Opus 5 / Fable 5 route to a different model instead of returning blocked ([`../docs/feature-inventory.md`](../docs/feature-inventory.md)). That is useful in production and **corrosive in an evalset**: a run where some requests silently answered from a different model produces a pass rate that belongs to no single model, and the refusal/adversarial suites below are exactly the ones whose inputs trip classifiers most. **Run evals with fallbacks off, or record the served model per example and report per-model.** *Failure mode if ignored:* an eval goes green, the certified model never ran the hard cases, and the regression you built the suite to catch ships anyway.
+
 Each template below follows the same structure:
 
 - **Catches** — the specific regression this eval detects

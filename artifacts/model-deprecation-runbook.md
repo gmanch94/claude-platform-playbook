@@ -27,7 +27,7 @@ You cannot run this runbook well from a cold start. Four things must already be 
 |---|---|---|
 | Deprecation notice email to org admins | Event | Platform owner (label mapping to the [`operating-model-guide.md`](operating-model-guide.md) RACI cast is under the protocol below) |
 | [Model deprecations docs page](https://platform.claude.com/docs/en/about-claude/model-deprecations) | Monthly, alongside the feature-inventory refresh ritual this repo runs on itself | Platform owner |
-| New-model launches (a successor appearing often precedes the predecessor's deprecation) | Monthly | Architect |
+| New-model launches (a successor appearing often precedes the predecessor's deprecation) | Monthly | Architect — **a launch is not a deprecation notice**, so this protocol runs in *voluntary-upgrade* mode: work steps 2–5 (parity check, eval cert, cost re-forecast, staged cutover) without the retirement-date pressure, and skip step 6 while the incumbent stays available. Live case: **Opus 5 launched 2026-07-24 and Opus 4.8 was *not* deprecated** — the upgrade is worth running on its merits (same price, thinking-default change), not because a clock started |
 | Hyperscaler catalogs (Bedrock / Vertex / Foundry) | Monthly if you procure there | Platform owner — versions lag in **both** directions: successors arrive late, and retirement dates can differ from first-party |
 
 ---

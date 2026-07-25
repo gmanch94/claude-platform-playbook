@@ -80,7 +80,7 @@
         <tr>
           <th>Pattern  ↓     Feature →</th>
           <th data-tip="Cache the static prefix of your prompt (system + tools + retrieved context) so reads cost 10% of fresh input. Highest-leverage cost lever.">Prompt caching</th>
-          <th data-tip="Model produces visible reasoning before the final answer. Higher accuracy on hard problems; doubles output tokens.">Extended thinking</th>
+          <th data-tip="Model reasons before the final answer. Higher accuracy on hard problems; thinking tokens bill as output. NOTE: on Opus 5 (2026-07-24) thinking is ON by default — for Opus rows treat this as a depth dial via the effort parameter, not an opt-in.">Extended thinking</th>
           <th data-tip="Model can call functions you define (DB lookups, API calls, calculators). Foundation for any non-chat workflow.">Tool use</th>
           <th data-tip="Computer use 2.0 — model drives a browser/desktop via screenshots + actions. Web automation, legacy app integration.">Computer use 2.0</th>
           <th data-tip="Upload PDFs/CSVs/images directly to the model without chunking. Ideal for document-grounded patterns.">Files API</th>

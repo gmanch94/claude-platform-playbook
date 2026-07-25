@@ -36,7 +36,7 @@ Count: X OK, Y stale.
 Canonical pins (from CLAUDE.md): **Opus 5 / Sonnet 5 / Haiku 4.5** — the current deployable (GA) tier.
 
 Grep across all artifacts for any occurrence of:
-- `Opus 4\.\d` — flag if not `4.8`
+- `Opus 4\.\d` — flag unless the hit is an explicit historical / version-history / price-comparison reference (the repo deliberately preserves several — context-window and cache-floor history, the Azure GA row, "same price as Opus 4.8"). Current-state mentions should read `Opus 5`
 - `Sonnet 4\.\d` — flag unless it's an explicit "(prev)" / historical reference to Sonnet 4.6; current-state mentions should read `Sonnet 5`
 - `Haiku 4\.\d` — flag if not `4.5`
 - `claude-opus-[0-9]`, `claude-sonnet-[0-9]`, `claude-haiku-[0-9]` — report exact strings found
