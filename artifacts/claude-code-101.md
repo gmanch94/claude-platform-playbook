@@ -169,6 +169,9 @@ Craft rules that actually matter:
 - **`@path` imports load at launch and cost full context.** Splitting a big `CLAUDE.md` into imports *organizes* it but does **not** save tokens — the imported files are expanded in every session. Max depth 4 hops. To mention a path without importing it, wrap in backticks.
 - **Project-root `CLAUDE.md` survives `/compact`** (re-read from disk and re-injected). Nested subdirectory `CLAUDE.md` files do **not** auto-reinject — so if an instruction "disappeared after compact," it lived only in conversation or in a nested file. Put anything load-bearing in the project root.
 - **Write specifics, not vibes.** "Run `npm test` before committing" beats "test your changes." "API handlers live in `src/api/handlers/`" beats "keep files organized."
+- **Spend the lines on gotchas, not on what Claude can already see.** Directory layouts, dependency lists, and architecture overviews are derivable from the repo in a few tool calls — they cost context every session and teach nothing. Pitfalls, rationale, and conventions that differ from tool defaults are the opposite: unguessable, and worth every line. "Types live in one monolithic file and nowhere else" earns its place; "we use TypeScript and React" does not.
+- **`/doctor` will do this trim for you** (Claude Code **v2.1.206+**). It proposes cuts on a checked-in `CLAUDE.md` along exactly that line — drop the derivable, keep the pitfalls, rationale, and conventions. Treat its output as a proposal, not a patch.
+- **Prefer progressive disclosure to one long file.** The instinct to make `CLAUDE.md` the central repository of everything the team knows — on the theory that Claude won't find it otherwise — is the common failure. It will find it: point at a skill or a path-scoped rule and it loads when relevant. If you have a verification ritual, make it a verification skill and reference it in one line.
 - Fast-add with the `#` prefix mid-session; browse/edit with `/memory`; scaffold a starter with `/init`.
 
 **The critical distinction (carry it to the enterprise guide): `CLAUDE.md` *guides* behavior — it is not an enforcement layer.** If something must be *blocked*, it belongs in `permissions.deny`, not a polite instruction.
@@ -211,7 +214,7 @@ The fix is ordinary version control over the authored files. What makes it less 
 
 Type `/` to see all; the full reference is [docs.claude.com/en/docs/claude-code/commands](https://docs.claude.com/en/docs/claude-code/commands). The high-value subset:
 
-- **Set up a repo:** `/init` (scaffold CLAUDE.md) · `/memory` · `/mcp` · `/permissions`
+- **Set up a repo:** `/init` (scaffold CLAUDE.md) · `/doctor` (setup checkup — and, on **v2.1.206+**, proposes trims for a checked-in `CLAUDE.md` and estimates what your skill listing is costing in context) · `/memory` · `/mcp` · `/permissions`
 - **During a task:** `/model` · `/effort` · `/plan` · `/context` · `/compact` · `/btw` (a quick aside that *doesn't* pollute conversation history)
 - **Parallel work:** `/tasks` (what's running) · `/background` (detach the session to keep running) · `/batch` (decompose a codebase-wide change into per-[worktree](https://docs.claude.com/en/docs/claude-code/worktrees) units)
 - **Before you ship:** `/diff` · `/code-review` (correctness pass on the diff; `--fix` applies findings; `ultra` runs the deeper cloud review) · `/review` (fast read-only pass on a GitHub PR) · `/security-review` · `/claude-security` (the deep-scan plugin, once installed). Which of these to reach for, and what each costs: [`claude-security-layers.md`](claude-security-layers.md)
@@ -227,6 +230,9 @@ Type `/` to see all; the full reference is [docs.claude.com/en/docs/claude-code/
 - **Custom slash command:** drop a markdown file in `.claude/commands/`. `deploy.md` → `/deploy`. Reference `$ARGUMENTS` for trailing text. Great for repo-specific routines.
 - **Skills:** richer instruction packs in `.claude/skills/<name>/SKILL.md` (a description + body + optional helper files). Claude loads them when relevant. Add `context: fork` to run a skill in an isolated subagent (the skill body becomes the subagent's prompt). Skills chain — `/skill-a /skill-b do X` loads up to six and passes the trailing text to each.
 - Package sets of commands/skills/hooks/MCP as **plugins** from a marketplace.
+- **Hide a skill without editing it.** `skillOverrides` (**v2.1.129+**) sets per-skill visibility — `on`, `name-only`, `user-invocable-only`, `off` — which matters for a skill checked into a shared repo that you don't own. `/skills` writes it for you into `.claude/settings.local.json`. Plugin skills are managed through `/plugin` instead.
+
+**Write skills as guides, not rulebooks.** A skill's job is to let Claude find *your* knowledge when it's relevant — your review gates, your deploy ritual, the thing your team does differently. Over-constraining it is the common mistake, and it costs twice: an over-specified skill both narrows how the model approaches the problem and competes with your `CLAUDE.md` and the user's own prompt for authority. Reserve hard rules for the places where a wrong answer is expensive. Split a long skill into several files rather than one wall of text — the body loads when the skill fires, the helper files load only if needed. Every skill also sits in a listing the model reads each session; `/doctor` will tell you what that listing costs and which skills dominate it.
 
 The repo ships eight team-grade skill templates: [`claude-code-starter-skills.md`](claude-code-starter-skills.md). Don't hand-repeat a workflow you could encode once.
 
