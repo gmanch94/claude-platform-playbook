@@ -53,6 +53,8 @@ Hand engineers [`claude-code-101.md`](claude-code-101.md) (the individual-practi
 - **Cost surprise** — long agentic sessions w/ Opus can spike. Set per-engineer budget alerts.
 - **Skill / plugin sprawl** — left unchecked, every engineer ships their own duplicate Skill within a month.
 - **Personal device becomes a credential** — if Remote Control is enabled, a phone with an active claude.ai session can drive a live Claude Code session with full local filesystem access. Treat the device like an SSH key: screen lock required, short session timeouts, and an IT admin can revoke it per-device via managed settings if that's not an acceptable risk for the team.
+- **Config backup becomes an egress path** — engineers accumulate months of real work in `~/.claude/` (user `CLAUDE.md`, personal skills and hooks, and auto-memory that records internal hostnames, architecture decisions, and ticket IDs), and nothing backs it up. The obvious self-serve fix is a personal cloud repo, which moves internal detail off the managed endpoint; a whole-directory copy also carries the OAuth credential file. This is the one risk here that arrives as *good* behavior, so it won't show up as a policy violation — name a sanctioned destination and ship an allowlist template in the plugin before someone invents their own. Practitioner-side framing: [`claude-code-101.md`](claude-code-101.md) §7.
+- **…and a copy may already exist that nobody chose.** Run the check in the other direction before you brief anyone: if endpoint backup, a profile-container product, or a cloud drive pointed at the home folder captures the user profile, `~/.claude` is already replicating off every machine in the fleet — credential file and memory included — and no engineer decided it. Confirm what those agents actually cover rather than assuming the risk begins with someone's choice. Don't assume your engineers know either: which tools sweep a home directory is endpoint-management knowledge, not developer knowledge, so the answer has to come from you and go *to* them.
 
 ---
 
@@ -274,6 +276,7 @@ For recurring work (weekly sweep, on-cadence reports), use scheduled tasks rathe
 | Audit log: all tool calls in headless mode | Plugin's Stop hook + central log |
 | Plugin changes require eval pass | CI |
 | Quarterly review of allow/deny lists | Platform team |
+| Sanctioned destination + allowlist template for personal `~/.claude/` backup | Plugin ships the template; platform team owns the destination |
 | Quarterly model surface refresh | Platform team — bumps model version, runs eval, ships if green |
 
 ---
