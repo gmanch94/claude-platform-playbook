@@ -101,6 +101,31 @@ The as-of stamp is **load-bearing** on `cost-calculator.html` — readers commit
 
 ## Repo-specific lessons
 
+### 2026-07-26 — don't guard a counted claim you can just delete
+
+Writing #85 I introduced a counted sentence in `claude-code-101.md` §7 ("**Three** things make it less obvious than it sounds:") over three bullets. Counted prose is the class `check-counts.mjs` section (b) exists for, so the reflex was right: register it, per the documented extension path — `[file, stated-count regex, row regex, label]`.
+
+**The registration was inert, and the negative control is what said so.** The row regex `/^- \*\*[A-Z]/gm` matched **38** bolded bullets across the whole file, not the three under that sentence. Section (b) counts row markers **file-wide**; it works for the existing registrations because their markers are file-unique by construction — a leading `Q1` table cell, a bolded `A1` one. A plain bolded bullet has no such marker, and no regex gets one without inventing a sentinel to carry it.
+
+The fix wasn't a cleverer regex. **It was deleting the number** — the sentence now reads "What makes it less obvious than it sounds:". No count, nothing to drift, `check-counts.mjs` left untouched.
+
+**The transferable half: a counted claim is a liability you chose to take on.** The guard is the *second*-best answer to it. Before registering a new count, ask whether the count earns its place at all — "three things" carried no information the three bullets didn't already carry. Same family as *retitle rather than renumber*: the cheapest defect is the one you decline to author.
+
+**Second-order, and the reason this is worth logging rather than just fixing:** the failure was visible only because the positive control was run and read. A lazier row regex that happened to match exactly three things elsewhere in the file would have printed `OK  says 3, has 3` and guarded **nothing** — green forever, drift uncaught. **Negative-control every new guard registration** (flip the stated number, confirm it goes red), and read the positive control's *row count*, not just its verdict.
+
+### 2026-07-26 — split the register by audience, don't write the sentence twice
+
+The #85 risk exists at two altitudes: a platform team deciding fleet policy, and a practitioner deciding what to do on their own laptop. The first draft wrote it once, in platform-team language, and pointed the reader at "ask IT what those agents cover."
+
+**That instruction is unrunnable for most of the people who need it.** It assumes an IT department exists, that the reader knows which question to ask, and that terms like *profile container* mean something to them. Many Claude Desktop and product-surface users are not engineers, and the engineers reading `claude-code-101.md` don't know endpoint-management tooling either — that's a different profession.
+
+Shipped as two registers instead:
+
+- **`claude-code-adoption-guide.md`** (platform team) keeps the technical framing and adds the part that makes it act: *which tools sweep a home directory is endpoint-management knowledge, not developer knowledge, so the answer has to travel from you to them.*
+- **`claude-code-101.md`** (practitioner) gets a self-check anyone can run — *open whatever backup or file-sync app is on the machine and search it for `.claude`* — with no product names and no "ask IT."
+
+**Transferable: guidance the reader cannot act on transfers anxiety without transferring capability**, which is worse than staying silent. When a risk spans audiences, the test is not "is this accurate" but "can *this* reader do something by Friday." Applies to `cowork-101.md` and `user-mindset-cheatsheet.md` on any future extension.
+
 ### 2026-07-25 — the parent-doc diff is a real gate, and it can come back "no"
 
 `claude-code-config-builder.html` is downstream of `claude-code-enterprise-config.md` §2/§4/§5, and **no guard catches builder-vs-parent drift** — not `check-counts.mjs`, not `/stale-check`, not `/doc-verify`. So the UX review's wording and field-structure proposals were held back behind a manual diff while six other PRs shipped. The diff paid for itself on the first item it touched.
