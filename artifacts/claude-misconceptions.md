@@ -47,6 +47,11 @@
 - **Mis-decide.** Procurement assumes individual Pro covers an engineering team. Scale-out blocked when team usage limits hit mid-pilot.
 - **Cite.** [docs.claude.com — pricing](https://docs.claude.com/en/about-claude/pricing); [`cost-calculator.html`](cost-calculator.html).
 
+### "`CLAUDE.md` should hold everything the team knows, or Claude won't find it."
+- **Reality.** Backwards on both halves. Anthropic's own guidance targets **under 200 lines** per file because longer ones "consume more context and may reduce adherence," and `@path` imports organize without saving anything — imported files load at launch regardless. Deferred loading is what path-scoped rules and Skills are for. `/doctor` (**v2.1.206+**) will propose the trim: cut what the model can derive from the codebase (directory layouts, dependency lists, architecture overviews), keep pitfalls, rationale, and conventions that differ from tool defaults. Anthropic ran the same argument on itself, removing "over 80%" of Claude Code's system prompt for Opus 5 and Fable 5 "with no measurable loss on our coding evaluations" `[M]` — the vendor's own prompt on the vendor's own evals, and part of that 80% was **moved into skills rather than deleted** (the post names verification and code review). Treat it as direction, not as a number your file will reproduce.
+- **Mis-decide.** Funding a "golden `CLAUDE.md`" program and measuring it by lines landed; splitting a bloated file into imports and booking a context saving that doesn't exist; blaming the model for ignoring a rule that sits at line 400 of a file it was told to weigh against three others.
+- **Cite.** [docs.claude.com — memory](https://docs.claude.com/en/docs/claude-code/memory); [docs.claude.com — slash commands](https://docs.claude.com/en/docs/claude-code/slash-commands); [claude.com/blog — the new rules of context engineering](https://claude.com/blog/the-new-rules-of-context-engineering-for-claude-5-generation-models) `[M]`; [`claude-code-101.md`](claude-code-101.md) §5, [`claude-code-enterprise-config.md`](claude-code-enterprise-config.md) §3.
+
 ---
 
 ## 3. API economics

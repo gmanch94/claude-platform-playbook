@@ -88,6 +88,9 @@ const crossFile = [
   ['CLAUDE.md',     /(\w+) posture questions \(deliv/, 'artifacts/claude-code-config-builder.html', /class="q" id="q-/g,        'builder posture questions (CLAUDE.md)'],
   ['README.md',     /from (\w+) posture answers \(deliv/, 'artifacts/claude-code-config-builder.html', /class="q" id="q-/g,     'builder posture questions (README)'],
   ['docs/scope.md', /\*\*(\w+) posture questions \+ an advanced drawer\*\*/, 'artifacts/claude-code-config-builder.html', /class="q" id="q-/g, 'builder posture questions (scope)'],
+  ['README.md',     /\| (\w+) myths about Claude/,      'artifacts/claude-misconceptions.md',        /^### "/gm,                'misconception myths (README)'],
+  ['CLAUDE.md',     /(\w+) myths that drive mis-budget/, 'artifacts/claude-misconceptions.md',       /^### "/gm,                'misconception myths (CLAUDE.md)'],
+  ['index.html',    /(\w+) myths that quietly/,         'artifacts/claude-misconceptions.md',        /^### "/gm,                'misconception myths (index.html)'],
 ];
 
 // --- malformed markdown tables (structure, not counts) ---

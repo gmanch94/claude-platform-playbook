@@ -1667,7 +1667,10 @@ function checklist(o, findings){
 
   L.push("", "## Guidance layer (the managed CLAUDE.md)", "",
     "- [ ] Place the managed `CLAUDE.md` at the **managed policy path** — **macOS** `/Library/Application Support/ClaudeCode/CLAUDE.md` · **Linux / WSL** `/etc/claude-code/CLAUDE.md` · **Windows** `C:\\Program Files\\ClaudeCode\\CLAUDE.md` — or inline it via the `claudeMd` key in managed settings.",
-    "- [ ] Remember what it is: it loads for **every session on the machine, in every repo**, and a user cannot exclude it — but it **guides, it does not gate**. Anything that must hold against a careless or adversarial user belongs in the JSON.");
+    "- [ ] Remember what it is: it loads for **every session on the machine, in every repo**, and a user cannot exclude it — but it **guides, it does not gate**. Anything that must hold against a careless or adversarial user belongs in the JSON.",
+    "- [ ] **Diff it against two or three real project `CLAUDE.md` files before deploying.** All four scopes concatenate, so any line that contradicts a team's own rule reaches the model in the same request as that rule — drop it, or state the precedence out loud.",
+    "- [ ] **Then trim it, per line.** In the emitted file, `Data boundaries`, `How we work` and `Model + cost` are org-specific — keep them. `Security posture` and `Operating posture` are mixed. What comes out is the **never/always rule your fleet hasn't actually needed — not the topic it covers**: rewrite `never say \"done\", \"fixed\", or \"passing\" without having run it` as a convention, or move verification into a skill, rather than dropping verification. `Blocked tools and paths are enforced centrally` and `Mandate an adversarial review` are yours and stay. Keep any line another document cites as a stated control — and if you haven't written the threat model or control matrix yet, keep it and revisit then. Check your **model pin** first: the premise is about the generation your machines actually run. Full per-line verdict: config §3.",
+    "- [ ] **Keep the pre-trim file in source control with a one-line rationale per deletion, and canary before the fleet push.** A trim that removed something load-bearing has no error message; this is the detection path.");
 
   L.push("", "## Policy + people", "",
     "- [ ] Publish the organization-instructions doc (the stub in the last tab) and link it from `companyAnnouncements`.",
@@ -2025,6 +2028,7 @@ function render(){
     const n = body.split("\n").length;
     chips.push([n > 200 ? "no" : "ok", n + " lines / ~200 ceiling"]);
     chips.push(["", "loads in every session, every repo — cannot be excluded"]);
+    chips.push(["", "menu, not a floor — cut what you haven't watched go wrong"]);
   } else if (S.tab === "check") {
     chips.push(["", (body.match(/- \[ \]/g)||[]).length + " operator actions"]);
   } else {
@@ -2035,7 +2039,7 @@ function render(){
   document.getElementById("pane-trace").innerHTML = {
     json: "Fields trace to <a href='claude-code-enterprise-config.html'>config §2</a> (Template A, permission mechanics, sandbox) and §5 (identity, cloud, network, telemetry, spend). Every unsupplied key is omitted — this tool never writes a value-shaped placeholder into a fail-closed field.",
     wrap: "Delivery sources and precedence: <a href='claude-code-enterprise-config.html'>config §1</a>. Exactly one managed source is used — they are not merged.",
-    md:   "Template B, <a href='claude-code-enterprise-config.html'>config §3</a>. This is the coaching layer: it shapes what Claude does and gates nothing. Keep hard controls in the JSON.",
+    md:   "Template B, <a href='claude-code-enterprise-config.html'>config §3</a>. This is the coaching layer: it shapes what Claude does and gates nothing. Keep hard controls in the JSON. <b>Trim it before you deploy</b> — all four CLAUDE.md scopes concatenate, so every line here lands beside a team's own project file. Cut the never/always rules your fleet hasn't actually needed and move craft expectations into the org-policy doc; keep what encodes <em>your</em> org. The per-line keep/cut split, the model-pin caveat, and the cited-as-a-control exception are in <a href='claude-code-enterprise-config.html'>config §3</a>.",
     check:"Template C + <a href='claude-code-enterprise-config.html'>config §7</a>. Operator actions belong in a file in your repo, not a PR description — a PR description is buried after merge and a fresh operator never sees it."
   }[S.tab];
 
