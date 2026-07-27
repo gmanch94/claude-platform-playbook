@@ -189,9 +189,18 @@ Invisible context bloat, ranked: too many MCP servers left connected, an oversiz
 
 ---
 
-## 7. Auto-memory — Claude's own notebook
+## 7. Auto-memory — Claude's own notebook, and the local tier it lives in
 
 Separate from `CLAUDE.md`: Claude keeps notes for itself across sessions in `~/.claude/projects/<project>/memory/`, indexed by `MEMORY.md`. Only the **first 200 lines / 25 KB** of the index load at session start (topic files load on demand). It's **machine-local**, shared across all worktrees of the same repo, not synced across machines. Browse and prune it with `/memory` — it's plain markdown you can edit or delete. Toggle with `autoMemoryEnabled`. Good for build commands and recurring gotchas; it decides what's worth keeping.
+
+**That "machine-local" applies to more than memory, and nothing backs any of it up.** Over a few months `~/.claude/` accumulates your user `CLAUDE.md` and whatever it `@`-imports, personal skills and slash commands (§9), personal hooks (§12), and the memory above. The team tier has a durability answer — the plugin repo, source-controlled and tagged. The org tier has one — managed settings, deployed by IT. The personal tier has none by default, so a re-imaged laptop takes months of accumulated judgment with it, silently and all at once.
+
+The fix is ordinary version control over the authored files. Two things make it less obvious than it sounds:
+
+- **Allowlist the files you wrote; don't blocklist the ones you didn't.** Session transcripts and cached plugin checkouts are nearly the whole directory by size, and your OAuth credential file lives there too — none of that is yours to keep or safe to publish. Ignore everything and re-include by name, so a file a future release drops into that directory is excluded by default rather than committed silently.
+- **Read what you are about to publish.** Memory records project specifics: internal hostnames, architecture decisions, ticket IDs. On a work machine that is an egress question before it is a backup question — see the kickoff risk list in [`claude-code-adoption-guide.md`](claude-code-adoption-guide.md), and use whatever destination your platform team has sanctioned rather than inventing one.
+
+**Failure mode:** a whole-directory copy pushed somewhere personal — now the credential file and every internal detail in memory are off the managed endpoint. That is worse than having no backup at all.
 
 ---
 
