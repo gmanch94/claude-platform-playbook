@@ -195,10 +195,13 @@ Separate from `CLAUDE.md`: Claude keeps notes for itself across sessions in `~/.
 
 **That "machine-local" applies to more than memory, and nothing backs any of it up.** Over a few months `~/.claude/` accumulates your user `CLAUDE.md` and whatever it `@`-imports, personal skills and slash commands (§9), personal hooks (§12), and the memory above. The team tier has a durability answer — the plugin repo, source-controlled and tagged. The org tier has one — managed settings, deployed by IT. The personal tier has none by default, so a re-imaged laptop takes months of accumulated judgment with it, silently and all at once.
 
-The fix is ordinary version control over the authored files. Two things make it less obvious than it sounds:
+The fix is ordinary version control over the authored files. What makes it less obvious than it sounds:
 
 - **Allowlist the files you wrote; don't blocklist the ones you didn't.** Session transcripts and cached plugin checkouts are nearly the whole directory by size, and your OAuth credential file lives there too — none of that is yours to keep or safe to publish. Ignore everything and re-include by name, so a file a future release drops into that directory is excluded by default rather than committed silently.
 - **Read what you are about to publish.** Memory records project specifics: internal hostnames, architecture decisions, ticket IDs. On a work machine that is an egress question before it is a backup question — see the kickoff risk list in [`claude-code-adoption-guide.md`](claude-code-adoption-guide.md), and use whatever destination your platform team has sanctioned rather than inventing one.
+- **A copy may already exist that you didn't make.** If your employer runs a backup tool, or a cloud drive is set to cover your home folder, `~/.claude` can get swept up with everything else — credential file included. You don't have to know which tool does what: open whatever backup or file-sync app is on the machine and search it for `.claude`. If it shows up, the copy already exists, and the only open question is whether the people responsible for it know what's inside.
+
+**A note on "sync."** A cloud drive is not a backup. It copies your current state to the other end, so deleting a file there deletes it everywhere — the delete is the thing that travels. Deleted files sit in a recycle bin for a limited window, which covers a mistake you catch quickly and not one you catch late; check your provider's actual retention before relying on it. Version control is the part that remembers, and the part that tells you *what* changed.
 
 **Failure mode:** a whole-directory copy pushed somewhere personal — now the credential file and every internal detail in memory are off the managed endpoint. That is worse than having no backup at all.
 
