@@ -39,7 +39,7 @@ Give the people you onboard [`user-mindset-cheatsheet.md`](user-mindset-cheatshe
 Is PHI, or any data requiring a **BAA** or **data residency**, ever going to sit in a folder Cowork can reach? → **Cowork is not an option for that workload.** The BAA explicitly does **not** cover Cowork (it covers the first-party API and Enterprise Chat/Projects/Artifacts/file-creation, with admin HIPAA activation). Route that work to a BAA-covered surface or keep it out of connected folders. This is independent of how useful Cowork is. [H — [privacy.claude.com BAA](https://privacy.claude.com/en/articles/8114513-business-associate-agreements-baa-for-commercial-customers); enumerated in [`governance-overlay.md`](governance-overlay.md) §4]
 
 **Gate 1 — Plan + device.**
-Cowork requires a **paid Claude plan** (Pro, Max, Team, or Enterprise). The session runs **remotely** and Cowork is available on the **desktop app (macOS/Windows), web (claude.ai), and mobile (iOS/Android)** — web and mobile are **in beta, rolling out from the Max plan**. The **desktop app is required for local-file, browser, and computer use** (the folder work this guide is about), even though the session runs remotely. No free tier. If your knowledge workers are on Free, that's the first blocker to clear; if they're on locked-down laptops that can't install the desktop app, local-folder work is blocked (web/mobile don't reach local files). [H — [support.claude.com get-started](https://support.claude.com/en/articles/13345190-get-started-with-claude-cowork)]
+Cowork requires a **paid Claude plan** (Pro, Max, Team, or Enterprise). The session runs **remotely** and Cowork is available on the **desktop app (macOS/Windows), web (claude.ai), and mobile (iOS/Android)** — web and mobile are **in beta**, initially rolled out to Max and **expanded to Team + Enterprise as of 2026-08-03**. On Team, cloud execution is on by default (an Owner can turn it off); on Enterprise it's off by default — an Owner must enable "Run Cowork in the cloud" and grant the capability via custom roles. The **desktop app is required for local-file, browser, and computer use** (the folder work this guide is about), even though the session runs remotely. No free tier. If your knowledge workers are on Free, that's the first blocker to clear; if they're on locked-down laptops that can't install the desktop app, local-folder work is blocked (web/mobile don't reach local files). [H — [support.claude.com get-started](https://support.claude.com/en/articles/13345190-get-started-with-claude-cowork)] [M — Team/Enterprise expansion WebSearch-corroborated 2026-08-03; primary support.claude.com article blocked in-session, re-verify next refresh]
 
 **Gate 2 — Governance ownership.**
 Because Cowork takes real actions on a real machine, *someone* must own the answer to "which folders, which egress, reviewed by whom." On Team/Enterprise that owner uses admin controls (below). For individual Pro/Max seats there is no central admin — the user *is* the governance boundary. Decide who owns this before broad enablement, not after the first incident.
@@ -51,9 +51,9 @@ Because Cowork takes real actions on a real machine, *someone* must own the answ
 | Requirement | Detail | Source |
 |---|---|---|
 | **Plan** | Paid only — Pro, Max, Team, Enterprise. No Free. | [H] support.claude.com |
-| **App** | Desktop (macOS/Windows, latest version) required for local-file/browser/computer use; **web (claude.ai) + mobile in beta** (rolling out from Max). Session runs remotely. | [H] support.claude.com |
+| **App** | Desktop (macOS/Windows, latest version) required for local-file/browser/computer use; **web (claude.ai) + mobile in beta**, now on Max/Team/Enterprise (expanded from Max-only 2026-08-03; Team on-by-default, Enterprise off-by-default). Session runs remotely. | [H] support.claude.com; [M] Team/Ent expansion, see footer note |
 | **Connectivity** | Active internet required for the whole session. | [H] support.claude.com |
-| **Mobile** | Full Cowork **in beta on iOS/Android** (rolling out from Max); reaches your remote session but **no local-file access without the desktop app**. | [H] support.claude.com |
+| **Mobile** | Full Cowork **in beta on iOS/Android** across Max/Team/Enterprise; reaches your remote session but **no local-file access without the desktop app**. | [H] support.claude.com; [M] Team/Ent expansion |
 | **BAA / residency** | Not covered by BAA; treat as out-of-scope for PHI and residency-bound data. | [H] privacy.claude.com |
 
 ---
@@ -140,4 +140,6 @@ Pick a baseline in Phase 0 so Phase 3 has evidence:
 
 ---
 
-`© gmanch94 · CC-BY-4.0 · As of 2026-07. Verify Cowork availability + governance at support.claude.com.`
+`© gmanch94 · CC-BY-4.0 · As of 2026-08. Verify Cowork availability + governance at support.claude.com.`
+
+**[M] note (2026-08-03):** the Team/Enterprise web-mobile expansion above was corroborated via WebSearch (a matching support-article title + press coverage), not a direct primary-source fetch — `support.claude.com` was proxy-blocked in the session that made this update. Re-confirm directly at the next monthly refresh.
